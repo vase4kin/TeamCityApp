@@ -17,20 +17,19 @@
 
 package teamcityapp.features.change_details.impl.router
 
-import android.app.Activity
 import androidx.core.net.toUri
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.storage.Storage
 
 /** UI-scoped browser adapter; never retained by the ViewModel. */
 class ChangeDetailsRouterImpl(
-    private val activity: Activity,
     private val chromeTabs: ChromeCustomTabs,
-    private val storage: Storage
+    private val storage: Storage,
+    private val onClose: () -> Unit
 ) : ChangeDetailsRouter {
     override fun start() = chromeTabs.initCustomsTabs()
     override fun stop() = chromeTabs.unbindCustomsTabs()
-    override fun close() = activity.finish()
+    override fun close() = onClose()
     override fun openUrl(url: String) {
         chromeTabs.launchUrl(url)
     }

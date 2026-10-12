@@ -30,14 +30,19 @@ import teamcityapp.features.tests.impl.router.TestsRouter
 import teamcityapp.libraries.list_state.ListUiState
 
 @Composable
-internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel()) {
+internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel(), parentCount: TestsCountState? = null, onParentCountRetry: (() -> Unit)? = null) {
     val selection by viewModel.selection.collectAsStateWithLifecycle()
-    val count by viewModel.count.collectAsStateWithLifecycle()
-    LaunchedEffect(count, router) {
-        when (val current = count) {
-            is TestsCountState.Available -> router.updateTabCount(current.count)
-            TestsCountState.Unavailable -> router.updateTabCount(0)
-            TestsCountState.Loading -> Unit
+    val count = parentCount ?: run {
+        val ownCount by viewModel.count.collectAsStateWithLifecycle()
+        ownCount
+    }
+    if (parentCount == null) {
+        LaunchedEffect(count, router) {
+            when (val current = count) {
+                is TestsCountState.Available -> router.updateTabCount(current.count)
+                TestsCountState.Unavailable -> router.updateTabCount(0)
+                TestsCountState.Loading -> Unit
+            }
         }
     }
     // A new filter gets a fresh Paging presenter and scroll state; its previous rows never
@@ -79,7 +84,7 @@ internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltVie
                 viewModel.prepareRefresh()
                 tests.refresh()
             },
-            onCountRetry = viewModel::retryCount,
+            onCountRetry = onParentCountRetry ?: viewModel::retryCount,
             onFailedTest = router::openFailedTest,
             onAppendRetry = tests::retry
         )

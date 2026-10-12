@@ -34,6 +34,8 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.Matchers.not
@@ -41,10 +43,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.login.impl.LoginActivity
 
 /**
- * Validation tests for [LoginActivity]
+ * Validation tests for [MainActivity]
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -68,8 +69,8 @@ class LoginActivityValidationTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomActivityTestRule<LoginActivity> =
-        CustomActivityTestRule(LoginActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.LEGACY_LOGIN_COMPONENT)
 
     @Before
     fun setUp() {

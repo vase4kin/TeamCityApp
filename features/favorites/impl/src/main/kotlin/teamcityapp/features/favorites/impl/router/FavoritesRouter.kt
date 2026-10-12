@@ -16,33 +16,11 @@
 
 package teamcityapp.features.favorites.impl.router
 
-import androidx.fragment.app.Fragment
-import dagger.hilt.android.scopes.FragmentScoped
-import javax.inject.Inject
-import teamcityapp.features.favorites.api.FavoritesAppRouter
-import teamcityapp.features.favorites.impl.FavoritesFragment
-import teamcityapp.features.favorites.impl.tracker.FavoritesTracker
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
-import teamcityapp.libraries.utils.requireScreenOwner
 
 interface FavoritesRouter {
     fun openDrawer()
     fun openProject(project: ProjectReference)
     fun openConfiguration(configuration: BuildConfigurationSummary)
-}
-
-@FragmentScoped
-class FavoritesRouterImpl @Inject constructor(
-    owner: Fragment,
-    private val appRouter: FavoritesAppRouter,
-    private val tracker: FavoritesTracker
-) : FavoritesRouter {
-    private val fragment = owner.requireScreenOwner<FavoritesFragment>()
-    override fun openDrawer() = appRouter.openDrawer(fragment.requireActivity())
-    override fun openProject(project: ProjectReference) = appRouter.openProject(fragment.requireActivity(), project)
-    override fun openConfiguration(configuration: BuildConfigurationSummary) {
-        tracker.configurationOpened()
-        appRouter.openBuildConfiguration(fragment.requireActivity(), configuration)
-    }
 }

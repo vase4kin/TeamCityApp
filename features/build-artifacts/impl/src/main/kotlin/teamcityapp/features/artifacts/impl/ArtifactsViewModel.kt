@@ -21,25 +21,24 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.Json
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
+import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.RefreshableListLoader
 
 @HiltViewModel
 class ArtifactsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ArtifactsRepository,
-    codec: BuildLaunchCodec,
     private val tracker: ArtifactsTracker
 ) : ViewModel() {
-    val build = codec.decode(requireNotNull(savedStateHandle.get<Serializable>(ArtifactsNavigation.BUILD)))
-    private val url = savedStateHandle.get<String>(ArtifactsNavigation.URL).orEmpty()
-    private val title = savedStateHandle.get<String>(ArtifactsNavigation.NAME).orEmpty()
+    val build = Json.decodeFromString<BuildLaunchData>(requireNotNull(savedStateHandle.get<String>(JSON_BUILD)))
+    private val url = savedStateHandle.get<String>(ArtifactsViewModel.URL).orEmpty()
+    private val title = savedStateHandle.get<String>(ArtifactsViewModel.NAME).orEmpty()
     private val loader = RefreshableListLoader(flowOf(url)) { path, force -> repository.entries(path, force) }
     private val download = MutableStateFlow<ArtifactDownloadState>(ArtifactDownloadState.Idle)
     private var downloadJob: Job? = null
@@ -90,5 +89,11 @@ class ArtifactsViewModel @Inject constructor(
         lastClaimedToken = token
         download.value = ArtifactDownloadState.Idle
         return ready.file
+    }
+    companion object {
+        internal const val URL = "url"
+        internal const val NAME = "name"
+
+        internal const val JSON_BUILD = "artifacts.build.json"
     }
 }

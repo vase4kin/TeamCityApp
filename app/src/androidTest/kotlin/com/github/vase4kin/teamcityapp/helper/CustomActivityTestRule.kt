@@ -1,0 +1,35 @@
+/*
+ * Copyright 2019 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.helper
+
+import android.app.Activity
+import android.content.Intent
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
+
+class CustomActivityTestRule<T : Activity>(activityClass: Class<T>, private val componentName: String? = null) : ActivityTestRule<T>(activityClass, false, false) {
+    override fun getActivityIntent(): Intent = (super.getActivityIntent() ?: Intent(Intent.ACTION_MAIN)).apply {
+        componentName?.let { setClassName(InstrumentationRegistry.getInstrumentation().targetContext, it) }
+    }
+
+    override fun launchActivity(startIntent: Intent?): T = super.launchActivity(
+        startIntent?.let { incoming ->
+            componentName?.let { component -> Intent(incoming).setClassName(InstrumentationRegistry.getInstrumentation().targetContext, component) } ?: incoming
+        }
+    )
+}

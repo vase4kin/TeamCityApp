@@ -14,10 +14,4 @@ Copyright 2026 Andrey Tolpeev
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
-        <activity android:name="teamcityapp.features.run_build.impl.RunBuildActivity" android:exported="false" android:label="@string/title_run_build"
-            android:theme="@style/Theme.MyApp" />
-        <activity-alias android:name="com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity" android:targetActivity="teamcityapp.features.run_build.impl.RunBuildActivity" android:exported="false" />
-    </application>
-</manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />

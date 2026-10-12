@@ -20,12 +20,10 @@ import android.app.Application
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildHydrator
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
-import com.github.vase4kin.teamcityapp.builds.data.homeBuildAccountKey
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import com.github.vase4kin.teamcityapp.integration.features.home.data.HomeFilterEvents
+import com.github.vase4kin.teamcityapp.integration.features.runningbuilds.data.AppRunningBuildsRepository
+import com.github.vase4kin.teamcityapp.integration.filters.filter.Filter
+import com.github.vase4kin.teamcityapp.integration.filters.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.gson.Gson
 import io.reactivex.Single
@@ -50,6 +48,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.running_builds.api.RunningBuildsFilter
 import teamcityapp.features.running_builds.api.RunningBuildsQuery
+import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
+import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.storage.models.UserAccount
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -72,7 +73,7 @@ class AppRunningBuildsRepositoryTest {
         storage,
         filters,
         bus,
-        AppBuildHydrator(AppBuildLaunchMapper()),
+        BuildHydrator(BuildLaunchMapper()),
         StandardTestDispatcher(scope.testScheduler)
     ).also {
         whenever(storage.activeUser).thenAnswer { active }
@@ -205,7 +206,7 @@ class AppRunningBuildsRepositoryTest {
             storage,
             filters,
             bus,
-            AppBuildHydrator(AppBuildLaunchMapper()),
+            BuildHydrator(BuildLaunchMapper()),
             StandardTestDispatcher(testScheduler)
         )
         assertTrue(runCatching { app.builds(query, false) }.exceptionOrNull() is CancellationException)
@@ -262,14 +263,14 @@ class AppRunningBuildsRepositoryTest {
         val app = app(this)
         val observations = async { app.query.take(3).toList() }
         runCurrent()
-        assertTrue(bus.hasSubscriberForEvent(HomeDataManager.RunningBuildsFilterChangedEvent::class.java))
-        bus.post(HomeDataManager.RunningBuildsFilterChangedEvent())
+        assertTrue(bus.hasSubscriberForEvent(HomeFilterEvents.RunningBuildsFilterChangedEvent::class.java))
+        bus.post(HomeFilterEvents.RunningBuildsFilterChangedEvent())
         runCurrent()
         filters.runningBuildsFilter = Filter.RUNNING_ALL
-        bus.post(HomeDataManager.RunningBuildsFilterChangedEvent())
+        bus.post(HomeFilterEvents.RunningBuildsFilterChangedEvent())
         runCurrent()
         active = account("bob", listOf("C"))
-        bus.post(HomeDataManager.RunningBuildsFilterChangedEvent())
+        bus.post(HomeFilterEvents.RunningBuildsFilterChangedEvent())
         val observed = observations.await()
         assertEquals(RunningBuildsFilter.Favorites, observed[0].filter)
         assertEquals(listOf("A", "B"), observed[0].favoriteConfigurationIds)
@@ -277,7 +278,7 @@ class AppRunningBuildsRepositoryTest {
         assertTrue(observed[1].favoriteConfigurationIds.isEmpty())
         assertTrue(observed[2].favoriteConfigurationIds.isEmpty())
         assertNotEquals(observed[1].accountKey, observed[2].accountKey)
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.RunningBuildsFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.RunningBuildsFilterChangedEvent::class.java))
     }
 
     @Test fun resubscriptionReadsLatestFavoritesAndPreviousQueriesAreImmutableSnapshots() = runTest {
@@ -297,7 +298,7 @@ class AppRunningBuildsRepositoryTest {
         runCurrent()
         pending.cancel()
         runCurrent()
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.RunningBuildsFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.RunningBuildsFilterChangedEvent::class.java))
     }
 
     @Test fun accountQuerySwitchCancelsOldRxBatchAndOnlyPublishesTheNewAccountsResult() = runTest {
@@ -314,7 +315,7 @@ class AppRunningBuildsRepositoryTest {
         assertTrue(oldResponse.hasObservers())
         active = account("bob", listOf("C"))
         current = next
-        bus.post(HomeDataManager.RunningBuildsFilterChangedEvent())
+        bus.post(HomeFilterEvents.RunningBuildsFilterChangedEvent())
         runCurrent()
         assertFalse(oldResponse.hasObservers())
         oldResponse.onSuccess(Builds(1, listOf(build("old"))))
@@ -326,7 +327,7 @@ class AppRunningBuildsRepositoryTest {
         verify(legacy, never()).build(any(), any())
         collecting.cancel()
         runCurrent()
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.RunningBuildsFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.RunningBuildsFilterChangedEvent::class.java))
     }
 
     @Test fun zeroCountIsAuthoritativeEvenWhenTheResponseContainsRows() = runTest {

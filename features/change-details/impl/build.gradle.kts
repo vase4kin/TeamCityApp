@@ -25,15 +25,14 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.change_details.impl" }
 dependencies {
+    implementation(projects.libraries.navigation)
     implementation(projects.features.changeDetails.api)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
     implementation(projects.libraries.chromeTabs)
     implementation(projects.libraries.storage)
     implementation(projects.libraries.storageModels)
     implementation(projects.libraries.api)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

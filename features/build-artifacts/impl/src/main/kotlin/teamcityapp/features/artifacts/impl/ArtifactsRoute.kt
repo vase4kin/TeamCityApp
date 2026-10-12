@@ -94,7 +94,7 @@ internal fun ArtifactsRoute(
         }
     }
     ArtifactsScreen(
-        // A Compose dialog has its own window, independent of the Fragment pager's visibility.
+        // A Compose dialog has its own window, independent of the destination's visibility.
         if (presentsDialogs) state else state.copy(download = ArtifactDownloadState.Idle),
         showToolbar, platformError.takeIf { presentsDialogs },
         viewModel::refresh, viewModel::retry, router::navigateUp,

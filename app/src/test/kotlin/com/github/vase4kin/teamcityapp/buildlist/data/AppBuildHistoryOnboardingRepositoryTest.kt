@@ -24,13 +24,14 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
+import teamcityapp.features.build_history.impl.data.DefaultBuildHistoryOnboardingRepository
 import teamcityapp.libraries.onboarding.OnboardingManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppBuildHistoryOnboardingRepositoryTest {
     @Test fun pendingPromptsKeepRunFilterFavoriteSequence() = runTest {
         val manager = mock<OnboardingManager>()
-        assertEquals(listOf(BuildHistoryPrompt.Run, BuildHistoryPrompt.Filter, BuildHistoryPrompt.Favorite), AppBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler)).pendingPrompts())
+        assertEquals(listOf(BuildHistoryPrompt.Run, BuildHistoryPrompt.Filter, BuildHistoryPrompt.Favorite), DefaultBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler)).pendingPrompts())
         verify(manager).isRunBuildPromptShown
         verify(manager).isFilterBuildsPromptShown
         verify(manager).isFavPromptShown
@@ -42,13 +43,13 @@ class AppBuildHistoryOnboardingRepositoryTest {
             on { isRunBuildPromptShown } doReturn true
             on { isFavPromptShown } doReturn true
         }
-        assertEquals(listOf(BuildHistoryPrompt.Filter), AppBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler)).pendingPrompts())
+        assertEquals(listOf(BuildHistoryPrompt.Filter), DefaultBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler)).pendingPrompts())
         verify(manager, never()).isAddFavPromptShown
     }
 
     @Test fun markShownWritesOnlyTheCorrespondingExistingPreference() = runTest {
         val manager = mock<OnboardingManager>()
-        val adapter = AppBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler))
+        val adapter = DefaultBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler))
         adapter.markShown(BuildHistoryPrompt.Run)
         adapter.markShown(BuildHistoryPrompt.Filter)
         adapter.markShown(BuildHistoryPrompt.Favorite)
@@ -63,7 +64,7 @@ class AppBuildHistoryOnboardingRepositoryTest {
         val failure = IllegalStateException("unavailable")
         doThrow(failure).whenever(manager).saveFilterBuildsPromptShown()
         try {
-            AppBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler)).markShown(BuildHistoryPrompt.Filter)
+            DefaultBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler)).markShown(BuildHistoryPrompt.Filter)
             fail("Expected persistence failure")
         } catch (actual: IllegalStateException) {
             assertEquals(failure::class, actual::class)
@@ -75,7 +76,7 @@ class AppBuildHistoryOnboardingRepositoryTest {
 
     @Test fun cancelledPromptPersistenceDoesNotChangeStorage() = runTest {
         val manager = mock<OnboardingManager>()
-        val adapter = AppBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler))
+        val adapter = DefaultBuildHistoryOnboardingRepository(manager, StandardTestDispatcher(testScheduler))
         val request = async { adapter.markShown(BuildHistoryPrompt.Run) }
         request.cancelAndJoin()
         verifyNoInteractions(manager)

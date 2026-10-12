@@ -25,9 +25,9 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.*
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import java.io.Serializable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -39,7 +39,6 @@ import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.impl.router.ArtifactsRouter
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
 import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
@@ -57,21 +56,16 @@ class ArtifactsRouteTest {
     }
     private val router = FakeRouter()
     private val build = BuildLaunchData("42", "/builds/42", buildTypeId = "configuration")
-    private val codec = object : BuildLaunchCodec {
-        override fun encode(build: BuildLaunchData): Serializable = "legacy-build"
-        override fun decode(payload: Serializable) = build
-    }
 
     @After fun after() {
         store.clear()
     }
     private fun viewModel(load: suspend () -> List<Artifact> = { emptyList() }, downloadResult: suspend () -> DownloadedArtifact = { DownloadedArtifact("/downloaded") }) = ArtifactsViewModel(
-        SavedStateHandle(mapOf(ArtifactsNavigation.BUILD to "legacy-build", ArtifactsNavigation.URL to "/artifacts")),
+        SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(build), ArtifactsViewModel.URL to "/artifacts")),
         object : ArtifactsRepository {
             override suspend fun entries(url: String, forceRefresh: Boolean) = load()
             override suspend fun download(file: ArtifactDownload) = downloadResult()
         },
-        codec,
         object : ArtifactsTracker {
             override fun viewShown() {}
         }

@@ -23,14 +23,16 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_overview.impl" }
 dependencies {
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
+    implementation(projects.libraries.navigation)
+    implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildOverview.api)
     implementation(projects.features.bottomSheet.api)
     implementation(projects.libraries.listState)
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

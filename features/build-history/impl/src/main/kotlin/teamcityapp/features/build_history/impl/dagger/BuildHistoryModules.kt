@@ -20,15 +20,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
-import teamcityapp.features.build_history.impl.navigation.BuildHistoryNavigationImpl
 import teamcityapp.features.build_history.impl.tracker.BuildHistoryTracker
 import teamcityapp.features.build_history.impl.tracker.BuildHistoryTrackerImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class BuildHistoryModules {
-    @Binds abstract fun navigation(implementation: BuildHistoryNavigationImpl): BuildHistoryNavigation
 
     @Binds abstract fun tracker(implementation: BuildHistoryTrackerImpl): BuildHistoryTracker
 }

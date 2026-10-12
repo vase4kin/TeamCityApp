@@ -34,13 +34,14 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.Companion.RUN_BUILD_TYPE_ID
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -56,12 +57,11 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
 
 private const val TYPE_ID = "TypeId"
 
 /**
- * Tests for [FilterBuildsActivity]
+ * Tests for the FilterBuilds root destination
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -84,8 +84,8 @@ class FilterBuildsBranchesAutoCompleteTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomActivityTestRule<FilterBuildsActivity> =
-        CustomActivityTestRule(FilterBuildsActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, "teamcityapp.features.filter_builds.impl.FilterBuildsActivity")
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -103,7 +103,7 @@ class FilterBuildsBranchesAutoCompleteTest {
     fun testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID)
+        intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check the branches autocomplete field is not visible
@@ -118,7 +118,7 @@ class FilterBuildsBranchesAutoCompleteTest {
         `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(ArrayList())))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID)
+        intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check the branches autocomplete field is not visible
@@ -136,7 +136,7 @@ class FilterBuildsBranchesAutoCompleteTest {
         `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(branches)))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID)
+        intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
         // Starting the activity
         activityRule.launchActivity(intent)
         // Choose branch from autocomplete and verify it is appeared

@@ -15,10 +15,13 @@
  */
 
 import com.android.build.api.dsl.LibraryExtension
-plugins { id("teamcityapp.android.library") }
+plugins {
+    id("teamcityapp.android.library")
+    alias(libs.plugins.kotlin.serialization)
+}
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_overview.api" }
 dependencies {
+    api(projects.libraries.navigation)
     api(projects.libraries.builds)
-    api(libs.androidx.fragment)
     api(libs.coroutines.android)
 }

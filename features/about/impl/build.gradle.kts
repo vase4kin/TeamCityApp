@@ -36,18 +36,17 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
+    implementation(projects.libraries.navigation)
     implementation(projects.features.about.api)
     implementation(projects.libraries.appRating)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.chromeTabs)
-    implementation(projects.libraries.utils)
 
     implementation(libs.compose.material3.windowSizeClass)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.google.material)
-    implementation(libs.google.openSourceLicensesLibrary)
     implementation(libs.dagger.dagger)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.google.openSourceLicensesLibrary)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

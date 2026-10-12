@@ -25,12 +25,12 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.splash.impl" }
 dependencies {
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.session)
+    implementation(projects.libraries.navigation)
     implementation(projects.features.splash.api)
-    implementation(projects.libraries.utils)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

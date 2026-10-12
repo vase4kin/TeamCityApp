@@ -16,8 +16,6 @@
 
 package teamcityapp.features.login.impl
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.junit.Assert.assertEquals
@@ -25,50 +23,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.features.login.api.router.LoginAppRouter
-import teamcityapp.features.login.impl.navigation.LoginNavigationImpl
-import teamcityapp.features.login.impl.router.LoginRouterImpl
 import teamcityapp.features.login.impl.tracker.LoginTrackerImpl
 import teamcityapp.libraries.authentication.AuthenticationAnalytics
-import teamcityapp.libraries.resources.R as SharedR
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class LoginOwnershipTest {
-    @Test fun navigationPreservesLaunchBehavior() {
-        val owner = spy(Robolectric.buildActivity(Activity::class.java).setup().get())
-        doNothing().`when`(owner).startActivity(any(Intent::class.java))
-        LoginNavigationImpl().open(owner)
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        verify(owner).startActivity(intent.capture())
-        assertEquals(LoginActivity::class.java.name, intent.value.component!!.className)
-        assertEquals(0, intent.value.flags)
-    }
-
-    @Test fun accountSwitchClearsTheTask() {
-        val owner = spy(Robolectric.buildActivity(Activity::class.java).setup().get())
-        doNothing().`when`(owner).startActivity(any(Intent::class.java))
-        LoginNavigationImpl().openWithClearStack(owner)
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        verify(owner).startActivity(intent.capture())
-        assertEquals(LoginActivity::class.java.name, intent.value.component!!.className)
-        assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK, intent.value.flags)
-    }
-
-    @Test fun successfulNavigationPreservesCloseOrder() {
-        val owner = mock(Activity::class.java)
-        val destination = mock(LoginAppRouter::class.java)
-        LoginRouterImpl(owner, destination).openProjects()
-        val order = inOrder(owner, destination)
-        order.verify(destination).openProjects(owner)
-        order.verify(owner).finish()
-
-        order.verifyNoMoreInteractions()
-    }
-
     @Test fun analyticsPreserveScreenAndActionEvents() {
         val analytics = mock(FirebaseAnalytics::class.java)
         val tracker = LoginTrackerImpl(analytics, AuthenticationAnalytics(analytics))

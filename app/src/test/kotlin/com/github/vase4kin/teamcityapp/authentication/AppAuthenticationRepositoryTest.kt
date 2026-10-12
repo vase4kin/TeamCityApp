@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.authentication
 import android.app.Application
 import android.content.Context
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.integration.authentication.AppAuthenticationRepository
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*

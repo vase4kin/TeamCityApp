@@ -28,5 +28,6 @@ extensions.configure<LibraryExtension> {
 
 dependencies {
     api(projects.libraries.listState)
+    implementation(libs.androidx.activity.compose)
     implementation(projects.libraries.theme)
 }

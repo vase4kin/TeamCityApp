@@ -25,11 +25,11 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.settings.impl" }
 dependencies {
+    implementation(projects.libraries.navigation)
     implementation(projects.features.settings.api)
     implementation(projects.libraries.appTheme)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

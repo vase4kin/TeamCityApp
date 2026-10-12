@@ -50,9 +50,9 @@ class BuildHistoryViewModel @Inject constructor(
     private val onboardingRepository: BuildHistoryOnboardingRepository,
     private val tracker: BuildHistoryTracker
 ) : ViewModel() {
-    val configurationName: String = savedStateHandle[BuildHistoryNavigation.EXTRA_NAME] ?: ""
-    val configurationId: String = savedStateHandle[BuildHistoryNavigation.EXTRA_ID] ?: ""
-    private var generation = newGeneration(BuildHistoryQuery(configurationId, savedStateHandle[EFFECTIVE_LOCATOR] ?: savedStateHandle[BuildHistoryNavigation.EXTRA_LOCATOR] ?: BuildHistoryQuery.DEFAULT_LOCATOR))
+    val configurationName: String = savedStateHandle[BuildHistoryViewModel.EXTRA_NAME] ?: ""
+    val configurationId: String = savedStateHandle[BuildHistoryViewModel.EXTRA_ID] ?: ""
+    private var generation = newGeneration(BuildHistoryQuery(configurationId, savedStateHandle[EFFECTIVE_LOCATOR] ?: savedStateHandle[BuildHistoryViewModel.EXTRA_LOCATOR] ?: BuildHistoryQuery.DEFAULT_LOCATOR))
     private val selected = MutableStateFlow(generation.selection)
     internal val selection = selected.asStateFlow()
 
@@ -271,6 +271,10 @@ class BuildHistoryViewModel @Inject constructor(
         lateinit var selection: HistorySelection
     }
     companion object {
+        internal const val EXTRA_ID = "id"
+        internal const val EXTRA_NAME = "name"
+        internal const val EXTRA_LOCATOR = "buildHistoryLocator"
+
         internal const val EFFECTIVE_LOCATOR = "effectiveBuildHistoryLocator"
         private const val QUEUED_HREF = "recentQueuedBuildHref"
     }

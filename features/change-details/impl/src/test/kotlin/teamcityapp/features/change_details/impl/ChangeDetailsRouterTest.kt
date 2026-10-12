@@ -16,7 +16,6 @@
 
 package teamcityapp.features.change_details.impl
 
-import android.app.Activity
 import android.app.Application
 import android.net.Uri
 import org.junit.Assert.*
@@ -33,10 +32,10 @@ import teamcityapp.libraries.storage.models.UserAccount
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class ChangeDetailsRouterTest {
-    private val activity = mock(Activity::class.java)
+    private var closes = 0
     private val tabs = mock(ChromeCustomTabs::class.java)
     private val storage = mock(Storage::class.java)
-    private val router = ChangeDetailsRouterImpl(activity, tabs, storage)
+    private val router = ChangeDetailsRouterImpl(tabs, storage) { closes++ }
 
     @Test fun lifecycleOwnsBrowserConnection() {
         router.start()
@@ -76,8 +75,8 @@ class ChangeDetailsRouterTest {
         verify(tabs).launchUrl("https://next.example/diffView.html?id=123&vcsFileName=a.kt")
     }
 
-    @Test fun closeFinishesActivity() {
+    @Test fun closeDelegatesToTheNavigationOwner() {
         router.close()
-        verify(activity).finish()
+        assertEquals(1, closes)
     }
 }

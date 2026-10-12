@@ -24,14 +24,19 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.navigation.impl" }
 dependencies {
+    implementation(projects.libraries.data)
+    implementation(projects.libraries.coroutines)
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.remote)
+
+    implementation(projects.features.buildHistory.api)
+    implementation(projects.features.drawer.api)
+    implementation(projects.libraries.navigation)
     implementation(projects.features.navigation.api)
     implementation(projects.libraries.listState)
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.appRating)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.authentication
 
+import com.github.vase4kin.teamcityapp.integration.authentication.AppLoginRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.*

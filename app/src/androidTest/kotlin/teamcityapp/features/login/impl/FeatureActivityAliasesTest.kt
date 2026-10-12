@@ -15,23 +15,34 @@
  */
 
 package teamcityapp.features.login.impl
+
 import android.content.ComponentName
 import android.content.Context
-import android.content.pm.ActivityInfo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class FeatureActivityAliasesTest {
-    @Test fun legacyComponentsResolveToFeatureOwnedActivities() {
+    @Test fun legacyComponentsResolveToTheirCurrentOwningActivity() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val targets = mapOf(
-            "com.github.vase4kin.teamcityapp.login.view.LoginActivity" to "teamcityapp.features.login.impl.LoginActivity",
-            "com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity" to "teamcityapp.features.create_account.impl.CreateAccountActivity",
-            "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity" to "teamcityapp.features.run_build.impl.RunBuildActivity",
-            "com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity" to "teamcityapp.features.filter_builds.impl.FilterBuildsActivity"
+            "com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.home.view.HomeActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "teamcityapp.features.navigation.impl.NavigationActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "teamcityapp.features.build_history.impl.BuildHistoryActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "teamcityapp.features.artifacts.impl.ArtifactsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.login.view.LoginActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "teamcityapp.features.run_build.impl.RunBuildActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "teamcityapp.features.filter_builds.impl.FilterBuildsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity"
         )
         targets.forEach { (legacy, target) ->
             val alias = context.packageManager.getActivityInfo(ComponentName(context, legacy), 0)
@@ -39,7 +50,6 @@ class FeatureActivityAliasesTest {
             assertFalse(alias.exported)
             val activity = context.packageManager.getActivityInfo(ComponentName(context, target), 0)
             assertFalse(activity.exported)
-            if (legacy.contains("login.view")) assertEquals(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, activity.screenOrientation)
         }
     }
 }

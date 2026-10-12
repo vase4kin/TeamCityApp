@@ -310,7 +310,7 @@ class BuildHistoryViewModelTest {
     }
 
     @Test fun effectiveFilterSurvivesSavedStateAndResetRestoresAnyDefault() = runTest(dispatcher) {
-        val handle = SavedStateHandle(mapOf("id" to "configuration", BuildHistoryNavigation.EXTRA_LOCATOR to "running:true,personal:false"))
+        val handle = SavedStateHandle(mapOf("id" to "configuration", BuildHistoryViewModel.EXTRA_LOCATOR to "running:true,personal:false"))
         val vm = viewModel(handle)
         assertEquals("running:true,personal:false", vm.selection.value.query.locator)
         vm.applyFilter("state:queued,pinned:any,personal:false")
@@ -368,7 +368,7 @@ class BuildHistoryViewModelTest {
     }
 
     @Test fun pullRefreshAndInitialRetryForceCurrentEffectiveFilterWithoutReset() = runTest(dispatcher) {
-        val vm = viewModel(SavedStateHandle(mapOf("id" to "configuration", BuildHistoryNavigation.EXTRA_LOCATOR to "pinned:true")))
+        val vm = viewModel(SavedStateHandle(mapOf("id" to "configuration", BuildHistoryViewModel.EXTRA_LOCATOR to "pinned:true")))
         vm.selection.value.pages.asSnapshot {
             vm.prepareRefresh()
             refresh()

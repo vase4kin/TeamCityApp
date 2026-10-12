@@ -66,7 +66,6 @@ fun DrawerScreen(
 ) {
     Surface(modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
         Column(Modifier.navigationBarsPadding()) {
-            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
             LazyColumn(
                 Modifier.fillMaxWidth().weight(1f, fill = false).testTag("drawer:list")
                     .nestedScroll(rememberNestedScrollInteropConnection()),

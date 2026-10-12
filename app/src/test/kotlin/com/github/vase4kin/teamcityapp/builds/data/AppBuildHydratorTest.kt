@@ -27,10 +27,12 @@ import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
+import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppBuildHydratorTest {
-    private val hydrator = AppBuildHydrator(AppBuildLaunchMapper())
+    private val hydrator = BuildHydrator(BuildLaunchMapper())
 
     @Test fun runningSummaryAlwaysForcesTheDetailRequest() = runTest {
         val session = mock<Repository>()

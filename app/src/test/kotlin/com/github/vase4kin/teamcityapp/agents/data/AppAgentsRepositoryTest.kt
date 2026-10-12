@@ -20,9 +20,10 @@ import android.app.Application
 import com.github.vase4kin.teamcityapp.agents.api.Agent as LegacyAgent
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import com.github.vase4kin.teamcityapp.integration.features.agents.data.AppAgentsRepository
+import com.github.vase4kin.teamcityapp.integration.features.home.data.HomeFilterEvents
+import com.github.vase4kin.teamcityapp.integration.filters.filter.Filter
+import com.github.vase4kin.teamcityapp.integration.filters.filter.FilterProvider
 import io.reactivex.Single
 import javax.inject.Provider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -74,13 +75,13 @@ class AppAgentsRepositoryTest {
         val repository = AppAgentsRepository(Provider { mock<Repository>() }, provider, bus, StandardTestDispatcher(testScheduler))
         val observed = async { repository.filter.take(2).toList() }
         runCurrent()
-        assertTrue(bus.hasSubscriberForEvent(HomeDataManager.AgentsFilterChangedEvent::class.java))
-        bus.post(HomeDataManager.AgentsFilterChangedEvent())
+        assertTrue(bus.hasSubscriberForEvent(HomeFilterEvents.AgentsFilterChangedEvent::class.java))
+        bus.post(HomeFilterEvents.AgentsFilterChangedEvent())
         runCurrent()
         provider.agentsFilter = Filter.AGENTS_DISCONNECTED
-        bus.post(HomeDataManager.AgentsFilterChangedEvent())
+        bus.post(HomeFilterEvents.AgentsFilterChangedEvent())
         assertEquals(listOf(AgentsFilter.Connected, AgentsFilter.Disconnected), observed.await())
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.AgentsFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.AgentsFilterChangedEvent::class.java))
         assertEquals(listOf(AgentsFilter.Disconnected), repository.filter.take(1).toList())
     }
 
@@ -91,7 +92,7 @@ class AppAgentsRepositoryTest {
         runCurrent()
         pending.cancel()
         runCurrent()
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.AgentsFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.AgentsFilterChangedEvent::class.java))
     }
 
     @Test fun resolvesTheCurrentAccountRepositoryForEveryRequest() = runTest {

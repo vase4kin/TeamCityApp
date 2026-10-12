@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +29,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -38,6 +42,7 @@ import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert.*
 import org.junit.Before
@@ -46,8 +51,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.about.repository.models.ServerInfo
+import teamcityapp.features.settings.api.navigation.SettingsDestination
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -69,6 +74,8 @@ class AboutActivityTest {
     @Rule(order = 3)
     val compose = createEmptyComposeRule()
 
+    @Inject lateinit var launcher: RootDestinationLauncher
+
     @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val info = ServerInfo("xxx117", "https://www.server.xxx177.com")
@@ -80,7 +87,7 @@ class AboutActivityTest {
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 
-    private fun launch() = ActivityScenario.launch<AboutActivity>(Intent(app, AboutActivity::class.java))
+    private fun launch() = ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.ABOUT_COMPONENT))
     private fun awaitText(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
@@ -188,6 +195,23 @@ class AboutActivityTest {
             } finally {
                 Intents.release()
             }
+        }
+    }
+
+    @Test fun typedRequestReusesAnAliasLaunchedHostAndRecreationRetainsItsBackStack() {
+        kotlinx.coroutines.runBlocking { app.appInjector.themePreferences().setTheme(teamcityapp.libraries.app_theme.ThemeMode.Light) }
+        `when`(teamCityService.serverInfo()).thenReturn(Single.just(info))
+        launch().use { scenario ->
+            awaitText(info.version)
+            scenario.onActivity { launcher.open(it, SettingsDestination) }
+            awaitText("Light theme")
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            scenario.onActivity { assertEquals(IncomingDestinationResolver.ABOUT_COMPONENT, it.intent.component?.className) }
+            scenario.recreate()
+            awaitText("Light theme")
+            compose.onNodeWithContentDescription("Back").performClick()
+            awaitText(info.version)
+            verify(teamCityService, times(1)).serverInfo()
         }
     }
 

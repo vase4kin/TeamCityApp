@@ -24,8 +24,11 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_log.impl" }
 dependencies {
-    implementation(libs.androidx.fragment)
-    implementation(projects.libraries.utils)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.storageModels)
+    implementation(projects.libraries.storage)
+    implementation(libs.androidx.activity.compose)
+    implementation(projects.libraries.navigation)
     implementation(projects.libraries.chromeTabs)
     implementation(projects.features.buildLog.api)
 

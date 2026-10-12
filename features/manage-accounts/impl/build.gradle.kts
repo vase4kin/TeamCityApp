@@ -25,10 +25,14 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.manage_accounts.impl" }
 dependencies {
+    implementation(projects.libraries.cacheManager)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.session)
+    implementation(projects.features.createAccount.api)
+    implementation(projects.libraries.navigation)
     implementation(projects.features.manageAccounts.api)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

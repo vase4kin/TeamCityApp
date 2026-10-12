@@ -39,13 +39,16 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -84,8 +87,8 @@ class PropertiesFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomActivityTestRule<BuildDetailsActivity> =
-        CustomActivityTestRule(BuildDetailsActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -133,10 +136,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        onView(withText("Parameters"))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+        compose.tapBuildDetailsTab("Parameters")
 
         compose.onNodeWithText("sdk").assertIsDisplayed()
         compose.onNodeWithText("24").assertIsDisplayed()
@@ -163,10 +163,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        onView(withText("Parameters"))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+        compose.tapBuildDetailsTab("Parameters")
 
         // Checking empty message
         compose.onNodeWithText(activityRule.activity.getString(teamcityapp.features.properties.impl.R.string.empty_list_message_parameters)).assertIsDisplayed()
@@ -198,10 +195,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        onView(withText("Parameters"))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+        compose.tapBuildDetailsTab("Parameters")
 
         // Checking empty message
         compose.onNodeWithText(activityRule.activity.getString(teamcityapp.features.properties.impl.R.string.empty_list_message_parameters)).assertIsDisplayed()
@@ -228,10 +222,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        onView(withText("Parameters"))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+        compose.tapBuildDetailsTab("Parameters")
 
         // Value selection remains independent from the full-width copy action.
         compose.onNodeWithText("24", useUnmergedTree = true).performTouchInput { longClick() }

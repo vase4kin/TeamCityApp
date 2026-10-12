@@ -25,9 +25,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -72,7 +74,7 @@ class TestDetailsActivityTest {
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 
-    private fun launch(url: String = "/test") = ActivityScenario.launch<TestDetailsActivity>(Intent(app, TestDetailsActivity::class.java).putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
+    private fun launch(url: String = "/test") = ActivityScenario.launch<MainActivity>(Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.TEST_DETAILS_COMPONENT)).putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
     private fun awaitText(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()

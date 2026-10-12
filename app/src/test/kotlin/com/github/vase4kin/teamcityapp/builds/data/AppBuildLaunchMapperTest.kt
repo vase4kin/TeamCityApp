@@ -20,9 +20,10 @@ import com.google.gson.GsonBuilder
 import org.junit.Assert.*
 import org.junit.Test
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 class AppBuildLaunchMapperTest {
-    private val mapper = AppBuildLaunchMapper()
+    private val mapper = BuildLaunchMapper()
 
     @Test fun completeLegacyPayloadMapsAllLaunchFieldsAndRawValues() {
         val actual = mapper.toLaunchData(legacyBuild(completeBuildJson))

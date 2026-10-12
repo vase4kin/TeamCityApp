@@ -27,6 +27,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
@@ -37,7 +39,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.libraries.app_theme.ThemeMode
 
 @HiltAndroidTest
@@ -59,14 +60,14 @@ class SettingsActivityTest {
 
     @Before fun before() {
         app.appInjector.sharedUserStorage().clearAll()
-        app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL, false)
+        app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.di.modules.Mocks.URL, false)
         runBlocking { repo.setTheme(ThemeMode.Light) }
     }
 
     @After fun after() {
         runBlocking { repo.setTheme(ThemeMode.System) }
     }
-    private fun launch() = ActivityScenario.launch<SettingsActivity>(Intent(app, SettingsActivity::class.java))
+    private fun launch() = ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.SETTINGS_COMPONENT))
     private fun awaitSummary(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
@@ -112,7 +113,7 @@ class SettingsActivityTest {
     @Test fun savedThemeIsAppliedToOtherComposeActivitiesBeforeOpeningSettings() {
         runBlocking { repo.setTheme(ThemeMode.Dark) }
         compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES }
-        ActivityScenario.launch<AboutActivity>(Intent(app, AboutActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.ABOUT_COMPONENT)).use { scenario ->
             scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
             scenario.recreate()
             scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }

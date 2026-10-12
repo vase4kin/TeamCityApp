@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2020 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -28,15 +29,60 @@
         android:theme="@style/Theme.MyApp"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".home.view.HomeActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:theme="@style/HomeTheme" />
-        <activity
-            android:name=".build_details.view.BuildDetailsActivity"
-            android:label="@string/title_activity_build"
-            android:theme="@style/Theme.MyApp" />
+        <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" />
+        <activity-alias android:name="teamcityapp.features.run_build.impl.RunBuildActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.filter_builds.impl.FilterBuildsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.navigation.impl.NavigationActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.build_history.impl.BuildHistoryActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.artifacts.impl.ArtifactsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.login.impl.LoginActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.login.view.LoginActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.create_account.impl.CreateAccountActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.test_details.impl.TestDetailsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.change_details.impl.ChangeDetailsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.manage_accounts.impl.ManageAccountsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.about.impl.AboutActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false"
+            android:label="@string/drawer_item_about" />
+        <activity-alias android:name="teamcityapp.features.settings.impl.SettingsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false"
+            android:label="@string/drawer_item_settings" />
+        <activity-alias android:name="teamcityapp.features.splash.impl.SplashActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.splash.view.SplashActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias android:name=".home.view.HomeActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name=".build_details.view.BuildDetailsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/OssTheme.MyApp" />

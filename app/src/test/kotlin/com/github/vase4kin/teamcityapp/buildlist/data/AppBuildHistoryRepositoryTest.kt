@@ -35,12 +35,15 @@ import org.junit.Test
 import org.mockito.kotlin.*
 import teamcityapp.features.build_history.api.BuildHistoryPage
 import teamcityapp.features.build_history.api.BuildHistoryQuery
+import teamcityapp.features.build_history.impl.data.DefaultBuildHistoryRepository
+import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppBuildHistoryRepositoryTest {
-    private val mapper = AppBuildLaunchMapper()
-    private val hydrator = AppBuildHydrator(mapper)
-    private fun adapter(session: Repository, dispatcher: CoroutineDispatcher, service: TeamCityService = mock(), storage: SharedUserStorage = mock()) = AppBuildHistoryRepository(Provider { session }, Provider { service }, storage, hydrator, mapper, dispatcher)
+    private val mapper = BuildLaunchMapper()
+    private val hydrator = BuildHydrator(mapper)
+    private fun adapter(session: Repository, dispatcher: CoroutineDispatcher, service: TeamCityService = mock(), storage: SharedUserStorage = mock()) = DefaultBuildHistoryRepository(Provider { session }, Provider { service }, storage, hydrator, mapper, dispatcher)
 
     @Test fun initialPageKeepsSelectedLocatorAndAllowsPageCache() = runTest {
         val session = mock<Repository>()
@@ -112,7 +115,7 @@ class AppBuildHistoryRepositoryTest {
         var resolutions = 0
         doReturn(pending).whenever(first).listBuilds("Android", query.locator, false)
         doReturn(Single.just(draftBuild("1"))).whenever(first).build("/builds/1", false)
-        val adapter = AppBuildHistoryRepository(
+        val adapter = DefaultBuildHistoryRepository(
             Provider {
                 resolutions++
                 current

@@ -24,14 +24,17 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_queue.impl" }
 dependencies {
+    implementation(libs.androidx.activity.compose)
+    implementation(projects.features.buildDetails.api)
+    implementation(projects.features.buildHistory.api)
+    implementation(projects.features.drawer.api)
+    implementation(projects.libraries.navigation)
     implementation(projects.features.buildQueue.api)
     implementation(projects.libraries.listState)
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.buildUi)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

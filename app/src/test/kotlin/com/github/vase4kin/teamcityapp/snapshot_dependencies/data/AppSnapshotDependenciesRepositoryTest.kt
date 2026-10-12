@@ -29,10 +29,13 @@ import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
+import teamcityapp.features.snapshot_dependencies.impl.data.DefaultSnapshotDependenciesRepository
+import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppSnapshotDependenciesRepositoryTest {
-    private val hydrator = AppBuildHydrator(AppBuildLaunchMapper())
+    private val hydrator = BuildHydrator(BuildLaunchMapper())
 
     @Test fun capturesOneSessionForListAndDetailsAndPreservesDependencyOrder() = runTest {
         val first = mock<Repository>()
@@ -43,7 +46,7 @@ class AppSnapshotDependenciesRepositoryTest {
         doReturn(Single.just(draftPage(rows))).whenever(first).listSnapshotBuilds("123", true)
         doReturn(Single.just(rows[0])).whenever(first).build("/builds/2", false)
         doReturn(Single.just(rows[1])).whenever(first).build("/builds/1", true)
-        val adapter = AppSnapshotDependenciesRepository(provider, hydrator, StandardTestDispatcher(testScheduler))
+        val adapter = DefaultSnapshotDependenciesRepository(provider, hydrator, StandardTestDispatcher(testScheduler))
         assertEquals(listOf("2", "1"), adapter.dependencies("123", true).map { it.id })
         assertEquals(1, resolutions)
         verifyNoInteractions(nextAccount)
@@ -53,7 +56,7 @@ class AppSnapshotDependenciesRepositoryTest {
     @Test fun cacheAllowedLoadPassesFalseToSnapshotPage() = runTest {
         val session = mock<Repository>()
         doReturn(Single.just(draftPage(emptyList()))).whenever(session).listSnapshotBuilds("123", false)
-        val adapter = AppSnapshotDependenciesRepository(Provider { session }, hydrator, StandardTestDispatcher(testScheduler))
+        val adapter = DefaultSnapshotDependenciesRepository(Provider { session }, hydrator, StandardTestDispatcher(testScheduler))
         assertTrue(adapter.dependencies("123", false).isEmpty())
         verify(session).listSnapshotBuilds("123", false)
         verifyNoMoreInteractions(session)
@@ -62,7 +65,7 @@ class AppSnapshotDependenciesRepositoryTest {
     @Test fun zeroCountDoesNotHydrateStaleRows() = runTest {
         val session = mock<Repository>()
         doReturn(Single.just(draftPage(listOf(draftBuild("stale")), count = 0))).whenever(session).listSnapshotBuilds("123", true)
-        val adapter = AppSnapshotDependenciesRepository(Provider { session }, hydrator, StandardTestDispatcher(testScheduler))
+        val adapter = DefaultSnapshotDependenciesRepository(Provider { session }, hydrator, StandardTestDispatcher(testScheduler))
         assertTrue(adapter.dependencies("123", true).isEmpty())
         verify(session).listSnapshotBuilds("123", true)
         verifyNoMoreInteractions(session)
@@ -72,7 +75,7 @@ class AppSnapshotDependenciesRepositoryTest {
         val session = mock<Repository>()
         val pending = SingleSubject.create<Builds>()
         doReturn(pending).whenever(session).listSnapshotBuilds("123", false)
-        val adapter = AppSnapshotDependenciesRepository(Provider { session }, hydrator, StandardTestDispatcher(testScheduler))
+        val adapter = DefaultSnapshotDependenciesRepository(Provider { session }, hydrator, StandardTestDispatcher(testScheduler))
         val request = async { adapter.dependencies("123", false) }
         runCurrent()
         assertTrue(pending.hasObservers())

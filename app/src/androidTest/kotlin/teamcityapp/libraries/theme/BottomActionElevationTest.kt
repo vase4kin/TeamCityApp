@@ -32,9 +32,11 @@ import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
@@ -42,9 +44,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import teamcityapp.features.create_account.impl.CreateAccountActivity
-import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
-import teamcityapp.features.run_build.impl.RunBuildActivity
 import teamcityapp.libraries.app_theme.ThemeMode
 
 /** Actual activity viewport, scroll-end and keyboard evidence for fixed action surfaces. */
@@ -100,8 +99,8 @@ class BottomActionElevationTest {
     }
     private fun run(dark: Boolean) {
         mode(dark)
-        val intent = Intent(app, RunBuildActivity::class.java).putExtra(com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID, "href")
-        ActivityScenario.launch<RunBuildActivity>(intent).use { scenario ->
+        val intent = Intent().setClassName(app.packageName, IncomingDestinationResolver.RUN_BUILD_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.RUN_BUILD_TYPE_ID, "href")
+        ActivityScenario.launch<MainActivity>(intent).use { scenario ->
             await("run-build")
             inspect(scenario, "run-build", "fit", false)
             compose.onNodeWithTag("run-build:options").performClick()
@@ -124,7 +123,7 @@ class BottomActionElevationTest {
     }
     private fun create(dark: Boolean) {
         mode(dark)
-        ActivityScenario.launch<CreateAccountActivity>(Intent(app, CreateAccountActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.CREATE_ACCOUNT_COMPONENT)).use { scenario ->
             await("create-account")
             inspect(scenario, "create-account", "fit", false)
             landscape(scenario)
@@ -156,7 +155,7 @@ class BottomActionElevationTest {
     }
     private fun filter(dark: Boolean) {
         mode(dark)
-        ActivityScenario.launch<FilterBuildsActivity>(Intent(app, FilterBuildsActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(app.packageName, IncomingDestinationResolver.FILTER_BUILDS_COMPONENT)).use { scenario ->
             await("filter-builds")
             inspect(scenario, "filter-builds", "fit", false)
             landscape(scenario)

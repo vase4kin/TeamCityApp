@@ -91,11 +91,11 @@ class TestsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: TestsRepository
 ) : ViewModel() {
-    private val url: String = checkNotNull(savedStateHandle[TestsFragment.ARG_URL])
+    private val url: String = checkNotNull(savedStateHandle[TestsViewModel.ARG_URL])
     internal val counts = TestsCounts(
-        passed = savedStateHandle[TestsFragment.ARG_PASSED] ?: 0,
-        failed = savedStateHandle[TestsFragment.ARG_FAILED] ?: 0,
-        ignored = savedStateHandle[TestsFragment.ARG_IGNORED] ?: 0
+        passed = savedStateHandle[TestsViewModel.ARG_PASSED] ?: 0,
+        failed = savedStateHandle[TestsViewModel.ARG_FAILED] ?: 0,
+        ignored = savedStateHandle[TestsViewModel.ARG_IGNORED] ?: 0
     )
     private var generation = newGeneration(
         savedStateHandle.get<String>(ARG_FILTER)?.let { name -> TestsFilter.entries.find { it.name == name } } ?: TestsFilter.Failed
@@ -162,6 +162,10 @@ class TestsViewModel @Inject constructor(
     }
 
     companion object {
+        internal const val ARG_URL = "url"
+        internal const val ARG_PASSED = "passedCount"
+        internal const val ARG_FAILED = "failedCount"
+        internal const val ARG_IGNORED = "ignoredCount"
         internal const val ARG_FILTER = "selectedTestsFilter"
     }
 }

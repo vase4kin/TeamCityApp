@@ -25,10 +25,11 @@ import java.io.Serializable
 import org.junit.Assert.*
 import org.junit.Test
 import teamcityapp.features.build_history.api.BuildHistoryQuery
+import teamcityapp.features.build_history.impl.data.LegacyBuildHistoryFilterAdapter
 import teamcityapp.features.filter_builds.api.BuildStatusFilter
 
 class AppBuildHistoryFilterAdapterTest {
-    private val adapter = AppBuildHistoryFilterAdapter()
+    private val adapter = LegacyBuildHistoryFilterAdapter()
 
     @Test fun emptySelectionKeepsPersonalAndPinnedFalseUnlikeDefaultHistoryLocator() {
         val actual = adapter.locator(BuildListFilterImpl())

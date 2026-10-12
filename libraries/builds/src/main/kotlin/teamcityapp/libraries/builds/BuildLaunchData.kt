@@ -17,6 +17,8 @@
 
 package teamcityapp.libraries.builds
 
+import kotlinx.serialization.Serializable
+
 /**
  * Complete immutable launch snapshot, hydrated before a build is displayed in a list.
  *
@@ -24,6 +26,7 @@ package teamcityapp.libraries.builds
  * creates its tabs before loading Overview, so a build ID or row summary cannot replace this.
  * Adapters copy collection values and preserve null versus present-but-empty sections.
  */
+@Serializable
 data class BuildLaunchData(
     val id: String,
     val href: String,
@@ -66,6 +69,7 @@ data class BuildLaunchData(
 }
 
 /** Partial server configurations are valid; a missing project name uses the configuration ID. */
+@Serializable
 data class BuildConfigurationData(
     val id: String?,
     val name: String? = null,
@@ -74,7 +78,10 @@ data class BuildConfigurationData(
     val href: String? = null
 )
 
+@Serializable
 data class BuildCollectionLink(val href: String?, val count: Int? = null, val nextHref: String? = null)
+
+@Serializable
 data class BuildTests(
     val href: String?,
     val passed: Int = 0,
@@ -85,7 +92,10 @@ data class BuildTests(
 )
 
 /** A present wrapper with a null list differs from an absent wrapper and an empty list. */
+@Serializable
 data class BuildProperties(val items: List<BuildProperty>?, val id: String? = null, val href: String? = null)
+
+@Serializable
 data class BuildProperty(
     val name: String?,
     val value: String?,
@@ -93,8 +103,14 @@ data class BuildProperty(
     val id: String? = null,
     val href: String? = null
 )
+
+@Serializable
 data class BuildAgent(val id: String?, val name: String?, val href: String? = null)
+
+@Serializable
 data class BuildUser(val username: String?, val name: String?, val id: String? = null, val href: String? = null)
+
+@Serializable
 data class BuildTrigger(
     val type: String?,
     val date: String? = null,
@@ -102,4 +118,6 @@ data class BuildTrigger(
     val user: BuildUser? = null,
     val configuration: BuildConfigurationData? = null
 )
+
+@Serializable
 data class BuildCancellation(val timestamp: String?, val user: BuildUser?)

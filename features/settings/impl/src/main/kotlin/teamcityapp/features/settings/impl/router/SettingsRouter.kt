@@ -16,13 +16,6 @@
 
 package teamcityapp.features.settings.impl.router
 
-import android.app.Activity
-
 interface SettingsRouter {
     fun close()
-}
-internal class SettingsRouterImpl(private val activity: Activity) : SettingsRouter {
-    override fun close() {
-        activity.finish()
-    }
 }

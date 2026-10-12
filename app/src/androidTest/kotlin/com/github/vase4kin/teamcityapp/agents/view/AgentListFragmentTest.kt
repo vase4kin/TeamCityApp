@@ -27,13 +27,14 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.any
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -64,7 +65,7 @@ class AgentListFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomActivityTestRule(HomeActivity::class.java)
+    val activityRule = CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -131,8 +132,8 @@ class AgentListFragmentTest {
         openAgents()
         assertTextVisible("Visible agent")
         Assert.assertEquals(1, calls.get())
-        selectTab(R.id.favorites)
-        selectTab(R.id.agents)
+        selectTab("Favorites")
+        selectTab("Agents")
         compose.waitUntil(10_000) { calls.get() >= 2 }
         Assert.assertEquals(2, calls.get())
         assertTextVisible("Visible agent")
@@ -146,32 +147,32 @@ class AgentListFragmentTest {
         )
         openAgents()
         compose.waitUntil(10_000) { subscribed.get() }
-        selectTab(R.id.favorites)
+        selectTab("Favorites")
         compose.waitUntil(10_000) { disposed.get() }
         `when`(teamCityService.listAgents(false, null, null)).thenReturn(
             Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Returned agent"))))
         )
-        selectTab(R.id.agents)
+        selectTab("Agents")
         assertTextVisible("Returned agent")
     }
 
     private fun openAgents() {
         activityRule.launchActivity(null)
-        selectTab(R.id.agents)
+        selectTab("Agents")
     }
 
-    private fun selectTab(id: Int) {
-        onView(allOf(withId(id), isDescendantOfA(withId(R.id.navigation)), isDisplayed())).perform(click())
+    private fun selectTab(tab: String) {
+        compose.onNodeWithTag("home:tab:$tab").performClick()
     }
 
     private fun showDisconnected() {
-        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
+        compose.onNodeWithTag("home:fab").performClick()
         compose.onNodeWithText(text(FilterR.string.text_show_disconnected)).performClick()
     }
 
     private fun assertTextVisible(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithText(value).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText(value).assertIsDisplayed()
+        compose.onAllNodesWithText(value).onFirst().assertIsDisplayed()
     }
 
     private fun text(id: Int) = InstrumentationRegistry.getInstrumentation().targetContext.getString(id)

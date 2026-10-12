@@ -16,35 +16,15 @@
 
 package teamcityapp.features.artifacts.impl
 
-import android.app.Activity
-import androidx.fragment.app.Fragment
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.components.FragmentComponent
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.artifacts.impl.tracker.*
-import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ArtifactsModule {
-    @Binds abstract fun navigation(impl: ArtifactsNavigationImpl): ArtifactsNavigation
 
     @Binds abstract fun tracker(impl: ArtifactsTrackerImpl): ArtifactsTracker
-}
-
-@Module
-@InstallIn(ActivityComponent::class)
-object ArtifactsActivityModule {
-    @Provides fun owner(owner: Activity): ArtifactsActivity = owner.requireScreenOwner<ArtifactsActivity>()
-}
-
-@Module
-@InstallIn(FragmentComponent::class)
-object ArtifactsFragmentModule {
-    @Provides fun owner(owner: Fragment): ArtifactsFragment = owner.requireScreenOwner<ArtifactsFragment>()
 }

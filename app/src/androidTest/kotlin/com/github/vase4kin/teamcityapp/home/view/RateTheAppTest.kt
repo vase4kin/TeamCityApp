@@ -33,13 +33,19 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.AppModule
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.destinationIntent
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.home.dagger.RateTheAppTestAppModule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -53,8 +59,9 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
-import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 import teamcityapp.libraries.remote.RemoteService
 
@@ -76,7 +83,7 @@ class RateTheAppTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule = CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -126,7 +133,7 @@ class RateTheAppTest {
         row("project:id").performClick()
         awaitRows()
         compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_NAME, "Project")))
+        Assert.assertEquals(ProjectDestination("id", "Project", false), currentRootSnapshot().entries.last().destination)
     }
 
     @Test fun ratePersistsChoiceAndLaunchesTheStore() {
@@ -146,7 +153,7 @@ class RateTheAppTest {
         compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
         awaitHandled()
         row("configuration:build_type_id").performClick()
-        intended(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY))
+        Assert.assertTrue(currentRootSnapshot().entries.last().destination is BuildHistoryDestination)
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }
@@ -167,7 +174,7 @@ class RateTheAppTest {
     }
 
     @Test fun cancelledChoiceSurvivesRecreationWithoutReloadingEntries() {
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitRating()
             compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
             awaitHandled()
@@ -175,7 +182,7 @@ class RateTheAppTest {
             awaitRows()
             compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
             Assert.assertTrue(sharedPreferences.getBoolean("rated", false))
-            verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         }
     }
 

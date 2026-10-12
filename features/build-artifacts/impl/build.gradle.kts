@@ -23,14 +23,19 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.artifacts.impl" }
 dependencies {
+    testImplementation(libs.retrofit.gsonConverter)
+    testImplementation(libs.mockito.mockitoKotlin)
+    testImplementation(libs.mockito.mockitoCore)
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
+    implementation(projects.libraries.navigation)
+    implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildArtifacts.api)
     implementation(projects.features.bottomSheet.api)
     implementation(projects.libraries.listState)
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

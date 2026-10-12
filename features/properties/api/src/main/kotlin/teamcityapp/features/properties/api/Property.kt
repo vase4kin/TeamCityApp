@@ -16,5 +16,8 @@
 
 package teamcityapp.features.properties.api
 
+import kotlinx.serialization.Serializable
+
 /** A user-defined build parameter, independent of its network representation. */
+@Serializable
 data class Property(val name: String, val value: String)

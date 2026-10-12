@@ -90,9 +90,6 @@ object TeamCityDimensions {
     val propertyContentSpacing = 14.dp
 
     // Sheet headers, error illustrations, and coachmarks.
-    val sheetHandleWidth = 40.dp
-    val sheetHandleHeight = 4.dp
-    val sheetHandleCornerRadius = 2.dp
     val sheetHeaderMinHeight = 76.dp
     val errorIllustrationSize = 88.dp
     val errorIllustrationIconSize = 36.dp

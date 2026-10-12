@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider
 
-import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
@@ -26,6 +25,8 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import teamcityapp.features.build_log.impl.data.legacy.BuildLogInteractor
+import teamcityapp.features.build_log.impl.data.legacy.BuildLogUrlProviderImpl
 import teamcityapp.libraries.storage.models.UserAccount
 
 @RunWith(MockitoJUnitRunner::class)

@@ -23,9 +23,9 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.*
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import java.io.Serializable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -35,7 +35,6 @@ import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.build_overview.api.*
 import teamcityapp.features.build_overview.impl.router.BuildOverviewRouter
 import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
@@ -52,20 +51,15 @@ class BuildOverviewRouteTest {
         override val lifecycle: Lifecycle = registry
     }
     private val router = FakeRouter()
-    private val codec = object : BuildLaunchCodec {
-        override fun encode(build: BuildLaunchData): Serializable = "legacy-build"
-        override fun decode(payload: Serializable) = BuildOverviewFixtures.finished
-    }
 
     @After fun after() {
         store.clear()
     }
     private fun viewModel(load: suspend (Boolean) -> BuildLaunchData) = BuildOverviewViewModel(
-        SavedStateHandle(mapOf(BuildOverviewNavigation.BUILD to "legacy-build")),
+        SavedStateHandle(mapOf(BuildOverviewViewModel.JSON_BUILD to Json.encodeToString(BuildOverviewFixtures.finished))),
         object : BuildOverviewRepository {
             override suspend fun build(href: String, forceRefresh: Boolean) = load(forceRefresh)
-        },
-        codec
+        }
     ).also { store.put("overview", it) }
 
     @Test fun hidingOverviewCancelsPendingLoadAndReleasesUiResourcesBeforeResuming() {

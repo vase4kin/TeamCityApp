@@ -24,15 +24,14 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.filter_builds.impl" }
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(projects.libraries.utils)
+    implementation(projects.libraries.data)
+    implementation(projects.libraries.navigation)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
     implementation(projects.features.filterBuilds.api)
     implementation(libs.androidx.activity.compose)
 
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.resources)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

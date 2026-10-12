@@ -35,17 +35,18 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.any
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.Companion.RUN_BUILD_TYPE_ID
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
-import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.util.ArrayList
 import okhttp3.ResponseBody
 import org.hamcrest.Matchers.instanceOf
@@ -61,10 +62,9 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import retrofit2.HttpException
 import retrofit2.Response
-import teamcityapp.features.run_build.impl.RunBuildActivity
 
 /**
- * Tests for [RunBuildActivity]
+ * Tests for the RunBuild root destination
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -88,8 +88,8 @@ class RunBuildActivityMockTest {
 
     @Rule(order = 3)
     @JvmField
-    val activityRule: CustomActivityTestRule<RunBuildActivity> =
-        CustomActivityTestRule(RunBuildActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, "teamcityapp.features.run_build.impl.RunBuildActivity")
 
     @Mock
     lateinit var responseBody: ResponseBody
@@ -109,7 +109,7 @@ class RunBuildActivityMockTest {
     @Test
     fun testUserCanSeeErrorForbiddenSnackBarIfServerReturnsAnError() {
         // Prepare mocks
-        val httpException = HttpException(Response.error<Build>(CODE_FORBIDDEN, responseBody))
+        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
         `when`(teamCityService.queueBuild(any())).thenReturn(
             Single.error(
                 httpException
@@ -120,7 +120,7 @@ class RunBuildActivityMockTest {
         `when`(teamCityService.buildType(any())).thenReturn(Single.just(Mocks.buildTypeMock()))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Starting the build
@@ -142,7 +142,7 @@ class RunBuildActivityMockTest {
         `when`(teamCityService.buildType(any())).thenReturn(Single.just(Mocks.buildTypeMock()))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Starting the build
@@ -162,7 +162,7 @@ class RunBuildActivityMockTest {
         `when`(teamCityService.buildType(any())).thenReturn(Single.just(Mocks.buildTypeMock()))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Choose branch from autocomplete and verify it is appeared

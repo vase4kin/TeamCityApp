@@ -16,36 +16,16 @@
 
 package teamcityapp.features.snapshot_dependencies.impl.dagger
 
-import androidx.fragment.app.Fragment
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesAppRouter
-import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesNavigation
-import teamcityapp.features.snapshot_dependencies.impl.SnapshotDependenciesFragment
-import teamcityapp.features.snapshot_dependencies.impl.navigation.SnapshotDependenciesNavigationImpl
-import teamcityapp.features.snapshot_dependencies.impl.router.SnapshotDependenciesRouter
-import teamcityapp.features.snapshot_dependencies.impl.router.SnapshotDependenciesRouterImpl
 import teamcityapp.features.snapshot_dependencies.impl.tracker.SnapshotDependenciesTracker
 import teamcityapp.features.snapshot_dependencies.impl.tracker.SnapshotDependenciesTrackerImpl
-import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class SnapshotDependenciesNavigationModule {
-    @Binds abstract fun navigation(implementation: SnapshotDependenciesNavigationImpl): SnapshotDependenciesNavigation
+abstract class SnapshotDependenciesTrackerModule {
 
     @Binds abstract fun tracker(implementation: SnapshotDependenciesTrackerImpl): SnapshotDependenciesTracker
-}
-
-@Module
-@InstallIn(FragmentComponent::class)
-object SnapshotDependenciesRouterModule {
-    @Provides fun router(owner: Fragment, appRouter: SnapshotDependenciesAppRouter): SnapshotDependenciesRouter {
-        owner.requireScreenOwner<SnapshotDependenciesFragment>()
-        return SnapshotDependenciesRouterImpl(appRouter)
-    }
 }

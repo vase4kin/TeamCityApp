@@ -14,9 +14,4 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
-        <activity android:name=".NavigationActivity" android:exported="false" />
-        <activity-alias android:name="com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity" android:targetActivity="teamcityapp.features.navigation.impl.NavigationActivity" android:exported="false" />
-    </application>
-</manifest>
+<manifest />

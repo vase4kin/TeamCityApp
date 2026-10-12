@@ -18,15 +18,14 @@ package teamcityapp.features.build_overview.impl
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelStore
-import java.io.Serializable
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
+import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import teamcityapp.features.build_overview.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.list_state.ListUiState
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,13 +34,6 @@ class BuildOverviewViewModelTest {
     private val store = ViewModelStore()
     private val repository = FakeRepository()
     private var incoming = BuildOverviewFixtures.finished
-    private val codec = object : BuildLaunchCodec {
-        override fun encode(build: BuildLaunchData): Serializable = "serialized-legacy-build"
-        override fun decode(payload: Serializable): BuildLaunchData {
-            assertEquals("serialized-legacy-build", payload)
-            return incoming
-        }
-    }
 
     @Before fun before() {
         Dispatchers.setMain(dispatcher)
@@ -51,7 +43,7 @@ class BuildOverviewViewModelTest {
         store.clear()
         Dispatchers.resetMain()
     }
-    private fun vm() = BuildOverviewViewModel(SavedStateHandle(mapOf(BuildOverviewNavigation.BUILD to codec.encode(incoming))), repository, codec).also { store.put("overview", it) }
+    private fun vm() = BuildOverviewViewModel(SavedStateHandle(mapOf(BuildOverviewViewModel.JSON_BUILD to Json.encodeToString(incoming))), repository).also { store.put("overview", it) }
     private fun TestScope.observe(vm: BuildOverviewViewModel) = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.state.collect {} }
 
     @Test fun finishedInitialLoadUsesCacheAndIsCollectionDriven() = runTest(dispatcher) {
@@ -219,6 +211,41 @@ class BuildOverviewViewModelTest {
         runCurrent()
         assertEquals(ListUiState.Loading, vm.state.value.list)
         assertTrue(vm.state.value.actions.isEmpty())
+    }
+
+    @Test fun typedArgumentsAndHostRefreshAreRetainedAcrossCollectors() = runTest(dispatcher) {
+        val typed = BuildOverviewFixtures.finished.copy(href = "/typed")
+        repository.load = { _, _ -> typed }
+        val saved = SavedStateHandle(mapOf(BuildOverviewViewModel.JSON_BUILD to Json.encodeToString(typed)))
+        val vm = BuildOverviewViewModel(saved, repository).also { store.put("typed", it) }
+        val first = observe(vm)
+        runCurrent()
+        assertEquals(listOf("/typed" to false), repository.calls)
+        vm.refreshFromHost(1)
+        runCurrent()
+        assertEquals(listOf("/typed" to false, "/typed" to true), repository.calls)
+        first.cancel()
+        runCurrent()
+        vm.refreshFromHost(1)
+        observe(vm)
+        runCurrent()
+        assertEquals(2, repository.calls.size)
+        vm.refreshFromHost(2)
+        runCurrent()
+        assertEquals(3, repository.calls.size)
+    }
+
+    @Test fun mutationReplacementForcesFirstOverviewReadEvenWhenItsIncomingSnapshotIsFinished() = runTest(dispatcher) {
+        val typed = BuildOverviewFixtures.finished
+        val vm = BuildOverviewViewModel(SavedStateHandle(mapOf(BuildOverviewViewModel.JSON_BUILD to Json.encodeToString(typed), BuildOverviewViewModel.FORCE_INITIAL to true)), repository).also { store.put("replacement", it) }
+        val first = observe(vm)
+        runCurrent()
+        assertEquals(listOf(typed.href to true), repository.calls)
+        first.cancel()
+        runCurrent()
+        observe(vm)
+        runCurrent()
+        assertEquals(1, repository.calls.size)
     }
     private class FakeRepository : BuildOverviewRepository {
         val calls = mutableListOf<Pair<String, Boolean>>()

@@ -16,29 +16,10 @@
 
 package teamcityapp.features.manage_accounts.impl.router
 
-import android.app.Activity
 import teamcityapp.features.manage_accounts.api.AccountDestination
-import teamcityapp.features.manage_accounts.api.router.ManageAccountsAppRouter
 
 interface ManageAccountsRouter {
     fun close()
     fun createAccount()
     fun navigate(destination: AccountDestination)
-}
-internal class ManageAccountsRouterImpl(
-    private val activity: Activity,
-    private val appRouter: ManageAccountsAppRouter
-) : ManageAccountsRouter {
-    override fun close() {
-        activity.finish()
-    }
-    override fun createAccount() {
-        appRouter.openCreateAccount(activity)
-    }
-    override fun navigate(destination: AccountDestination) {
-        when (destination) {
-            AccountDestination.Home -> appRouter.openHome(activity)
-            AccountDestination.Login -> appRouter.openLogin(activity)
-        }
-    }
 }

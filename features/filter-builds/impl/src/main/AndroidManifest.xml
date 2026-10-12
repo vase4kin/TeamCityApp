@@ -14,10 +14,4 @@ Copyright 2026 Andrey Tolpeev
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
-        <activity android:name="teamcityapp.features.filter_builds.impl.FilterBuildsActivity" android:exported="false" android:label="@string/title_filter_builds"
-            android:theme="@style/Theme.MyApp" />
-        <activity-alias android:name="com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity" android:targetActivity="teamcityapp.features.filter_builds.impl.FilterBuildsActivity" android:exported="false" />
-    </application>
-</manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />

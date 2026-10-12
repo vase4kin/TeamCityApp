@@ -24,11 +24,19 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.changes.impl" }
 dependencies {
+    implementation(projects.libraries.data)
+    implementation(projects.libraries.coroutines)
+    implementation(libs.coroutines.rx2)
+    testImplementation(libs.mockito.mockitoCore)
+    testImplementation(libs.mockito.mockitoKotlin)
+    testImplementation(libs.retrofit.gsonConverter)
+
+    implementation(projects.features.changeDetails.api)
+    implementation(projects.libraries.navigation)
+    implementation(projects.features.buildDetails.api)
     implementation(projects.features.changes.api)
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

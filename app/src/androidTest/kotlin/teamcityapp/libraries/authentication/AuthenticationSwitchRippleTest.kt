@@ -28,9 +28,11 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
@@ -41,9 +43,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.create_account.impl.CreateAccountActivity
-import teamcityapp.features.login.impl.LoginActivity
-import teamcityapp.features.run_build.impl.RunBuildActivity
 import teamcityapp.libraries.app_theme.ThemeMode
 
 /** Actual activity/window evidence: local golden rendering does not animate held ripples. */
@@ -93,21 +92,21 @@ class AuthenticationSwitchRippleTest {
 
     private fun login(dark: Boolean) {
         mode(dark)
-        ActivityScenario.launch<LoginActivity>(Intent(app, LoginActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.LOGIN_COMPONENT)).use { scenario ->
             inspect("login", "login:form") { block -> scenario.onActivity { block(it.window.decorView) } }
         }
     }
     private fun create(dark: Boolean) {
         mode(dark)
-        ActivityScenario.launch<CreateAccountActivity>(Intent(app, CreateAccountActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.CREATE_ACCOUNT_COMPONENT)).use { scenario ->
             inspect("create", "create-account:form") { block -> scenario.onActivity { block(it.window.decorView) } }
         }
     }
     private fun run(dark: Boolean) {
         mode(dark)
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        val intent = Intent(app, RunBuildActivity::class.java).putExtra(com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID, "href")
-        ActivityScenario.launch<RunBuildActivity>(intent).use { scenario ->
+        val intent = Intent().setClassName(app, IncomingDestinationResolver.RUN_BUILD_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.RUN_BUILD_TYPE_ID, "href")
+        ActivityScenario.launch<MainActivity>(intent).use { scenario ->
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("run-build:options").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
             compose.onNodeWithTag("run-build:options").performClick()
             inspect("run", "run-build:options-card", listOf("personal" to false, "top" to false, "clean" to true)) { block -> scenario.onActivity { block(it.window.decorView) } }

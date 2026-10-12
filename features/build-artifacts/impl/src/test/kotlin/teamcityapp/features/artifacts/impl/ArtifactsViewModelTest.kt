@@ -18,16 +18,15 @@ package teamcityapp.features.artifacts.impl
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelStore
-import java.io.Serializable
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
+import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
 import teamcityapp.libraries.builds.*
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.list_state.ListUiState
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,13 +39,6 @@ class ArtifactsViewModelTest {
     private val build = BuildLaunchData("b1", "/build/b1", buildTypeId = "bt", artifacts = BuildCollectionLink("/artifacts", 2), properties = teamcityapp.libraries.builds.BuildProperties(emptyList()), tests = BuildTests("/tests", 5, 2, 1))
     private val repository = FakeRepository()
     private var shown = 0
-    private val codec = object : BuildLaunchCodec {
-        override fun encode(build: BuildLaunchData): Serializable = "legacy-build-payload"
-        override fun decode(payload: Serializable): BuildLaunchData {
-            assertEquals("legacy-build-payload", payload)
-            return build
-        }
-    }
 
     @Before fun before() {
         Dispatchers.setMain(dispatcher)
@@ -57,9 +49,8 @@ class ArtifactsViewModelTest {
         Dispatchers.resetMain()
     }
     private fun vm() = ArtifactsViewModel(
-        SavedStateHandle(mapOf(ArtifactsNavigation.BUILD to codec.encode(build), ArtifactsNavigation.URL to "/artifacts", ArtifactsNavigation.NAME to "Artifacts")),
+        SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(build), ArtifactsViewModel.URL to "/artifacts", ArtifactsViewModel.NAME to "Artifacts")),
         repository,
-        codec,
         object : ArtifactsTracker {
             override fun viewShown() {
                 shown++
@@ -333,5 +324,20 @@ class ArtifactsViewModelTest {
             downloads += file
             return save(file)
         }
+    }
+
+    @Test fun typedJsonBuildKeepsFullSnapshotWithoutDecodingALegacyArgument() = runTest(dispatcher) {
+        val typed = build.copy(properties = BuildProperties(null), snapshotDependencies = BuildCollectionLink(null))
+        val vm = ArtifactsViewModel(
+            SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(typed), "build" to "invalid legacy payload", ArtifactsViewModel.URL to "/typed")),
+            repository,
+            object : ArtifactsTracker {
+                override fun viewShown() {}
+            }
+        ).also { store.put("typed", it) }
+        assertEquals(typed, vm.build)
+        observe(vm)
+        runCurrent()
+        assertEquals(listOf("/typed" to false), repository.calls)
     }
 }

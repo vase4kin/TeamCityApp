@@ -24,12 +24,7 @@ import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasFlags
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -40,18 +35,18 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityTestAppModule
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
+import com.github.vase4kin.teamcityapp.di.modules.AppModule
+import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_AUTH
+import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE
+import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE_UNSAFE
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.capture
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -72,7 +67,6 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Ignore
@@ -87,10 +81,9 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 import org.mockito.kotlin.any
-import teamcityapp.features.create_account.impl.CreateAccountActivity
 
 /**
- * Tests for [CreateAccountActivity] with mocked internet connection
+ * Tests for [MainActivity] with mocked internet connection
  */
 @UninstallModules(AppModule::class)
 @HiltAndroidTest
@@ -115,8 +108,8 @@ class CreateAccountActivityTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomIntentsTestRule<CreateAccountActivity> =
-        CustomIntentsTestRule(CreateAccountActivity::class.java)
+    val activityRule: CustomIntentsTestRule<MainActivity> =
+        CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.CREATE_ACCOUNT_COMPONENT)
 
     @Captor
     lateinit var callbackArgumentCaptor: ArgumentCaptor<Callback>
@@ -139,8 +132,17 @@ class CreateAccountActivityTest {
     @Mock
     lateinit var call: Call
 
+    @javax.inject.Inject lateinit var accounts: com.github.vase4kin.teamcityapp.navigation.AppAccountFlowNavigation
+
     @Spy
     val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+
+    private fun awaitHome() {
+        compose.waitUntil(15_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("home:tab:Projects").assertIsDisplayed()
+        compose.onNodeWithTag("auth:password").assertDoesNotExist()
+        org.junit.Assert.assertEquals(MainActivity::class.java, activityRule.activity.javaClass)
+    }
 
     private val inputUrl = URL.replace("https://", "")
 
@@ -196,27 +198,15 @@ class CreateAccountActivityTest {
         compose.onNodeWithTag("create-account:submit").performClick()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasFlags(
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                ),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD),
-                        equalTo(true)
-                    )
-                ),
-                toPackage("com.github.vase4kin.teamcityapp.mock.debug")
-            )
-        )
+        awaitHome()
 
         val storageUtils = SharedUserStorage.init(activityRule.activity, null)
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(URL))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(false))
+        val host = activityRule.activity
+        androidx.test.espresso.Espresso.pressBackUnconditionally()
+        compose.waitUntil(5_000) { host.isFinishing }
     }
 
     /**
@@ -247,22 +237,7 @@ class CreateAccountActivityTest {
         compose.onNodeWithTag("create-account:submit").performClick()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasFlags(
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                ),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD),
-                        equalTo(true)
-                    )
-                ),
-                toPackage("com.github.vase4kin.teamcityapp.mock.debug")
-            )
-        )
+        awaitHome()
 
         val storageUtils = SharedUserStorage.init(activityRule.activity, null)
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), `is`(true))
@@ -296,17 +271,7 @@ class CreateAccountActivityTest {
         compose.onNodeWithTag("auth:password").performImeAction()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -339,6 +304,40 @@ class CreateAccountActivityTest {
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
         compose.onNodeWithText("Client Error", substring = true).assertIsDisplayed()
+    }
+
+    @Test fun pendingGuestAuthenticationRetainsItsOwnerAcrossRootRecreation() {
+        compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
+        compose.onNodeWithTag("auth:guest").performClick()
+        compose.onNodeWithTag("create-account:submit").performClick()
+        compose.waitForIdle()
+        org.mockito.Mockito.verify(call, org.mockito.Mockito.timeout(5_000)).enqueue(capture(callbackArgumentCaptor))
+        InstrumentationRegistry.getInstrumentation().runOnMainSync { activityRule.activity.recreate() }
+        compose.waitForIdle()
+        compose.onNodeWithTag("auth:progress").assertExists()
+        org.mockito.Mockito.verify(call, org.mockito.Mockito.times(1)).enqueue(any())
+        callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
+        awaitHome()
+        val app = context.applicationContext as TeamCityApplicationBase
+        assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(true))
+        org.mockito.Mockito.verify(call, org.mockito.Mockito.times(1)).enqueue(any())
+    }
+
+    @Test fun replacingTheAccountStackCancelsPendingAuthenticationAndIgnoresLateSuccess() {
+        compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
+        compose.onNodeWithTag("auth:guest").performClick()
+        compose.onNodeWithTag("create-account:submit").performClick()
+        compose.waitForIdle()
+        org.mockito.Mockito.verify(call, org.mockito.Mockito.timeout(5_000)).enqueue(capture(callbackArgumentCaptor))
+        accounts.home(resetSession = true)
+        awaitHome()
+        org.mockito.Mockito.verify(call, org.mockito.Mockito.timeout(5_000)).cancel()
+        callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
+        compose.waitForIdle()
+        val app = context.applicationContext as TeamCityApplicationBase
+        assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(false))
+        assertThat(app.appInjector.sharedUserStorage().activeUser.teamcityUrl, `is`("$URL/server"))
+        compose.onNodeWithTag("home:tab:Projects").assertIsDisplayed()
     }
 
     @Module(includes = [CreateAccountActivityTestAppModule::class])

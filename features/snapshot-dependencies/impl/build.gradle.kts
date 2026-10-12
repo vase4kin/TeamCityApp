@@ -24,13 +24,17 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.snapshot_dependencies.impl" }
 dependencies {
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
+    implementation(projects.features.buildHistory.api)
+    implementation(projects.libraries.navigation)
+    implementation(projects.features.buildDetails.api)
     implementation(projects.features.snapshotDependencies.api)
     implementation(projects.libraries.listState)
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.buildUi)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

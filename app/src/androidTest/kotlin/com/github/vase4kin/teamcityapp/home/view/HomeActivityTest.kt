@@ -31,11 +31,16 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.hasDestination
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -44,12 +49,13 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
+import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
-import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 
 @HiltAndroidTest
@@ -69,7 +75,7 @@ class HomeActivityTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule = CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -122,13 +128,13 @@ class HomeActivityTest {
         assertTextVisible("New project")
         row("project:child").assertTextContains("Contains a lot of projects")
         row("configuration:child-build").assertTextContains("Build and run tests")
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_ID, "id"), hasExtra(NavigationNavigation.PROJECT_NAME, "Project")))
-        verify(teamCityService).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+        org.junit.Assert.assertEquals(ProjectDestination("id", "Project", false), currentRootSnapshot().entries.last().destination)
+        verify(teamCityService).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         verify(teamCityService).listBuildTypes("id")
         row("project:child").performClick()
         assertTextVisible("New project")
         assertTextVisible("Description")
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_ID, "child"), hasExtra(NavigationNavigation.PROJECT_NAME, "New project")))
+        assertEquals(ProjectDestination("child", "New project", false), currentRootSnapshot().entries.last().destination)
         verify(teamCityService).listBuildTypes("child")
     }
 
@@ -136,7 +142,7 @@ class HomeActivityTest {
         activityRule.launchActivity(null)
         awaitRow("configuration:build_type_id")
         row("configuration:build_type_id").performClick()
-        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
+        org.junit.Assert.assertEquals(BuildHistoryDestination("build_type_id", "build type"), currentRootSnapshot().entries.last().destination)
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }
@@ -167,12 +173,12 @@ class HomeActivityTest {
     }
 
     @Test fun completedRootDataSurvivesRecreationWithoutAnotherRequest() {
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitRow("project:id")
             scenario.recreate()
             awaitRow("project:id")
             row("configuration:build_type_id").assertIsDisplayed()
-            verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         }
     }
 
@@ -184,8 +190,8 @@ class HomeActivityTest {
             inset = ViewCompat.getRootWindowInsets(activityRule.activity.window.decorView)
                 ?.getInsets(WindowInsetsCompat.Type.statusBars())?.top ?: 0
         }
-        val title = compose.onNodeWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true)
-            .fetchSemanticsNode().boundsInWindow
+        val title = compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true)
+            .fetchSemanticsNodes().minBy { it.boundsInWindow.top }.boundsInWindow
         assertThat(title.top.toInt(), greaterThanOrEqualTo(inset))
     }
 
@@ -195,7 +201,7 @@ class HomeActivityTest {
     }
     private fun assertTextVisible(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithText(value, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText(value, useUnmergedTree = true).assertIsDisplayed()
+        compose.onAllNodesWithText(value, useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
     private fun text(id: Int) = context.getString(id)
 }

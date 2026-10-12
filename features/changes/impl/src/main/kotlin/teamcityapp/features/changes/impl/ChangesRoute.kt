@@ -28,16 +28,21 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import teamcityapp.features.changes.impl.router.ChangesRouter
 
 @Composable
-internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = hiltViewModel()) {
+internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = hiltViewModel(), parentCount: ChangesCountState? = null, onParentCountRetry: (() -> Unit)? = null) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val visiblePages = remember(viewModel, lifecycle) { viewModel.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
     val changes = visiblePages.collectAsLazyPagingItems()
-    val count by viewModel.count.collectAsStateWithLifecycle()
-    LaunchedEffect(count, router) {
-        when (val current = count) {
-            is ChangesCountState.Available -> router.updateTabCount(current.count)
-            ChangesCountState.Unavailable -> router.updateTabCount(0)
-            ChangesCountState.Loading -> Unit
+    val count = parentCount ?: run {
+        val ownCount by viewModel.count.collectAsStateWithLifecycle()
+        ownCount
+    }
+    if (parentCount == null) {
+        LaunchedEffect(count, router) {
+            when (val current = count) {
+                is ChangesCountState.Available -> router.updateTabCount(current.count)
+                ChangesCountState.Unavailable -> router.updateTabCount(0)
+                ChangesCountState.Loading -> Unit
+            }
         }
     }
     var completed by rememberSaveable { mutableStateOf(false) }
@@ -62,7 +67,7 @@ internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = h
             viewModel.prepareRefresh()
             changes.refresh()
         },
-        onCountRetry = viewModel::retryCount,
+        onCountRetry = onParentCountRetry ?: viewModel::retryCount,
         onChange = router::openChange,
         onAppendRetry = changes::retry
     )

@@ -19,25 +19,13 @@ package teamcityapp.features.favorites.impl.dagger
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.favorites.api.FavoritesNavigation
-import teamcityapp.features.favorites.impl.navigation.FavoritesNavigationImpl
-import teamcityapp.features.favorites.impl.router.FavoritesRouter
-import teamcityapp.features.favorites.impl.router.FavoritesRouterImpl
 import teamcityapp.features.favorites.impl.tracker.FavoritesTracker
 import teamcityapp.features.favorites.impl.tracker.FavoritesTrackerImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class FavoritesModules {
-    @Binds abstract fun navigation(implementation: FavoritesNavigationImpl): FavoritesNavigation
 
     @Binds abstract fun tracker(implementation: FavoritesTrackerImpl): FavoritesTracker
-}
-
-@Module
-@InstallIn(FragmentComponent::class)
-abstract class FavoritesScreenModule {
-    @Binds abstract fun router(implementation: FavoritesRouterImpl): FavoritesRouter
 }
