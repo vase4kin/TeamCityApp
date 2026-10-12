@@ -53,7 +53,8 @@ or recreating the app. The five existing `HomeTab` values and their ordinals rem
 unchanged for installed Intent compatibility and saved navigation. Each content pane
 keeps its original retained owner.
 
-Home owns a shared pinned header with the active server and account avatar. Hosted
+Home owns a shared pinned header with the selected destination title and account avatar.
+The compact bottom navigation uses icons with accessible destination descriptions. Hosted
 root screens suppress their own headers through the scoped `LocalTeamCityHeaderProvided`
 contract and bind list scrolling to the host's app-bar state. Nested project visits
 retain their own Back header. Activity's native Expressive connected toggle buttons
@@ -63,23 +64,43 @@ loading and failures never produce a misleading partial total. Agents and Favori
 have no notification-style badge in primary navigation.
 
 Filters are labeled inline controls with a visible current-query summary. Favorites
-keeps its existing add-to-favorites action in the header. Existing onboarding keys
-remain compatible, with the former drawer tip targeting the account avatar and action
-tips targeting the inline controls.
+embeds its add action in the existing shared empty-state message card for an empty
+saved-favorites list. The action selects the retained Projects pane directly. Existing onboarding keys remain
+compatible, with the former drawer tip targeting the avatar and action tips targeting
+the filters or the empty-state action. Optional count failures use a Snackbar with a
+Retry counts action rather than reserving permanent space above navigation.
+
+Activity panes retain completed content through selection, backgrounding and recreation.
+While visible and resumed, they check fresh repository snapshots every 30 seconds.
+Changed snapshots produce a floating Updates available card; Update applies the latest
+successful check. Returning to an opened pane waits for the next interval instead of
+reloading immediately. Polling stops when hidden and rejects canceled or superseded
+results. Manual refresh, query changes and unfinished initial-load resumption keep
+their existing behavior. Refresh failures float above retained list content, with
+Retry and Close actions; the list geometry and scroll position do not move. Update
+and refresh-failure notices share the same primary-container tonal surface, shape,
+spacing and action layout, with distinct refresh/error icons.
 
 The avatar opens the full-screen Account destination. Its serialized
 `DrawerDestination` key remains compatible, and the existing account ViewModel,
 repository, analytics and switching behavior remain in the owning feature. Account
-child destinations push onto the stack so Back returns to Account, then Home. Back
-and other interactions remain disabled while an account switch is pending. Quick
+child destinations push onto the stack so Back returns to Account, then Home. Manage
+accounts and Add another account form one connected tonal row group, without a
+second accounts heading. Back and other interactions remain disabled while an account switch is pending. Quick
 Filter and Action Bottom Sheet keep their existing sheet presentation.
 
-Verification for this layout passed Home and Account behavioral/golden tests,
-regressions in the five hosted list modules and shared theme, the Home repository
-adapter tests, both mock APK builds, mock lint and formatting. All 43 API 37
-emulator cases across Home initial-tab, startup/restoration, Home actions, Account
-and root-sheet coverage passed. Native ripple captures wait on Android's wall-time
-animation clock before checking the same row-edge pixels.
+Verification for this layout passed the owning feature and shared-list consumer unit
+and screenshot suites, Home repository adapter tests, both debug app builds and the
+mock instrumentation APK, app/feature lint and formatting. All 88 API 37 emulator
+cases were verified across Home startup/restoration, navigation, Favorites, Activity
+and Account. They include retained scroll/content on return, cancellation, same-server
+account isolation, Snackbar count retry, the empty-state Projects action, and a real
+30-second poll that keeps a new build pending until Update is tapped.
+
+The follow-up styling verification passed the shared-list/UI behavioral and golden
+suites and 28 native Favorites, Account, refresh-retry and polling-update cases. It
+covers the original empty-state card with an embedded action, one connected account
+action group, and matching tonal floating notices in both themes and larger text.
 
 ## Acceptance cases
 
