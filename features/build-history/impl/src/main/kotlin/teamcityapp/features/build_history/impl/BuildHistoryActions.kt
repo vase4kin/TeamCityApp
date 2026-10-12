@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityExtendedFloatingActionButton
+import teamcityapp.libraries.theme.TeamCityFloatingToolbar
 import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -64,7 +65,7 @@ internal fun BuildHistoryActions(
             exit = shrinkHorizontally(MaterialTheme.motionScheme.defaultSpatialSpec(), shrinkTowards = Alignment.End) + fadeOut(MaterialTheme.motionScheme.defaultEffectsSpec())
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                HorizontalFloatingToolbar(expanded = true, modifier = Modifier.testTag("history:toolbar")) {
+                TeamCityFloatingToolbar(modifier = Modifier.testTag("history:toolbar")) {
                     IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
                         Icon(painterResource(R.drawable.ic_history_filter), stringResource(R.string.history_filter))
                     }
