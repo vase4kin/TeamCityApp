@@ -1,0 +1,105 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.drawer.impl
+
+import android.app.Application
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.LayoutDirection
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
+import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
+import org.junit.runner.RunWith
+import org.junit.runners.model.Statement
+import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.drawer.api.*
+import teamcityapp.libraries.theme.TeamCityTheme
+
+/** Every account, loading, and failure state, in both themes, sizes, and enlarged text. */
+@OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
+@RunWith(ParameterizedRobolectricTestRunner::class)
+@Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+class AccountScreenScreenshotTest(private val stateName: String, private val variant: Variant) {
+    data class Variant(val name: String, val width: Int, val height: Int, val dark: Boolean, val fontScale: Float, val rtl: Boolean = false) {
+        override fun toString() = name
+    }
+
+    private val compose = createComposeRule()
+    private val device = TestRule { base, _ ->
+        object : Statement() {
+            override fun evaluate() {
+                val qualifiers = RuntimeEnvironment.getQualifiers()
+                val fontScale = RuntimeEnvironment.getFontScale()
+                RuntimeEnvironment.setQualifiers(
+                    "en-rUS-w${variant.width}dp-h${variant.height}dp-${if (variant.width >= 600) "large" else "normal"}-${if (variant.dark) "night" else "notnight"}-mdpi"
+                )
+                RuntimeEnvironment.setFontScale(variant.fontScale)
+                try {
+                    base.evaluate()
+                } finally {
+                    RuntimeEnvironment.setQualifiers(qualifiers)
+                    RuntimeEnvironment.setFontScale(fontScale)
+                }
+            }
+        }
+    }
+
+    @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
+
+    @Test fun rendersState() {
+        compose.setContent { CompositionLocalProvider(LocalLayoutDirection provides if (variant.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) { TeamCityTheme(darkTheme = variant.dark) { AccountScreen(drawerFixture(stateName), {}, {}, {}, {}, {}, {}, {}) } } }
+        compose.mainClock.advanceTimeBy(500)
+        compose.waitForIdle()
+        if (stateName == "scrolled") {
+            compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+        }
+        compose.onRoot().captureRoboImage("account_${stateName}_${variant.name}.png")
+    }
+
+    companion object {
+        @JvmStatic
+        @Parameters(name = "{0}_{1}")
+        fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
+            val theme = if (dark) "dark" else "light"
+            val variants = listOf(
+                Variant("phone_$theme", 360, 800, dark, 1f),
+                Variant("tablet_$theme", 1000, 700, dark, 1f),
+                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+            )
+            val existing = listOf("loading", "empty", "error", "one", "mixed", "no_active", "long", "scrolled", "switching", "switch_error", "missing").flatMap { state ->
+                (variants + (if (state == "one") listOf(Variant("rtl_phone_$theme", 360, 800, dark, 1f, rtl = true)) else emptyList()) + if (state in listOf("one", "long", "scrolled")) listOf(Variant("double_font_$theme", 360, 800, dark, 2f)) else emptyList()).map { arrayOf<Any>(state, it) }
+            }
+            existing + listOf(
+                arrayOf<Any>("named", Variant("phone_$theme", 360, 800, dark, 1f)),
+                arrayOf<Any>("named_long", Variant("double_font_$theme", 360, 800, dark, 2f)),
+                arrayOf<Any>("named_long", Variant("rtl_large_font_$theme", 360, 800, dark, 1.5f, rtl = true))
+            )
+        }
+    }
+}

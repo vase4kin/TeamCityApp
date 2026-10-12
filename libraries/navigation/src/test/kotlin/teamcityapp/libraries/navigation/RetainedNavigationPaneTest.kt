@@ -19,6 +19,7 @@ package teamcityapp.libraries.navigation
 import android.app.Application
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,8 +32,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
@@ -82,7 +86,10 @@ class RetainedNavigationPaneTest {
                     val children = remember(entryId) {
                         listOf("projects", "favorites", "agents").map { NavigationEntry("$entryId/$it", Detail(it)) }
                     }
-                    RetainedNavigationPane(children, "$entryId/${selected.value}", navigator, registry)
+                    Column {
+                        Text("selected:${selected.value}")
+                        RetainedNavigationPane(children, "$entryId/${selected.value}", navigator, registry)
+                    }
                 }
             },
             object : FeatureDestination<Detail>(Detail::class, Detail.serializer()) {
@@ -170,6 +177,30 @@ class RetainedNavigationPaneTest {
         assertEquals(0, favorites.collectors)
         compose.onNodeWithText("projects:loaded:1").assertExists()
         assertEquals(1, nav.snapshot.entries.size)
+    }
+
+    @Test fun selectingAChildReplacesThePreviousContentInTheFirstRecompositionFrame() {
+        content()
+        val projects = model("projects")
+        select("favorites")
+        val favorites = model("favorites")
+        compose.mainClock.autoAdvance = false
+        compose.runOnUiThread { selected.value = "projects" }
+        // Snapshot notifications can arrive before the frame that recomposes the parent.
+        // Inspect the first frame that actually renders the newly selected header.
+        var changed = false
+        repeat(4) {
+            if (!changed) {
+                compose.mainClock.advanceTimeByFrame()
+                changed = compose.onAllNodesWithText("selected:projects").fetchSemanticsNodes().isNotEmpty()
+            }
+        }
+        assertTrue("The parent selection must be rendered", changed)
+        compose.onNode(hasText("projects:", substring = true)).assertIsDisplayed()
+        compose.onNode(hasText("favorites:", substring = true)).assertDoesNotExist()
+        assertSame(projects, model("projects"))
+        assertFalse(favorites.cleared)
+        assertEquals(0, favorites.viewResources)
     }
 
     @Test fun leavingAndReturningToParentRetainsAllChildrenButRemovingParentClearsThem() {

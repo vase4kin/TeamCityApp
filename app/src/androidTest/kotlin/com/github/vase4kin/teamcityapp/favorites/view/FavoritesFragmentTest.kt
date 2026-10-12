@@ -113,7 +113,7 @@ class FavoritesFragmentTest {
     @Test fun favoritesToolbarOpensTheDrawer() {
         openFavorites()
         assertTextVisible(text(FavoritesR.string.favorites_empty))
-        compose.onNodeWithTag("favorites:up").performClick()
+        compose.onNodeWithTag("home:account").performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("drawer:settings").assertIsDisplayed()
     }
@@ -121,7 +121,7 @@ class FavoritesFragmentTest {
     @Test fun addFavoritesFabOffersTheProjectsTab() {
         openFavorites()
         assertTextVisible(text(FavoritesR.string.favorites_empty))
-        compose.onNodeWithTag("home:fab").performClick()
+        compose.onNodeWithTag("home:action").performClick()
         compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_info_add)).assertIsDisplayed()
         compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_info_add_action)).performClick()
         awaitProjectRow()

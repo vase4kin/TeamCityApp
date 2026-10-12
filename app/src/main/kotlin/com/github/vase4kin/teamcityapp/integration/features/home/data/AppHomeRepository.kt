@@ -109,7 +109,7 @@ class AppHomeRepository @Inject constructor(
     class QueryObserver(private val storage: SharedUserStorage, private val filters: FilterProvider, private val changed: (HomeQuery) -> Unit) {
         fun current(): HomeQuery {
             val account = storage.activeUser
-            return HomeQuery(account.homeBuildAccountKey(), account.buildTypeIds.toList(), QuickFilter.entries[filters.runningBuildsFilter.ordinal], QuickFilter.entries[filters.queuedBuildsFilter.ordinal], QuickFilter.entries[filters.agentsFilter.ordinal])
+            return HomeQuery(account.homeBuildAccountKey(), account.buildTypeIds.toList(), QuickFilter.entries[filters.runningBuildsFilter.ordinal], QuickFilter.entries[filters.queuedBuildsFilter.ordinal], QuickFilter.entries[filters.agentsFilter.ordinal], HomeAccount(account.userName, account.teamcityUrl))
         }
 
         @Subscribe fun filterApplied(@Suppress("UNUSED_PARAMETER") event: FilterAppliedEvent) = changed(current())

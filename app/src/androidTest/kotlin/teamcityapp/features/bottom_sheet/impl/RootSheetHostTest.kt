@@ -78,6 +78,7 @@ class RootSheetHostTest {
     private var originalNight = AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
     private var originalAccessibilityFlags = 0
     private var dark = false
+    private var isAccount = false
 
     @Before fun before() {
         originalTheme = runBlocking { app.appInjector.themePreferences().theme.first() }
@@ -109,13 +110,13 @@ class RootSheetHostTest {
 
     @Test fun quickDark() = quick(true)
 
-    @Test fun drawerLight() = drawer(false)
+    @Test fun accountLight() = drawer(false)
 
-    @Test fun drawerDark() = drawer(true)
+    @Test fun accountDark() = drawer(true)
 
-    @Test fun drawerMultipleLight() = drawer(false, multiple = true)
+    @Test fun accountMultipleLight() = drawer(false, multiple = true)
 
-    @Test fun drawerMultipleDark() = drawer(true, multiple = true)
+    @Test fun accountMultipleDark() = drawer(true, multiple = true)
 
     private fun action(dark: Boolean) = exercise("action", "sheet:Copy", dark) {
         ActionSheetDestination("Configuration", listOf("configuration-id"), SheetMenuType.BuildType, it.navigationSnapshot!!.entries.first().id, "host-test")
@@ -136,13 +137,14 @@ class RootSheetHostTest {
             if (multiple) saveUserAccountAndSetItAsActive("https://teamcity.example/secondary", "build.engineer", "test-password", true, storageListener)
             saveUserAccountAndSetItAsActive(Mocks.URL, "alex.morgan", "test-password", false, storageListener)
         }
-        exercise(if (multiple) "drawer_multiple" else "drawer", "drawer:add", dark) { DrawerDestination }
+        exercise(if (multiple) "account_multiple" else "account", "drawer:add", dark) { DrawerDestination }
     }
 
     @Inject lateinit var launcher: RootDestinationLauncher
 
     private fun exercise(name: String, rowTag: String, dark: Boolean, factory: (MainActivity) -> NavKey) {
         this.dark = dark
+        isAccount = name.startsWith("account")
         runBlocking { app.appInjector.themePreferences().setTheme(if (dark) ThemeMode.Dark else ThemeMode.Light) }
         instrumentation.runOnMainSync { AppCompatDelegate.setDefaultNightMode(if (dark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO) }
         ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java).setClassName(app, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
@@ -151,10 +153,16 @@ class RootSheetHostTest {
             await(rowTag)
             assertHost(scenario)
             capture("${name}_initial")
-            await("navigation:sheet")
-            compose.onAllNodesWithContentDescription("Drag handle", useUnmergedTree = true).assertCountEquals(1)
+            if (isAccount) {
+                await("account:back")
+                compose.onNodeWithTag("navigation:sheet").assertDoesNotExist()
+                compose.onAllNodesWithContentDescription("Drag handle", useUnmergedTree = true).assertCountEquals(0)
+            } else {
+                await("navigation:sheet")
+                compose.onAllNodesWithContentDescription("Drag handle", useUnmergedTree = true).assertCountEquals(1)
+            }
             assertHost(scenario)
-            if (name.startsWith("drawer")) {
+            if (name.startsWith("account")) {
                 assertDrawerSpacingAndMenuWidths(scenario)
                 listOf("settings", "about", "rate", "privacy").forEach { action ->
                     assertRowEdgesAndRipple("${name}_$action", "drawer:$action", scenario)
@@ -170,7 +178,7 @@ class RootSheetHostTest {
             assertHost(scenario)
             capture("${name}_recreated")
             pressBack()
-            compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:sheet").fetchSemanticsNodes().isEmpty() }
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag(if (isAccount) "drawer:list" else "navigation:sheet").fetchSemanticsNodes().isEmpty() }
             scenario.onActivity { launcher.open(it, factory(it)) }
             await(rowTag)
             assertHost(scenario)
@@ -207,7 +215,7 @@ class RootSheetHostTest {
         instrumentation.waitForIdleSync()
     }
     private fun assertHost(scenario: ActivityScenario<MainActivity>) {
-        compose.onNodeWithTag("navigation:sheet").assertIsDisplayed()
+        compose.onNodeWithTag(if (isAccount) "account:back" else "navigation:sheet").assertIsDisplayed()
         scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
     }
 
@@ -218,7 +226,7 @@ class RootSheetHostTest {
         active.assertHasNoClickAction()
         val density = app.resources.displayMetrics.density
         compose.onNodeWithTag("drawer:manage").assertIsDisplayed().assertHeightIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget)
-        val sheet = compose.onNodeWithTag("navigation:sheet").fetchSemanticsNode().boundsInWindow
+        val sheet = compose.onNodeWithTag(if (isAccount) "account:content" else "navigation:sheet").fetchSemanticsNode().boundsInWindow
         val left = sheet.left
         val right = sheet.right
         listOf("add", "settings", "about", "rate", "privacy").forEach { action ->
@@ -232,7 +240,7 @@ class RootSheetHostTest {
 
     private fun assertRowEdgesAndRipple(name: String, tag: String, scenario: ActivityScenario<MainActivity>) {
         val row = compose.onNodeWithTag(tag)
-        if (name.startsWith("drawer")) {
+        if (name.startsWith("account")) {
             row.performScrollTo()
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
@@ -242,7 +250,7 @@ class RootSheetHostTest {
         val bounds = row.fetchSemanticsNode().boundsInWindow
         var screenDeltaX = 0
         var screenDeltaY = 0
-        val sheet = compose.onNodeWithTag("navigation:sheet").fetchSemanticsNode().boundsInWindow
+        val sheet = compose.onNodeWithTag(if (isAccount) "account:content" else "navigation:sheet").fetchSemanticsNode().boundsInWindow
         scenario.onActivity {
             val location = IntArray(2)
             val screen = IntArray(2)
@@ -251,7 +259,7 @@ class RootSheetHostTest {
             screenDeltaX = screen[0] - location[0]
             screenDeltaY = screen[1] - location[1]
         }
-        val inset = if (name.startsWith("drawer")) 16f * app.resources.displayMetrics.density else 0f
+        val inset = if (name.startsWith("account")) 16f * app.resources.displayMetrics.density else 0f
         assertEquals(sheet.left + inset, bounds.left, 1f)
         assertEquals(sheet.right - inset, bounds.right, 1f)
         val before = capture("${name}_idle")
@@ -259,7 +267,8 @@ class RootSheetHostTest {
         try {
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
-            SystemClock.sleep(100)
+            // Android's native ripple runs on wall time, independently of Compose's clock.
+            SystemClock.sleep(500)
             instrumentation.waitForIdleSync()
             val pressed = capture("${name}_pressed")
             val y = bounds.center.y.toInt() + screenDeltaY

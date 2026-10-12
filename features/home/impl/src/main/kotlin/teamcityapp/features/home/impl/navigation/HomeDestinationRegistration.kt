@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.*
 import teamcityapp.features.agents.api.navigation.AgentsDestination
 import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
+import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
 import teamcityapp.features.filter_bottom_sheet.api.navigation.QuickFilterDestination
 import teamcityapp.features.home.api.*
@@ -122,7 +123,9 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                 },
                 onRetry = model::retry,
                 onDismissPrompt = model::dismissPrompt,
-                snackbar = snackbar
+                snackbar = snackbar,
+                onAccount = { navigator.push(DrawerDestination) },
+                onActivity = model::selectActivity
             ) { RetainedNavigationPane(children, "$entryId/${state.selected.name}", navigator, registry.get()) }
         }
     }

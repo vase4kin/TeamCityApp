@@ -15,6 +15,8 @@
   -->
 
 <resources>
+    <string name="account_title">Account</string>
+    <string name="account_back">Back</string>
     <!--new drawer-->
     <string name="text_menu_accounts">Accounts</string>
     <string name="text_rate_the_app">Rate the app</string>

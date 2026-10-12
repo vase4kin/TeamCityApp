@@ -131,7 +131,7 @@ class RunningBuildsFragmentTest {
     @Test fun toolbarOpensTheDrawerFromTheHomeHostedFragment() {
         openTab()
         assertTextVisible(text(FeatureR.string.running_builds_empty_favorites))
-        compose.onNodeWithTag("running_builds:drawer").performClick()
+        compose.onNodeWithTag("home:account").performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("drawer:settings").assertIsDisplayed()
     }
@@ -356,6 +356,7 @@ class RunningBuildsFragmentTest {
         clickTab()
     }
     private fun clickTab() {
+        compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:Running").performClick()
     }
     private fun awaitProjects() {
@@ -371,7 +372,7 @@ class RunningBuildsFragmentTest {
     }
     private fun text(id: Int) = context.getString(id)
     private fun showAllFromFilterFab() {
-        compose.onNodeWithTag("home:fab").performClick()
+        compose.onNodeWithTag("home:action").performClick()
         compose.onNodeWithText(text(QuickR.string.text_show_running)).performClick()
     }
     private fun assertBadgeCount(expected: Int) {

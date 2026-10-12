@@ -24,7 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.drawer.impl.router.DrawerRouter
 @Composable
-fun DrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel = hiltViewModel()) {
+fun DrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel = hiltViewModel(), onNavigateUp: () -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(router) {
@@ -43,7 +43,7 @@ fun DrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel = hiltViewModel
             }
         }
     }
-    DrawerScreen(
+    AccountScreen(
         state, viewModel::select,
         {
             if (state.canInteract) {
@@ -79,6 +79,7 @@ fun DrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel = hiltViewModel
             }
         },
         onRetry = viewModel::retry,
-        onRetrySelection = viewModel::retrySelection, onDismissMissing = viewModel::dismissMissing
+        onRetrySelection = viewModel::retrySelection, onDismissMissing = viewModel::dismissMissing,
+        onNavigateUp = onNavigateUp
     )
 }

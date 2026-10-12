@@ -101,7 +101,7 @@ class AgentListFragmentTest {
     @Test fun showsTheAgentsToolbarAndOpensTheDrawer() {
         openAgents()
         assertTextVisible(text(AgentsR.string.agents_title))
-        compose.onNodeWithTag("agents:drawer").performClick()
+        compose.onNodeWithTag("home:account").performClick()
         compose.onNodeWithTag("drawer:list").assertExists()
     }
 
@@ -162,11 +162,12 @@ class AgentListFragmentTest {
     }
 
     private fun selectTab(tab: String) {
+        if (tab in listOf("Running", "Queue", "Agents")) compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:$tab").performClick()
     }
 
     private fun showDisconnected() {
-        compose.onNodeWithTag("home:fab").performClick()
+        compose.onNodeWithTag("home:action").performClick()
         compose.onNodeWithText(text(FilterR.string.text_show_disconnected)).performClick()
     }
 

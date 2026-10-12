@@ -17,22 +17,30 @@
 package teamcityapp.features.home.impl
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import teamcityapp.features.home.api.HomePrompt
 import teamcityapp.features.home.api.HomeTab
-import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.*
-import teamcityapp.libraries.theme.TeamCityTheme
 
+private val activityTabs = listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
     state: HomeUiState,
@@ -43,119 +51,162 @@ fun HomeScreen(
     onDismissPrompt: () -> Unit,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
+    onAccount: () -> Unit = {},
+    onActivity: () -> Unit = { onTabSelected(HomeTab.Running) },
     content: @Composable () -> Unit
 ) {
-    val labels = mapOf(
-        HomeTab.Projects to R.string.home_projects,
-        HomeTab.Favorites to R.string.home_favorites,
-        HomeTab.Running to R.string.home_running,
-        HomeTab.Queue to R.string.home_queue,
-        HomeTab.Agents to R.string.home_agents
-    )
-    val icons = mapOf(
-        HomeTab.Projects to R.drawable.ic_home_white_24dp,
-        HomeTab.Favorites to R.drawable.ic_favorite_white_24dp,
-        HomeTab.Running to R.drawable.ic_directions_run_white_24px,
-        HomeTab.Queue to R.drawable.ic_layers_white_24dp,
-        HomeTab.Agents to SharedR.drawable.ic_directions_railway_black_24dp
-    )
-
-    @Composable fun TabIcon(tab: HomeTab) {
-        BadgedBox(badge = {
-            when (val badge = state.badges[tab]) {
-                is HomeBadge.Count -> if (badge.value > 0) Badge { Text(badge.value.toString(), Modifier.testTag("home:count:${tab.name}")) }
-
-                is HomeBadge.Failed -> {
-                    val description = stringResource(badge.message)
-                    Badge(Modifier.semantics { contentDescription = description }) { Text("!", modifier = Modifier.testTag("home:count-failed:${tab.name}")) }
-                }
-
-                else -> Unit
-            }
-        }) { Icon(painterResource(icons.getValue(tab)), contentDescription = null) }
-    }
     val anchors = remember { CoachmarkAnchors() }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val prompt = state.prompt
-    val promptBounds = prompt?.let { anchors.bounds(if (it.prompt == teamcityapp.features.home.api.HomePrompt.Drawer) DRAWER_COACHMARK_ANCHOR else "home:fab") }
+    val promptBounds = prompt?.let { anchors.bounds(if (it.prompt == HomePrompt.Drawer) DRAWER_COACHMARK_ANCHOR else "home:action") }
+    val destinations = listOf(
+        Triple("Projects", R.string.home_projects, R.drawable.ic_home_white_24dp),
+        Triple("Favorites", R.string.home_favorites, R.drawable.ic_favorite_white_24dp),
+        Triple("Activity", R.string.home_activity, R.drawable.ic_activity)
+    )
+    fun selected(name: String) = when (name) {
+        "Projects" -> state.selected == HomeTab.Projects
+        "Favorites" -> state.selected == HomeTab.Favorites
+        else -> state.isActivity
+    }
+    fun select(name: String) = when (name) {
+        "Projects" -> onTabSelected(HomeTab.Projects)
+        "Favorites" -> onTabSelected(HomeTab.Favorites)
+        else -> onActivity()
+    }
+
+    @Composable fun DestinationIcon(name: String, icon: Int) {
+        BadgedBox(badge = { if (name == "Activity") HomeCountBadge(state.activityBadge, "Activity") }) {
+            Icon(painterResource(icon), contentDescription = null)
+        }
+    }
     Box(modifier.fillMaxSize().coachmarkHost(anchors)) {
         CompositionLocalProvider(LocalCoachmarkAnchors provides anchors) {
             Row(Modifier.fillMaxSize().then(if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier)) {
                 if (expanded) {
                     NavigationRail {
-                        HomeTab.entries.forEach { tab ->
-                            NavigationRailItem(
-                                selected = state.selected == tab,
-                                onClick = { onTabSelected(tab) },
-                                icon = { TabIcon(tab) },
-                                label = { Text(stringResource(labels.getValue(tab)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                modifier = Modifier.testTag("home:tab:${tab.name}")
-                            )
+                        destinations.forEach { (name, label, icon) ->
+                            NavigationRailItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, label = { Text(stringResource(label)) }, modifier = Modifier.testTag("home:tab:$name"))
                         }
                     }
                 }
                 Scaffold(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).nestedScroll(scrollBehavior.nestedScrollConnection),
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    topBar = {
+                        TeamCityAppBarSurface(scrollBehavior) {
+                            TopAppBar(
+                                modifier = Modifier.testTag("screen:app-bar"),
+                                colors = teamCityTopAppBarColors(),
+                                scrollBehavior = scrollBehavior,
+                                title = {
+                                    Column {
+                                        state.query?.account?.serverUrl?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                                        Text(stringResource(state.titleRes), style = MaterialTheme.typography.headlineMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("home:title"))
+                                    }
+                                },
+                                actions = {
+                                    val description = state.query?.account?.userName?.let { stringResource(R.string.home_open_named_account, it) } ?: stringResource(R.string.home_open_account)
+                                    FilledTonalIconButton(onAccount, Modifier.padding(end = TeamCityDimensions.smallSpacing).testTag("home:account").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR, anchors).semantics { contentDescription = description }) {
+                                        val initials = state.accountInitials
+                                        if (initials == null) {
+                                            Icon(painterResource(R.drawable.ic_account), null)
+                                        } else {
+                                            Text(initials, style = MaterialTheme.typography.labelLarge)
+                                        }
+                                    }
+                                }
+                            )
+                            if (state.isActivity) {
+                                val largeText = LocalDensity.current.fontScale > 1.3f
+                                Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding).selectableGroup().testTag("home:activity-views"), horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)) {
+                                    activityTabs.forEachIndexed { index, tab ->
+                                        ToggleButton(
+                                            checked = state.selected == tab,
+                                            onCheckedChange = { onTabSelected(tab) },
+                                            shapes = when (index) {
+                                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                                activityTabs.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                                            },
+                                            contentPadding = PaddingValues(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.smallSpacing),
+                                            modifier = Modifier.weight(1f).testTag("home:tab:${tab.name}").semantics { selected = state.selected == tab }
+                                        ) {
+                                            if (largeText) {
+                                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                    Text(stringResource(tab.labelRes()), maxLines = 1)
+                                                    if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                                }
+                                            } else {
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                    Text(stringResource(tab.labelRes()), maxLines = 1)
+                                                    if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (state.selected != HomeTab.Projects) {
+                                Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+                                    state.filterSummaryRes?.let { Text(stringResource(it), Modifier.weight(1f).testTag("home:filter-summary"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                    FilledTonalButton(onFab, Modifier.testTag("home:action").coachmarkAnchor("home:action", anchors)) {
+                                        Icon(painterResource(if (state.selected == HomeTab.Favorites) R.drawable.ic_favorite_white_24dp else R.drawable.ic_filter_list_white_24px), null, Modifier.size(18.dp))
+                                        Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
+                                        Text(stringResource(state.fabLabelRes))
+                                    }
+                                }
+                            }
+                        }
+                    },
                     bottomBar = {
                         Surface {
-                            Column(
-                                Modifier.fillMaxWidth().windowInsetsPadding(
-                                    WindowInsets.safeDrawing.only(if (expanded) WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom else WindowInsetsSides.Horizontal)
-                                )
-                            ) {
+                            Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(if (expanded) WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom else WindowInsetsSides.Horizontal))) {
                                 state.retryMessageRes?.let { message ->
-                                    ErrorNotice(
-                                        message = stringResource(message),
-                                        onRetry = onRetry,
-                                        actionLabel = stringResource(state.retryLabelRes),
-                                        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("home:retry-notice")
-                                    )
+                                    ErrorNotice(stringResource(message), onRetry, actionLabel = stringResource(state.retryLabelRes), modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("home:retry-notice"))
                                 }
                                 if (!expanded) {
                                     NavigationBar {
-                                        HomeTab.entries.forEach { tab ->
-                                            NavigationBarItem(
-                                                selected = state.selected == tab,
-                                                onClick = { onTabSelected(tab) },
-                                                icon = { TabIcon(tab) },
-                                                label = { Text(stringResource(labels.getValue(tab)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                                modifier = Modifier.testTag("home:tab:${tab.name}")
-                                            )
+                                        destinations.forEach { (name, label, icon) ->
+                                            NavigationBarItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, label = { Text(stringResource(label), maxLines = 1, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.testTag("home:tab:$name"))
                                         }
                                     }
                                 }
                             }
                         }
                     },
-                    floatingActionButton = {
-                        if (state.selected != HomeTab.Projects) {
-                            FloatingActionButton(onClick = onFab, modifier = Modifier.testTag("home:fab").coachmarkAnchor("home:fab", anchors)) {
-                                Icon(
-                                    painterResource(if (state.selected == HomeTab.Favorites) R.drawable.ic_favorite_white_24dp else R.drawable.ic_filter_list_white_24px),
-                                    contentDescription = stringResource(state.fabLabelRes)
-                                )
-                            }
-                        }
-                    },
                     snackbarHost = { SnackbarHost(snackbar) }
                 ) { padding ->
-                    Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }
+                    CompositionLocalProvider(LocalTeamCityHeaderProvided provides true, LocalTeamCityAppBarState provides scrollBehavior.state) {
+                        Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }
+                    }
                 }
             }
         }
-        if (prompt != null && promptBounds != null) {
-            Coachmark(
-                title = stringResource(prompt.title),
-                description = stringResource(prompt.description),
-                dismissLabel = stringResource(R.string.home_continue),
-                anchor = promptBounds,
-                onDismiss = onDismissPrompt,
-                modifier = Modifier.testTag("home:coachmark:${prompt.prompt}"),
-                dismissModifier = Modifier.testTag("home:dismiss-prompt"),
-                placement = if (prompt.prompt == teamcityapp.features.home.api.HomePrompt.Drawer) CoachmarkPlacement.Below else CoachmarkPlacement.Above
-            )
-        }
+        if (prompt != null && promptBounds != null) Coachmark(title = stringResource(prompt.title), description = stringResource(prompt.description), dismissLabel = stringResource(R.string.home_continue), anchor = promptBounds, onDismiss = onDismissPrompt, modifier = Modifier.testTag("home:coachmark:${prompt.prompt}"), dismissModifier = Modifier.testTag("home:dismiss-prompt"), placement = CoachmarkPlacement.Below)
     }
+}
+
+@Composable
+private fun HomeCountBadge(badge: HomeBadge?, tag: String) {
+    when (badge) {
+        is HomeBadge.Count -> if (badge.value > 0) Badge(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer) { Text(badge.value.toString(), Modifier.testTag("home:count:$tag")) }
+
+        is HomeBadge.Failed -> {
+            val description = stringResource(badge.message)
+            Badge(Modifier.semantics { contentDescription = description }, containerColor = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer) { Text("!", Modifier.testTag("home:count-failed:$tag")) }
+        }
+
+        else -> Unit
+    }
+}
+
+private fun HomeTab.labelRes() = when (this) {
+    HomeTab.Running -> R.string.home_running
+    HomeTab.Queue -> R.string.home_queue
+    HomeTab.Agents -> R.string.home_agents
+    HomeTab.Projects -> R.string.home_projects
+    HomeTab.Favorites -> R.string.home_favorites
 }
 
 @Preview @Composable

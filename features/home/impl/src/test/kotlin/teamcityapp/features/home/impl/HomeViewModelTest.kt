@@ -134,6 +134,54 @@ class HomeViewModelTest {
         Assert.assertEquals(HomeTab.Agents, model.state.value.selected)
     }
 
+    @Test fun activityRestoresItsLastViewAcrossOtherDestinationsAndRecreation() = runTest(dispatcher) {
+        pending = { emptySet() }
+        val handle = SavedStateHandle(mapOf(HomeViewModel.SELECTED_TAB to HomeTab.Queue.ordinal))
+        var model = model(handle)
+        var collector = observe(model)
+        runCurrent()
+        model.select(HomeTab.Projects)
+        runCurrent()
+        model.selectActivity()
+        runCurrent()
+        Assert.assertEquals(HomeTab.Queue, model.state.value.selected)
+        model.select(HomeTab.Agents)
+        model.select(HomeTab.Favorites)
+        runCurrent()
+        collector.cancel()
+        store.clear()
+        model = model(handle)
+        collector = observe(model)
+        runCurrent()
+        model.selectActivity()
+        runCurrent()
+        Assert.assertEquals(HomeTab.Agents, model.state.value.selected)
+        collector.cancel()
+    }
+
+    @Test fun invalidSavedActivityViewFallsBackToRunning() = runTest(dispatcher) {
+        val model = model(SavedStateHandle(mapOf(HomeViewModel.SELECTED_ACTIVITY_TAB to HomeTab.Favorites.ordinal)))
+        observe(model)
+        model.selectActivity()
+        runCurrent()
+        Assert.assertEquals(HomeTab.Running, model.state.value.selected)
+    }
+
+    @Test fun activityCountsNeverSumUnknownCountsOrIncludeAgents() {
+        val healthy = HomeUiState(badges = mapOf(HomeTab.Running to HomeBadge.Count(2), HomeTab.Queue to HomeBadge.Count(4), HomeTab.Agents to HomeBadge.Count(20)))
+        Assert.assertEquals(HomeBadge.Count(6), healthy.activityBadge)
+        Assert.assertEquals(HomeBadge.Loading, healthy.copy(badges = healthy.badges - HomeTab.Queue).activityBadge)
+        Assert.assertTrue(healthy.copy(badges = healthy.badges + (HomeTab.Queue to HomeBadge.Failed())).activityBadge is HomeBadge.Failed)
+    }
+
+    @Test fun accountPresentationUsesOnlyTheCurrentQueriesPublicIdentity() {
+        val state = HomeUiState(query = query.value.copy(account = HomeAccount("andrey.tolpeev", "https://teamcity.example")))
+        Assert.assertEquals("AT", state.accountInitials)
+        Assert.assertNull(HomeUiState().accountInitials)
+        Assert.assertNull(state.copy(query = query.value.copy(account = HomeAccount("._-", "https://teamcity.example"))).accountInitials)
+        Assert.assertEquals("GU", state.copy(query = query.value.copy(account = HomeAccount("Guest user", "https://teamcity.example"))).accountInitials)
+    }
+
     @Test fun drawerPromptPrecedesTheSelectedTabsPromptAndAcknowledgementsArePersisted() = runTest(dispatcher) {
         val model = model()
         observe(model)

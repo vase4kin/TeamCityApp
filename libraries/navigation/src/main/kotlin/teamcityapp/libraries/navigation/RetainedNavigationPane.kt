@@ -21,6 +21,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -57,15 +58,19 @@ fun RetainedNavigationPane(
             ),
             entryProvider = { registry.entry(it, navigator) }
         )
-        // Decorate all children, but pass only the active child to NavDisplay. This keeps hidden
-        // stores alive and prevents a sibling tab from becoming a system Back destination.
-        NavDisplay(
-            entries = listOf(entries.first { it.contentKey == selectedEntryId }),
-            modifier = modifier,
-            transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-            popTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-            predictivePopTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-            onBack = {}
-        )
+        // Ownership stays outside the selected display's key so hidden stores remain alive.
+        // Start each sibling's display at its own scene: even a no-animation scene transition
+        // otherwise keeps the previous child's content until a later frame, after the parent's
+        // header and constraints have already changed. Siblings are not Back destinations.
+        key(selectedEntryId) {
+            NavDisplay(
+                entries = listOf(entries.first { it.contentKey == selectedEntryId }),
+                modifier = modifier,
+                transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+                popTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+                predictivePopTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+                onBack = {}
+            )
+        }
     }
 }

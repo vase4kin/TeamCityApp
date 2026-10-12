@@ -85,42 +85,43 @@ class HomeInitialTabTest {
 
     @Test fun freshHomeConsumesTheRequestedFavoritesTab() {
         launch(HomeTab.Favorites.ordinal).use { scenario ->
-            awaitDisplayed("favorites:up")
+            awaitDisplayed("home:tab:Favorites")
             assertSelected(scenario, HomeTab.Favorites)
         }
     }
 
     @Test fun recreationKeepsTheChosenTabInsteadOfReapplyingTheLaunchTab() {
         launch(HomeTab.Favorites.ordinal).use { scenario ->
-            awaitDisplayed("favorites:up")
+            awaitDisplayed("home:tab:Favorites")
+            compose.onNodeWithTag("home:tab:Activity").performClick()
             compose.onNodeWithTag("home:tab:Queue").performClick()
-            awaitDisplayed("build_queue:drawer")
+            awaitDisplayed("home:tab:Queue")
             assertSelected(scenario, HomeTab.Queue)
             // The unchanged Intent still requests Favorites; restoration must take precedence.
             scenario.onActivity { assertEquals(HomeTab.Favorites.ordinal, it.intent.getIntExtra(IncomingDestinationResolver.HOME_TAB, -1)) }
             scenario.recreate()
-            awaitDisplayed("build_queue:drawer")
+            awaitDisplayed("home:tab:Queue")
             assertSelected(scenario, HomeTab.Queue)
         }
     }
 
     @Test fun negativeLaunchTabLeavesTheDefaultProjectsTabSelected() {
         launch(-1).use { scenario ->
-            awaitDisplayed("navigation:up")
+            awaitDisplayed("home:tab:Projects")
             assertSelected(scenario, HomeTab.Projects)
         }
     }
 
     @Test fun launchTabPastTheLastItemLeavesTheDefaultProjectsTabSelected() {
         launch(HomeTab.entries.size).use { scenario ->
-            awaitDisplayed("navigation:up")
+            awaitDisplayed("home:tab:Projects")
             assertSelected(scenario, HomeTab.Projects)
         }
     }
 
     @Test fun installedTabRequestReturnsToTheExistingHomeVisitAndRemovesTheSettingsVisit() {
         launch(HomeTab.Queue.ordinal).use { scenario ->
-            awaitDisplayed("build_queue:drawer")
+            awaitDisplayed("home:tab:Queue")
             var home: String? = null
             scenario.onActivity {
                 home = it.navigationSnapshot!!.entries.single().id
@@ -130,14 +131,14 @@ class HomeInitialTabTest {
             scenario.onActivity {
                 it.startActivity(Intent().setClassName(it, IncomingDestinationResolver.HOME_COMPONENT).putExtra(IncomingDestinationResolver.HOME_TAB, HomeTab.Favorites.ordinal))
             }
-            awaitDisplayed("favorites:up")
+            awaitDisplayed("home:tab:Favorites")
             assertSelected(scenario, HomeTab.Favorites)
             scenario.onActivity {
                 assertEquals(home, it.navigationSnapshot!!.entries.single().id)
                 assertTrue(it.supportFragmentManager.fragments.isEmpty())
             }
             scenario.recreate()
-            awaitDisplayed("favorites:up")
+            awaitDisplayed("home:tab:Favorites")
             assertSelected(scenario, HomeTab.Favorites)
         }
     }
@@ -145,11 +146,11 @@ class HomeInitialTabTest {
     @Test fun bothInstalledReloadPoliciesResetConsentOnceAndKeepTheRequestedTabThroughRecreation() {
         listOf(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, BundleExtractorValues.IS_NEW_ACCOUNT_CREATED).forEach { flag ->
             ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT).putExtra(IncomingDestinationResolver.HOME_TAB, HomeTab.Queue.ordinal).putExtra(flag, true)).use { scenario ->
-                awaitDisplayed("build_queue:drawer")
+                awaitDisplayed("home:tab:Queue")
                 assertSelected(scenario, HomeTab.Queue)
                 scenario.onActivity { assertFalse(it.intent.hasExtra(flag)) }
                 scenario.recreate()
-                awaitDisplayed("build_queue:drawer")
+                awaitDisplayed("home:tab:Queue")
                 assertSelected(scenario, HomeTab.Queue)
             }
         }

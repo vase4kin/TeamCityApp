@@ -131,7 +131,7 @@ class BuildQueueFragmentTest {
     @Test fun toolbarOpensTheDrawerFromTheHomeHostedFragment() {
         openTab()
         assertTextVisible(text(FeatureR.string.build_queue_empty_favorites))
-        compose.onNodeWithTag("build_queue:drawer").performClick()
+        compose.onNodeWithTag("home:account").performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("drawer:settings").assertIsDisplayed()
     }
@@ -356,6 +356,7 @@ class BuildQueueFragmentTest {
         clickTab()
     }
     private fun clickTab() {
+        compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:Queue").performClick()
     }
     private fun awaitProjects() {
@@ -371,7 +372,7 @@ class BuildQueueFragmentTest {
     }
     private fun text(id: Int) = context.getString(id)
     private fun showAllFromFilterFab() {
-        compose.onNodeWithTag("home:fab").performClick()
+        compose.onNodeWithTag("home:action").performClick()
         compose.onNodeWithText(text(QuickR.string.text_show_queued)).performClick()
     }
     private fun assertBadgeCount(expected: Int) {

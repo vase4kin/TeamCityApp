@@ -38,6 +38,8 @@ import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.LocalTeamCityAppBarState
+import teamcityapp.libraries.theme.LocalTeamCityHeaderProvided
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.coachmarkAnchor
@@ -56,21 +58,23 @@ fun FavoritesScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
-    BindTeamCityAppBarToList(listState, scrollBehavior.state)
+    BindTeamCityAppBarToList(listState, LocalTeamCityAppBarState.current ?: scrollBehavior.state)
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier.testTag("screen:app-bar"),
-                colors = teamCityTopAppBarColors(),
-                scrollBehavior = scrollBehavior,
-                title = { Text(stringResource(R.string.favorites_title)) },
-                navigationIcon = {
-                    IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
-                        Icon(painterResource(R.drawable.ic_navigation_drawer), stringResource(R.string.favorites_open_drawer))
+            if (!LocalTeamCityHeaderProvided.current) {
+                CenterAlignedTopAppBar(
+                    modifier = Modifier.testTag("screen:app-bar"),
+                    colors = teamCityTopAppBarColors(),
+                    scrollBehavior = scrollBehavior,
+                    title = { Text(stringResource(R.string.favorites_title)) },
+                    navigationIcon = {
+                        IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
+                            Icon(painterResource(R.drawable.ic_navigation_drawer), stringResource(R.string.favorites_open_drawer))
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {

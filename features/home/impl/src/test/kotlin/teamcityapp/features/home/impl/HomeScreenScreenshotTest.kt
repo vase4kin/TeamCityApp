@@ -74,44 +74,28 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
 
     @Test fun rendersState() {
         val badges = HomeTab.entries.filter { it != HomeTab.Projects }.associateWith<HomeTab, HomeBadge> { HomeBadge.Count(if (it == HomeTab.Favorites) 8 else 123) }
-        val state = when {
-            stateName == "loading" -> HomeUiState()
-            stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
-            stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
-            stateName == "onboarding_failed" -> HomeUiState(badges = badges, onboardingFailed = true)
-            stateName == "favorites_count_failure" -> HomeUiState(selected = HomeTab.Favorites, badges = badges + (HomeTab.Running to HomeBadge.Failed()))
-            stateName == "favorites_toolbar" -> HomeUiState(selected = HomeTab.Favorites, badges = badges)
-            stateName.startsWith("prompt_") -> HomePrompt.valueOf(stateName.removePrefix("prompt_")).let { HomeUiState(selected = if (it == HomePrompt.Drawer) HomeTab.Projects else HomeTab.valueOf(it.name), badges = badges, prompt = it.ui()) }
-            else -> HomeUiState(selected = HomeTab.valueOf(stateName.removePrefix("tab_")), badges = badges)
-        }
+        val query = HomeQuery("account", listOf("mock"), teamcityapp.features.filter_bottom_sheet.api.QuickFilter.RunningFavorites, teamcityapp.features.filter_bottom_sheet.api.QuickFilter.QueuedAll, teamcityapp.features.filter_bottom_sheet.api.QuickFilter.AgentsConnected, HomeAccount("Andrey Tolpeev", "https://teamcity.example"))
+        val state = (
+            when {
+                stateName == "loading" -> HomeUiState()
+                stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
+                stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
+                stateName == "onboarding_failed" -> HomeUiState(badges = badges, onboardingFailed = true)
+                stateName == "favorites_count_failure" -> HomeUiState(selected = HomeTab.Favorites, badges = badges + (HomeTab.Running to HomeBadge.Failed()))
+                stateName == "favorites_toolbar" -> HomeUiState(selected = HomeTab.Favorites, badges = badges)
+                stateName.startsWith("prompt_") -> HomePrompt.valueOf(stateName.removePrefix("prompt_")).let { HomeUiState(selected = if (it == HomePrompt.Drawer) HomeTab.Projects else HomeTab.valueOf(it.name), badges = badges, prompt = it.ui()) }
+                else -> HomeUiState(selected = HomeTab.valueOf(stateName.removePrefix("tab_")), badges = badges)
+            }
+            ).copy(query = query)
         compose.mainClock.autoAdvance = false
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
                 HomeScreen(state, variant.width >= 600, {}, {}, {}, {}, remember { SnackbarHostState() }) {
-                    if (stateName.startsWith("favorites_")) {
-                        // Exercise the tab-owned toolbar and a nonzero top inset together with Home.
-                        Scaffold(topBar = {
-                            CenterAlignedTopAppBar(
-                                title = { Text(stringResource(R.string.home_favorites)) },
-                                navigationIcon = { IconButton({}) { Icon(painterResource(teamcityapp.libraries.resources.R.drawable.ic_dehaze_black_24dp), "Open navigation drawer") } },
-                                windowInsets = WindowInsets(top = 24.dp)
-                            )
-                        }) { padding ->
-                            Column(Modifier.padding(padding).padding(TeamCityDimensions.contentPadding)) {
-                                Text("Kotlin / Kotlin Release", style = MaterialTheme.typography.titleSmall)
-                                Surface(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
-                                    Text("Aggregate (2.4.20)", Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.titleMedium)
-                                }
-                            }
-                        }
-                    } else {
-                        Surface(Modifier.fillMaxSize()) {
-                            Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-                                if (state.prompt?.prompt == HomePrompt.Drawer) {
-                                    IconButton({}, Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(teamcityapp.libraries.resources.R.drawable.ic_dehaze_black_24dp), "Open navigation drawer") }
-                                }
-                                Text("TeamCity", style = MaterialTheme.typography.headlineSmall)
-                                Text("Projects, configurations and builds", style = MaterialTheme.typography.bodyLarge)
+                    Surface(Modifier.fillMaxSize()) {
+                        Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                            Text("TeamCity App", style = MaterialTheme.typography.titleMedium)
+                            Surface(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
+                                Text(if (state.isActivity) "Mock debug · main" else "Mock debug", Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge)
                             }
                         }
                     }

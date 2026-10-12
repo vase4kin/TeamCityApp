@@ -36,6 +36,11 @@ class HomeViewModel @Inject constructor(
     private val tracker: HomeTracker
 ) : ViewModel() {
     private val selected = savedState.getStateFlow(SELECTED_TAB, HomeTab.Projects.ordinal)
+    init {
+        HomeTab.entries.getOrNull(selected.value)?.takeIf { it in ACTIVITY_TABS }?.let {
+            savedState[SELECTED_ACTIVITY_TAB] = it.ordinal
+        }
+    }
     private val refresh = MutableStateFlow(0L)
     private val prompts = MutableStateFlow<Set<HomePrompt>>(emptySet())
     private val onboardingFailed = MutableStateFlow(false)
@@ -81,6 +86,12 @@ class HomeViewModel @Inject constructor(
     fun select(tab: HomeTab) {
         tracker.selected(tab)
         savedState[SELECTED_TAB] = tab.ordinal
+        if (tab in ACTIVITY_TABS) savedState[SELECTED_ACTIVITY_TAB] = tab.ordinal
+    }
+    fun selectActivity() {
+        val current = HomeTab.entries.getOrNull(selected.value)?.takeIf { it in ACTIVITY_TABS }
+        val retained = savedState.get<Int>(SELECTED_ACTIVITY_TAB)?.let { HomeTab.entries.getOrNull(it) }?.takeIf { it in ACTIVITY_TABS }
+        select(current ?: retained ?: HomeTab.Running)
     }
     fun retry() {
         refresh.value++
@@ -110,5 +121,7 @@ class HomeViewModel @Inject constructor(
     }
     companion object {
         const val SELECTED_TAB = "home.tab"
+        const val SELECTED_ACTIVITY_TAB = "home.activity.tab"
+        private val ACTIVITY_TABS = setOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)
     }
 }
