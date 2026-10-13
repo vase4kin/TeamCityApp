@@ -29,7 +29,7 @@
         android:theme="@style/Theme.MyApp"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" />
+        <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" android:theme="@style/Theme.TeamCityApp.Starting" />
         <activity-alias android:name="teamcityapp.features.run_build.impl.RunBuildActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity"

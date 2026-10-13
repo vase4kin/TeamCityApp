@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.splash.api.*
 import teamcityapp.features.splash.impl.router.SplashRouter
+import teamcityapp.libraries.navigation.LocalNavigationDrawReady
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
@@ -84,6 +85,7 @@ class SplashRouteTest {
 
     @Test fun retryRechecksTheRepositoryAndRoutesAfterRecovery() {
         var reads = 0
+        var drawReadyReports = 0
         val router = Router()
         val vm = SplashViewModel(object : SplashRepository {
             override suspend fun hasAccounts(): Boolean {
@@ -93,12 +95,34 @@ class SplashRouteTest {
             }
         })
         store.put("splash", vm)
-        compose.setContent { TeamCityTheme { SplashRoute(router, vm) } }
+        compose.setContent {
+            CompositionLocalProvider(LocalNavigationDrawReady provides { drawReadyReports++ }) {
+                TeamCityTheme { SplashRoute(router, vm) }
+            }
+        }
         compose.waitUntil { compose.onAllNodesWithTag("splash:error").fetchSemanticsNodes().isNotEmpty() }
         assertTrue(router.destinations.isEmpty())
+        assertTrue(drawReadyReports > 0)
+        compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
         compose.onNodeWithText("Try again").performClick()
         compose.waitUntil { router.destinations.size == 1 }
         assertEquals(listOf(SplashDestination.Login), router.destinations)
         assertEquals(2, reads)
+    }
+
+    @Test fun pendingAccountReadDoesNotDismissTheInitialSplash() {
+        val pending = CompletableDeferred<Boolean>()
+        var drawReadyReports = 0
+        val vm = SplashViewModel(object : SplashRepository {
+            override suspend fun hasAccounts() = pending.await()
+        })
+        store.put("splash", vm)
+        compose.setContent {
+            CompositionLocalProvider(LocalNavigationDrawReady provides { drawReadyReports++ }) {
+                TeamCityTheme { SplashRoute(Router(), vm) }
+            }
+        }
+        compose.onNodeWithTag("splash:loading").assertIsDisplayed()
+        assertEquals(0, drawReadyReports)
     }
 }

@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.splash.impl.router.SplashRouter
+import teamcityapp.libraries.navigation.ReportNavigationDrawReady
 
 @Composable
 fun SplashRoute(router: SplashRouter, viewModel: SplashViewModel = hiltViewModel()) {
@@ -35,5 +36,6 @@ fun SplashRoute(router: SplashRouter, viewModel: SplashViewModel = hiltViewModel
             }
         }
     }
+    if (state == SplashUiState.Error) ReportNavigationDrawReady()
     SplashScreen(state, onRetry = viewModel::retry)
 }

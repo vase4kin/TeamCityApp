@@ -29,14 +29,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.home.api.HomeTabSelection
 import teamcityapp.features.splash.api.navigation.AccountActivationDestination
+import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 import teamcityapp.libraries.navigation.LocalNavigationContentLifecycle
+import teamcityapp.libraries.navigation.LocalNavigationDrawReady
 import teamcityapp.libraries.navigation.NavigationHost
 import teamcityapp.libraries.navigation.rememberNavigator
 import teamcityapp.libraries.theme.TeamCitySystemBars
@@ -55,10 +58,14 @@ class MainActivity : AppCompatActivity() {
     private var launchAccountKey = "signed-out"
     private var activeNavigator: teamcityapp.libraries.navigation.Navigator? = null
     private lateinit var navigationLifecycle: RootNavigationLifecycle
+    private lateinit var launchSplash: LaunchSplashState
     internal val navigationSnapshot get() = activeNavigator?.visibleSnapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        launchSplash = LaunchSplashState()
+        val splashScreen = installSplashScreen()
         super.onCreate(RootActivitySavedState.forRoot(savedInstanceState))
+        splashScreen.setKeepOnScreenCondition(launchSplash::keepOnScreen)
         navigationLifecycle = RootNavigationLifecycle(lifecycle)
         accounts.synchronize()
         val initialSessionKey = accounts.session.value.key
@@ -157,9 +164,14 @@ class MainActivity : AppCompatActivity() {
                 SideEffect {
                     if (incomingRequest.value == null && (session.requestId == null || handledRequest.value.requestId == session.requestId) && navigator.snapshot.sessionKey == session.key) {
                         navigationLifecycle.applied()
+                        val destination = navigator.current.destination
+                        if (destination !is SplashNavigationDestination && destination !is AccountActivationDestination) launchSplash.release()
                     }
                 }
-                CompositionLocalProvider(LocalNavigationContentLifecycle provides navigationLifecycle.lifecycle) {
+                CompositionLocalProvider(
+                    LocalNavigationContentLifecycle provides navigationLifecycle.lifecycle,
+                    LocalNavigationDrawReady provides launchSplash::release
+                ) {
                     NavigationHost(navigator, registry, ::finish)
                 }
             }

@@ -101,13 +101,13 @@ class SplashActivityTest {
         compose.onNodeWithText(description).assertIsDisplayed()
     }
 
-    @Test fun pendingLoadingSurvivesRecreationWithAnAccessibleLogo() {
+    @Test fun pendingLoadingSurvivesRecreationWithoutDuplicateBranding() {
         launch().use { scenario ->
             awaitTag("splash:loading")
-            compose.onNodeWithContentDescription("TeamCityApp").assertIsDisplayed()
+            compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
             scenario.recreate()
             awaitTag("splash:loading")
-            compose.onNodeWithContentDescription("TeamCityApp").assertIsDisplayed()
+            compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
             assertEquals(Lifecycle.State.RESUMED, scenario.state)
         }
     }
@@ -205,7 +205,7 @@ class SplashActivityTest {
         assertEquals(MainActivity::class.java.name, info.targetActivity)
         ActivityScenario.launch<MainActivity>(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setComponent(component)).use {
             awaitTag("splash:loading")
-            compose.onNodeWithContentDescription("TeamCityApp").assertIsDisplayed()
+            compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
         }
     }
 }

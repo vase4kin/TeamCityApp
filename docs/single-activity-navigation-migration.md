@@ -360,6 +360,17 @@ Existing hosts: `SplashActivity`.
 
 Installed aliases: `teamcityapp.features.splash.view.SplashActivity`.
 
+MainActivity installs the AndroidX launch splash before `super.onCreate`, with a
+day/night background and a padded vector icon. It stays visible through the saved
+account check and initial account preparation until Login/Home is ready. Storage
+or preparation errors release it to show the existing retry UI. A one-second
+maximum gives slow preparation ordinary progress UI instead of an indefinite
+launch splash; this is a maximum wait, not a minimum display duration. Release is
+one-way for each activity, so retries and account switches cannot bring the
+launch splash back. The retained Compose startup/account-activation destinations
+keep their cancellation, recreation, initialization and retry behavior and render
+progress/errors on the app surface without a second logo or branded background.
+
 ### test-details
 
 Existing hosts: `TestDetailsActivity`.
