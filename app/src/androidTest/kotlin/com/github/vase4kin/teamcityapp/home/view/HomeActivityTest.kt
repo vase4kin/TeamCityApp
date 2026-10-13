@@ -224,7 +224,8 @@ class HomeActivityTest {
         val notice = compose.onNodeWithTag("home:snackbar").assertIsDisplayed().fetchSemanticsNode().boundsInWindow
         Assert.assertTrue(notice.top >= beforeFailure.bottom)
         Assert.assertTrue(notice.bottom <= compose.onNodeWithTag("home:tab:Favorites").fetchSemanticsNode().boundsInWindow.top)
-        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("home:count:Favorites", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("favorites:configuration:build_type_id").assertIsDisplayed()
         doReturn(Single.just(Builds(3, emptyList()))).`when`(teamCityService).listRunningBuilds(anyString(), eq("count"))
@@ -234,6 +235,8 @@ class HomeActivityTest {
         compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:Running").performClick()
         compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals("3")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test fun primaryTabsRetainTheirNestedVisitsAcrossRecreationAndBack() {
