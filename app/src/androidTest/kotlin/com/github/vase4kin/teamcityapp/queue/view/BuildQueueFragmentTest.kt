@@ -67,7 +67,6 @@ import org.mockito.kotlin.whenever
 import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_queue.impl.R as FeatureR
-import teamcityapp.features.filter_bottom_sheet.impl.R as QuickR
 import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
 import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.list_ui.R as ListR
@@ -141,7 +140,7 @@ class BuildQueueFragmentTest {
         whenever(teamCityService.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
         openTab()
         assertTextVisible(text(FeatureR.string.build_queue_empty_favorites))
-        showAllFromFilterFab()
+        showAllFromFilterChip()
         assertTextVisible(text(FeatureR.string.build_queue_empty_all))
         compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_filters_applied)).assertIsDisplayed()
         assertBadgeCount(0)
@@ -166,7 +165,7 @@ class BuildQueueFragmentTest {
         compose.onNodeWithTag("build_queue:configuration:1").assertTextEquals("Project B - Beta")
         row("2").assertDoesNotExist()
         assertBadgeCount(2)
-        showAllFromFilterFab()
+        showAllFromFilterChip()
         awaitRow("2")
         row("1").assertIsDisplayed()
         row("3").assertIsDisplayed()
@@ -374,9 +373,8 @@ class BuildQueueFragmentTest {
         compose.onAllNodesWithText(value, useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
     private fun text(id: Int) = context.getString(id)
-    private fun showAllFromFilterFab() {
-        compose.onNodeWithTag("home:action").performClick()
-        compose.onNodeWithText(text(QuickR.string.text_show_queued)).performClick()
+    private fun showAllFromFilterChip() {
+        compose.onNodeWithTag("home:filter:QueuedAll").performClick()
     }
     private fun assertBadgeCount(expected: Int) {
         compose.waitUntil(10_000) {

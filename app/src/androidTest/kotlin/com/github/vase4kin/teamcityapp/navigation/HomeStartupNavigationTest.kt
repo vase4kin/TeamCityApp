@@ -205,20 +205,21 @@ class HomeStartupNavigationTest {
         }
     }
 
-    @Test fun quickFilterUpdatesTheRetainedAgentsQueryAndRestoresTheSelectedTab() {
+    @Test fun filterChipUpdatesTheRetainedAgentsQueryAndSurvivesRecreation() {
         launch().use { scenario ->
             awaitRoot()
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            compose.onNodeWithTag("home:action").performClick()
-            awaitTag("quick-filter:content")
-            scenario.recreate()
-            awaitTag("quick-filter:content")
-            compose.onNodeWithTag("quick-filter:apply").performClick()
+            compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick()
             awaitTag("agents:list")
             compose.waitUntil(10_000) { runCatching { verify(service).listAgents(true, null, null) }.isSuccess }
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
             compose.onNodeWithTag("quick-filter:content").assertDoesNotExist()
+            scenario.recreate()
+            awaitTag("home:filter:AgentsDisconnected")
+            compose.onNodeWithTag("home:filter:AgentsDisconnected").assertIsSelected()
+            compose.onNodeWithTag("home:filter:AgentsConnected").performClick()
+            compose.waitUntil(10_000) { runCatching { compose.onNodeWithTag("home:filter:AgentsConnected").assertIsSelected() }.isSuccess }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }

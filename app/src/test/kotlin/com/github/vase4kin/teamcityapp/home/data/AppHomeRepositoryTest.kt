@@ -66,13 +66,19 @@ class AppHomeRepositoryTest {
     ).also { whenever(storage.activeUser).thenAnswer { active } }
     private fun query() = HomeQuery(active.homeBuildAccountKey(), active.buildTypeIds.toList(), QuickFilter.RunningAll, QuickFilter.QueuedAll, QuickFilter.AgentsConnected)
 
-    @Test fun countsUseOneAccountSessionAndIndependentFailuresPreserveSuccessfulSections() = runTest {
+    @Test fun eachCountUsesOnlyItsOwnEndpointAndFailuresRemainIndependent() = runTest {
         val app = app(this)
         whenever(legacy.listRunningBuilds(any(), eq("count"), eq(false))).thenReturn(Single.just(Builds(5, emptyList())))
         whenever(legacy.listQueueBuilds(null, "count", false)).thenReturn(Single.error(RuntimeException("offline")))
         whenever(legacy.listAgents(false, "count", null, false)).thenReturn(Single.just(Agents(3, emptyList())))
-        assertEquals(HomeCounts(HomeCount.Available(2), HomeCount.Available(5), HomeCount.Unavailable, HomeCount.Available(3)), app.counts(query()))
-        assertEquals(1, providerCalls)
+        assertEquals(HomeCount.Available(5), app.count(query(), HomeTab.Running))
+        verify(legacy).listRunningBuilds(any(), eq("count"), eq(false))
+        verifyNoMoreInteractions(legacy)
+        assertEquals(HomeCount.Unavailable, app.count(query(), HomeTab.Queue))
+        assertEquals(HomeCount.Available(3), app.count(query(), HomeTab.Agents))
+        assertEquals(3, providerCalls)
+        assertEquals(HomeCount.Available(2), app.count(query(), HomeTab.Favorites))
+        assertEquals(3, providerCalls)
     }
 
     @Test fun favoriteCountsSumAllSavedIdsWithoutMutatingTheirPersistence() = runTest {
@@ -80,9 +86,9 @@ class AppHomeRepositoryTest {
         whenever(legacy.listRunningBuilds(any(), eq("count"), eq(false))).thenReturn(Single.just(Builds(2, emptyList())))
         whenever(legacy.listQueueBuilds(any(), eq("count"), eq(false))).thenReturn(Single.just(Builds(3, emptyList())))
         whenever(legacy.listAgents(false, "count", null, false)).thenReturn(Single.just(Agents(0, emptyList())))
-        val result = app.counts(query().copy(runningFilter = QuickFilter.RunningFavorites, queueFilter = QuickFilter.QueuedFavorites))
-        assertEquals(HomeCount.Available(4), result.running)
-        assertEquals(HomeCount.Available(6), result.queue)
+        val query = query().copy(runningFilter = QuickFilter.RunningFavorites, queueFilter = QuickFilter.QueuedFavorites)
+        assertEquals(HomeCount.Available(4), app.count(query, HomeTab.Running))
+        assertEquals(HomeCount.Available(6), app.count(query, HomeTab.Queue))
         assertEquals(listOf("A", "B"), active.buildTypeIds)
         verify(storage, never()).removeBuildTypeFromFavorites(any())
     }
@@ -93,9 +99,9 @@ class AppHomeRepositoryTest {
         whenever(legacy.listRunningBuilds(any(), eq("count"), eq(false))).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
         whenever(legacy.listQueueBuilds(null, "count", false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
         whenever(legacy.listAgents(false, "count", null, false)).thenReturn(Single.never<Agents>().doOnDispose { disposed++ })
-        val pending = async { app.counts(query()) }
+        val pending = listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents).map { tab -> async { app.count(query(), tab) } }
         runCurrent()
-        pending.cancel()
+        pending.forEach { it.cancel() }
         runCurrent()
         assertEquals(3, disposed)
     }
@@ -105,11 +111,19 @@ class AppHomeRepositoryTest {
         val previous = query()
         active = UserAccount("https://same-server", "bob", byteArrayOf(), false, true)
         try {
-            app.counts(previous)
+            app.count(previous, HomeTab.Running)
             fail("old query accepted")
         } catch (_: CancellationException) { }
         assertEquals(0, providerCalls)
         verifyNoInteractions(legacy)
+    }
+
+    @Test fun disconnectedAgentsCountDoesNotRequestEitherBuildCount() = runTest {
+        val app = app(this)
+        whenever(legacy.listAgents(true, "count", null, false)).thenReturn(Single.just(Agents(7, emptyList())))
+        assertEquals(HomeCount.Available(7), app.count(query().copy(agentsFilter = QuickFilter.AgentsDisconnected), HomeTab.Agents))
+        verify(legacy).listAgents(true, "count", null, false)
+        verifyNoMoreInteractions(legacy)
     }
 
     @Test fun initialQueryCapturesAccountIdentityAndFavoritesTogether() = runTest {

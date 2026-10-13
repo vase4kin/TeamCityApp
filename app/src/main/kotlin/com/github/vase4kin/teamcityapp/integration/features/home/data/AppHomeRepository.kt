@@ -50,42 +50,40 @@ class AppHomeRepository @Inject constructor(
         awaitClose { events.unregister(observer) }
     }.distinctUntilChanged()
 
-    override suspend fun counts(query: HomeQuery): HomeCounts = withContext(io) {
+    override suspend fun count(query: HomeQuery, tab: HomeTab): HomeCount = withContext(io) {
         requireCurrentHomeBuildAccount(storage, query.accountKey)
+        if (tab == HomeTab.Favorites) return@withContext HomeCount.Available(query.favoriteIds.size)
+        require(tab in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents))
         val session = repository.get()
         requireCurrentHomeBuildAccount(storage, query.accountKey)
-        coroutineScope {
-            suspend fun count(load: suspend () -> Int): HomeCount = try {
-                val value = load()
-                requireCurrentHomeBuildAccount(storage, query.accountKey)
-                HomeCount.Available(value)
-            } catch (error: Exception) {
-                if (error is CancellationException) throw error
-                HomeCount.Unavailable
-            }
+        try {
             suspend fun favoriteCount(load: suspend (String) -> Int) = coroutineScope { query.favoriteIds.map { async { load(it) } }.awaitAll().sum() }
-            val running = async {
-                count {
+            val value = when (tab) {
+                HomeTab.Running -> {
                     if (query.runningFilter == QuickFilter.RunningFavorites) {
                         favoriteCount { session.listRunningBuilds("$RUNNING_LOCATOR,buildType:$it", "count", false).await().count }
                     } else {
                         session.listRunningBuilds(RUNNING_LOCATOR, "count", false).await().count
                     }
                 }
-            }
-            val queued = async {
-                count {
+
+                HomeTab.Queue -> {
                     if (query.queueFilter == QuickFilter.QueuedFavorites) {
                         favoriteCount { session.listQueueBuilds("buildType:$it", "count", false).await().count }
                     } else {
                         session.listQueueBuilds(null, "count", false).await().count
                     }
                 }
+
+                HomeTab.Agents -> session.listAgents(query.agentsFilter == QuickFilter.AgentsDisconnected, "count", null, false).await().count
+
+                else -> error("Unsupported count tab: $tab")
             }
-            val agents = async { count { session.listAgents(query.agentsFilter == QuickFilter.AgentsDisconnected, "count", null, false).await().count } }
-            val result = HomeCounts(HomeCount.Available(query.favoriteIds.size), running.await(), queued.await(), agents.await())
             requireCurrentHomeBuildAccount(storage, query.accountKey)
-            result
+            HomeCount.Available(value)
+        } catch (error: Exception) {
+            if (error is CancellationException) throw error
+            HomeCount.Unavailable
         }
     }
     override suspend fun pendingPrompts() = withContext(io) {

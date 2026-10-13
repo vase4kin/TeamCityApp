@@ -17,6 +17,7 @@
 package teamcityapp.features.home.impl
 
 import androidx.annotation.StringRes
+import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.*
 
 sealed interface HomeBadge {
@@ -25,13 +26,16 @@ sealed interface HomeBadge {
     data class Failed(@StringRes val message: Int = R.string.home_count_failed) : HomeBadge
 }
 data class HomePromptUi(val prompt: HomePrompt, @StringRes val title: Int, @StringRes val description: Int)
+data class HomeFilterOption(val filter: QuickFilter, @StringRes val labelRes: Int, val selected: Boolean)
 data class HomeUiState(
     val selected: HomeTab = HomeTab.Projects,
     val badges: Map<HomeTab, HomeBadge> = HomeTab.entries.filter { it != HomeTab.Projects }.associateWith { HomeBadge.Loading },
     val query: HomeQuery? = null,
     val prompt: HomePromptUi? = null,
     val onboardingFailed: Boolean = false,
-    val retryAttempt: Long = 0
+    val retryAttempt: Long = 0,
+    val applyingFilter: QuickFilter? = null,
+    val filterFailed: Boolean = false
 ) {
     val isActivity: Boolean get() = selected in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)
 
@@ -45,26 +49,30 @@ data class HomeUiState(
             if (parts.size > 1) "${parts.first().first()}${parts.last().first()}".uppercase() else parts.first().take(2).uppercase()
         }
 
-    @get:StringRes val filterSummaryRes: Int? get() = when (selected) {
-        HomeTab.Running -> when (query?.runningFilter) {
-            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.RunningFavorites -> R.string.home_filter_favorites
-            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.RunningAll -> R.string.home_filter_all_builds
-            else -> null
+    val filterOptions: List<HomeFilterOption> get() {
+        val filters = when (selected) {
+            HomeTab.Running -> listOf(QuickFilter.RunningAll, QuickFilter.RunningFavorites)
+            HomeTab.Queue -> listOf(QuickFilter.QueuedAll, QuickFilter.QueuedFavorites)
+            HomeTab.Agents -> listOf(QuickFilter.AgentsConnected, QuickFilter.AgentsDisconnected)
+            else -> return emptyList()
         }
-
-        HomeTab.Queue -> when (query?.queueFilter) {
-            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.QueuedFavorites -> R.string.home_filter_favorites
-            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.QueuedAll -> R.string.home_filter_all_builds
-            else -> null
+        val current = when (selected) {
+            HomeTab.Running -> query?.runningFilter
+            HomeTab.Queue -> query?.queueFilter
+            else -> query?.agentsFilter
         }
-
-        HomeTab.Agents -> when (query?.agentsFilter) {
-            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.AgentsConnected -> R.string.home_filter_connected
-            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.AgentsDisconnected -> R.string.home_filter_disconnected
-            else -> null
+        return filters.map { filter ->
+            HomeFilterOption(
+                filter,
+                when (filter) {
+                    QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.string.home_filter_all_builds
+                    QuickFilter.RunningFavorites, QuickFilter.QueuedFavorites -> R.string.home_filter_favorites
+                    QuickFilter.AgentsConnected -> R.string.home_filter_connected
+                    QuickFilter.AgentsDisconnected -> R.string.home_filter_disconnected
+                },
+                filter == current
+            )
         }
-
-        else -> null
     }
 
     @get:StringRes val retryMessageRes: Int? get() = when {
@@ -75,7 +83,7 @@ data class HomeUiState(
 
     @get:StringRes val retryLabelRes: Int get() = if (onboardingFailed) R.string.home_retry else R.string.home_retry_counts
 
-    @get:StringRes val fabLabelRes: Int get() = if (selected == HomeTab.Favorites) R.string.home_add_favorite else R.string.home_filter
+    @get:StringRes val filterErrorRes: Int? get() = if (filterFailed) R.string.home_filter_failed else null
 }
 internal fun HomePrompt.ui() = when (this) {
     HomePrompt.Drawer -> HomePromptUi(this, R.string.home_account_tip_title, R.string.home_account_tip_description)

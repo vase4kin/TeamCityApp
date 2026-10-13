@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.HomePrompt
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.libraries.theme.*
@@ -46,7 +47,7 @@ fun HomeScreen(
     state: HomeUiState,
     expanded: Boolean,
     onTabSelected: (HomeTab) -> Unit,
-    onFab: () -> Unit,
+    onFilterSelected: (QuickFilter) -> Unit,
     onRetry: () -> Unit,
     onDismissPrompt: () -> Unit,
     snackbar: SnackbarHostState,
@@ -62,6 +63,10 @@ fun HomeScreen(
     val retryAction by rememberUpdatedState(onRetry)
     LaunchedEffect(retryMessage, state.query?.accountKey, state.retryAttempt, showNavigation) {
         if (showNavigation && retryMessage != null && snackbar.showSnackbar(retryMessage, retryLabel, withDismissAction = true, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) retryAction()
+    }
+    val filterError = state.filterErrorRes?.let { stringResource(it) }
+    LaunchedEffect(filterError, state.query?.accountKey, showNavigation) {
+        if (showNavigation && filterError != null) snackbar.showSnackbar(filterError)
     }
     val anchors = remember { CoachmarkAnchors() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -151,14 +156,12 @@ fun HomeScreen(
                                     }
                                 }
                                 if (state.isActivity) {
-                                    Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
-                                        state.filterSummaryRes?.let { Text(stringResource(it), Modifier.weight(1f).testTag("home:filter-summary"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                                        FilledTonalButton(onFab, Modifier.testTag("home:action").coachmarkAnchor("home:action", anchors)) {
-                                            Icon(painterResource(if (state.selected == HomeTab.Favorites) R.drawable.ic_favorite_white_24dp else R.drawable.ic_filter_list_white_24px), null, Modifier.size(18.dp))
-                                            Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
-                                            Text(stringResource(state.fabLabelRes))
-                                        }
-                                    }
+                                    HomeFilterChips(
+                                        options = state.filterOptions,
+                                        enabled = state.query != null && state.applyingFilter == null,
+                                        onSelected = onFilterSelected,
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.extraSmallSpacing).testTag("home:action").coachmarkAnchor("home:action", anchors)
+                                    )
                                 }
                             }
                         }

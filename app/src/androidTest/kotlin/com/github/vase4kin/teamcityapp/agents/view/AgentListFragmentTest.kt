@@ -46,7 +46,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 import teamcityapp.features.agents.impl.R as AgentsR
-import teamcityapp.features.filter_bottom_sheet.impl.R as FilterR
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -167,8 +166,7 @@ class AgentListFragmentTest {
     }
 
     private fun showDisconnected() {
-        compose.onNodeWithTag("home:action").performClick()
-        compose.onNodeWithText(text(FilterR.string.text_show_disconnected)).performClick()
+        compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick()
     }
 
     private fun assertTextVisible(value: String) {

@@ -67,7 +67,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
-import teamcityapp.features.filter_bottom_sheet.impl.R as QuickR
 import teamcityapp.features.running_builds.impl.R as FeatureR
 import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
 import teamcityapp.libraries.data.builds.BuildLaunchMapper
@@ -142,7 +141,7 @@ class RunningBuildsFragmentTest {
         whenever(teamCityService.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
         openTab()
         assertTextVisible(text(FeatureR.string.running_builds_empty_favorites))
-        showAllFromFilterFab()
+        showAllFromFilterChip()
         assertTextVisible(text(FeatureR.string.running_builds_empty_all))
         compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_filters_applied)).assertIsDisplayed()
         assertBadgeCount(0)
@@ -167,7 +166,7 @@ class RunningBuildsFragmentTest {
         compose.onNodeWithTag("running_builds:configuration:1").assertTextEquals("Project B - Beta")
         row("2").assertDoesNotExist()
         assertBadgeCount(2)
-        showAllFromFilterFab()
+        showAllFromFilterChip()
         awaitRow("2")
         row("1").assertIsDisplayed()
         row("3").assertIsDisplayed()
@@ -177,6 +176,37 @@ class RunningBuildsFragmentTest {
         verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("B"), BUILD_LAUNCH_FIELDS)
         verify(teamCityService, times(1)).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)
         verify(teamCityService, never()).build(any())
+    }
+
+    @Test fun runningFilterKeepsOtherSegmentsStableWhileItsCountIsPending() {
+        storage.addBuildTypeToFavorites("A")
+        stubFavorite("A", emptyList(), 2)
+        whenever(teamCityService.listQueueBuilds("buildType:A", "count")).thenReturn(Single.just(Builds(6, emptyList())))
+        whenever(teamCityService.listAgents(false, "count", null)).thenReturn(Single.just(com.github.vase4kin.teamcityapp.agents.api.Agents(11, emptyList())))
+        val count = io.reactivex.subjects.SingleSubject.create<Builds>()
+        val locator = "running:true,branch:default:any,personal:false,pinned:false"
+        whenever(teamCityService.listRunningBuilds(locator, "count")).thenReturn(count)
+        whenever(teamCityService.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        openTab()
+        assertBadgeCount(2)
+        compose.waitUntil(10_000) {
+            runCatching {
+                compose.onNodeWithTag("home:count:Queue", useUnmergedTree = true).assertTextEquals("6")
+                compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("11")
+            }.isSuccess
+        }
+        val segments = listOf("Queue", "Agents").map { compose.onNodeWithTag("home:tab:$it") }
+        val bounds = segments.map { it.fetchSemanticsNode().boundsInRoot }
+        showAllFromFilterChip()
+        compose.waitUntil(10_000) { count.hasObservers() }
+        compose.onNodeWithTag("home:count:Queue", useUnmergedTree = true).assertTextEquals("6")
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("11")
+        Assert.assertEquals(bounds, segments.map { it.fetchSemanticsNode().boundsInRoot })
+        count.onSuccess(Builds(5, emptyList()))
+        assertBadgeCount(5)
+        Assert.assertEquals(bounds, segments.map { it.fetchSemanticsNode().boundsInRoot })
+        verify(teamCityService, times(1)).listQueueBuilds("buildType:A", "count")
+        verify(teamCityService, times(1)).listAgents(false, "count", null)
     }
 
     @Test fun rowNavigationPreservesTheCompleteBuildPayloadInTheSameRoot() {
@@ -394,9 +424,8 @@ class RunningBuildsFragmentTest {
         compose.onAllNodesWithText(value, useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
     private fun text(id: Int) = context.getString(id)
-    private fun showAllFromFilterFab() {
-        compose.onNodeWithTag("home:action").performClick()
-        compose.onNodeWithText(text(QuickR.string.text_show_running)).performClick()
+    private fun showAllFromFilterChip() {
+        compose.onNodeWithTag("home:filter:RunningAll").performClick()
     }
     private fun assertBadgeCount(expected: Int) {
         compose.waitUntil(10_000) {
