@@ -21,7 +21,6 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,7 +39,6 @@ import teamcityapp.features.favorites.api.LocalFavoritesProjectsAction
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
 import teamcityapp.features.home.api.*
 import teamcityapp.features.home.impl.*
-import teamcityapp.features.home.impl.R
 import teamcityapp.features.home.impl.tracker.*
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.running_builds.api.navigation.RunningBuildsDestination
@@ -67,20 +65,6 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
             }
             val state by model.state.collectAsStateWithLifecycle()
             val snackbar = remember { SnackbarHostState() }
-            val buildsFiltered = stringResource(R.string.text_filters_applied)
-            val agentsFiltered = stringResource(R.string.text_agents_filters_applied)
-            var previousQuery by remember(entryId) { mutableStateOf<HomeQuery?>(null) }
-            LaunchedEffect(state.query) {
-                val current = state.query
-                val previous = previousQuery
-                previousQuery = current
-                if (current != null && previous != null && current.accountKey == previous.accountKey) {
-                    when {
-                        current.agentsFilter != previous.agentsFilter -> snackbar.showSnackbar(agentsFiltered)
-                        current.runningFilter != previous.runningFilter || current.queueFilter != previous.queueFilter -> snackbar.showSnackbar(buildsFiltered)
-                    }
-                }
-            }
             val children = remember(entryId) {
                 listOf(
                     NavigationEntry("$entryId/Projects", ProjectDestination()),

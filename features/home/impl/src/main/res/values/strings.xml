@@ -16,8 +16,6 @@
   -->
 
 <resources>
-<string name="text_filters_applied">Build filters have been applied</string>
-    <string name="text_agents_filters_applied">Agents filters have been applied</string>
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
     <string name="text_onboarding_navigation_drawer">Manage your accounts and control theme settings</string>
     <string name="title_onboarding_add_fav">Add to favorites</string>

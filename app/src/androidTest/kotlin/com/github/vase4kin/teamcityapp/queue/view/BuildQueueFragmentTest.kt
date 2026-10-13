@@ -142,7 +142,8 @@ class BuildQueueFragmentTest {
         assertTextVisible(text(FeatureR.string.build_queue_empty_favorites))
         showAllFromFilterChip()
         assertTextVisible(text(FeatureR.string.build_queue_empty_all))
-        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_filters_applied)).assertIsDisplayed()
+        compose.onNodeWithTag("home:filter:QueuedAll").assertIsSelected()
+        compose.onNodeWithTag("home:snackbar").assertDoesNotExist()
         assertBadgeCount(0)
         verify(teamCityService).listQueueBuilds(null, BUILD_LAUNCH_FIELDS)
     }
