@@ -108,7 +108,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   security, utilities, and other reusable components.
 - `build-logic/src/main/kotlin/Config.kt`: SDK/JVM settings and application version.
 - `build-logic/`: included Kotlin build containing Android application/library,
-  Java-only library, Hilt/kapt, Compose, Data Binding, and aggregate coverage conventions.
+  Java-only library, Hilt/KSP, Compose, and aggregate coverage conventions.
   All Android modules apply these conventions; `buildSrc` has been retired.
 - `gradle/libs.versions.toml`: dependency and plugin versions/coordinates.
 - `settings.gradle.kts`: included modules, plugin resolution, and dependency
@@ -257,15 +257,15 @@ to the requested behavior and the coherent migration slice needed to support it.
 - The build uses Kotlin DSL, the version catalog at `gradle/libs.versions.toml`,
   type-safe project accessors, and convention plugins in `build-logic`. Modules
   apply `teamcityapp.android.application`, `teamcityapp.android.library`, or
-  `teamcityapp.android.library.java`, plus optional Hilt/kapt and Data Binding
+  `teamcityapp.android.library.java`, plus optional Hilt/KSP
   conventions. Compose modules also apply `teamcityapp.android.compose`.
   The app applies the aggregate coverage convention. Keep shared
   configuration in these plugins rather than root cross-project callbacks.
   See `build-logic/README.md`.
 - Keep dependency/plugin versions in the catalog; keep SDK/application settings
   in `Config.kt`. Do not scatter versions through module build files.
-- Kotlin Android modules use kapt for Hilt/Dagger processing of Kotlin and Java
-  sources. Do not also register the Dagger compiler with `annotationProcessor`.
+- Android modules use KSP for Hilt/Dagger processing of Kotlin and Java
+  sources. Do not also register these processors with kapt or `annotationProcessor`.
 - Add modules to `settings.gradle.kts`, give Android modules a namespace, and declare
   only the dependencies they need.
 - Use Kotlin DSL for build changes. Keep feature dependencies, namespaces,
@@ -273,7 +273,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   in settings and plugin versions in the catalog. Update affected modules and
   verification commands together; keep convention plugins reusable.
 - Use AGP's built-in Kotlin and new Android DSL. Hilt/Dagger processing uses
-  `com.android.legacy-kapt` through the shared Hilt convention. Kotlin's JVM target
+  `com.google.devtools.ksp` through the shared Hilt convention. Kotlin's JVM target
   follows the shared Java target; Java/resource-only conventions disable Kotlin.
   Configure additional Kotlin roots through `android.sourceSets` or variant sources.
 - Use JDK 17. Be explicit about the variant when running app tasks.

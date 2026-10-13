@@ -7,11 +7,10 @@ shared Android configuration and replaces the former buildSrc and root callbacks
 | --- | --- |
 | `teamcityapp.android.application` | Android application with built-in Kotlin, shared SDK/Java/Kotlin targets, lint, unit-test coverage, and instrumentation defaults |
 | `teamcityapp.android.library` | Android library with built-in Kotlin, the same shared defaults |
-| `teamcityapp.android.library.java` | Android library defaults without Kotlin or kapt; use for Java/resource-only modules |
-| `teamcityapp.android.hilt` | Hilt and AGP legacy-kapt plugins, Hilt runtime and kapt compiler dependencies |
+| `teamcityapp.android.library.java` | Android library defaults without Kotlin or KSP; use for Java/resource-only modules |
+| `teamcityapp.android.hilt` | Hilt and KSP plugins, Hilt runtime and KSP compiler dependencies |
 | `teamcityapp.android.compose` | Compose compiler, Compose BOM, Material 3, previews, and debug tooling |
 | `teamcityapp.android.screenshot` | Local Robolectric/Roborazzi Compose tests, Android resources, and baseline/report paths |
-| `teamcityapp.android.data-binding` | Data Binding for Android application/library modules |
 | `teamcityapp.android.coverage` | App aggregate debug coverage and CI report locations |
 
 Apply an application or library convention before the optional Hilt convention:
@@ -20,7 +19,6 @@ Apply an application or library convention before the optional Hilt convention:
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
-    id("teamcityapp.android.data-binding")
 }
 
 android {
@@ -33,8 +31,10 @@ module-specific overrides in the module script. Modules that use plain Dagger
 in addition to Hilt still declare their Dagger runtime/compiler dependencies.
 The convention does not add `annotationProcessor` dependencies. Modules needing
 Parcelize apply `org.jetbrains.kotlin.plugin.parcelize`. Hilt/Dagger annotation
-processing uses `com.android.legacy-kapt`, versioned with AGP, while retaining
-the existing `kapt` dependency configurations.
+processing uses KSP 2, with its plugin version centralized in the catalog.
+Compiler dependencies use `ksp`; the app's Hilt instrumentation processor uses
+`kspAndroidTest`. KSP processes both Kotlin and Java sources. The unused Data
+Binding convention and kapt-specific Javac hooks have been removed.
 
 Compose modules also apply `teamcityapp.android.compose` after the Android
 convention and declare their own activity, lifecycle, and coroutine dependencies.
@@ -110,7 +110,7 @@ python3 scripts/prepare-r8-verification.py
 Prepare debug Google Services files as described in AGENTS.md before app builds.
 Functional tests use isolated Kotlin DSL builds to verify built-in Kotlin,
 JVM target alignment with module Java overrides,
-Hilt dependency registration, Data Binding, Java-only modules, and aggregate
+Hilt/KSP dependency registration, Java-only modules, and aggregate
 coverage inputs/exclusions/output paths. Focused tests preserve the R8 report
 count guard. CI runs these tests alongside the app and feature unit tests.
 
@@ -123,7 +123,7 @@ Gradle's Problems API; inspect `build/reports/problems/problems-report.html`.
 Do not disable warning output to make a build appear clean.
 
 The build scripts and conventions use public Android DSL interfaces with AGP's
-built-in Kotlin and legacy-kapt adapter. App instrumentation dependencies retain AGP's default alignment constraints; library
+built-in Kotlin and KSP. App instrumentation dependencies retain AGP's default alignment constraints; library
 configurations do not generate cross-variant constraints. Lint uses AGP's default
 report locations, and CI uploads `app/build/reports/lint-results-mockDebug.*`.
 
