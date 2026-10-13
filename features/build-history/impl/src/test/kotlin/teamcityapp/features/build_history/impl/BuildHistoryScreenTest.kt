@@ -144,6 +144,15 @@ class BuildHistoryScreenTest {
         compose.onNodeWithText("09 October").assertIsDisplayed().assertHasNoClickAction()
     }
 
+    @Test fun previousYearSectionShowsYearAndKeepsBuildNavigation() {
+        val build = historyBuild().copy(startDate = "20251010T102030+0700")
+        var opened: BuildLaunchData? = null
+        compose.setContent { TeamCityTheme { HistoryTestScreen(rows = listOf(build), onBuild = { opened = it }) } }
+        compose.onNodeWithText("10 October 2025").assertIsDisplayed().assertHasNoClickAction()
+        compose.onNodeWithTag("history:build:42").performClick()
+        assertEquals(build, opened)
+    }
+
     @Test fun toolbarAndRunActionsRemainUiCallbacks() {
         var backs = 0
         var runs = 0
