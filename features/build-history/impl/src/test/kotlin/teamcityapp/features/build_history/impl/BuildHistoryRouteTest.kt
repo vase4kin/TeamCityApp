@@ -53,7 +53,7 @@ class BuildHistoryRouteTest {
     private val onboarding = FakeHistoryOnboarding()
     private val router = FakeRouter()
 
-    // History collects at RESUMED; test lifecycle transitions remain explicit.
+    // Optional controls collect at RESUMED; navigation transitions draw at STARTED.
     private val resumedOwner = object : LifecycleOwner {
         val registry = LifecycleRegistry.createUnsafe(this).apply { currentState = Lifecycle.State.RESUMED }
         override val lifecycle: Lifecycle = registry
@@ -263,6 +263,55 @@ class BuildHistoryRouteTest {
         assertTrue(frames.isNotEmpty())
         assertTrue("Returning frames: $frames", frames.all { it.first == listOf("42") && !it.second })
         assertEquals(1, repository.requests.size)
+    }
+
+    @Test fun backTransitionDrawsCachedRowsAndScrollBeforeResume() {
+        repository.loadPage = { BuildHistoryPage((0..19).map { historyBuild(it.toString()) }) }
+        val vm = viewModel()
+        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { BuildHistoryRoute(router, vm) } } }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:list").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:list").performScrollToIndex(12)
+        compose.runOnIdle { resumedOwner.registry.currentState = Lifecycle.State.CREATED }
+        compose.waitForIdle()
+        compose.onNodeWithTag("history:list").assertDoesNotExist()
+
+        // Navigation 3 keeps the returning entry STARTED until its animation settles.
+        compose.runOnIdle { resumedOwner.registry.currentState = Lifecycle.State.STARTED }
+        compose.waitForIdle()
+        compose.onNodeWithTag("history:build:12").assertIsDisplayed()
+        assertEquals(1, repository.requests.size)
+        assertEquals(1, repository.favoriteCalls)
+        assertEquals(1, onboarding.loads)
+        assertEquals(1, tracker.views)
+
+        compose.runOnIdle { resumedOwner.registry.currentState = Lifecycle.State.RESUMED }
+        compose.waitForIdle()
+        compose.onNodeWithTag("history:build:12").assertIsDisplayed()
+        assertEquals(1, repository.requests.size)
+    }
+
+    @Test fun transitionDrawsRowsButDefersPromptsNoticesAndQueuedRefreshUntilResume() {
+        onboarding.pending = { listOf(teamcityapp.features.build_history.api.BuildHistoryPrompt.Run) }
+        val vm = viewModel()
+        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { BuildHistoryRoute(router, vm) } } }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:coachmark:Run").fetchSemanticsNodes().isNotEmpty() }
+        compose.runOnIdle { resumedOwner.registry.currentState = Lifecycle.State.CREATED }
+        compose.waitForIdle()
+        compose.runOnIdle {
+            vm.onQueuedBuildResult("/queued")
+            resumedOwner.registry.currentState = Lifecycle.State.STARTED
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("history:build:42").assertIsDisplayed()
+        compose.onNodeWithTag("history:coachmark:Run").assertDoesNotExist()
+        compose.onNodeWithText("Build is added to build queue").assertDoesNotExist()
+        assertEquals(1, repository.requests.size)
+
+        compose.runOnIdle { resumedOwner.registry.currentState = Lifecycle.State.RESUMED }
+        compose.waitUntil(5_000) { repository.requests.size == 2 }
+        compose.onNodeWithTag("history:coachmark:Run").assertIsDisplayed()
+        assertFalse(vm.controls.value.refreshPending)
+        assertTrue(repository.requests.last().force)
     }
 
     private class FakeRouter : BuildHistoryRouter {

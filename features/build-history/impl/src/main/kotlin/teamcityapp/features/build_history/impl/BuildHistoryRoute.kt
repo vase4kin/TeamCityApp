@@ -47,11 +47,11 @@ internal fun BuildHistoryRoute(router: BuildHistoryRouter, viewModel: BuildHisto
     var completed by rememberSaveable(selection.query) { mutableStateOf(false) }
     val listState = rememberSaveable(selection.query, saver = LazyListState.Saver) { LazyListState() }
     // A query and its Paging generation travel together. No new filter can display old rows.
-    // PagingData has its own cached page-event stream. Dispose its presenter while hidden,
-    // retaining completed-empty and scroll state here alongside the ViewModel's page cache.
-    if (lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) {
+    // Navigation 3 keeps visible entries STARTED during transitions. Draw the cached
+    // presenter then, retaining completed-empty and scroll state when fully hidden.
+    if (lifecycleState.isAtLeast(Lifecycle.State.STARTED)) {
         key(selection.pages) {
-            BuildHistoryPagingContent(selection, controls, router, viewModel, completed, { completed = true }, listState)
+            BuildHistoryPagingContent(selection, controls, router, viewModel, completed, { completed = true }, listState, lifecycleState.isAtLeast(Lifecycle.State.RESUMED))
         }
     }
 }
@@ -64,10 +64,10 @@ private fun BuildHistoryPagingContent(
     viewModel: BuildHistoryViewModel,
     completed: Boolean,
     onCompleted: () -> Unit,
-    listState: LazyListState
+    listState: LazyListState,
+    resumed: Boolean
 ) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    // The parent composes this presenter only while RESUMED. Keep the cached Flow intact:
+    // The parent composes this presenter only while STARTED. Keep the cached Flow intact:
     // lifecycle wrappers hide Paging's replay cache and make returning content start empty.
     val builds = selection.rows.collectAsLazyPagingItems()
     if (builds.loadState.refresh is LoadState.NotLoading) SideEffect { onCompleted() }
@@ -84,8 +84,8 @@ private fun BuildHistoryPagingContent(
     val notice = controls.notice
     val message = notice?.let { stringResource(it.messageRes) }.orEmpty()
     val action = notice?.actionLabelRes?.let { stringResource(it) }
-    LaunchedEffect(notice?.id, snackbar) {
-        if (notice == null) return@LaunchedEffect
+    LaunchedEffect(notice?.id, snackbar, resumed) {
+        if (notice == null || !resumed) return@LaunchedEffect
         val result = snackbar.showSnackbar(
             message,
             action,
@@ -106,7 +106,7 @@ private fun BuildHistoryPagingContent(
     BuildHistoryScreen(
         title = viewModel.configurationName,
         state = state,
-        controls = controls,
+        controls = if (resumed) controls else controls.copy(onboarding = (controls.onboarding as? OnboardingState.Available)?.copy(prompt = null) ?: controls.onboarding),
         itemCount = builds.itemCount,
         itemAt = { builds[it] },
         itemPeek = { builds.peek(it) },
