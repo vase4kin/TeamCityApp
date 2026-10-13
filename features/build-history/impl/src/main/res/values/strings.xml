@@ -19,6 +19,11 @@
     <string name="history_back">Back</string>
     <string name="history_filter">Filter builds</string>
     <string name="history_run">Run build</string>
+    <string name="history_favorites">Favorites</string>
+    <string name="history_retry_favorites">Retry loading favorites</string>
+    <string name="history_loading_favorites">Loading favorites…</string>
+    <string name="history_adding_favorite">Adding to favorites…</string>
+    <string name="history_removing_favorite">Removing from favorites…</string>
     <string name="history_add_favorite">Add to favorites</string>
     <string name="history_remove_favorite">Remove from favorites</string>
     <string name="history_empty">No builds</string>

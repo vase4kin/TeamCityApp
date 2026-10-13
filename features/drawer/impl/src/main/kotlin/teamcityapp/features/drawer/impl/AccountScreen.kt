@@ -57,8 +57,10 @@ fun AccountScreen(
         TopAppBar(
             title = { Text(stringResource(R.string.account_title), style = MaterialTheme.typography.headlineMedium) },
             navigationIcon = {
-                IconButton(onNavigateUp, enabled = state.canInteract, modifier = Modifier.testTag("account:back")) {
-                    Icon(painterResource(ThemeR.drawable.ic_arrow_back_24dp), stringResource(R.string.account_back))
+                TeamCityTooltip(stringResource(R.string.account_back)) {
+                    IconButton(onNavigateUp, enabled = state.canInteract, modifier = Modifier.testTag("account:back")) {
+                        Icon(painterResource(ThemeR.drawable.ic_arrow_back_24dp), stringResource(R.string.account_back))
+                    }
                 }
             },
             colors = teamCityTopAppBarColors(),

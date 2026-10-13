@@ -42,6 +42,7 @@ import teamcityapp.libraries.theme.LocalTeamCityAppBarState
 import teamcityapp.libraries.theme.LocalTeamCityHeaderProvided
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.coachmarkAnchor
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
@@ -70,8 +71,10 @@ fun FavoritesScreen(
                     scrollBehavior = scrollBehavior,
                     title = { Text(stringResource(R.string.favorites_title)) },
                     navigationIcon = {
-                        IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
-                            Icon(painterResource(R.drawable.ic_navigation_drawer), stringResource(R.string.favorites_open_drawer))
+                        TeamCityTooltip(stringResource(R.string.favorites_open_drawer)) {
+                            IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
+                                Icon(painterResource(R.drawable.ic_navigation_drawer), stringResource(R.string.favorites_open_drawer))
+                            }
                         }
                     }
                 )

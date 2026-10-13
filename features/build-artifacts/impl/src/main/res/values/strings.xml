@@ -15,6 +15,7 @@
   ~ limitations under the License.
   -->
 <resources>
+    <string name="artifacts_show_actions">Show artifact actions</string>
  <string name="artifacts_title">Artifacts</string>
  <string name="artifacts_empty">No artifacts</string>
  <string name="artifacts_back">Back</string>

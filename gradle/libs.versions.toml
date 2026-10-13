@@ -57,6 +57,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-testManifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-hilt-viewModelCompose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "androidx-hilt" }
 compose-ui-testJunit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-testAccessibility = { module = "androidx.compose.ui:ui-test-junit4-accessibility" }
 kotlin-compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }

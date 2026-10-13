@@ -48,6 +48,7 @@ import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityAppBarSurface
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
@@ -102,8 +103,10 @@ internal fun BuildHistoryScreen(
                             title = {},
                             windowInsets = WindowInsets(0, 0, 0, 0),
                             navigationIcon = {
-                                IconButton(onClick = onBack, modifier = Modifier.testTag("history:back")) {
-                                    Icon(painterResource(R.drawable.ic_history_back), stringResource(R.string.history_back))
+                                TeamCityTooltip(stringResource(R.string.history_back)) {
+                                    IconButton(onClick = onBack, modifier = Modifier.testTag("history:back")) {
+                                        Icon(painterResource(R.drawable.ic_history_back), stringResource(R.string.history_back))
+                                    }
                                 }
                             }
                         )

@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityStatusColors
@@ -91,7 +93,7 @@ fun BuildOverviewScreen(
 
 @Composable
 private fun OverviewGroupHeading(@StringRes title: Int) {
-    Text(stringResource(title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding + TeamCityDimensions.mediumSpacing, vertical = TeamCityDimensions.mediumSpacing))
+    Text(stringResource(title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() }.padding(horizontal = TeamCityDimensions.contentPadding + TeamCityDimensions.mediumSpacing, vertical = TeamCityDimensions.mediumSpacing))
 }
 
 @Composable
@@ -142,8 +144,13 @@ private fun OverviewSectionRow(section: OverviewSectionUiState, onClick: () -> U
         }
         when (val count = section.count) {
             is BuildDetailsCount.Available -> Badge(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest, contentColor = MaterialTheme.colorScheme.onSurfaceVariant) { Text(count.count.toString()) }
+
             BuildDetailsCount.Loading -> TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize).semantics { contentDescription = countDescription.orEmpty() })
-            BuildDetailsCount.Unavailable -> IconButton(onClick = onRetry, modifier = Modifier.testTag("overview:retry-count:${section.section.name}")) { Icon(painterResource(R.drawable.overview_retry), stringResource(R.string.overview_retry_count) + ": " + countDescription.orEmpty()) }
+
+            BuildDetailsCount.Unavailable -> TeamCityTooltip(stringResource(R.string.overview_retry_count) + ": " + countDescription.orEmpty()) {
+                IconButton(onClick = onRetry, modifier = Modifier.testTag("overview:retry-count:${section.section.name}")) { Icon(painterResource(R.drawable.overview_retry), stringResource(R.string.overview_retry_count) + ": " + countDescription.orEmpty()) }
+            }
+
             null -> Unit
         }
         Icon(painterResource(R.drawable.overview_chevron), null, Modifier.size(18.dp))

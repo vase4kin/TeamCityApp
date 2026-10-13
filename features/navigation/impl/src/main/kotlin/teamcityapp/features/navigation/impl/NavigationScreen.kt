@@ -43,6 +43,7 @@ import teamcityapp.libraries.theme.LocalTeamCityHeaderProvided
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.coachmarkAnchor
 import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
@@ -73,12 +74,14 @@ fun NavigationScreen(
                     scrollBehavior = scrollBehavior,
                     title = { Text(state.title.resolve()) },
                     navigationIcon = {
-                        IconButton(onClick = onNavigateUp, modifier = if (state.root) Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR) else Modifier) {
-                            Icon(
-                                painterResource(if (state.root) R.drawable.ic_navigation_drawer else R.drawable.ic_navigation_back),
-                                stringResource(state.navigationLabelRes),
-                                Modifier.testTag("navigation:up")
-                            )
+                        TeamCityTooltip(stringResource(state.navigationLabelRes)) {
+                            IconButton(onClick = onNavigateUp, modifier = if (state.root) Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR) else Modifier) {
+                                Icon(
+                                    painterResource(if (state.root) R.drawable.ic_navigation_drawer else R.drawable.ic_navigation_back),
+                                    stringResource(state.navigationLabelRes),
+                                    Modifier.testTag("navigation:up")
+                                )
+                            }
                         }
                     }
                 )

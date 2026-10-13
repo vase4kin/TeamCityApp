@@ -43,6 +43,38 @@ class HomeScreenTest {
     private val badges = mapOf(HomeTab.Running to HomeBadge.Count(2), HomeTab.Queue to HomeBadge.Count(3), HomeTab.Agents to HomeBadge.Count(9), HomeTab.Favorites to HomeBadge.Count(1))
     private val query = HomeQuery("account", listOf("configuration"), QuickFilter.RunningFavorites, QuickFilter.QueuedAll, QuickFilter.AgentsConnected, HomeAccount("Andrey Tolpeev", "https://teamcity.example"))
 
+    @Test fun compactNavigationHintsKeepEqualTargetsAndDoNotSelectDestinations() {
+        val selected = mutableListOf<HomeTab>()
+        compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(), false, selected::add, {}, {}, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        val tabs = listOf("Projects", "Favorites", "Activity")
+        val bounds = tabs.map { compose.onNodeWithTag("home:tab:$it").fetchSemanticsNode().boundsInRoot }
+        assertEquals(bounds[0].width, bounds[1].width, 1f)
+        assertEquals(bounds[1].width, bounds[2].width, 1f)
+        tabs.forEach { name ->
+            val tab = compose.onNodeWithTag("home:tab:$name")
+            tab.assertContentDescriptionEquals(name).assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Tab))
+            tab.performTouchInput { longClick() }
+            compose.onNode(hasText(name) and hasAnyAncestor(isPopup())).assertIsDisplayed()
+            assertTrue(selected.isEmpty())
+            compose.mainClock.advanceTimeBy(2500)
+        }
+        compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
+        compose.onNodeWithTag("home:tab:Favorites").performClick()
+        assertEquals(listOf(HomeTab.Favorites), selected)
+    }
+
+    @Test fun expandedNavigationHasOneTabTargetPerDestinationAndShowsHints() {
+        val selected = mutableListOf<HomeTab>()
+        compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(), true, selected::add, {}, {}, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        compose.onAllNodes(hasTestTag("home:tab:Favorites")).assertCountEquals(1)
+        compose.onNodeWithTag("home:tab:Favorites").performTouchInput { longClick() }
+        compose.onNode(hasText("Favorites") and hasAnyAncestor(isPopup())).assertIsDisplayed()
+        assertTrue(selected.isEmpty())
+        compose.mainClock.advanceTimeBy(2500)
+        compose.onNodeWithTag("home:tab:Favorites").performClick()
+        assertEquals(listOf(HomeTab.Favorites), selected)
+    }
+
     @Test fun projectsExposeThreeDestinationsAndAnAccessibleAccountAvatar() {
         var accounts = 0
         compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(query = query, badges = badges), false, {}, {}, {}, {}, remember { SnackbarHostState() }, onAccount = { accounts++ }) { Text("Project content") } } }

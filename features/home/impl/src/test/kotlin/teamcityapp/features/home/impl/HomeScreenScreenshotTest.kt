@@ -28,6 +28,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -78,6 +79,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         val query = HomeQuery("account", listOf("mock"), teamcityapp.features.filter_bottom_sheet.api.QuickFilter.RunningFavorites, teamcityapp.features.filter_bottom_sheet.api.QuickFilter.QueuedAll, teamcityapp.features.filter_bottom_sheet.api.QuickFilter.AgentsConnected, HomeAccount("Andrey Tolpeev", "https://teamcity.example"))
         val state = (
             when {
+                stateName == "tooltip" -> HomeUiState()
                 stateName == "loading" -> HomeUiState()
                 stateName == "running_all" -> HomeUiState(selected = HomeTab.Running)
                 stateName == "queue_favorites" -> HomeUiState(selected = HomeTab.Queue)
@@ -128,6 +130,15 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         compose.waitForIdle()
         compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
+        if (stateName == "tooltip") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("home:tab:Favorites").performTouchInput { longClick() }
+            compose.waitForIdle()
+            compose.onNode(isPopup()).assertExists()
+            compose.mainClock.autoAdvance = false
+            captureScreenRoboImage("home_${stateName}_${variant.name}.png")
+            return
+        }
         compose.onRoot().captureRoboImage("home_${stateName}_${variant.name}.png")
     }
     companion object {
@@ -136,7 +147,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("loading", "counts_failed", "partial_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure", "running_all", "queue_favorites", "agents_disconnected", "filter_loading", "filter_applying", "filter_failed") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("tooltip", "loading", "counts_failed", "partial_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure", "running_all", "queue_favorites", "agents_disconnected", "filter_loading", "filter_applying", "filter_failed") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

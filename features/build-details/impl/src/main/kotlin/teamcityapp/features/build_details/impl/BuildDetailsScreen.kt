@@ -77,7 +77,11 @@ internal fun BuildDetailsScreen(
                             if (state.subtitle.isNotEmpty()) Text(state.subtitle, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     },
-                    navigationIcon = { IconButton(onClick = onUp, enabled = !state.busy) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) } }
+                    navigationIcon = {
+                        TeamCityTooltip(stringResource(R.string.navigate_up)) {
+                            IconButton(onClick = onUp, enabled = !state.busy) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) }
+                        }
+                    }
                 )
             },
             floatingActionButtonPosition = FabPosition.End,
@@ -160,22 +164,26 @@ private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (B
         if (state.floatingActions.isNotEmpty()) {
             TeamCityFloatingToolbar(modifier = Modifier.testTag("details:toolbar")) {
                 state.floatingActions.forEach { action ->
-                    IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors)) {
-                        Icon(painterResource(if (action.action == BuildDetailsAction.Share) R.drawable.ic_details_share else R.drawable.ic_details_browser), stringResource(action.label))
+                    TeamCityTooltip(stringResource(action.label)) {
+                        IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors)) {
+                            Icon(painterResource(if (action.action == BuildDetailsAction.Share) R.drawable.ic_details_share else R.drawable.ic_details_browser), stringResource(action.label))
+                        }
                     }
                 }
             }
         }
         val action = state.primaryAction
-        TeamCityLoadingExtendedFloatingActionButton(
-            onClick = { onAction(action.action) },
-            label = stringResource(action.label),
-            loadingLabel = stringResource(state.actionLoadingLabelRes),
-            loading = state.busy,
-            modifier = Modifier.heightIn(min = FloatingToolbarDefaults.ContainerSize).testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
-            containerColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
-            contentColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
-            icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) }
-        )
+        TeamCityTooltip(stringResource(state.actionTooltipLabelRes)) {
+            TeamCityLoadingExtendedFloatingActionButton(
+                onClick = { onAction(action.action) },
+                label = stringResource(action.label),
+                loadingLabel = stringResource(state.actionLoadingLabelRes),
+                loading = state.busy,
+                modifier = Modifier.heightIn(min = FloatingToolbarDefaults.ContainerSize).testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
+                containerColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
+                contentColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
+                icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) }
+            )
+        }
     }
 }

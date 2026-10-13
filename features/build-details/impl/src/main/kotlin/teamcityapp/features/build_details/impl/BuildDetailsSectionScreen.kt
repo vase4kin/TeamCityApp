@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import teamcityapp.features.build_details.api.BuildDetailsSection
 import teamcityapp.libraries.theme.LocalTeamCityAppBarState
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +46,11 @@ internal fun BuildDetailsSectionScreen(section: BuildDetailsSection, buildNumber
                     Text(stringResource(R.string.section_build_subtitle, buildNumber, configurationName), style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             },
-            navigationIcon = { IconButton(onClick = onUp) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) } }
+            navigationIcon = {
+                TeamCityTooltip(stringResource(R.string.navigate_up)) {
+                    IconButton(onClick = onUp) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) }
+                }
+            }
         )
     }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).testTag("details:section:${section.name}")) { padding -> Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { CompositionLocalProvider(LocalTeamCityAppBarState provides scrollBehavior.state) { content() } } }
 }

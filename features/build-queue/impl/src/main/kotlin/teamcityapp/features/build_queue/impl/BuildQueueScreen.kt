@@ -45,6 +45,7 @@ import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.LocalTeamCityAppBarState
 import teamcityapp.libraries.theme.LocalTeamCityHeaderProvided
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.coachmarkAnchor
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
@@ -71,7 +72,9 @@ internal fun BuildQueueScreen(
                 scrollBehavior = scrollBehavior,
                 title = { Text(stringResource(R.string.build_queue_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("build_queue:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.build_queue_open_drawer)) }
+                    TeamCityTooltip(stringResource(R.string.build_queue_open_drawer)) {
+                        IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("build_queue:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.build_queue_open_drawer)) }
+                    }
                 }
             )
         }

@@ -92,6 +92,8 @@ internal data class BuildDetailsUiState(
             else -> R.string.loading_restart
         }
     }
+
+    @get:StringRes val actionTooltipLabelRes: Int get() = if (busy) actionLoadingLabelRes else primaryAction.label
     val primaryAction: BuildDetailsMenuAction get() = when {
         current.isRunning -> BuildDetailsMenuAction(BuildDetailsAction.Cancel, R.string.action_stop_build)
         current.isQueued -> BuildDetailsMenuAction(BuildDetailsAction.Cancel, R.string.text_remove_from_queue_button)

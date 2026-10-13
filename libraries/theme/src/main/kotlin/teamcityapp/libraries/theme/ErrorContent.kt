@@ -128,8 +128,10 @@ private fun ErrorNoticeActions(onRetry: (() -> Unit)?, enabled: Boolean, actionL
     Row(verticalAlignment = Alignment.CenterVertically) {
         ErrorNoticeAction(onRetry, enabled, actionLabel)
         if (onDismiss != null) {
-            IconButton(onDismiss) {
-                Icon(painterResource(R.drawable.ic_close_black_24dp), stringResource(R.string.action_close))
+            TeamCityTooltip(stringResource(R.string.action_close)) {
+                IconButton(onDismiss) {
+                    Icon(painterResource(R.drawable.ic_close_black_24dp), stringResource(R.string.action_close))
+                }
             }
         }
     }

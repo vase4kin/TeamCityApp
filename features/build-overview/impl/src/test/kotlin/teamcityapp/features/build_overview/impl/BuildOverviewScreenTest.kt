@@ -38,6 +38,13 @@ import teamcityapp.libraries.theme.TeamCityTheme
 class BuildOverviewScreenTest {
     @get:Rule val compose = createComposeRule()
 
+    @Test fun resultsAndSetupExposeHeadingsForScreenReaderNavigation() {
+        val state = buildOverviewState(ListUiState.Content(listOf(BuildOverviewFixtures.finished)))
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state, {}, {}, {}) } }
+        compose.onNodeWithText("Results").assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Heading, Unit))
+        compose.onNodeWithText("Build setup").performScrollTo().assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Heading, Unit))
+    }
+
     @Test fun branchCardDispatchesItsTypedValue() {
         val rows = overviewRows(BuildOverviewFixtures.finished)
         var clicked: OverviewRow? = null
