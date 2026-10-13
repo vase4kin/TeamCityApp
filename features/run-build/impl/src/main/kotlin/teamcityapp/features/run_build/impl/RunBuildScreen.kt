@@ -41,11 +41,11 @@ data class ParameterDialogState(val name: String = "", val value: String = "", v
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQueue: () -> Unit, onClose: () -> Unit, onSelectAgent: () -> Unit, onAddParameter: () -> Unit, onClearParameters: () -> Unit, agentDialog: Boolean = false, parameterDialog: ParameterDialogState? = null, onDismissDialog: () -> Unit = {}, onAgentSelected: (BuildAgent) -> Unit = {}, onParameterChange: (ParameterDialogState) -> Unit = {}, onConfirmParameter: () -> Unit = {}) {
+fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQueue: () -> Unit, onClose: () -> Unit, onSelectAgent: () -> Unit, onAddParameter: () -> Unit, onClearParameters: () -> Unit, agentDialog: Boolean = false, parameterDialog: ParameterDialogState? = null, onDismissDialog: () -> Unit = {}, onAgentSelected: (BuildAgent) -> Unit = {}, onParameterChange: (ParameterDialogState) -> Unit = {}, onConfirmParameter: () -> Unit = {}, snackbar: SnackbarHostState = remember { SnackbarHostState() }) {
     val request = state.request
     var optionsExpanded by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(state.queueError, parameterDialog?.invalid) {
-        if (state.queueError != null || parameterDialog?.invalid == true) optionsExpanded = true
+    LaunchedEffect(parameterDialog?.invalid) {
+        if (parameterDialog?.invalid == true) optionsExpanded = true
     }
     val scrollState = rememberScrollState()
     TeamCityScreen(stringResource(R.string.title_run_build), onClose, bottomBar = {
@@ -56,11 +56,8 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                 Text(stringResource(state.queueLabelRes))
             }
         }
-    }) { modifier ->
+    }, snackbarHost = { SnackbarHost(snackbar, Modifier.testTag("run-build:snackbar")) }) { modifier ->
         Column(modifier) {
-            if (state.queueError != null) {
-                ErrorNotice(stringResource(requireNotNull(state.queueErrorMessageRes)), modifier = Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("run-build:error"))
-            }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("run-build:scroll").padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)) {
                 Text(stringResource(R.string.quick_setup), style = MaterialTheme.typography.headlineMedium)
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {

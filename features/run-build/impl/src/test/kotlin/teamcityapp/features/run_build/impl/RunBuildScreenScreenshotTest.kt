@@ -17,6 +17,11 @@
 package teamcityapp.features.run_build.impl
 
 import android.app.Application
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
@@ -92,7 +97,16 @@ class RunBuildScreenScreenshotTest(private val stateName: String, private val va
             }
         )
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { RunBuildScreen(state, {}, {}, {}, {}, {}, {}, agentDialog = stateName == "agent_dialog", parameterDialog = if (stateName.startsWith("parameter_")) ParameterDialogState(invalid = stateName == "parameter_error") else null) } }
+        compose.setContent {
+            TeamCityTheme(darkTheme = variant.dark) {
+                val snackbar = remember { SnackbarHostState() }
+                val errorMessage = state.queueErrorMessageRes?.let { stringResource(it) }
+                LaunchedEffect(errorMessage) {
+                    if (errorMessage != null) snackbar.showSnackbar(errorMessage, duration = SnackbarDuration.Indefinite)
+                }
+                RunBuildScreen(state, {}, {}, {}, {}, {}, {}, agentDialog = stateName == "agent_dialog", parameterDialog = if (stateName.startsWith("parameter_")) ParameterDialogState(invalid = stateName == "parameter_error") else null, snackbar = snackbar)
+            }
+        }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (stateName in listOf("expanded", "scrolled")) {

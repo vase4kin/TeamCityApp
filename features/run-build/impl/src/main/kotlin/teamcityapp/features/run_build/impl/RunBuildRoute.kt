@@ -17,8 +17,11 @@
 package teamcityapp.features.run_build.impl
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.*
@@ -42,10 +45,13 @@ fun RunBuildRoute(router: RunBuildRouter, viewModel: RunBuildViewModel = hiltVie
     LaunchedEffect(state.queuedHref, lifecycle, router) {
         state.queuedHref?.let { href -> lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) { if (viewModel.consumeSuccess(href)) router.queued(href) } }
     }
-    LaunchedEffect(state.queueError) {
-        if (state.queueError != null) {
-            kotlinx.coroutines.delay(3500)
-            viewModel.clearError()
+    val snackbar = remember { SnackbarHostState() }
+    val errorMessage = state.queueErrorMessageRes?.let { stringResource(it) }
+    LaunchedEffect(state.queueErrorId, errorMessage, lifecycle) {
+        if (errorMessage == null) return@LaunchedEffect
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            snackbar.showSnackbar(errorMessage, duration = SnackbarDuration.Long)
+            viewModel.clearError(state.queueErrorId)
         }
     }
     BackHandler { if (!state.queuing) router.close() }
@@ -68,6 +74,7 @@ fun RunBuildRoute(router: RunBuildRouter, viewModel: RunBuildViewModel = hiltVie
             value = it.value
             invalid = it.invalid
         },
+        snackbar = snackbar,
         onConfirmParameter = {
             if (viewModel.addParameter(name, value)) {
                 parameterDialog = false

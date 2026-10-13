@@ -74,6 +74,7 @@ fun TeamCityScreen(
     contentMaxWidth: Dp = TeamCityDimensions.screenContentMaxWidth,
     actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {},
     bottomBar: (@Composable () -> Unit)? = null,
+    snackbarHost: @Composable () -> Unit = {},
     content: @Composable (Modifier) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -85,6 +86,7 @@ fun TeamCityScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).then(if (bottomBar != null) Modifier.imePadding() else Modifier),
         containerColor = containerColor,
         bottomBar = { bottomBar?.invoke() },
+        snackbarHost = snackbarHost,
         topBar = {
             Box {
                 TopAppBar(
