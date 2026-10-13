@@ -39,6 +39,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.*
 import teamcityapp.libraries.theme.*
 import teamcityapp.libraries.theme.TeamCityTheme
@@ -78,6 +79,12 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         val state = (
             when {
                 stateName == "loading" -> HomeUiState()
+                stateName == "running_all" -> HomeUiState(selected = HomeTab.Running)
+                stateName == "queue_favorites" -> HomeUiState(selected = HomeTab.Queue)
+                stateName == "agents_disconnected" -> HomeUiState(selected = HomeTab.Agents)
+                stateName == "filter_loading" -> HomeUiState(selected = HomeTab.Running)
+                stateName == "filter_applying" -> HomeUiState(selected = HomeTab.Running, applyingFilter = QuickFilter.RunningAll)
+                stateName == "filter_failed" -> HomeUiState(selected = HomeTab.Running, filterFailed = true)
                 stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
                 stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
                 stateName == "agents_zero" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Count(0)))
@@ -90,7 +97,15 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
                 stateName.startsWith("prompt_") -> HomePrompt.valueOf(stateName.removePrefix("prompt_")).let { HomeUiState(selected = if (it == HomePrompt.Drawer) HomeTab.Projects else HomeTab.valueOf(it.name), badges = badges, prompt = it.ui()) }
                 else -> HomeUiState(selected = HomeTab.valueOf(stateName.removePrefix("tab_")), badges = badges)
             }
-            ).copy(query = query)
+            ).copy(
+            query = when (stateName) {
+                "running_all" -> query.copy(runningFilter = QuickFilter.RunningAll)
+                "queue_favorites" -> query.copy(queueFilter = QuickFilter.QueuedFavorites)
+                "agents_disconnected" -> query.copy(agentsFilter = QuickFilter.AgentsDisconnected)
+                "filter_loading" -> null
+                else -> query
+            }
+        )
         compose.mainClock.autoAdvance = false
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
@@ -121,7 +136,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("loading", "counts_failed", "partial_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("loading", "counts_failed", "partial_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure", "running_all", "queue_favorites", "agents_disconnected", "filter_loading", "filter_applying", "filter_failed") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

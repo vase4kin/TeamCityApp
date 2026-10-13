@@ -66,15 +66,64 @@ class HomeScreenTest {
         compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:Activity").assertIsSelected()
         compose.onNodeWithTag("home:tab:Running").assertIsSelected()
-        compose.onNodeWithText("Favorite configurations").assertIsDisplayed()
+        compose.onNodeWithTag("home:filter:RunningFavorites").assertIsDisplayed().assertIsSelected()
+        compose.onNodeWithTag("home:filter:RunningAll").assertIsDisplayed()
         compose.onNodeWithTag("home:tab:Queue").performClick()
         compose.onNodeWithTag("home:tab:Queue").assertIsSelected()
-        compose.onNodeWithText("All configurations").assertIsDisplayed()
+        compose.onNodeWithTag("home:filter:QueuedAll").assertIsDisplayed().assertIsSelected()
         compose.onNodeWithTag("home:tab:Agents").performClick()
-        compose.onNodeWithText("Connected agents").assertIsDisplayed()
+        compose.onNodeWithTag("home:filter:AgentsConnected").assertIsDisplayed().assertIsSelected()
         compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("9")
-        compose.onNodeWithText("Filters").performClick()
+        compose.onNodeWithText("Filters").assertDoesNotExist()
+        compose.onNodeWithTag("home:filter-summary").assertDoesNotExist()
+        compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick()
         assertEquals(1, actions)
+    }
+
+    @Test fun chipsApplyOnlyNewSelectionsAndEachTabRetainsItsOwnFilter() {
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Running, query = query, badges = badges))
+        val applied = mutableListOf<QuickFilter>()
+        compose.setContent {
+            TeamCityTheme {
+                HomeScreen(state.value, false, { state.value = state.value.copy(selected = it) }, { filter ->
+                    applied += filter
+                    val current = checkNotNull(state.value.query)
+                    state.value = state.value.copy(
+                        query = when (filter) {
+                            QuickFilter.RunningAll, QuickFilter.RunningFavorites -> current.copy(runningFilter = filter)
+                            QuickFilter.QueuedAll, QuickFilter.QueuedFavorites -> current.copy(queueFilter = filter)
+                            else -> current.copy(agentsFilter = filter)
+                        }
+                    )
+                }, {}, {}, remember { SnackbarHostState() }) { Text("Content") }
+            }
+        }
+        compose.onNodeWithTag("home:filter:RunningFavorites").performClick()
+        assertTrue(applied.isEmpty())
+        compose.onNodeWithTag("home:filter:RunningAll").performClick().assertIsSelected()
+        compose.onNodeWithTag("home:tab:Queue").performClick()
+        compose.onNodeWithTag("home:filter:QueuedAll").assertIsSelected()
+        compose.onNodeWithTag("home:filter:QueuedFavorites").performClick().assertIsSelected()
+        compose.onNodeWithTag("home:tab:Agents").performClick()
+        compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick().assertIsSelected()
+        compose.onNodeWithTag("home:tab:Running").performClick()
+        compose.onNodeWithTag("home:filter:RunningAll").assertIsSelected()
+        compose.onNodeWithTag("home:tab:Queue").performClick()
+        compose.onNodeWithTag("home:filter:QueuedFavorites").assertIsSelected()
+        assertEquals(listOf(QuickFilter.RunningAll, QuickFilter.QueuedFavorites, QuickFilter.AgentsDisconnected), applied)
+    }
+
+    @Test fun chipsAreDisabledUntilTheAccountQueryIsAvailableAndWhileApplying() {
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Running))
+        compose.setContent { TeamCityTheme { HomeScreen(state.value, false, {}, {}, {}, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        compose.onNodeWithTag("home:filter:RunningAll").assertIsNotEnabled()
+        compose.onNodeWithTag("home:filter:RunningFavorites").assertIsNotEnabled()
+        compose.runOnIdle { state.value = state.value.copy(query = query, applyingFilter = QuickFilter.RunningAll) }
+        compose.onNodeWithTag("home:filter:RunningAll").assertIsNotEnabled()
+        compose.onNodeWithTag("home:filter:RunningFavorites").assertIsNotEnabled().assertIsSelected()
+        compose.runOnIdle { state.value = state.value.copy(applyingFilter = null, filterFailed = true) }
+        compose.onNodeWithTag("home:filter:RunningAll").assertIsEnabled()
+        compose.onNodeWithText("Couldn’t change the filter. Tap a chip to try again.").assertIsDisplayed()
     }
 
     @Test fun compactCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(false)
@@ -84,6 +133,28 @@ class HomeScreenTest {
     @Test fun expandedAgentsBadgeMatchesTheOtherActivityCounts() = assertAgentsBadges(true, 1f)
 
     @Test fun enlargedTextShowsAgentsBadgeBelowItsLabel() = assertAgentsBadges(false, 1.5f)
+
+    @Test fun runningCountRefreshKeepsOtherSegmentLabelsAndBoundsStable() = assertStableSegments(1f)
+
+    @Test fun enlargedTextRunningCountRefreshKeepsOtherSegmentsStable() = assertStableSegments(1.5f)
+
+    private fun assertStableSegments(fontScale: Float) {
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Running, query = query, badges = badges))
+        compose.setContent {
+            val density = LocalDensity.current.density
+            CompositionLocalProvider(LocalDensity provides Density(density, fontScale)) {
+                TeamCityTheme { HomeScreen(state.value, false, {}, {}, {}, {}, remember { SnackbarHostState() }) { Text("Build content") } }
+            }
+        }
+        val nodes = listOf(compose.onNodeWithTag("home:tab:Queue"), compose.onNodeWithTag("home:tab:Agents"), compose.onNodeWithText("Queue", useUnmergedTree = true), compose.onNodeWithText("Agents", useUnmergedTree = true))
+        val bounds = nodes.map { it.fetchSemanticsNode().boundsInRoot }
+        compose.runOnIdle { state.value = state.value.copy(query = query.copy(runningFilter = QuickFilter.RunningAll), badges = badges + (HomeTab.Running to HomeBadge.Loading)) }
+        assertEquals(bounds, nodes.map { it.fetchSemanticsNode().boundsInRoot })
+        compose.onNodeWithTag("home:count:Queue", useUnmergedTree = true).assertTextEquals("3")
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("9")
+        compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Running to HomeBadge.Count(12))) }
+        assertEquals(bounds, nodes.map { it.fetchSemanticsNode().boundsInRoot })
+    }
 
     private fun assertAgentsBadges(expanded: Boolean, fontScale: Float) {
         val state = mutableStateOf(HomeUiState(selected = HomeTab.Agents, query = query, badges = badges))
@@ -164,7 +235,7 @@ class HomeScreenTest {
         compose.setContent { TeamCityTheme { HomeScreen(state.value, false, {}, { actions++ }, {}, { state.value = state.value.copy(prompt = null) }, remember { SnackbarHostState() }) { Text("Content") } } }
         listOf(HomePrompt.Running, HomePrompt.Queue, HomePrompt.Agents).forEach { prompt ->
             compose.runOnIdle { state.value = HomeUiState(selected = HomeTab.valueOf(prompt.name), query = query) }
-            val target = compose.onNodeWithTag("home:action").fetchSemanticsNode().boundsInRoot.center
+            val target = compose.onNodeWithTag("home:filter:${state.value.filterOptions.first { !it.selected }.filter.name}").fetchSemanticsNode().boundsInRoot.center
             compose.runOnIdle { state.value = state.value.copy(prompt = prompt.ui()) }
             compose.onNodeWithTag("home:coachmark:$prompt").assertIsDisplayed()
             compose.onNodeWithTag("home:action").assertDoesNotExist()

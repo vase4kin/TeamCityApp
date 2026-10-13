@@ -44,10 +44,11 @@
     <string name="home_open_named_account">Open account for %1$s</string>
     <string name="home_account_tip_title">Your accounts and preferences</string>
     <string name="home_account_tip_description">Tap the account icon to switch accounts, manage servers and change app settings.</string>
-    <string name="home_filter_favorites">Favorite configurations</string>
-    <string name="home_filter_all_builds">All configurations</string>
-    <string name="home_filter_connected">Connected agents</string>
-    <string name="home_filter_disconnected">Disconnected agents</string>
+    <string name="home_filter_favorites">Favorites</string>
+    <string name="home_filter_all_builds">All builds</string>
+    <string name="home_filter_connected">Connected</string>
+    <string name="home_filter_disconnected">Disconnected</string>
+    <string name="home_filter_failed">Couldn’t change the filter. Tap a chip to try again.</string>
     <string name="home_favorites">Favorites</string>
     <string name="home_running">Running</string>
     <string name="home_queue">Queue</string>

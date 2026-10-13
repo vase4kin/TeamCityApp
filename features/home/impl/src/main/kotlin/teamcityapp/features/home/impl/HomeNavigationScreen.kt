@@ -18,6 +18,7 @@ package teamcityapp.features.home.impl
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.libraries.navigation.DestinationRegistry
 import teamcityapp.libraries.navigation.Navigator
@@ -32,7 +33,7 @@ internal fun HomeNavigationScreen(
     registry: DestinationRegistry,
     entryId: String,
     onTabSelected: (HomeTab) -> Unit,
-    onFilter: () -> Unit,
+    onFilter: (QuickFilter) -> Unit,
     onRetry: () -> Unit,
     onDismissPrompt: () -> Unit,
     snackbar: SnackbarHostState,
@@ -57,7 +58,7 @@ internal fun HomeNavigationScreen(
                 state.copy(selected = tab),
                 expanded = false,
                 onTabSelected = onTabSelected,
-                onFab = onFilter,
+                onFilterSelected = onFilter,
                 onRetry = onRetry,
                 onDismissPrompt = onDismissPrompt,
                 snackbar = snackbar,

@@ -33,11 +33,10 @@ sealed interface HomeCount {
     data class Available(val value: Int) : HomeCount
     data object Unavailable : HomeCount
 }
-data class HomeCounts(val favorites: HomeCount, val running: HomeCount, val queue: HomeCount, val agents: HomeCount)
 enum class HomePrompt { Drawer, Favorites, Running, Queue, Agents }
 interface HomeRepository {
     val query: Flow<HomeQuery>
-    suspend fun counts(query: HomeQuery): HomeCounts
+    suspend fun count(query: HomeQuery, tab: HomeTab): HomeCount
     suspend fun pendingPrompts(): Set<HomePrompt>
     suspend fun acknowledgePrompt(prompt: HomePrompt)
 }

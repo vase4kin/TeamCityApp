@@ -38,7 +38,6 @@ import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.features.favorites.api.LocalFavoritesProjectsAction
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
-import teamcityapp.features.filter_bottom_sheet.api.navigation.QuickFilterDestination
 import teamcityapp.features.home.api.*
 import teamcityapp.features.home.impl.*
 import teamcityapp.features.home.impl.R
@@ -75,7 +74,7 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                 val current = state.query
                 val previous = previousQuery
                 previousQuery = current
-                if (current != null && previous != null) {
+                if (current != null && previous != null && current.accountKey == previous.accountKey) {
                     when {
                         current.agentsFilter != previous.agentsFilter -> snackbar.showSnackbar(agentsFiltered)
                         current.runningFilter != previous.runningFilter || current.queueFilter != previous.queueFilter -> snackbar.showSnackbar(buildsFiltered)
@@ -106,17 +105,6 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                 if (tab == state.selected) selectedStack.popToRoot()
                 model.select(tab)
             }
-            val onFilter: () -> Unit = {
-                model.fabClicked()
-                state.query?.let { query ->
-                    val filter = when (state.selected) {
-                        HomeTab.Running -> query.runningFilter
-                        HomeTab.Queue -> query.queueFilter
-                        else -> query.agentsFilter
-                    }
-                    navigator.push(QuickFilterDestination(filter.ordinal))
-                }
-            }
             val onAccount: () -> Unit = { navigator.push(DrawerDestination) }
             CompositionLocalProvider(
                 LocalFavoritesProjectsAction provides {
@@ -131,7 +119,7 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                     registry.get(),
                     entryId,
                     onTabSelected = onTabSelected,
-                    onFilter = onFilter,
+                    onFilter = model::selectFilter,
                     onRetry = model::retry,
                     onDismissPrompt = model::dismissPrompt,
                     snackbar = snackbar,
