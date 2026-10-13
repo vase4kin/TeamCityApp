@@ -154,6 +154,26 @@ class RunBuildViewModelTest {
         assertEquals(R.string.title_run_build, vm.state.value.queueLabelRes)
     }
 
+    @Test fun dismissingAnEarlierSnackbarDoesNotClearARepeatedFailure() = runTest(dispatcher) {
+        result = QueueBuildResult.Forbidden
+        val vm = vm(this)
+        runCurrent()
+        vm.queue()
+        runCurrent()
+        val firstErrorId = vm.state.value.queueErrorId
+        vm.queue()
+        runCurrent()
+        val secondErrorId = vm.state.value.queueErrorId
+        assertTrue(secondErrorId > firstErrorId)
+        vm.clearError(firstErrorId)
+        runCurrent()
+        assertEquals(QueueBuildResult.Forbidden, vm.state.value.queueError)
+        vm.clearError(secondErrorId)
+        runCurrent()
+        assertNull(vm.state.value.queueError)
+        assertEquals("main", vm.state.value.request.branch)
+    }
+
     @Test fun parametersAllowEmptyValuesAndDuplicateNamesAndClearTogether() = runTest(dispatcher) {
         val vm = vm(this)
         runCurrent()

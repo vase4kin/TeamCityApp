@@ -25,14 +25,17 @@ import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.run_build.api.*
+import teamcityapp.features.run_build.impl.router.RunBuildRouter
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
@@ -183,20 +186,54 @@ class RunBuildScreenTest {
         compose.onNodeWithTag("run-build:personal").assertDoesNotExist()
     }
 
-    @Test fun errorsRevealOptionsAndBusySubmissionIsDisabled() {
+    @Test fun submissionErrorsKeepOptionsCollapsedAndBusySubmissionIsDisabled() {
         compose.setContent { TeamCityTheme { RunBuildScreen(RunBuildUiState(queueError = QueueBuildResult.Error, queuing = true), {}, { fail("Busy submission must be disabled") }, {}, {}, {}, {}) } }
-        compose.onNodeWithTag("run-build:personal").assertExists()
+        compose.onNodeWithTag("run-build:personal").assertDoesNotExist()
         compose.onNodeWithTag("run-build:submit").assertIsNotEnabled()
     }
 
     @Test fun submissionFailureRemainsVisibleAfterEditingScrolledParameters() {
         val state = mutableStateOf(RunBuildUiState(request = BuildRequest("bt1", parameters = List(12) { BuildParameter("name$it", "value$it") })))
-        compose.setContent { TeamCityTheme { RunBuildScreen(state.value, {}, {}, {}, {}, {}, {}) } }
+        val viewModel = setRunBuildRoute { QueueBuildResult.Forbidden }
+        compose.runOnIdle { viewModel.update(state.value.request) }
         compose.onNodeWithTag("run-build:options").performClick()
         compose.onNodeWithTag("run-build:clear").performScrollTo()
-        compose.runOnIdle { state.value = state.value.copy(queueError = QueueBuildResult.Forbidden) }
-        compose.onNodeWithTag("run-build:error").assertIsDisplayed()
+        compose.onNodeWithTag("run-build:submit").performClick()
+        compose.onNodeWithText("You don't have permission to run this build.").assertIsDisplayed()
+        compose.onNodeWithTag("run-build:snackbar").assertIsDisplayed()
+        compose.onNodeWithTag("run-build:error").assertDoesNotExist()
         compose.onNodeWithTag("run-build:submit").assertIsDisplayed()
+    }
+
+    @Test fun generalSubmissionFailureUsesSnackbarAndAllowsRetry() {
+        var attempts = 0
+        val viewModel = setRunBuildRoute {
+            attempts++
+            QueueBuildResult.Error
+        }
+        compose.onNodeWithTag("run-build:submit").performClick()
+        compose.onNodeWithTag("run-build:snackbar").assertIsDisplayed()
+        compose.onNodeWithText("Unable to run the build. Please try again.").assertIsDisplayed()
+        compose.onNodeWithTag("run-build:personal").assertDoesNotExist()
+        compose.runOnIdle { assertNotNull(viewModel.state.value.queueError) }
+        compose.mainClock.advanceTimeBy(11_000)
+        compose.waitForIdle()
+        compose.runOnIdle { assertNull(viewModel.state.value.queueError) }
+        compose.onNodeWithTag("run-build:submit").performClick()
+        compose.onNodeWithTag("run-build:snackbar").assertIsDisplayed()
+        compose.runOnIdle { assertEquals(2, attempts) }
+    }
+
+    private fun setRunBuildRoute(result: () -> QueueBuildResult): RunBuildViewModel {
+        val repository = object : RunBuildRepository {
+            override suspend fun branches(buildTypeId: String) = listOf("main")
+            override suspend fun agents(buildTypeId: String) = emptyList<BuildAgent>()
+            override suspend fun queue(request: BuildRequest) = result()
+        }
+        val viewModel = RunBuildViewModel(repository, SavedStateHandle(mapOf(BUILD_TYPE_ID to "bt1")), mock(RunBuildTracker::class.java))
+        val router = mock(RunBuildRouter::class.java)
+        compose.setContent { TeamCityTheme { RunBuildRoute(router, viewModel) } }
+        return viewModel
     }
 
     private fun assertBackgroundContinuesToBottom(dark: Boolean) {

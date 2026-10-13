@@ -26,7 +26,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.run_build.api.*
 
-data class RunBuildUiState(val branches: List<String>? = null, val branchesFailed: Boolean = false, val agents: List<BuildAgent>? = null, val agentsFailed: Boolean = false, val request: BuildRequest = BuildRequest(""), val queuing: Boolean = false, val queueError: QueueBuildResult? = null, val queuedHref: String? = null) {
+data class RunBuildUiState(val branches: List<String>? = null, val branchesFailed: Boolean = false, val agents: List<BuildAgent>? = null, val agentsFailed: Boolean = false, val request: BuildRequest = BuildRequest(""), val queuing: Boolean = false, val queueError: QueueBuildResult? = null, val queuedHref: String? = null, val queueErrorId: Long = 0) {
     @get:StringRes val queueLabelRes: Int = if (queuing) R.string.text_queueing_build else R.string.title_run_build
 
     @get:StringRes val queueErrorMessageRes: Int? = when (queueError) {
@@ -97,8 +97,8 @@ class RunBuildViewModel @Inject constructor(private val repository: RunBuildRepo
         form.update { it.copy(queuedHref = null) }
         return true
     }
-    fun clearError() {
-        form.update { it.copy(queueError = null) }
+    fun clearError(id: Long) {
+        form.update { if (it.queueErrorId == id) it.copy(queueError = null) else it }
     }
     fun queue() {
         if (form.value.queuing || form.value.queuedHref != null) return
@@ -120,12 +120,12 @@ class RunBuildViewModel @Inject constructor(private val repository: RunBuildRepo
 
                 QueueBuildResult.Forbidden -> {
                     tracker.trackUserRunBuildFailedForbidden()
-                    form.update { it.copy(queuing = false, queueError = result) }
+                    form.update { it.copy(queuing = false, queueError = result, queueErrorId = it.queueErrorId + 1) }
                 }
 
                 QueueBuildResult.Error -> {
                     tracker.trackUserRunBuildFailed()
-                    form.update { it.copy(queuing = false, queueError = result) }
+                    form.update { it.copy(queuing = false, queueError = result, queueErrorId = it.queueErrorId + 1) }
                 }
             }
         }
