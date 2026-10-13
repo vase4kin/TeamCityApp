@@ -5,14 +5,15 @@
   "bootstrap-sha": "9af715729fdc40427ce0d09f7a5998fd3733caeb",
   "packages": {
     ".": {
-        "component": "teamcityapp",
-        "prerelease": true,
-        "prerelease-type": "beta",
-        "extra-files": [
-            {
-              "type": "generic",
-              "path": "build-logic/src/main/kotlin/Config.kt"
-            }
+      "component": "teamcityapp",
+      "versioning": "prerelease",
+      "prerelease": true,
+      "prerelease-type": "beta",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "build-logic/src/main/kotlin/Config.kt"
+        }
       ]
     }
   }
