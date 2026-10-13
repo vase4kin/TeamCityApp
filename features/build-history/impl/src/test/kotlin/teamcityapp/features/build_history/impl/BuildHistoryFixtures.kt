@@ -42,7 +42,7 @@ internal class FakeHistoryRepository : BuildHistoryRepository {
         requests += request
         return loadPage(request)
     }
-    override suspend fun queuedBuild(href: String): BuildLaunchData {
+    suspend fun queuedBuild(href: String): BuildLaunchData {
         queuedRequests += href
         return loadQueued(href)
     }

@@ -44,14 +44,13 @@ class ArtifactsViewModel @Inject constructor(
     private var downloadJob: Job? = null
     private var nextToken = 0L
     private var lastClaimedToken = 0L
-    private var lastFailureToken = 0L
     val state = combine(loader.state, download) { list, file -> ArtifactsUiState(title, list, file) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), ArtifactsUiState(title))
     fun refresh() = loader.refresh()
     fun retry() = loader.retry()
     fun onResumed() = tracker.viewShown()
 
-    /** Explicit user downloads survive configuration changes, and cancel with the retained VM. */
+    /** Explicit transfers survive recreation; the UI cancels them on navigation/backgrounding. */
     fun download(file: ArtifactDownload) {
         if (downloadJob?.isActive == true) return
         downloadJob = viewModelScope.launch {
@@ -71,11 +70,8 @@ class ArtifactsViewModel @Inject constructor(
     fun retryDownload() {
         (download.value as? ArtifactDownloadState.Failed)?.let { download(it.file) }
     }
-    fun claimDownloadFailure(token: Long): Boolean {
-        val failed = download.value as? ArtifactDownloadState.Failed ?: return false
-        if (failed.token != token || token <= lastFailureToken) return false
-        lastFailureToken = token
-        return true
+    fun cancelUnfinishedDownload() {
+        if (download.value is ArtifactDownloadState.Downloading) cancelDownload()
     }
     fun cancelDownload() {
         downloadJob?.cancel()

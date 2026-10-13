@@ -229,33 +229,9 @@ class BuildDetailsViewModelTest {
         assertTrue(model.state.value.notice?.openQueued == true)
         val recreated = model(restored(saved), "restored")
         assertEquals(model.state.value.notice, recreated.state.value.notice)
-        recreated.openQueued()
-        recreated.openQueued()
-        runCurrent()
-        assertEquals(listOf("/queued"), queuedRequests)
-        assertEquals("43", recreated.state.value.replacement?.build?.id)
-        recreated.openQueued()
-        runCurrent()
-        assertEquals(1, queuedRequests.size)
-    }
-
-    @Test fun queuedLoadFailureRetainsRetryAndDoesNotReplaceCurrentBuild() = runTest(dispatcher) {
-        val model = model()
-        model.loaded(loaded.copy(state = "finished"))
-        model.requestRestart()
-        model.confirm(false)
-        runCurrent()
-        queued = { error("offline") }
-        model.openQueued()
-        runCurrent()
-        assertEquals(R.string.error_opening_build, model.state.value.notice?.message)
-        assertTrue(model.state.value.notice?.openQueued == true)
-        assertEquals(R.string.text_retry, model.state.value.notice?.actionLabel)
-        assertNull(model.state.value.replacement)
-        queued = { loaded.copy(id = "next") }
-        model.openQueued()
-        runCurrent()
-        assertEquals("next", model.state.value.replacement?.build?.id)
+        assertEquals("/queued", recreated.queuedBuildReference())
+        assertTrue(queuedRequests.isEmpty())
+        assertNull(recreated.state.value.replacement)
     }
 
     @Test fun forbiddenAndFailedRestartHaveDistinctMessagesAndNeverExposeQueuedAction() = runTest(dispatcher) {
@@ -272,7 +248,7 @@ class BuildDetailsViewModelTest {
         runCurrent()
         assertEquals(R.string.error_base_restart_build_error, model.state.value.notice?.message)
         assertFalse(model.state.value.notice?.openQueued == true)
-        model.openQueued()
+        assertNull(model.queuedBuildReference())
         runCurrent()
         assertTrue(queuedRequests.isEmpty())
     }

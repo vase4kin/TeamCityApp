@@ -32,7 +32,6 @@
     <string name="text_stopping_build">Stopping build..</string>
     <string name="text_removing_build_from_queue">Removing build from queue..</string>
     <string name="text_restarting_build">Restarting build..</string>
-    <string name="text_opening_build">Opening build..</string>
     <string name="text_stop_the_build">You are about to stop the build. Are you sure?</string>
     <string name="text_stop_the_build_2">You are about to stop the build ran not by you. Are you sure?</string>
     <string name="text_remove_build_from_queue">You are about to remove the build from queue. Are you sure?</string>
@@ -73,4 +72,9 @@
     <string name="text_onboarding_share_build">Share a link to this build with others.</string>
     <string name="text_onboarding_browser">Open this build’s page in a browser.</string>
     <string name="build_tip_save_failed">Couldn’t save this tip. Try Continue again.</string>
+    <string name="build_details_title">Build details</string>
+    <string name="preparing_confirmation">Preparing…</string>
+    <string name="loading_stop">Stopping…</string>
+    <string name="loading_remove">Removing…</string>
+    <string name="loading_restart">Restarting…</string>
 </resources>

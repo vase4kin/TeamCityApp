@@ -61,9 +61,6 @@ class ArtifactsDestinationRegistration @Inject constructor(private val platforms
                 putString(ArtifactsViewModel.NAME, destination.name)
             }
         }
-        val snackbar = remember { SnackbarHostState() }
-        val scope = rememberCoroutineScope()
-        val failed = stringResource(R.string.artifacts_download_failed)
         val events = remember(entryId) { Channel<ArtifactAction>(Channel.UNLIMITED) }
         DisposableEffect(events) { onDispose { events.close() } }
         val router = remember(activity, navigator, entryId, recipient, events) {
@@ -83,9 +80,6 @@ class ArtifactsDestinationRegistration @Inject constructor(private val platforms
                 override fun permission(file: ArtifactDownload) = platform.permission(activity, file)
                 override fun openFile(file: DownloadedArtifact) = platform.openDownloadedFile(activity, file)
                 override fun openBrowser(build: BuildLaunchData, href: String) = platform.openBrowser(activity, build, href)
-                override fun downloadFailed() {
-                    scope.launch { snackbar.showSnackbar(failed) }
-                }
                 override fun dispose() = platform.dispose(activity)
             }
         }
@@ -103,10 +97,9 @@ class ArtifactsDestinationRegistration @Inject constructor(private val platforms
                 }
                 onPauseOrDispose {}
             }
-            Box(Modifier.fillMaxSize()) {
-                ArtifactsRoute(router, destination.showToolbar)
-                SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
-            }
+            val ownerId = navigator.snapshot.entries.lastOrNull { it.destination !is ActionSheetDestination }?.id
+            val screenActive = ownerId != null && (ownerId == entryId || entryId.startsWith("$ownerId/"))
+            ArtifactsRoute(router, destination.showToolbar, screenActive = screenActive)
         }
     }
 }

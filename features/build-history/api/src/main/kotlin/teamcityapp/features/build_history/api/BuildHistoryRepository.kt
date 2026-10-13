@@ -31,7 +31,7 @@ interface BuildHistoryRepository {
     suspend fun page(query: BuildHistoryQuery, nextHref: String?, forceRefresh: Boolean): BuildHistoryPage
 
     /** The queued Show action reads a complete build directly from the server. */
-    suspend fun queuedBuild(href: String): BuildLaunchData
+
     suspend fun isFavorite(configurationId: String): Boolean
     suspend fun setFavorite(configurationId: String, favorite: Boolean)
 }

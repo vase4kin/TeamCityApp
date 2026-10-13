@@ -70,8 +70,11 @@ to the requested behavior and the coherent migration slice needed to support it.
   the active server's build-log URL in a Chrome Custom Tab, preserving guest URLs
   without exposing stored credentials. Browser sign-in and cookies belong to the
   browser; the embedded-log modules, WebView and consent preference are retired.
-  Downloads retain ViewModel state and close blocked reads on cancellation without
-  overwriting completed files.
+  Queued-build Show actions navigate immediately to a reference-loading visit; only a
+  resolved complete snapshot enters the normal details host and section destinations.
+  Downloads retain ViewModel state through recreation, but cancel on screen departure
+  or app backgrounding, closing blocked reads and removing temporary files without
+  overwriting completed files. Their inline card explains that screen-owned lifetime.
 - Lists share immutable models and rows in `libraries/build-configurations`,
   `libraries/builds` and `libraries/build-ui`, plus `libraries/list-ui` and
   `libraries/list-state`. History, Changes and Tests use Paging with opaque TeamCity

@@ -46,12 +46,6 @@ sealed interface OnboardingState {
         @get:StringRes val dismissLabelRes: Int = if (saveFailed) R.string.history_retry else R.string.history_got_it
     }
 }
-sealed interface QueuedBuildState {
-    data object Idle : QueuedBuildState
-    data object Loading : QueuedBuildState
-    data object Failed : QueuedBuildState
-    data class Ready(val build: BuildLaunchData) : QueuedBuildState
-}
 enum class BuildHistoryNoticeKind { Queued, FiltersApplied, FavoriteAdded, FavoriteRemoved }
 data class BuildHistoryNotice(val id: Long, val kind: BuildHistoryNoticeKind) {
     @get:StringRes val messageRes: Int = when (kind) {
@@ -71,7 +65,6 @@ data class BuildHistoryNotice(val id: Long, val kind: BuildHistoryNoticeKind) {
 data class BuildHistoryControls(
     val favorite: FavoriteState = FavoriteState.Loading,
     val onboarding: OnboardingState = OnboardingState.Loading,
-    val queuedBuild: QueuedBuildState = QueuedBuildState.Idle,
     val notice: BuildHistoryNotice? = null,
     val refreshPending: Boolean = false
 ) {

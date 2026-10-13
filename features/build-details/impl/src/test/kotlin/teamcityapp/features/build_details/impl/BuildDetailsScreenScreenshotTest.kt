@@ -124,7 +124,21 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
                 BuildDetailsUiState(snapshot, confirmation = BuildConfirmation(snapshot, kind, own = !stateName.endsWith("other")))
             }
 
-            stateName.startsWith("progress_") -> BuildDetailsUiState(snapshot, operation = BuildDetailsOperation.valueOf(stateName.removePrefix("progress_")))
+            stateName == "preparing_confirmation" -> BuildDetailsUiState(snapshot.copy(state = "running"), preparingConfirmation = true)
+
+            stateName.startsWith("progress_") -> {
+                val operation = BuildDetailsOperation.valueOf(stateName.removePrefix("progress_"))
+                BuildDetailsUiState(
+                    snapshot.copy(
+                        state = when (operation) {
+                            BuildDetailsOperation.Stop -> "running"
+                            BuildDetailsOperation.Remove -> "queued"
+                            BuildDetailsOperation.Restart -> "finished"
+                        }
+                    ),
+                    operation = operation
+                )
+            }
 
             else -> BuildDetailsUiState(snapshot)
         }
@@ -194,7 +208,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("finished", "running", "queued", "floating_content", "overview_scrolled", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.flatMap { listOf("section_${it.name}", "section_${it.name}_scrolled") } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted", "notice_opening_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("finished", "running", "queued", "preparing_confirmation", "floating_content", "overview_scrolled", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.flatMap { listOf("section_${it.name}", "section_${it.name}_scrolled") } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

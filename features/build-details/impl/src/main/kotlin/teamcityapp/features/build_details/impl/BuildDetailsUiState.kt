@@ -23,10 +23,9 @@ import teamcityapp.libraries.builds.BuildLaunchData
 
 internal typealias BuildDetailsAction = BuildDetailsCommand
 internal enum class BuildDetailsOperation(@StringRes val message: Int) {
-    Stop(R.string.text_stopping_build),
-    Remove(R.string.text_removing_build_from_queue),
-    Restart(R.string.text_restarting_build),
-    OpenQueued(R.string.text_opening_build)
+    Stop(R.string.loading_stop),
+    Remove(R.string.loading_remove),
+    Restart(R.string.loading_restart)
 }
 
 @Serializable
@@ -84,6 +83,15 @@ internal data class BuildDetailsUiState(
         if (!current.configuration?.projectId.isNullOrBlank()) add(BuildDetailsAction.Project)
     }
     val floatingActions: List<BuildDetailsMenuAction> get() = menu.filter { it.action == BuildDetailsAction.Share || it.action == BuildDetailsAction.Browser }
+    val actionLoadingLabelRes: Int get() = operation?.message ?: if (preparingConfirmation) {
+        R.string.preparing_confirmation
+    } else {
+        when {
+            current.isRunning -> R.string.loading_stop
+            current.isQueued -> R.string.loading_remove
+            else -> R.string.loading_restart
+        }
+    }
     val primaryAction: BuildDetailsMenuAction get() = when {
         current.isRunning -> BuildDetailsMenuAction(BuildDetailsAction.Cancel, R.string.action_stop_build)
         current.isQueued -> BuildDetailsMenuAction(BuildDetailsAction.Cancel, R.string.text_remove_from_queue_button)

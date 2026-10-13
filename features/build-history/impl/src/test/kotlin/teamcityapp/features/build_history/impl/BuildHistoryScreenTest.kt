@@ -62,13 +62,11 @@ internal fun HistoryTestScreen(
     onRetry: () -> Unit = {},
     onAppendRetry: () -> Unit = {},
     onBuild: (BuildLaunchData) -> Unit = {},
-    onQueuedRetry: () -> Unit = {},
-    onQueuedDismiss: () -> Unit = {},
     snackbar: androidx.compose.material3.SnackbarHostState = androidx.compose.runtime.remember { androidx.compose.material3.SnackbarHostState() }
 ) {
     BuildHistoryScreen(
         "Build Android and check all supported configurations", state, controls, rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, append,
-        onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, onQueuedRetry, onQueuedDismiss, snackbar = snackbar
+        onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, snackbar = snackbar
     )
 }
 
@@ -378,24 +376,5 @@ class BuildHistoryScreenTest {
         assertEquals(1, retries)
         compose.runOnIdle { state.value = state.value.copy(saving = true, saveFailed = false) }
         compose.onNodeWithTag("history:prompt-dismiss").assertIsNotEnabled()
-    }
-
-    @Test fun queuedShowFailureOffersExplicitRetryAndDismissActions() {
-        var retries = 0
-        var dismissals = 0
-        compose.setContent {
-            TeamCityTheme {
-                HistoryTestScreen(
-                    controls = BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available(), QueuedBuildState.Failed),
-                    onQueuedRetry = { retries++ },
-                    onQueuedDismiss = { dismissals++ }
-                )
-            }
-        }
-        compose.onNodeWithText("We encountered problem opening build").assertIsDisplayed()
-        compose.onNodeWithText("Retry").performClick()
-        compose.onNodeWithText("Cancel").performClick()
-        assertEquals(1, retries)
-        assertEquals(1, dismissals)
     }
 }

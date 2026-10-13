@@ -231,7 +231,7 @@ class BuildDetailsNavigationTest {
         }
     }
 
-    @Test fun restartSubmitsOnceThenQueuedBuildReplacesTheFinishedDestination() {
+    @Test fun restartOpensQueuedVisitAndBackRestoresTheFinishedBuild() {
         val build = mapper.toLaunchData(Mocks.successBuild())
         launch().use { scenario ->
             open(scenario, build)
@@ -248,6 +248,11 @@ class BuildDetailsNavigationTest {
             scenario.recreate()
             awaitTag("overview:row:WaitReason")
             verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            pressBack()
+            compose.waitUntil(10_000) {
+                (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as? BuildDetailsDestination)?.build?.id == build.id
+            }
+            awaitTag("overview:list")
             pressBack()
             awaitTag("navigation:row:project:id")
         }

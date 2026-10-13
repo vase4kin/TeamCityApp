@@ -72,7 +72,8 @@ class BuildDetailsScreenTest {
         compose.onNodeWithContentDescription("Navigate up").assertIsNotEnabled()
         compose.onNodeWithTag("details:action:Cancel").assertIsNotEnabled()
         compose.onNodeWithTag("details:confirm").assertDoesNotExist()
-        compose.onNodeWithText("Stopping build..").assertExists()
+        compose.onNodeWithText("Stopping…", useUnmergedTree = true).assertExists()
+        compose.onNodeWithTag("details:action:Cancel").assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.StateDescription, "Stopping…"))
     }
 
     @Test fun unavailableCountIsExplicitAndMetadataRetryHasOneCallback() {

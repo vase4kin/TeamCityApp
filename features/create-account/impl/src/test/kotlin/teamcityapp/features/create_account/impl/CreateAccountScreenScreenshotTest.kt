@@ -78,7 +78,7 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
             "server_error" -> AuthenticationError.Server("Unable to connect to TeamCity server")
             else -> null
         }
-        val form = AuthenticationFormState(serverUrl = if (stateName == "empty_url") "" else "https://teamcity.example/server", userName = if (stateName == "filled") "developer" else "", password = if (stateName == "filled") "password" else "", guest = stateName == "guest", busy = stateName == "loading", error = error)
+        val form = AuthenticationFormState(serverUrl = if (stateName == "empty_url") "" else "https://teamcity.example/server", userName = if (stateName == "filled") "developer" else "", password = if (stateName == "filled") "password" else "", guest = stateName in listOf("guest", "guest_loading"), busy = stateName in listOf("loading", "guest_loading", "demo_signing_in"), error = error)
         val dialog = when (stateName) {
             "ssl_dialog" -> CreateAccountDialog.Ssl
             "discard" -> CreateAccountDialog.Discard
@@ -97,7 +97,7 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
         }
         compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
         val tag = when (stateName) {
-            "loading" -> "auth:progress"
+            "loading", "guest_loading" -> "create-account:submit"
             "ssl_dialog" -> "auth:warning"
             "discard" -> "create-account:discard"
             else -> null
@@ -126,7 +126,7 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "server_error", "duplicate", "save_error", "loading", "ssl_dialog", "discard", "scrolled").flatMap { state ->
+            listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "server_error", "duplicate", "save_error", "guest_loading", "loading", "ssl_dialog", "discard", "scrolled").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             } + listOf("user", "scrolled").map { state -> arrayOf<Any>(state, Variant("landscape_$theme", 720, 360, dark, 1f)) }
         }

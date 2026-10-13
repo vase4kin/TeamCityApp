@@ -42,6 +42,7 @@ dependencies {
     implementation(projects.features.filterBuilds.api)
 
     implementation(projects.features.buildDetails.api)
+    implementation(projects.libraries.listState)
     implementation(projects.libraries.theme)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

@@ -26,6 +26,9 @@ data class ArtifactsUiState(
     val download: ArtifactDownloadState = ArtifactDownloadState.Idle
 )
 sealed interface ArtifactDownloadState {
+    @get:StringRes val messageRes: Int get() = if (this is Failed) R.string.artifacts_download_failed else R.string.artifacts_downloading
+
+    @get:StringRes val dismissLabelRes: Int get() = if (this is Failed) R.string.artifacts_dismiss else R.string.artifacts_cancel
     data object Idle : ArtifactDownloadState
     data class Downloading(val file: ArtifactDownload) : ArtifactDownloadState
     data class Failed(val file: ArtifactDownload, val token: Long = 0) : ArtifactDownloadState

@@ -36,9 +36,7 @@ fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFo
     val scrollState = rememberScrollState()
     TeamCityScreen(stringResource(R.string.add_new_account_dialog_title), onClose, bottomBar = {
         TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("create-account:bottom-action")) {
-            Button(onSubmit, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("create-account:submit"), enabled = !state.form.busy) {
-                Text(stringResource(R.string.add_new_account_dialog_create_account_button_text))
-            }
+            TeamCityLoadingButton(onSubmit, stringResource(R.string.add_new_account_dialog_create_account_button_text), stringResource(state.submitLabelRes), state.form.busy, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("create-account:submit"))
         }
     }) { modifier ->
         Column(modifier) {
@@ -50,7 +48,6 @@ fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFo
         }
     }
     when {
-        state.form.busy -> AuthenticationProgress(stringResource(R.string.progress_dialog_content), stringResource(R.string.progress_dialog_title))
         dialog == CreateAccountDialog.Ssl -> AuthenticationWarning(onAccept = onConfirm, onDecline = onDecline)
         dialog == CreateAccountDialog.Discard -> AlertDialog(onDismissRequest = onDecline, modifier = Modifier.testTag("create-account:discard"), shape = MaterialTheme.shapes.large, text = { Text(stringResource(R.string.discard_dialog_content)) }, confirmButton = { TextButton(onConfirm) { Text(stringResource(R.string.discard_dialog_positive_button_text)) } }, dismissButton = { TextButton(onDecline) { Text(stringResource(R.string.discard_dialog_negative_button_text)) } })
     }

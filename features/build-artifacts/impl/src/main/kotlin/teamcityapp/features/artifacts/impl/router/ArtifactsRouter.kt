@@ -30,7 +30,6 @@ interface ArtifactsRouter {
     fun permission(file: ArtifactDownload): ArtifactPermission
     fun openFile(file: DownloadedArtifact)
     fun openBrowser(build: BuildLaunchData, href: String)
-    fun downloadFailed()
     fun dispose()
 }
 

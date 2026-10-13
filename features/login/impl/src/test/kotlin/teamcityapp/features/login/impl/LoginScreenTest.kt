@@ -78,6 +78,14 @@ class LoginScreenTest {
         }
     }
 
+    @Test fun authenticationProgressIsInlineAndBelongsToDemoWhenRequested() {
+        compose.setContent { TeamCityTheme { LoginScreen(LoginUiState(form = AuthenticationFormState(busy = true), demo = teamcityapp.features.login.api.DemoServer(true, "https://demo"), demoLoading = false, demoSigningIn = true), {}, {}, {}, {}) } }
+        compose.onNodeWithTag("auth:progress").assertDoesNotExist()
+        compose.onNodeWithTag("login:demo").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithText("Connecting…").assertIsDisplayed()
+        compose.onNodeWithTag("login:submit").assertIsNotEnabled()
+    }
+
     @Test fun httpConsentAndSslConsentHaveSeparateCallbacks() {
         var http = 0
         var ssl = 0

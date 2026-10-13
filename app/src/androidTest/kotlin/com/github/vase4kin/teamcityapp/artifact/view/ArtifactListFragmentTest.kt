@@ -214,7 +214,7 @@ class ArtifactListFragmentTest {
         intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(Mocks.URL + "/repository/download/current-config/42:id/archive.zip!/index.html?guest=1")))
     }
 
-    @Test fun downloadFailureNotifiesBuildDetailsAndFeatureRetryCanSucceed() {
+    @Test fun downloadFailureCardOffersRetryThatCanSucceed() {
         intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
         `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.error(RuntimeException("download offline")))
         openArtifacts(Files(listOf(file("retry.unknown", "/metadata/retry"))))
@@ -236,14 +236,49 @@ class ArtifactListFragmentTest {
         `when`(teamCityService.downloadFile(anyString())).thenReturn(pending.doOnDispose { canceled.incrementAndGet() })
         openArtifacts(Files(listOf(file("cancel.unknown", "/metadata/cancel"))))
         download("/metadata/cancel")
-        awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+        awaitText(text(ArtifactsR.string.artifacts_downloading))
         compose.waitUntil(10_000) { pending.hasObservers() }
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
         compose.waitUntil(10_000) { canceled.get() == 1 }
         assertFalse(pending.hasObservers())
-        compose.onNodeWithText(text(ArtifactsR.string.artifacts_downloading_title)).assertDoesNotExist()
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_downloading)).assertDoesNotExist()
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(ArtifactsR.string.artifacts_download_failed)).assertCountEquals(0)
+    }
+
+    @Test fun leavingArtifactsCancelsPendingDownloadAndReturningDoesNotResumeIt() {
+        val pending = SingleSubject.create<ResponseBody>()
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
+        openArtifacts(Files(listOf(file("leave.unknown", "/metadata/leave"))))
+        download("/metadata/leave")
+        awaitText(text(ArtifactsR.string.artifacts_downloading))
+        compose.waitUntil(10_000) { pending.hasObservers() }
+        androidx.test.espresso.Espresso.pressBack()
+        compose.waitUntil(10_000) { !pending.hasObservers() }
+        tab("Artifacts")
+        awaitText("leave.unknown")
+        compose.onNodeWithTag("artifacts:download-card").assertDoesNotExist()
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
+    }
+
+    @Test fun backgroundingCancelsPendingDownloadWithoutAnErrorOrAutomaticResume() {
+        val pending = SingleSubject.create<ResponseBody>()
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Files(listOf(file("background.unknown", "/metadata/background")))))
+        ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(BuildComposeFixtures.finished)).use { scenario ->
+            awaitTag("overview:list")
+            tab("Artifacts")
+            download("/metadata/background")
+            awaitText(text(ArtifactsR.string.artifacts_downloading))
+            compose.waitUntil(10_000) { pending.hasObservers() }
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+            compose.waitUntil(10_000) { !pending.hasObservers() }
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+            awaitText("background.unknown")
+            compose.onNodeWithTag("artifacts:download-card").assertDoesNotExist()
+            compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
+        }
     }
 
     @Test fun restoredArtifactsRetainsPagesAndPendingDownloadWithoutDuplicateWork() {
@@ -263,17 +298,17 @@ class ArtifactListFragmentTest {
             awaitTag("overview:list")
             tab("Artifacts")
             download("/metadata/restore")
-            awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+            awaitText(text(ArtifactsR.string.artifacts_downloading))
             val completedLists = lists.get()
             scenario.recreate()
-            awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+            awaitText(text(ArtifactsR.string.artifacts_downloading))
             assertEquals(completedLists, lists.get())
             assertEquals(1, downloads.get())
             assertTrue(pending.hasObservers())
             compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
             compose.waitUntil(10_000) { !pending.hasObservers() }
             awaitText("restore.unknown")
-            // The retained destination restores its loaded toolbar after the dialog closes.
+            // The retained destination restores its loaded toolbar after recreation.
             compose.awaitDisplayedText("#latest-number · Current configuration")
         }
     }
@@ -283,7 +318,7 @@ class ArtifactListFragmentTest {
         `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
         openArtifacts(Files(listOf(file("app.apk", "/metadata/app.apk"))))
         download("/metadata/app.apk")
-        awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+        awaitText(text(ArtifactsR.string.artifacts_downloading))
         compose.waitUntil(10_000) { pending.hasObservers() }
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_permission_denied)).assertDoesNotExist()
         assertFalse(androidx.test.espresso.intent.Intents.getIntents().any { it.action == android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES })

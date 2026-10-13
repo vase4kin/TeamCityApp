@@ -137,18 +137,6 @@ internal fun BuildDetailsScreen(
             dismissButton = { TextButton(onClick = onDismissConfirmation) { Text(stringResource(R.string.text_cancel_button)) } }
         )
     }
-    state.operation?.let { operation ->
-        AlertDialog(
-            onDismissRequest = {},
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(stringResource(operation.message))
-                    TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth())
-                }
-            },
-            confirmButton = {}
-        )
-    }
 }
 
 @Preview
@@ -179,13 +167,15 @@ private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (B
             }
         }
         val action = state.primaryAction
-        ExtendedFloatingActionButton(
-            onClick = { if (!state.busy) onAction(action.action) },
+        TeamCityLoadingExtendedFloatingActionButton(
+            onClick = { onAction(action.action) },
+            label = stringResource(action.label),
+            loadingLabel = stringResource(state.actionLoadingLabelRes),
+            loading = state.busy,
             modifier = Modifier.heightIn(min = FloatingToolbarDefaults.ContainerSize).testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
             containerColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
             contentColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
-            icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) },
-            text = { Text(stringResource(action.label)) }
+            icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) }
         )
     }
 }

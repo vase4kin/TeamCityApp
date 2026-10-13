@@ -72,6 +72,12 @@ class LoadingIndicatorScreenshotTest(private val stateName: String, private val 
             TeamCityTheme(darkTheme = variant.dark) {
                 Surface(Modifier.fillMaxSize()) {
                     when (stateName) {
+                        "button" -> Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            TeamCityLoadingButton({}, "Sign in", "Signing in…", false)
+                            TeamCityLoadingButton({}, "Sign in", "Signing in…", true)
+                            TeamCityLoadingExtendedFloatingActionButton({}, "Restart", "Restarting…", true, icon = {})
+                        }
+
                         "content" -> LoadingContent(Modifier.fillMaxSize())
 
                         "linear" -> Column(Modifier.padding(16.dp)) {
@@ -106,7 +112,7 @@ class LoadingIndicatorScreenshotTest(private val stateName: String, private val 
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("content", "inline", "linear", "branch").flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            listOf("content", "inline", "linear", "branch", "button").flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

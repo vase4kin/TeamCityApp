@@ -28,6 +28,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import teamcityapp.features.build_details.api.BuildDetailsDestination
+import teamcityapp.features.build_details.api.BuildDetailsReferenceDestination
 import teamcityapp.features.build_history.api.*
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.BuildHistoryRoute
@@ -72,6 +73,9 @@ class BuildHistoryDestinationRegistration @Inject constructor(
                 object : BuildHistoryRouter {
                     override fun navigateUp() {
                         if (!navigator.pop()) activity.finish()
+                    }
+                    override fun openBuildReference(href: String, configurationName: String) {
+                        navigator.push(BuildDetailsReferenceDestination(href, configurationName))
                     }
                     override fun openBuild(build: BuildLaunchData, configurationName: String) {
                         navigator.push(BuildDetailsDestination(build, configurationName))

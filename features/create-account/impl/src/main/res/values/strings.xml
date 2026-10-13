@@ -15,8 +15,6 @@ Copyright 2026 Andrey Tolpeev
   limitations under the License.
 -->
 <resources>
-<string name="progress_dialog_title">Checking</string>
-<string name="progress_dialog_content">Please wait…</string>
 <string name="add_new_account_dialog_title">Add user account</string>
 <string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
 <string name="add_new_account_dialog_create_account_button_text">Add</string>
@@ -24,4 +22,6 @@ Copyright 2026 Andrey Tolpeev
 <string name="discard_dialog_positive_button_text">Discard</string>
 <string name="discard_dialog_negative_button_text">Cancel</string>
     <string name="title_activity_create_account">Create account</string>
+    <string name="signing_in">Signing in…</string>
+    <string name="connecting">Connecting…</string>
 </resources>

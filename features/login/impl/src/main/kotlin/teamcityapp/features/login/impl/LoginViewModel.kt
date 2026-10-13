@@ -26,7 +26,9 @@ import kotlinx.coroutines.launch
 import teamcityapp.features.login.api.*
 import teamcityapp.libraries.authentication.*
 
-data class LoginUiState(val form: AuthenticationFormState = AuthenticationFormState(), val demo: DemoServer? = null, val demoLoading: Boolean = true, val httpConfirmation: Boolean = false, val guestUnauthorized: Boolean = false, val signedIn: Boolean = false) {
+data class LoginUiState(val form: AuthenticationFormState = AuthenticationFormState(), val demo: DemoServer? = null, val demoLoading: Boolean = true, val httpConfirmation: Boolean = false, val guestUnauthorized: Boolean = false, val signedIn: Boolean = false, val demoSigningIn: Boolean = false) {
+    val submitLabelRes: Int = if (form.guest) R.string.connecting else R.string.signing_in
+    val demoLabelRes: Int = R.string.connecting
     val httpWarning: AuthenticationWarningText? = if (httpConfirmation) AuthenticationWarningText.Http else null
 }
 
@@ -80,15 +82,15 @@ class LoginViewModel @Inject constructor(private val authentication: Authenticat
         val server = demo ?: return
         if (form.value.form.busy || form.value.signedIn) return
         tracker.trackUserTriesTryItOut()
-        authenticate(AccountCredentials(server.url, guest = true), false)
+        authenticate(AccountCredentials(server.url, guest = true), false, demoSubmission = true)
     }
     fun consumeSuccess(): Boolean {
         if (!form.value.signedIn) return false
         form.update { it.copy(signedIn = false) }
         return true
     }
-    private fun authenticate(input: AccountCredentials, checkHttp: Boolean) {
-        form.update { it.copy(form = it.form.copy(busy = true, error = null)) }
+    private fun authenticate(input: AccountCredentials, checkHttp: Boolean, demoSubmission: Boolean = false) {
+        form.update { it.copy(form = it.form.copy(busy = true, error = null), demoSigningIn = demoSubmission) }
         viewModelScope.launch {
             val result = try {
                 authentication.signIn(input, checkHttp, false)

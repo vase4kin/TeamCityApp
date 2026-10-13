@@ -299,7 +299,7 @@ class BuildHistoryActivityTest {
         }
     }
 
-    @Test fun queuedShowWaitsForFullResponseAndPushesCompleteTypedSnapshot() {
+    @Test fun queuedShowNavigatesImmediatelyAndResolvesCompleteTypedSnapshot() {
         installPage(emptyList())
         prepareRun(Activity.RESULT_OK)
         val pending = SingleSubject.create<Build>()
@@ -311,10 +311,10 @@ class BuildHistoryActivityTest {
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             compose.waitUntil(10_000) { pending.hasObservers() }
-            compose.onNodeWithTag("history:opening-progress").assertIsDisplayed()
+            compose.onNodeWithTag("details:reference-loading").assertIsDisplayed()
             pending.onSuccess(fullBuild("queued"))
             assertCompleteBuildDestination("queued")
-            // History hydration and the newly visible Overview each own one request.
+            // Reference resolution and the newly visible Overview each own one request.
             verify(teamCityService, times(2)).build("/queued/result")
         }
     }
@@ -329,11 +329,11 @@ class BuildHistoryActivityTest {
             completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
-            awaitText(text(HistoryR.string.history_open_failed))
+            awaitText(text(teamcityapp.features.build_details.impl.R.string.error_opening_build))
             doReturn(Single.just(fullBuild("queued"))).whenever(teamCityService).build("/queued/result")
             compose.onNodeWithText(text(HistoryR.string.history_retry)).performClick()
             assertCompleteBuildDestination("queued")
-            // Failed hydration, explicit retry, and the new Overview load.
+            // Failed reference loading, explicit retry, and the new Overview load.
             verify(teamCityService, times(3)).build("/queued/result")
         }
     }
@@ -516,7 +516,7 @@ class BuildHistoryActivityTest {
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             compose.waitUntil(10_000) { pending.hasObservers() }
             scenario.recreate()
-            compose.onNodeWithTag("history:opening-progress").assertIsDisplayed()
+            compose.onNodeWithTag("details:reference-loading").assertIsDisplayed()
             verify(teamCityService, times(1)).build("/queued/result")
             pending.onSuccess(fullBuild("queued"))
             assertCompleteBuildDestination("queued")

@@ -18,8 +18,7 @@
  <string name="artifacts_title">Artifacts</string>
  <string name="artifacts_empty">No artifacts</string>
  <string name="artifacts_back">Back</string>
- <string name="artifacts_downloading_title">Downloading artifact file..</string>
- <string name="artifacts_downloading">Please wait…</string>
+ <string name="artifacts_downloading">Downloading…</string>
  <string name="artifacts_cancel">Cancel</string>
  <string name="artifacts_download_failed">Couldn’t download the artifact.</string>
  <string name="artifacts_retry_download">Retry download</string>
@@ -29,4 +28,6 @@
  <string name="artifacts_file_unavailable">No installed app could open this file.</string>
  <string name="artifacts_browser_unavailable">Couldn’t open this artifact in the browser.</string>
  <string name="artifacts_ok">OK</string>
+ <string name="artifacts_keep_screen_open">Keep this screen open. Leaving it or putting the app in the background will cancel the download.</string>
+ <string name="artifacts_dismiss">Dismiss</string>
 </resources>
