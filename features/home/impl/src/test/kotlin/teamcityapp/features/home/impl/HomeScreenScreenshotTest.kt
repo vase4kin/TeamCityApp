@@ -111,6 +111,8 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onRoot().captureRoboImage("home_${stateName}_${variant.name}.png")
     }
     companion object {

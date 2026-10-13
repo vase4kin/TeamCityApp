@@ -48,7 +48,7 @@ class HomeScreenTest {
         compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(query = query, badges = badges), false, {}, {}, {}, {}, remember { SnackbarHostState() }, onAccount = { accounts++ }) { Text("Project content") } } }
         listOf("Projects", "Favorites", "Activity").forEach { compose.onNodeWithTag("home:tab:$it").assertIsDisplayed() }
         listOf("Running", "Queue", "Agents").forEach { compose.onNodeWithTag("home:tab:$it").assertDoesNotExist() }
-        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("14")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("home:count:Favorites", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithContentDescription("Open account for Andrey Tolpeev").performClick()
         assertEquals(1, accounts)
@@ -94,21 +94,21 @@ class HomeScreenTest {
             }
         }
         compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("9")
-        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("14")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Agents to HomeBadge.Count(0))) }
         compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertDoesNotExist()
-        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("5")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Agents to HomeBadge.Loading)) }
         compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Agents to HomeBadge.Failed())) }
         compose.onNodeWithTag("home:count-failed:Agents", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("!")
-        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("!")
+        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals("2")
         compose.onNodeWithTag("home:count:Queue", useUnmergedTree = true).assertTextEquals("3")
         compose.runOnIdle { state.value = state.value.copy(badges = badges) }
         compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("9")
-        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("14")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test fun expandedCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(true)
@@ -130,7 +130,7 @@ class HomeScreenTest {
         val notice = compose.onNodeWithText("Some tab counts couldn’t be loaded.").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
         assertTrue(notice.top > title.bottom)
         compose.onNodeWithTag("home:action").assertDoesNotExist()
-        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithText("Retry counts").performClick()
         assertEquals(1, retries)
         compose.onNodeWithTag("home:retry-notice").assertDoesNotExist()
