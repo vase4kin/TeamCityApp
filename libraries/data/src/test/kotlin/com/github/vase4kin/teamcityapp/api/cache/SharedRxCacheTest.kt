@@ -71,7 +71,12 @@ class SharedRxCacheTest {
         val subscribed = CountDownLatch(count)
         val loaders = (1..count).map { SingleSubject.create<Build>() }
         val observers = loaders.mapIndexed { index, loader ->
-            cache.build(loader.doOnSubscribe { subscribed.countDown() }, DynamicKey(old[index].href), EvictDynamicKey(true)).test()
+            val response = Single.wrap<Build> { observer ->
+                loader.subscribe(observer)
+                // Signal after observer registration, rather than from doOnSubscribe.
+                subscribed.countDown()
+            }
+            cache.build(response, DynamicKey(old[index].href), EvictDynamicKey(true)).test()
         }
         // Every upstream must be subscribed before any response completes: no network serialization.
         assertTrue(subscribed.await(10, TimeUnit.SECONDS))
