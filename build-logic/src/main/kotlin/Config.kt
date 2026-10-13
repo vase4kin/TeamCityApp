@@ -33,13 +33,29 @@ object Config {
 }
 
 internal fun androidVersionCode(version: String): Int {
-    val components = version.split('.').map { it.toIntOrNull() }
-    require(components.size == 3 && components.all { it != null }) {
-        "Release versions must contain numeric major, minor, and patch components"
+    val match = Regex("([1-9][0-9]*)\\.([0-9]+)\\.([0-9]+)(?:-beta\\.(0|[1-9][0-9]*))?")
+        .matchEntire(version)
+    requireNotNull(match) {
+        "Release versions must be major.minor.patch with an optional -beta.N suffix"
     }
-    val (major, minor, patch) = components.map { requireNotNull(it) }
-    require(major in 1..9_999 && minor in 0..99 && patch in 0..99) {
+    val (major, minor, patch) = match.groupValues.drop(1).take(3).map { it.toIntOrNull() }
+    require(major != null && major in 1..209 && minor != null && minor in 0..99 && patch != null && patch in 0..99) {
         "Release versions must fit the Android version code scheme"
     }
-    return major * 10_000 + minor * 100 + patch
+    val base = major * 10_000 + minor * 100 + patch
+    val beta = match.groupValues[4].takeIf { it.isNotEmpty() }
+    // Preserve the existing 1.x release codes. Starting with 2.x, reserve 999
+    // increasing beta codes before each stable release so promotion is an upgrade.
+    if (major == 1) {
+        require(beta == null) { "Beta releases are supported starting with 2.0.0" }
+        return base
+    }
+    val release = if (beta == null) {
+        999
+    } else {
+        requireNotNull(beta.toIntOrNull()?.takeIf { it in 0..998 }) {
+            "Beta numbers must be between 0 and 998"
+        }
+    }
+    return base * 1_000 + release
 }
