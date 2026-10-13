@@ -166,7 +166,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                 lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                     val result = snackbar.showSnackbar(activity.getString(notice.message), notice.actionLabel?.let(activity::getString))
                     model.consumeNotice(notice.id)
-                    if (result == SnackbarResult.ActionPerformed && notice.openQueued) model.openQueued()
+                    if (result == SnackbarResult.ActionPerformed && notice.openQueued) model.queuedBuildReference()?.let { navigator.push(BuildDetailsReferenceDestination(it, state.subtitle, fromRestart = true)) }
                 }
             }
             val overview = remember(destination, entryId) {

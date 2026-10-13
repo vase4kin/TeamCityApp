@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.artifacts.api.Artifact
 import teamcityapp.libraries.list_state.ListUiState
@@ -74,9 +76,7 @@ fun ArtifactsScreen(
         }
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
-            if (state.download is ArtifactDownloadState.Failed) {
-                ErrorNotice(stringResource(R.string.artifacts_download_failed), onRetryDownload, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.artifacts_retry_download))
-            }
+            ArtifactDownloadCard(state.download, onCancelDownload, onRetryDownload)
             TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.weight(1f), empty = { TeamCityListEmpty(stringResource(R.string.artifacts_empty)) }) {
                 val rows = (state.list as? ListUiState.Content<Artifact>)?.items.orEmpty()
                 val occurrences = mutableMapOf<String, Int>()
@@ -88,25 +88,12 @@ fun ArtifactsScreen(
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                     LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                         itemsIndexed(rows, key = { index, _ -> keys[index] }) { index, file ->
-                            ArtifactRow(file, { onArtifactClick(file) }, { onArtifactLongClick(file) }, listRowPosition(index, rows.size))
+                            ArtifactRow(file, { onArtifactClick(file) }, { onArtifactLongClick(file) }, listRowPosition(index, rows.size), enabled = file.isFolder || state.download !is ArtifactDownloadState.Downloading)
                         }
                     }
                 }
             }
         }
-    }
-    if (state.download is ArtifactDownloadState.Downloading) {
-        AlertDialog(
-            onDismissRequest = onCancelDownload,
-            title = { Text(stringResource(R.string.artifacts_downloading_title)) },
-            text = {
-                Column {
-                    Text(stringResource(R.string.artifacts_downloading))
-                    TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding))
-                }
-            },
-            confirmButton = { TextButton(onCancelDownload) { Text(stringResource(R.string.artifacts_cancel)) } }
-        )
     }
     platformError?.let { error ->
         AlertDialog(
@@ -125,12 +112,12 @@ fun ArtifactsScreen(
 }
 
 @Composable
-internal fun ArtifactRow(file: Artifact, onClick: () -> Unit, onLongClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single) {
+internal fun ArtifactRow(file: Artifact, onClick: () -> Unit, onLongClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single, enabled: Boolean = true) {
     val context = LocalContext.current
     TeamCityListRow(
-        onClick = onClick,
-        onLongClick = onLongClick,
-        modifier = Modifier.testTag("artifacts:row:${file.href}"),
+        onClick = { if (enabled) onClick() },
+        onLongClick = { if (enabled) onLongClick() },
+        modifier = Modifier.testTag("artifacts:row:${file.href}").then(if (enabled) Modifier else Modifier.semantics { disabled() }),
         position = position,
         leadingContent = {
             TeamCityListLeadingIcon {

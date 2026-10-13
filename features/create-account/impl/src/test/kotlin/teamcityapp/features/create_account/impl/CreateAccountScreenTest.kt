@@ -108,7 +108,7 @@ class CreateAccountScreenTest {
         var submitted = 0
         compose.setContent { TeamCityTheme { CreateAccountScreen(CreateAccountUiState(AuthenticationFormState(busy = true)), {}, { submitted++ }, {}, {}) } }
         compose.onNodeWithTag("auth:url").assertIsNotEnabled()
-        compose.onNodeWithTag("auth:progress").assertExists()
+        compose.onNodeWithTag("create-account:submit").assertExists()
         assertEquals(0, submitted)
     }
 }

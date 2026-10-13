@@ -123,7 +123,7 @@ class RunBuildScreenScreenshotTest(private val stateName: String, private val va
         }
         compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
         val tag = when (stateName) {
-            "queuing" -> "run-build:progress"
+            "queuing" -> "run-build:submit"
             "agent_dialog" -> "run-build:agent-dialog"
             "parameter_dialog", "parameter_error" -> "run-build:parameter-dialog"
             else -> null

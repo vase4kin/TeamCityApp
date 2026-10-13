@@ -25,6 +25,11 @@ import teamcityapp.libraries.builds.*
 class BuildDetailsDestinationTest {
     private val base = BuildLaunchData("1", "/builds/1", changes = BuildCollectionLink("/changes"), tests = BuildTests("/tests"), artifacts = BuildCollectionLink("/artifacts"), snapshotDependencies = BuildCollectionLink(null))
 
+    @Test fun referenceSerializationPreservesOpaqueUrlAndFallbackName() {
+        val destination = BuildDetailsReferenceDestination("opaque/queued/42?locator=branch:main", "Build Android", fromRestart = true)
+        assertEquals(destination, Json.decodeFromString<BuildDetailsReferenceDestination>(Json.encodeToString(destination)))
+    }
+
     @Test fun finishedSnapshotCreatesFiveSectionsInInstalledOrder() {
         assertEquals(BuildDetailsSection.entries, base.copy(state = "finished").detailsSections())
     }

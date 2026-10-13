@@ -28,6 +28,7 @@ import teamcityapp.libraries.authentication.*
 import teamcityapp.libraries.theme.UiText
 
 data class CreateAccountUiState(val form: AuthenticationFormState = AuthenticationFormState(), val created: Boolean = false) {
+    val submitLabelRes: Int = if (form.guest) R.string.connecting else R.string.signing_in
     val formErrorMessage: UiText? = if (form.error == AuthenticationError.DuplicateAccount) UiText.Resource(R.string.add_new_account_dialog_account_exist_error_message) else form.errorMessage
 }
 

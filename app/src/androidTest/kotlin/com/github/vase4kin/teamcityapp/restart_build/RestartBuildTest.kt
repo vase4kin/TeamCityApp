@@ -234,12 +234,12 @@ class RestartBuildTest {
         // Check build is opened
         compose.waitUntil(10_000) {
             (currentRootSnapshot().entries.last().destination as? teamcityapp.features.build_details.api.BuildDetailsDestination)?.let {
-                it.forceOverviewRefresh && it.build == teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(build2)
+                it.build == teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(build2)
             } == true
         }
         val destination = currentRootSnapshot().entries.last().destination as teamcityapp.features.build_details.api.BuildDetailsDestination
         org.junit.Assert.assertEquals(teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(build2), destination.build)
-        org.junit.Assert.assertTrue(destination.forceOverviewRefresh)
+        org.junit.Assert.assertFalse(destination.forceOverviewRefresh)
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")

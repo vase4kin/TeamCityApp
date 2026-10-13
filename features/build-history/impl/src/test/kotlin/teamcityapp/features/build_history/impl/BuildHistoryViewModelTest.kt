@@ -401,58 +401,14 @@ class BuildHistoryViewModelTest {
         assertNull(vm.controls.value.notice)
     }
 
-    @Test fun queuedShowReturnsFullLaunchOnceAndRetriesFailureWithoutDuplicates() = runTest(dispatcher) {
-        val result = historyBuild().copy(personal = true, pinned = true)
-        repository.loadQueued = { error("offline") }
-        val vm = viewModel()
-        observe(vm)
-        runCurrent()
-        vm.onQueuedBuildResult("/queued")
-        vm.openQueuedBuild()
-        vm.openQueuedBuild()
-        runCurrent()
-        assertEquals(QueuedBuildState.Failed, vm.controls.value.queuedBuild)
-        assertEquals(listOf("/queued"), repository.queuedRequests)
-        repository.loadQueued = { result }
-        vm.openQueuedBuild()
-        runCurrent()
-        assertEquals(result, vm.claimQueuedBuild())
-        assertNull(vm.claimQueuedBuild())
-        assertEquals(2, tracker.queued)
-    }
-
-    @Test fun newQueuedResultCancelsOlderPendingShowAndNeverLaunchesOldBuild() = runTest(dispatcher) {
-        val oldResponse = CompletableDeferred<teamcityapp.libraries.builds.BuildLaunchData>()
-        repository.loadQueued = { if (it == "/old") withContext(NonCancellable) { oldResponse.await() } else historyBuild("new") }
-        val vm = viewModel()
-        observe(vm)
-        runCurrent()
-        vm.onQueuedBuildResult("/old")
-        vm.openQueuedBuild()
-        runCurrent()
-        vm.onQueuedBuildResult("/new")
-        runCurrent()
-        oldResponse.complete(historyBuild("old"))
-        runCurrent()
-        assertNull(vm.claimQueuedBuild())
-        vm.openQueuedBuild()
-        runCurrent()
-        assertEquals(historyBuild("new"), vm.claimQueuedBuild())
-    }
-
-    @Test fun blankQueuedResultShowsFailureAndDismissDoesNotLaunch() = runTest(dispatcher) {
-        val vm = viewModel()
-        observe(vm)
-        runCurrent()
-        vm.onQueuedBuildResult("")
-        vm.openQueuedBuild()
-        runCurrent()
-        assertEquals(QueuedBuildState.Failed, vm.controls.value.queuedBuild)
+    @Test fun showReturnsReferenceWithoutFetchingAndRestoresIt() = runTest(dispatcher) {
+        val saved = SavedStateHandle(mapOf("id" to "configuration", "name" to "Build Android"))
+        val vm = BuildHistoryViewModel(saved, repository, onboarding, tracker)
+        vm.onQueuedBuildResult("opaque/queued/42")
+        assertEquals("opaque/queued/42", vm.queuedBuildReference())
         assertTrue(repository.queuedRequests.isEmpty())
-        vm.dismissQueuedFailure()
-        runCurrent()
-        assertEquals(QueuedBuildState.Idle, vm.controls.value.queuedBuild)
-        assertNull(vm.claimQueuedBuild())
+        val restored = BuildHistoryViewModel(saved, repository, onboarding, tracker)
+        assertEquals("opaque/queued/42", restored.queuedBuildReference())
     }
 
     @Test fun oldSnackbarAcknowledgementCannotDismissNewNotice() = runTest(dispatcher) {

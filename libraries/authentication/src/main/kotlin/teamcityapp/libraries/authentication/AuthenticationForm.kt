@@ -125,23 +125,6 @@ fun AuthenticationWarning(message: AuthenticationWarningText = AuthenticationWar
     )
 }
 
-@Composable
-fun AuthenticationProgress(message: String, title: String? = null) {
-    AlertDialog(
-        onDismissRequest = {},
-        modifier = Modifier.testTag("auth:progress"),
-        shape = MaterialTheme.shapes.large,
-        title = title?.let { { Text(it) } },
-        text = {
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
-                Text(message, Modifier.padding(start = TeamCityDimensions.sectionSpacing))
-            }
-        },
-        confirmButton = {}
-    )
-}
-
 @Preview @Composable
 private fun FormPreview() {
     TeamCityTheme { AuthenticationForm(AuthenticationFormState(), {}, {}, {}) }

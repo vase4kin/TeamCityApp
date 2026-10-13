@@ -20,6 +20,7 @@ import teamcityapp.libraries.builds.BuildLaunchData
 
 interface BuildHistoryRouter {
     fun navigateUp()
+    fun openBuildReference(href: String, configurationName: String)
     fun openBuild(build: BuildLaunchData, configurationName: String)
     fun openRunBuild(configurationId: String)
     fun openFilterBuilds(configurationId: String)

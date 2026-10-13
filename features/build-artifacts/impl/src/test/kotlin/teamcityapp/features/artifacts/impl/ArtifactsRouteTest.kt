@@ -19,7 +19,7 @@ package teamcityapp.features.artifacts.impl
 import android.app.Application
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -137,79 +137,35 @@ class ArtifactsRouteTest {
         assertTrue(router.disposals > second)
     }
 
-    @Test fun explicitDownloadSurvivesHiddenTabAndLaunchesFileOnlyOnceAfterResuming() {
-        val result = CompletableDeferred<DownloadedArtifact>()
+    @Test fun leavingScreenCancelsDownloadAndReturningDoesNotOpenOrReportFailure() {
         var started = false
+        var cancelled = false
         val vm = viewModel(downloadResult = {
             started = true
-            result.await()
+            try {
+                kotlinx.coroutines.awaitCancellation()
+            } finally {
+                cancelled = true
+            }
         })
         val visible = mutableStateOf(true)
         compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { ArtifactsRoute(router, false, visible.value, vm) } } }
-        compose.waitUntil(5_000) {
-            compose.waitForIdle()
-            router.actions.subscriptionCount.value == 1
-        }
+        compose.waitUntil(5_000) { router.actions.subscriptionCount.value == 1 }
         compose.runOnIdle { router.actions.tryEmit(ArtifactAction.Download(ArtifactDownload("file.zip", "opaque/download"))) }
+        compose.waitUntil(5_000) { started }
+        compose.onNodeWithTag("artifacts:download-card").assertIsDisplayed()
+        compose.runOnIdle { visible.value = false }
         compose.waitUntil(5_000) {
             compose.waitForIdle()
-            started
+            cancelled
         }
-        compose.runOnIdle { visible.value = false }
+        compose.runOnIdle { visible.value = true }
         compose.waitForIdle()
-        compose.onNodeWithText(RuntimeEnvironment.getApplication().getString(R.string.artifacts_downloading_title)).assertDoesNotExist()
-        compose.runOnIdle { result.complete(DownloadedArtifact("/completed/file.zip")) }
-        compose.waitForIdle()
+        compose.onNodeWithTag("artifacts:download-card").assertDoesNotExist()
         assertTrue(router.files.isEmpty())
-        compose.runOnIdle { visible.value = true }
-        compose.waitUntil(5_000) {
-            compose.waitForIdle()
-            router.files.size == 1
-        }
-        assertEquals(DownloadedArtifact("/completed/file.zip"), router.files.single())
-        compose.runOnIdle { visible.value = false }
-        compose.waitForIdle()
-        compose.runOnIdle { visible.value = true }
-        compose.waitForIdle()
-        assertEquals(1, router.files.size)
     }
 
-    @Test fun backgroundDownloadFailureNotifiesBuildDetailsOnlyOnceWhenTheArtifactTabReturns() {
-        val result = CompletableDeferred<DownloadedArtifact>()
-        var started = false
-        val vm = viewModel(downloadResult = {
-            started = true
-            result.await()
-        })
-        val visible = mutableStateOf(true)
-        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { ArtifactsRoute(router, false, visible.value, vm) } } }
-        compose.waitUntil(5_000) {
-            compose.waitForIdle()
-            router.actions.subscriptionCount.value == 1
-        }
-        compose.runOnIdle { router.actions.tryEmit(ArtifactAction.Download(ArtifactDownload("file.zip", "opaque/download"))) }
-        compose.waitUntil(5_000) {
-            compose.waitForIdle()
-            started
-        }
-        compose.runOnIdle { visible.value = false }
-        compose.waitForIdle()
-        compose.runOnIdle { result.completeExceptionally(IllegalStateException("offline")) }
-        compose.waitForIdle()
-        assertEquals(0, router.failures)
-        compose.runOnIdle { visible.value = true }
-        compose.waitUntil(5_000) {
-            compose.waitForIdle()
-            router.failures == 1
-        }
-        compose.runOnIdle { visible.value = false }
-        compose.waitForIdle()
-        compose.runOnIdle { visible.value = true }
-        compose.waitForIdle()
-        assertEquals(1, router.failures)
-    }
-
-    @Test fun pausedHostDismissesDownloadDialogButRetainsTheExplicitOperation() {
+    @Test fun pausedSheetHidesDownloadCardButRetainsTheExplicitOperation() {
         val owner = object : LifecycleOwner {
             val registry = LifecycleRegistry.createUnsafe(this)
             override val lifecycle: Lifecycle = registry
@@ -235,7 +191,7 @@ class ArtifactsRouteTest {
             compose.waitForIdle()
             started
         }
-        val title = RuntimeEnvironment.getApplication().getString(R.string.artifacts_downloading_title)
+        val title = RuntimeEnvironment.getApplication().getString(R.string.artifacts_downloading)
         compose.onNodeWithText(title).assertIsDisplayed()
         compose.runOnIdle { owner.registry.currentState = Lifecycle.State.STARTED }
         compose.waitForIdle()
@@ -289,9 +245,6 @@ class ArtifactsRouteTest {
         }
         override fun openBrowser(build: BuildLaunchData, href: String) {
             if (browserFails) throw IllegalStateException("No browser installed")
-        }
-        override fun downloadFailed() {
-            failures++
         }
         override fun dispose() {
             disposals++

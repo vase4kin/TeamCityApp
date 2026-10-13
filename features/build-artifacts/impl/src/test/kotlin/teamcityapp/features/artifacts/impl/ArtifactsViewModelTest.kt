@@ -221,7 +221,7 @@ class ArtifactsViewModelTest {
         assertEquals(ArtifactDownloadState.Idle, vm.state.value.download)
     }
 
-    @Test fun downloadFailureCanNotifyLegacyHostOnlyOnceAndRetryUsesTheSameOpaqueUrl() = runTest(dispatcher) {
+    @Test fun downloadFailureRetainsRetryForTheSameOpaqueUrl() = runTest(dispatcher) {
         repository.save = { error("offline") }
         val vm = vm()
         observe(vm)
@@ -229,8 +229,6 @@ class ArtifactsViewModelTest {
         vm.download(file)
         runCurrent()
         val failed = vm.state.value.download as ArtifactDownloadState.Failed
-        assertTrue(vm.claimDownloadFailure(failed.token))
-        assertFalse(vm.claimDownloadFailure(failed.token))
         repository.save = { downloaded }
         vm.retryDownload()
         runCurrent()

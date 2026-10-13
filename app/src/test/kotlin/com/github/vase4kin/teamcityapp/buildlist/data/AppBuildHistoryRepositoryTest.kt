@@ -43,7 +43,7 @@ import teamcityapp.libraries.data.builds.BuildLaunchMapper
 class AppBuildHistoryRepositoryTest {
     private val mapper = BuildLaunchMapper()
     private val hydrator = BuildHydrator(mapper)
-    private fun adapter(session: Repository, dispatcher: CoroutineDispatcher, service: TeamCityService = mock(), storage: SharedUserStorage = mock()) = DefaultBuildHistoryRepository(Provider { session }, Provider { service }, storage, hydrator, mapper, dispatcher)
+    private fun adapter(session: Repository, dispatcher: CoroutineDispatcher, storage: SharedUserStorage = mock()) = DefaultBuildHistoryRepository(Provider { session }, storage, hydrator, dispatcher)
 
     @Test fun initialPageKeepsSelectedLocatorAndAllowsPageCache() = runTest {
         val session = mock<Repository>()
@@ -120,10 +120,8 @@ class AppBuildHistoryRepositoryTest {
                 resolutions++
                 current
             },
-            Provider { mock<TeamCityService>() },
             mock(),
             hydrator,
-            mapper,
             StandardTestDispatcher(testScheduler)
         )
         val request = async { adapter.page(query, null, false) }
@@ -148,33 +146,6 @@ class AppBuildHistoryRepositoryTest {
         runCurrent()
         verify(session).listBuilds("Android", query.locator, false)
         verifyNoMoreInteractions(session)
-    }
-
-    @Test fun queuedShowUsesCapturedUncachedServiceAndFullDetailMapping() = runTest {
-        val session = mock<Repository>()
-        val service = mock<TeamCityService>()
-        val detail = draftBuild("queued", "queued", "/queue/1", ",\"number\":\"098\",\"buildType\":{\"id\":\"Android\",\"name\":\"Android build\"},\"snapshot-dependencies\":{\"href\":\"/snapshots\",\"count\":3}")
-        doReturn(Single.just(detail)).whenever(service).build("/queue/1")
-        val result = adapter(session, StandardTestDispatcher(testScheduler), service).queuedBuild("/queue/1")
-        assertEquals("098", result.number)
-        assertEquals("Android", result.configuration?.id)
-        assertEquals("/snapshots", result.snapshotDependencies?.href)
-        assertEquals(3, result.snapshotDependencies?.count)
-        verify(service).build("/queue/1")
-        verifyNoMoreInteractions(service)
-        verifyNoInteractions(session)
-    }
-
-    @Test fun cancellationDisposesQueuedShowServiceRequest() = runTest {
-        val session = mock<Repository>()
-        val service = mock<TeamCityService>()
-        val pending = SingleSubject.create<Build>()
-        doReturn(pending).whenever(service).build("/queue/1")
-        val request = async { adapter(session, StandardTestDispatcher(testScheduler), service).queuedBuild("/queue/1") }
-        runCurrent()
-        request.cancelAndJoin()
-        assertFalse(pending.hasObservers())
-        verifyNoInteractions(session)
     }
 
     @Test fun favoriteMembershipReadsTheCurrentAccountEachTime() = runTest {

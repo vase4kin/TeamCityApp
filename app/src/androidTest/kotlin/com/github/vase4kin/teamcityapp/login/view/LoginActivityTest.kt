@@ -491,7 +491,7 @@ class LoginActivityTest {
         org.mockito.Mockito.verify(call).enqueue(capture(callbackArgumentCaptor))
         InstrumentationRegistry.getInstrumentation().runOnMainSync { activityRule.activity.recreate() }
         compose.waitForIdle()
-        compose.onNodeWithTag("auth:progress").assertExists()
+        compose.onNodeWithTag("login:submit").assertIsNotEnabled()
         org.mockito.Mockito.verify(call, org.mockito.Mockito.times(1)).enqueue(any())
         callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
         compose.waitForIdle()

@@ -50,11 +50,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
     val scrollState = rememberScrollState()
     TeamCityScreen(stringResource(R.string.title_run_build), onClose, bottomBar = {
         TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("run-build:bottom-action")) {
-            Button(onQueue, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("run-build:submit"), enabled = !state.queuing) {
-                Icon(painterResource(R.drawable.ic_directions_run_white_24px), null)
-                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
-                Text(stringResource(state.queueLabelRes))
-            }
+            TeamCityLoadingButton(onQueue, stringResource(R.string.title_run_build), stringResource(state.queueLabelRes), state.queuing, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("run-build:submit"), icon = { Icon(painterResource(R.drawable.ic_directions_run_white_24px), null) })
         }
     }, snackbarHost = { SnackbarHost(snackbar, Modifier.testTag("run-build:snackbar")) }) { modifier ->
         Column(modifier) {
@@ -122,14 +118,6 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                 }
             }
         }
-    }
-    if (state.queuing) {
-        AlertDialog(onDismissRequest = {}, modifier = Modifier.testTag("run-build:progress"), shape = MaterialTheme.shapes.large, text = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
-                Text(stringResource(R.string.text_queueing_build), Modifier.padding(start = TeamCityDimensions.sectionSpacing))
-            }
-        }, confirmButton = {})
     }
     if (agentDialog) AlertDialog(onDismissRequest = onDismissDialog, modifier = Modifier.testTag("run-build:agent-dialog"), shape = MaterialTheme.shapes.large, title = { Text(stringResource(R.string.title_agent_chooser_dialog)) }, text = { Column(Modifier.verticalScroll(rememberScrollState())) { state.agents.orEmpty().forEach { agent -> Text(agent.name, Modifier.fillMaxWidth().clickable { onAgentSelected(agent) }.padding(vertical = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge) } } }, confirmButton = {})
     parameterDialog?.let { dialog ->

@@ -105,7 +105,7 @@ class BuildHistoryRouteTest {
         compose.onNodeWithText("Couldn’t load content").assertDoesNotExist()
     }
 
-    @Test fun queuedResultKeepsShowActionDuringRefreshAndLaunchesFullBuild() {
+    @Test fun queuedResultKeepsShowActionAndNavigatesWithoutFetching() {
         val vm = viewModel()
         compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { BuildHistoryRoute(router, vm) } } }
         compose.waitUntil(5_000) { repository.requests.isNotEmpty() }
@@ -113,40 +113,10 @@ class BuildHistoryRouteTest {
         compose.waitUntil(5_000) { repository.requests.size == 2 }
         compose.onNodeWithText("Build is added to build queue").assertIsDisplayed()
         compose.onNodeWithText("Show").performClick()
-        compose.waitUntil(5_000) { router.builds.isNotEmpty() }
-        assertEquals(listOf(historyBuild("queued")), router.builds)
-        assertEquals(listOf("/queued"), repository.queuedRequests)
+        compose.waitUntil(5_000) { router.references.isNotEmpty() }
+        assertEquals(listOf("/queued"), router.references)
+        assertTrue(repository.queuedRequests.isEmpty())
         assertTrue(repository.requests.last().force)
-    }
-
-    @Test fun pendingQueuedShowWaitsForResumedLifecycleAndLaunchesOnlyOnce() {
-        val owner = object : LifecycleOwner {
-            val registry = LifecycleRegistry.createUnsafe(this)
-            override val lifecycle: Lifecycle = registry
-        }
-        owner.registry.currentState = Lifecycle.State.RESUMED
-        val response = CompletableDeferred<BuildLaunchData>()
-        repository.loadQueued = { response.await() }
-        val vm = viewModel()
-        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides owner) { TeamCityTheme { BuildHistoryRoute(router, vm) } } }
-        compose.runOnIdle {
-            vm.onQueuedBuildResult("/queued")
-            vm.openQueuedBuild()
-        }
-        compose.waitUntil(5_000) { repository.queuedRequests.isNotEmpty() }
-        compose.onNodeWithTag("history:opening-progress").assertIsDisplayed()
-        compose.runOnIdle { owner.registry.currentState = Lifecycle.State.STARTED }
-        compose.waitForIdle()
-        compose.onNodeWithTag("history:opening-progress").assertDoesNotExist()
-        compose.runOnIdle { response.complete(historyBuild("queued")) }
-        compose.waitForIdle()
-        assertTrue(router.builds.isEmpty())
-        compose.runOnIdle { owner.registry.currentState = Lifecycle.State.RESUMED }
-        compose.waitUntil(5_000) { router.builds.size == 1 }
-        compose.runOnIdle { owner.registry.currentState = Lifecycle.State.STARTED }
-        compose.runOnIdle { owner.registry.currentState = Lifecycle.State.RESUMED }
-        compose.waitForIdle()
-        assertEquals(1, router.builds.size)
     }
 
     @Test fun queryReplacementHidesOldRowsDuringNewPendingRequest() {
@@ -296,6 +266,10 @@ class BuildHistoryRouteTest {
     }
 
     private class FakeRouter : BuildHistoryRouter {
+        val references = mutableListOf<String>()
+        override fun openBuildReference(href: String, configurationName: String) {
+            references += href
+        }
         val builds = mutableListOf<BuildLaunchData>()
         var name = ""
         var runId = ""

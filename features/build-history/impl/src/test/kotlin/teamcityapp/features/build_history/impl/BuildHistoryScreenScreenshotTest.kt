@@ -104,11 +104,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             "prompt_save_failed" -> OnboardingState.Available(BuildHistoryPrompt.Filter, saveFailed = true)
             else -> OnboardingState.Available()
         }
-        val opening = when (stateName) {
-            "queued_loading" -> QueuedBuildState.Loading
-            "queued_failed" -> QueuedBuildState.Failed
-            else -> QueuedBuildState.Idle
-        }
+
         val append = when (stateName) {
             "append_loading" -> HistoryAppendState.Loading
             "append_failed" -> HistoryAppendState.Error
@@ -126,7 +122,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 }
             }
             TeamCityTheme(darkTheme = variant.dark) {
-                HistoryTestScreen(state, BuildHistoryControls(favorite, onboarding, opening), rows, append, snackbar = snackbar)
+                HistoryTestScreen(state, BuildHistoryControls(favorite, onboarding), rows, append, snackbar = snackbar)
             }
         }
         compose.mainClock.advanceTimeBy(500)
@@ -156,7 +152,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
         }
         val roots = compose.onAllNodes(isRoot())
         roots[roots.fetchSemanticsNodes().lastIndex].captureRoboImage("history_${stateName}_${variant.name}.png")
-        if (!(stateName.startsWith("toolbar_") || stateName.startsWith("app_bar_")) && state is ListUiState.Content && variant.fontScale > 1f && opening == QueuedBuildState.Idle && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
+        if (!(stateName.startsWith("toolbar_") || stateName.startsWith("app_bar_")) && state is ListUiState.Content && variant.fontScale > 1f && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
             compose.mainClock.autoAdvance = true
             if (append == HistoryAppendState.Idle) {
                 compose.onNodeWithTag("history:list").performScrollToNode(hasTestTag("history:build:43"))
@@ -184,7 +180,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             listOf(
                 "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
-                "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed", "queued_loading", "queued_failed",
+                "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed",
                 "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_collapsed", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
             ).flatMap { name ->
                 variants.map { arrayOf<Any>(name, it) }

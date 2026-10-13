@@ -80,18 +80,6 @@ private fun BuildHistoryPagingContent(
         if (viewModel.claimRefresh()) refresh()
         onPauseOrDispose { }
     }
-    LifecycleResumeEffect(controls.queuedBuild, router) {
-        viewModel.claimQueuedBuild()?.let { router.openBuild(it, viewModel.configurationName) }
-        onPauseOrDispose { }
-    }
-    val accessibility = LocalAccessibilityManager.current
-    LaunchedEffect(controls.queuedBuild, lifecycle) {
-        if (controls.queuedBuild == QueuedBuildState.Failed) {
-            delay(accessibility?.calculateRecommendedTimeoutMillis(4_000L, containsIcons = false, containsText = true, containsControls = true) ?: 4_000L)
-            viewModel.dismissQueuedFailure()
-        }
-    }
-
     val snackbar = remember { SnackbarHostState() }
     val notice = controls.notice
     val message = notice?.let { stringResource(it.messageRes) }.orEmpty()
@@ -106,7 +94,7 @@ private fun BuildHistoryPagingContent(
         )
         if (result == SnackbarResult.ActionPerformed) {
             when (notice.kind) {
-                BuildHistoryNoticeKind.Queued -> viewModel.openQueuedBuild()
+                BuildHistoryNoticeKind.Queued -> viewModel.queuedBuildReference()?.let { router.openBuildReference(it, viewModel.configurationName) }
                 BuildHistoryNoticeKind.FiltersApplied -> viewModel.resetFilters()
                 BuildHistoryNoticeKind.FavoriteAdded -> router.openFavorites()
                 BuildHistoryNoticeKind.FavoriteRemoved -> Unit
@@ -141,8 +129,6 @@ private fun BuildHistoryPagingContent(
         onRetry = refresh,
         onAppendRetry = builds::retry,
         onBuild = { router.openBuild(it, viewModel.configurationName) },
-        onQueuedRetry = viewModel::openQueuedBuild,
-        onQueuedDismiss = viewModel::dismissQueuedFailure,
         snackbar = snackbar,
         listState = listState
     )

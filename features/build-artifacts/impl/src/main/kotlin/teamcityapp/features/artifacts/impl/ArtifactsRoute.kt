@@ -16,6 +16,7 @@
 
 package teamcityapp.features.artifacts.impl
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -33,8 +34,12 @@ internal fun ArtifactsRoute(
     router: ArtifactsRouter,
     showToolbar: Boolean,
     visible: Boolean = true,
-    viewModel: ArtifactsViewModel = hiltViewModel()
+    viewModel: ArtifactsViewModel = hiltViewModel(),
+    screenActive: Boolean = true
 ) {
+    val activity = LocalActivity.current
+    val lifetime = (activity as? androidx.lifecycle.LifecycleOwner)?.lifecycle ?: LocalLifecycleOwner.current.lifecycle
+    ArtifactDownloadLifetime(lifetime, screenActive && visible, { activity?.isChangingConfigurations == true }, viewModel::cancelUnfinishedDownload)
     val state = if (visible) {
         val collected by viewModel.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
         collected
@@ -65,7 +70,10 @@ internal fun ArtifactsRoute(
                     when (action) {
                         is ArtifactAction.Download -> download(action.file)
 
-                        is ArtifactAction.Open -> router.openFolder(action.name, viewModel.build, action.href)
+                        is ArtifactAction.Open -> {
+                            viewModel.cancelDownload()
+                            router.openFolder(action.name, viewModel.build, action.href)
+                        }
 
                         is ArtifactAction.Browser -> try {
                             router.openBrowser(viewModel.build, action.href)
@@ -86,8 +94,6 @@ internal fun ArtifactsRoute(
                     }
                 }
 
-                is ArtifactDownloadState.Failed -> if (viewModel.claimDownloadFailure(result.token)) router.downloadFailed()
-
                 else -> Unit
             }
             onPauseOrDispose {}
@@ -97,10 +103,18 @@ internal fun ArtifactsRoute(
         // A Compose dialog has its own window, independent of the destination's visibility.
         if (presentsDialogs) state else state.copy(download = ArtifactDownloadState.Idle),
         showToolbar, platformError.takeIf { presentsDialogs },
-        viewModel::refresh, viewModel::retry, router::navigateUp,
+        viewModel::refresh, viewModel::retry, {
+            viewModel.cancelDownload()
+            router.navigateUp()
+        },
         { file ->
             val children = file.childrenHref
-            if (file.isFolder && children != null) router.openFolder(file.name, viewModel.build, children) else router.openActions(file)
+            if (file.isFolder && children != null) {
+                viewModel.cancelDownload()
+                router.openFolder(file.name, viewModel.build, children)
+            } else {
+                router.openActions(file)
+            }
         },
         router::openActions,
         { (state.download as? ArtifactDownloadState.Failed)?.let { download(it.file) } },

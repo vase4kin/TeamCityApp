@@ -81,18 +81,18 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             "server_error" -> AuthenticationError.Server("Unable to connect to TeamCity server")
             else -> null
         }
-        val form = AuthenticationFormState(serverUrl = if (stateName == "empty_url") "" else "https://teamcity.example/server", userName = if (stateName == "filled") "developer" else "", password = if (stateName == "filled") "password" else "", guest = stateName == "guest", busy = stateName == "loading", error = error)
+        val form = AuthenticationFormState(serverUrl = if (stateName == "empty_url") "" else "https://teamcity.example/server", userName = if (stateName == "filled") "developer" else "", password = if (stateName == "filled") "password" else "", guest = stateName in listOf("guest", "guest_loading"), busy = stateName in listOf("loading", "guest_loading", "demo_signing_in"), error = error)
         val dialog = when (stateName) {
             "ssl_dialog" -> LoginDialog.Ssl
             "demo_dialog" -> LoginDialog.Demo
             else -> LoginDialog.None
         }
-        val state = LoginUiState(form, demo = if (stateName in listOf("demo", "demo_dialog", "scrolled")) DemoServer(true, "https://teamcity.jetbrains.com") else null, demoLoading = stateName == "demo_loading", httpConfirmation = stateName == "http", guestUnauthorized = stateName == "unauthorized")
+        val state = LoginUiState(form, demo = if (stateName in listOf("demo", "demo_dialog", "demo_signing_in", "scrolled")) DemoServer(true, "https://teamcity.jetbrains.com") else null, demoLoading = stateName == "demo_loading", httpConfirmation = stateName == "http", guestUnauthorized = stateName == "unauthorized", demoSigningIn = stateName == "demo_signing_in")
         compose.mainClock.autoAdvance = false
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { LoginScreen(state, {}, {}, {}, {}, dialog) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "scrolled") {
+        if (stateName == "scrolled" || stateName == "demo_signing_in") {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("login:demo").performScrollTo()
             compose.mainClock.autoAdvance = false
@@ -100,7 +100,7 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             compose.waitForIdle()
         }
         val tag = when (stateName) {
-            "loading" -> "auth:progress"
+            "loading", "guest_loading", "demo_signing_in" -> "login:submit"
             "ssl_dialog" -> "auth:warning"
             "http" -> "auth:warning"
             "unauthorized" -> "login:unauthorized"
@@ -110,20 +110,6 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
         val path = "login_${stateName}_${variant.name}.png"
         when {
             tag == null -> compose.onRoot().captureRoboImage(path)
-
-            stateName == "loading" -> {
-                // Native dialog edge blending varies by up to two RGB levels across hosts.
-                // Keep zero changed pixels; allow only this small color-rounding difference.
-                captureScreenRoboImage(
-                    path,
-                    roborazziOptions = RoborazziOptions(
-                        compareOptions = RoborazziOptions.CompareOptions(
-                            imageComparator = SimpleImageComparator(maxDistance = 0.01f)
-                        )
-                    )
-                )
-            }
-
             else -> captureScreenRoboImage(path)
         }
         if (stateName in listOf("save_error", "server_error", "duplicate") && (variant.fontScale > 1f || variant.width >= 600)) {
@@ -148,7 +134,7 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "save_error", "server_error", "demo_loading", "demo", "loading", "http", "unauthorized", "ssl_dialog", "demo_dialog", "scrolled").flatMap { state ->
+            listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "save_error", "server_error", "demo_loading", "demo", "demo_signing_in", "guest_loading", "loading", "http", "unauthorized", "ssl_dialog", "demo_dialog", "scrolled").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

@@ -65,14 +65,12 @@ class BuildHistoryViewModel @Inject constructor(
     private val onboardingRequest = MutableStateFlow(0)
     private var onboardingLoaded = false
     private var pendingPrompts = emptyList<BuildHistoryPrompt>()
-    private val queuedBuild = MutableStateFlow<QueuedBuildState>(QueuedBuildState.Idle)
     private var queuedHref: String? = null
     private val notice = MutableStateFlow<BuildHistoryNotice?>(null)
     private var noticeId = 0L
     private val refreshPending = MutableStateFlow(false)
     private var favoriteJob: Job? = null
     private var promptJob: Job? = null
-    private var queuedJob: Job? = null
     private var paused = false
 
     private val favoriteSource = favoriteRequest.flatMapLatest {
@@ -114,8 +112,8 @@ class BuildHistoryViewModel @Inject constructor(
             emitAll(onboarding)
         }
     }
-    val controls = combine(favoriteSource, onboardingSource, queuedBuild, notice, refreshPending) { fav, prompt, opening, message, refresh ->
-        BuildHistoryControls(fav, prompt, opening, message, refresh)
+    val controls = combine(favoriteSource, onboardingSource, notice, refreshPending) { fav, prompt, message, refresh ->
+        BuildHistoryControls(fav, prompt, message, refresh)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), BuildHistoryControls())
 
     internal fun prepareRefresh() {
@@ -230,38 +228,15 @@ class BuildHistoryViewModel @Inject constructor(
         paused = false
     }
     fun onQueuedBuildResult(href: String) {
-        queuedJob?.cancel()
-        queuedBuild.value = QueuedBuildState.Idle
         queuedHref = href
         savedStateHandle[QUEUED_HREF] = href
         showNotice(BuildHistoryNoticeKind.Queued)
         refreshPending.value = true
     }
-    fun openQueuedBuild() {
-        val href = queuedHref ?: savedStateHandle.get<String>(QUEUED_HREF) ?: return
-        if (queuedJob?.isActive == true) return
+    fun queuedBuildReference(): String? {
+        val href = queuedHref ?: savedStateHandle.get<String>(QUEUED_HREF) ?: return null
         tracker.queuedBuildRequested()
-        queuedJob = viewModelScope.launch {
-            queuedBuild.value = QueuedBuildState.Loading
-            queuedBuild.value = try {
-                if (href.isBlank()) throw IllegalArgumentException("Queued build URL missing")
-                val build = repository.queuedBuild(href)
-                currentCoroutineContext().ensureActive()
-                QueuedBuildState.Ready(build)
-            } catch (cancelled: CancellationException) {
-                throw cancelled
-            } catch (_: Exception) {
-                currentCoroutineContext().ensureActive()
-                QueuedBuildState.Failed
-            }
-        }
-    }
-    fun claimQueuedBuild(): BuildLaunchData? {
-        val ready = queuedBuild.value as? QueuedBuildState.Ready ?: return null
-        return if (queuedBuild.compareAndSet(ready, QueuedBuildState.Idle)) ready.build else null
-    }
-    fun dismissQueuedFailure() {
-        queuedBuild.value = QueuedBuildState.Idle
+        return href
     }
     fun dismissNotice(id: Long) {
         if (notice.value?.id == id) notice.value = null

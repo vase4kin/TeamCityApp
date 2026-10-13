@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import teamcityapp.libraries.authentication.*
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingButton
 import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -47,7 +48,7 @@ fun LoginScreen(state: LoginUiState, onChange: (AuthenticationFormState) -> Unit
                 Text(stringResource(R.string.app_name), Modifier.padding(top = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.headlineLarge)
                 Text(stringResource(R.string.text_app_description), Modifier.padding(top = TeamCityDimensions.smallSpacing), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.fillMaxWidth().padding(top = TeamCityDimensions.sectionSpacing).testTag("login:form"), horizontalPadding = TeamCityDimensions.sectionSpacing)
-                Button(onSubmit, Modifier.fillMaxWidth().padding(TeamCityDimensions.sectionSpacing).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("login:submit"), enabled = !state.form.busy, shape = MaterialTheme.shapes.large) { Text(stringResource(R.string.text_login_button)) }
+                TeamCityLoadingButton(onSubmit, stringResource(R.string.text_login_button), stringResource(state.submitLabelRes), state.form.busy && !state.demoSigningIn, Modifier.fillMaxWidth().padding(TeamCityDimensions.sectionSpacing).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("login:submit"), enabled = !state.form.busy, shape = MaterialTheme.shapes.large)
                 if (state.demoLoading) TeamCityLoadingIndicator(Modifier.padding(bottom = TeamCityDimensions.sectionSpacing).testTag("login:demo-loading"))
                 if (state.demo?.available == true) {
                     Card(Modifier.fillMaxWidth().padding(start = TeamCityDimensions.sectionSpacing, end = TeamCityDimensions.sectionSpacing, bottom = TeamCityDimensions.sectionSpacing).testTag("login:demo-card"), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer), elevation = CardDefaults.cardElevation(TeamCityDimensions.lowElevation)) {
@@ -55,14 +56,13 @@ fun LoginScreen(state: LoginUiState, onChange: (AuthenticationFormState) -> Unit
                             Icon(painterResource(R.drawable.ic_lightbulb_outline_black_24dp), null, Modifier.size(TeamCityDimensions.largeIconSize))
                             Text(stringResource(R.string.text_try_it_out), Modifier.padding(start = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge)
                         }
-                        OutlinedButton(onDemo, Modifier.align(Alignment.End).padding(end = TeamCityDimensions.contentPadding).testTag("login:demo"), enabled = !state.form.busy, shape = MaterialTheme.shapes.large) { Text(stringResource(R.string.text_button_try_it_out)) }
+                        TeamCityLoadingButton(onDemo, stringResource(R.string.text_button_try_it_out), stringResource(state.demoLabelRes), state.form.busy && state.demoSigningIn, Modifier.align(Alignment.End).padding(end = TeamCityDimensions.contentPadding).testTag("login:demo"), enabled = !state.form.busy, outlined = true, shape = MaterialTheme.shapes.large)
                     }
                 }
             }
         }
     }
     when {
-        state.form.busy -> AuthenticationProgress(stringResource(R.string.text_progress_bar_loading))
         state.httpConfirmation -> AuthenticationWarning(message = requireNotNull(state.httpWarning), onAccept = onConfirmHttp, onDecline = onDeclineHttp)
         state.guestUnauthorized -> AlertDialog(onDismissRequest = onDismissUnauthorized, modifier = Modifier.testTag("login:unauthorized"), shape = MaterialTheme.shapes.large, title = { Text(stringResource(R.string.info_unauthorized_dialog_title)) }, text = { Text(stringResource(R.string.info_unauthorized_dialog_content)) }, confirmButton = { TextButton(onDismissUnauthorized) { Text(stringResource(android.R.string.ok)) } })
         dialog == LoginDialog.Ssl -> AuthenticationWarning(onAccept = onConfirm, onDecline = onDecline)

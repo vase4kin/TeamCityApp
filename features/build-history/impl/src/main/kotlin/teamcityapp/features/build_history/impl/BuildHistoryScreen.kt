@@ -75,8 +75,6 @@ internal fun BuildHistoryScreen(
     onRetry: () -> Unit,
     onAppendRetry: () -> Unit,
     onBuild: (BuildLaunchData) -> Unit,
-    onQueuedRetry: () -> Unit,
-    onQueuedDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     listState: LazyListState = rememberLazyListState()
@@ -137,16 +135,7 @@ internal fun BuildHistoryScreen(
             snackbarHost = {
                 BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     val actionOnNewLine = maxWidth < TeamCityDimensions.historyInlineActionMinWidth && LocalDensity.current.fontScale > 1f
-                    if (controls.queuedBuild == QueuedBuildState.Failed) {
-                        Snackbar(
-                            Modifier.padding(TeamCityDimensions.mediumSpacing).testTag("history:queued-error"),
-                            actionOnNewLine = actionOnNewLine,
-                            action = { TextButton(onClick = onQueuedRetry, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)) { Text(stringResource(R.string.history_retry)) } },
-                            dismissAction = { TextButton(onClick = onQueuedDismiss, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)) { Text(stringResource(R.string.history_cancel)) } }
-                        ) { Text(stringResource(R.string.history_open_failed)) }
-                    } else {
-                        SnackbarHost(snackbar) { data -> Snackbar(data, actionOnNewLine = actionOnNewLine) }
-                    }
+                    SnackbarHost(snackbar) { data -> Snackbar(data, actionOnNewLine = actionOnNewLine) }
                 }
             }
         ) { padding ->
@@ -222,16 +211,6 @@ internal fun BuildHistoryScreen(
         }
         if (prompt != null && promptBounds != null) HistoryCoachmark(prompt, promptBounds, onPromptDismiss)
     }
-    when (controls.queuedBuild) {
-        QueuedBuildState.Loading -> AlertDialog(
-            onDismissRequest = {},
-            title = { Text(stringResource(R.string.history_opening)) },
-            text = { TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize).testTag("history:opening-progress")) },
-            confirmButton = {}
-        )
-
-        else -> Unit
-    }
 }
 
 @Composable
@@ -252,7 +231,7 @@ private fun BuildHistoryPreview() {
     TeamCityTheme {
         BuildHistoryScreen(
             "Build TeamCityApp", ListUiState.Content(rows), BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available()), rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, HistoryAppendState.Idle,
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
         )
     }
 }

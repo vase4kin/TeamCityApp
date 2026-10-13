@@ -37,10 +37,8 @@ import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 class DefaultBuildHistoryRepository @Inject constructor(
     private val repository: Provider<Repository>,
-    private val service: Provider<TeamCityService>,
     private val storage: SharedUserStorage,
     private val hydrator: BuildHydrator,
-    private val mapper: BuildLaunchMapper,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : BuildHistoryRepository {
     override suspend fun page(query: BuildHistoryQuery, nextHref: String?, forceRefresh: Boolean): BuildHistoryPage = withContext(ioDispatcher) {
@@ -56,15 +54,6 @@ class DefaultBuildHistoryRepository @Inject constructor(
         val summaries = if (page.count == 0) emptyList() else page.objects.orEmpty().toList()
         val rows = hydrator.hydrate(session, summaries)
         BuildHistoryPage(rows, if (rows.isEmpty()) null else page.nextHref?.takeIf { it.isNotBlank() })
-    }
-
-    override suspend fun queuedBuild(href: String): BuildLaunchData = withContext(ioDispatcher) {
-        currentCoroutineContext().ensureActive()
-        // The legacy Show action deliberately bypasses Repository/RxCache.
-        val capturedService = service.get()
-        val build = capturedService.build(href).await()
-        currentCoroutineContext().ensureActive()
-        mapper.toLaunchData(build)
     }
 
     override suspend fun isFavorite(configurationId: String): Boolean = withContext(ioDispatcher) {

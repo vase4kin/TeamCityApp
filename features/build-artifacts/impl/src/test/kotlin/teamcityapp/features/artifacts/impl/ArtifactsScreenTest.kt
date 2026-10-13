@@ -94,6 +94,17 @@ class ArtifactsScreenTest {
         assertEquals(1, cancels)
     }
 
+    @Test fun downloadCardStaysVisibleWhileListScrollsAndWarnsAboutDeparture() {
+        val files = ListUiState.Content((1..30).map { Artifact("File $it", "/$it", 1000, "/content/$it") })
+        compose.setContent { TeamCityTheme { ArtifactsScreen(ArtifactsUiState(list = files, download = ArtifactDownloadState.Downloading(ArtifactDownload("archive.zip", "/content"))), false, null, {}, {}, {}, {}, {}, {}, {}, {}) } }
+        val card = compose.onNodeWithTag("artifacts:download-card")
+        val before = card.fetchSemanticsNode().boundsInRoot
+        compose.onNodeWithTag("artifacts:list").performScrollToIndex(20)
+        card.assertIsDisplayed()
+        assertEquals(before, card.fetchSemanticsNode().boundsInRoot)
+        compose.onNodeWithText("Keep this screen open. Leaving it or putting the app in the background will cancel the download.").assertIsDisplayed()
+    }
+
     @Test fun platformErrorCanBeDismissed() {
         var dismisses = 0
         compose.setContent { TeamCityTheme { ArtifactsScreen(ArtifactsUiState(list = rows), false, ArtifactPlatformError.FileUnavailable, {}, {}, {}, {}, {}, {}, {}, { dismisses++ }) } }

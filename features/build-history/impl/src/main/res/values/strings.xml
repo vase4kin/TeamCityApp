@@ -33,8 +33,6 @@
     <string name="history_view">Open favorites</string>
     <string name="history_reset">Reset filters</string>
     <string name="history_got_it">Got it</string>
-    <string name="history_opening">Opening build..</string>
-    <string name="history_open_failed">We encountered problem opening build</string>
     <string name="history_queued">Build is added to build queue</string>
     <string name="history_filters_applied">Build filters have been applied</string>
     <string name="history_favorite_added">The configuration has been added to favorites</string>

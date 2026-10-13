@@ -163,25 +163,7 @@ internal class BuildDetailsViewModel @Inject constructor(
         mutableState.value = state.value.copy(overviewRefresh = version)
         notice(if (operation == BuildDetailsOperation.Stop) R.string.error_base_stop_build_error else R.string.error_base_remove_build_from_queue_error)
     }
-    fun openQueued() {
-        val href = queuedHref ?: return
-        if (state.value.busy || state.value.replacement != null) return
-        mutableState.value = state.value.copy(operation = BuildDetailsOperation.OpenQueued)
-        viewModelScope.launch {
-            try {
-                val build = repository.queuedBuild(href)
-                tracker.queuedOpened()
-                replace(build)
-            } catch (cancelled: CancellationException) {
-                throw cancelled
-            } catch (_: Exception) {
-                tracker.queuedFailed()
-                notice(R.string.error_opening_build, openQueued = true)
-            } finally {
-                mutableState.value = state.value.copy(operation = null)
-            }
-        }
-    }
+    fun queuedBuildReference(): String? = queuedHref.takeUnless { state.value.busy || state.value.replacement != null }
     private fun id(): Long = (++nextId).also { savedState[SEQUENCE] = it }
     private fun notice(message: Int, openQueued: Boolean = false) {
         val notice = BuildDetailsNotice(id(), message, openQueued)

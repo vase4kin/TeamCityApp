@@ -22,10 +22,12 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.modules.*
 import org.junit.Assert.*
 import org.junit.Test
+import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.filter_builds.api.*
 import teamcityapp.features.filter_builds.api.navigation.*
 import teamcityapp.features.run_build.api.navigation.*
+import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.navigation.*
 
 class BuildWorkflowNavigationTest {
@@ -33,7 +35,9 @@ class BuildWorkflowNavigationTest {
         setOf(
             emptyDestination(BuildHistoryDestination::class, BuildHistoryDestination.serializer()),
             emptyDestination(RunBuildDestination::class, RunBuildDestination.serializer()),
-            emptyDestination(FilterBuildsDestination::class, FilterBuildsDestination.serializer())
+            emptyDestination(FilterBuildsDestination::class, FilterBuildsDestination.serializer()),
+            emptyDestination(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()),
+            emptyDestination(BuildDetailsDestination::class, BuildDetailsDestination.serializer())
         )
     )
     private fun <T : NavKey> emptyDestination(type: kotlin.reflect.KClass<T>, serializer: kotlinx.serialization.KSerializer<T>) = object : FeatureDestination<T>(type, serializer) {
@@ -45,6 +49,22 @@ class BuildWorkflowNavigationTest {
 
         @Composable override fun Content(destination: T, navigator: Navigator, entryId: String) {}
     }
+
+    @Test fun bothShowOriginsRestoreAReferenceVisitAndReplaceItWithoutLosingBackDestination() {
+        listOf(false, true).forEach { fromRestart ->
+            val source = if (fromRestart) NavigationEntry("source", BuildDetailsDestination(BuildLaunchData("old", "/build/old"))) else NavigationEntry("source", BuildHistoryDestination("config", "Build Android"))
+            var next = 0
+            val nav = Navigator(mutableStateOf(NavigationSnapshot(listOf(source)))) { "visit-${++next}" }
+            nav.push(BuildDetailsReferenceDestination("opaque/queued/42", "Build Android", fromRestart))
+            val restored = Navigator(mutableStateOf(registry.decodeSnapshot(registry.encodeSnapshot(nav.snapshot)))) { "loaded" }
+            assertEquals(BuildDetailsReferenceDestination("opaque/queued/42", "Build Android", fromRestart), restored.current.destination)
+            restored.replace(BuildDetailsDestination(BuildLaunchData("42", "opaque/queued/42", state = "queued")))
+            assertEquals(2, restored.snapshot.entries.size)
+            assertTrue(restored.pop())
+            assertEquals(source, restored.current)
+        }
+    }
+
     private fun navigator(): Navigator {
         var next = 0
         return Navigator(mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("first-history", BuildHistoryDestination("id", "Android"))))), nextId = { "visit-${++next}" })
