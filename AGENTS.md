@@ -272,9 +272,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   flavors, signing, and packaging in the owning module. Declare repositories
   in settings and plugin versions in the catalog. Update affected modules and
   verification commands together; keep convention plugins reusable.
-- External Kotlin, kapt, and the legacy Android DSL remain in use. Preserve
-  `android.builtInKotlin=false` and `android.newDsl=false` until their migration
-  is explicitly in scope.
+- Use AGP's built-in Kotlin and new Android DSL. Hilt/Dagger processing uses
+  `com.android.legacy-kapt` through the shared Hilt convention. Kotlin's JVM target
+  follows the shared Java target; Java/resource-only conventions disable Kotlin.
+  Configure additional Kotlin roots through `android.sourceSets` or variant sources.
 - Use JDK 17. Be explicit about the variant when running app tasks.
 
 ## Testing and verification
