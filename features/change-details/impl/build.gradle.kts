@@ -41,5 +41,5 @@ dependencies {
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
     testImplementation(libs.mockito.mockitoCore)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

@@ -37,5 +37,5 @@ dependencies {
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

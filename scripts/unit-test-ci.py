@@ -68,7 +68,7 @@ def coverage_paths(root, module):
     for variant in ("debug", "mockDebug"):
         capitalized = variant[0].upper() + variant[1:]
         transformed = directory / f"intermediates/classes/{variant}/transform{capitalized}ClassesWithAsm/dirs"
-        paths = [transformed] if transformed.is_dir() else [directory / f"intermediates/javac/{variant}", directory / f"tmp/kotlin-classes/{variant}"]
+        paths = [transformed] if transformed.is_dir() else [directory / f"intermediates/javac/{variant}", directory / f"intermediates/built_in_kotlinc/{variant}/compile{capitalized}Kotlin/classes"]
         for path in paths:
             yield from sorted(path.rglob("*.class"))
 

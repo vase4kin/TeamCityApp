@@ -26,7 +26,7 @@ extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.auth
 dependencies {
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)

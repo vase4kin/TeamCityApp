@@ -5,13 +5,12 @@ shared Android configuration and replaces the former buildSrc and root callbacks
 
 | Plugin | Configuration |
 | --- | --- |
-| `teamcityapp.android.application` | Android application and Kotlin plugins, shared SDK/Java/Kotlin targets, lint, unit-test coverage, and instrumentation defaults |
-| `teamcityapp.android.library` | Android library and Kotlin plugins, the same shared defaults |
-| `teamcityapp.android.library.java` | Android library defaults without Kotlin or kapt; use for Java/resource-only modules |
-| `teamcityapp.android.hilt` | Hilt and kapt plugins, Hilt runtime and kapt compiler dependencies |
+| `teamcityapp.android.application` | Android application with built-in Kotlin, shared SDK/Java/Kotlin targets, lint, unit-test coverage, and instrumentation defaults |
+| `teamcityapp.android.library` | Android library with built-in Kotlin, the same shared defaults |
+| `teamcityapp.android.library.java` | Android library defaults without Kotlin or KSP; use for Java/resource-only modules |
+| `teamcityapp.android.hilt` | Hilt and KSP plugins, Hilt runtime and KSP compiler dependencies |
 | `teamcityapp.android.compose` | Compose compiler, Compose BOM, Material 3, previews, and debug tooling |
 | `teamcityapp.android.screenshot` | Local Robolectric/Roborazzi Compose tests, Android resources, and baseline/report paths |
-| `teamcityapp.android.data-binding` | Data Binding for Android application/library modules |
 | `teamcityapp.android.coverage` | App aggregate debug coverage and CI report locations |
 
 Apply an application or library convention before the optional Hilt convention:
@@ -20,7 +19,6 @@ Apply an application or library convention before the optional Hilt convention:
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
-    id("teamcityapp.android.data-binding")
 }
 
 android {
@@ -32,8 +30,11 @@ Keep feature dependencies, namespaces, flavors, signing, packaging, and any
 module-specific overrides in the module script. Modules that use plain Dagger
 in addition to Hilt still declare their Dagger runtime/compiler dependencies.
 The convention does not add `annotationProcessor` dependencies. Modules needing
-Parcelize apply `org.jetbrains.kotlin.plugin.parcelize`; the utils module applies
-kapt for Data Binding without Hilt.
+Parcelize apply `org.jetbrains.kotlin.plugin.parcelize`. Hilt/Dagger annotation
+processing uses KSP 2, with its plugin version centralized in the catalog.
+Compiler dependencies use `ksp`; the app's Hilt instrumentation processor uses
+`kspAndroidTest`. KSP processes both Kotlin and Java sources. The unused Data
+Binding convention and kapt-specific Javac hooks have been removed.
 
 Compose modules also apply `teamcityapp.android.compose` after the Android
 convention and declare their own activity, lifecycle, and coroutine dependencies.
@@ -63,10 +64,12 @@ Dependency/plugin versions, including JaCoCo, come from `gradle/libs.versions.to
 The included build imports that catalog explicitly. Main build repositories are
 centralized in `settings.gradle.kts`; project-level repositories are rejected.
 
-The conventions preserve the current external Kotlin plugin, kapt, and legacy
-Android DSL setup. They require the existing `android.builtInKotlin=false` and
-`android.newDsl=false` properties; switching to AGP's built-in Kotlin/new DSL is
-a separate migration.
+The conventions use AGP's built-in Kotlin and new Android DSL. Kotlin's JVM target
+follows the shared Java target (17). Java/resource-only modules disable Kotlin
+with `enableKotlin = false`, avoiding Kotlin tasks and the automatic stdlib
+dependency. Compose, Parcelize and serialization compiler plugins remain
+versioned in the catalog. R8 verification configures its instrumentation Kotlin
+sources through `android.sourceSets`.
 
 ## App variants and coverage
 
@@ -80,7 +83,10 @@ module. `teamcityapp.android.coverage` aggregates their execution data using
 `generateCodeCoverageReport`. It uses transformed debug/mockDebug classes when
 Hilt or Firebase modifies bytecode, and compiler outputs otherwise, preserving
 generated-class exclusions. It reads current AGP unit-test coverage outputs
-and legacy JaCoCo unit-test execution files. Device coverage stays in a separate
+and legacy JaCoCo unit-test execution files. Both the Gradle report and CI shard
+collector read built-in Kotlin classes from
+`build/intermediates/built_in_kotlinc/<variant>/compile<Variant>Kotlin/classes`.
+Device coverage stays in a separate
 report so the unit upload never includes instrumentation data. When compilation,
 tests and reporting are requested together, the report runs after those producers. Reporting alone
 can still use restored CI files without triggering builds or tests. XML is written to
@@ -102,8 +108,9 @@ python3 scripts/prepare-r8-verification.py
 ```
 
 Prepare debug Google Services files as described in AGENTS.md before app builds.
-Functional tests use isolated Kotlin DSL builds to verify module overrides,
-Hilt dependency registration, Data Binding, Java-only modules, and aggregate
+Functional tests use isolated Kotlin DSL builds to verify built-in Kotlin,
+JVM target alignment with module Java overrides,
+Hilt/KSP dependency registration, Java-only modules, and aggregate
 coverage inputs/exclusions/output paths. Focused tests preserve the R8 report
 count guard. CI runs these tests alongside the app and feature unit tests.
 
@@ -115,9 +122,8 @@ compilation tasks do not emit them. Kotlin also reports diagnostics through
 Gradle's Problems API; inspect `build/reports/problems/problems-report.html`.
 Do not disable warning output to make a build appear clean.
 
-The build scripts and conventions use public Android DSL interfaces while keeping
-`android.newDsl=false` and external Kotlin/kapt for plugin compatibility. App
-instrumentation dependencies retain AGP's default alignment constraints; library
+The build scripts and conventions use public Android DSL interfaces with AGP's
+built-in Kotlin and KSP. App instrumentation dependencies retain AGP's default alignment constraints; library
 configurations do not generate cross-variant constraints. Lint uses AGP's default
 report locations, and CI uploads `app/build/reports/lint-results-mockDebug.*`.
 
@@ -125,9 +131,7 @@ Some warnings still require separate migrations:
 
 | Warning | Current dependency or behavior |
 | --- | --- |
-| External Kotlin / legacy variant API | External Kotlin, its R8 verification source-set adapter, kapt, Firebase/OSS licenses and other plugins still rely on legacy integration. Preserve the required opt-outs until that migration is in scope. |
 | Jetifier | Mugen 1.0.3 contains `android/support/` references. Remove or replace this legacy pagination dependency before disabling Jetifier. |
-| Final resource IDs / app compile-time R / resource shrinking | ButterKnife annotations require constant IDs. Remove ButterKnife before adopting non-final IDs and optimized resource shrinking. |
 | Deprecated Fragment and activity transition APIs | Legacy ViewPager screens, fragment menus/permissions, and activity animations need their own migration and integration checks. |
 | Deprecated test rules / Compose rules | ActivityTestRule/IntentsTestRule and Compose v1 rules need lifecycle and scheduler migration, including device tests and reviewed screenshot verification. |
 | Mockito/JVM class sharing and annotation processors | Test instrumentation appends to the JVM bootstrap classpath; generated Hilt processor options may reach processors that do not consume them. Data Binding also prevents incremental annotation processing in modules that still use it. These diagnostics remain visible. |

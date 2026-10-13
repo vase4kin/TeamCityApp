@@ -87,7 +87,11 @@ extensions.configure<ApplicationExtension> {
 
     if (r8VerificationEnabled) {
         testBuildType = "r8Verification"
-        sourceSets.getByName("androidTest").setRoot("src/r8VerificationTest")
+        sourceSets.getByName("androidTest").apply {
+            setRoot("src/r8VerificationTest")
+            kotlin.directories.clear()
+            kotlin.directories.add("src/r8VerificationTest/kotlin")
+        }
     }
 
     flavorDimensions += "default"
@@ -244,7 +248,7 @@ dependencies {
     // Onboarding
     // Dagger
     implementation(libs.dagger.dagger)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 
     // Rx
     implementation(libs.androidx.activity.compose)
@@ -305,7 +309,7 @@ dependencies {
         androidTestImplementation(platform(libs.compose.bom))
         androidTestImplementation(libs.compose.ui.testJunit4)
         androidTestImplementation(libs.hilt.testing)
-        kaptAndroidTest(libs.hilt.compiler)
+        kspAndroidTest(libs.hilt.compiler)
         // Resolve conflits between apks
         androidTestImplementation(libs.google.material)
     }
@@ -313,34 +317,6 @@ dependencies {
     implementation(libs.google.crashlytics)
 
     implementation(libs.kotlin.stdlib)
-}
-
-// External Kotlin still owns its source sets; the public Android Kotlin directories
-// do not redirect KGP's common androidTest sources in the legacy DSL integration.
-if (r8VerificationEnabled) {
-    extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
-        sourceSets.getByName("androidTest").kotlin.setSrcDirs(
-            listOf("src/r8VerificationTest/java", "src/r8VerificationTest/kotlin")
-        )
-    }
-}
-
-// Kapt processes both Kotlin and Java sources. Avoid loading the processors again.
-tasks.withType<JavaCompile>().configureEach {
-    if (name.endsWith("JavaWithJavac")) {
-        doFirst {
-            options.annotationProcessorPath = files()
-        }
-    } else if (name.startsWith("hiltJavaCompile")) {
-        doFirst {
-            // Hilt does not process view bindings; ButterKnife's scanner uses JDK internals.
-            options.annotationProcessorPath = files(
-                options.annotationProcessorPath?.filter {
-                    !it.name.contains("butterknife-compiler")
-                }
-            )
-        }
-    }
 }
 
 if (r8VerificationEnabled) {

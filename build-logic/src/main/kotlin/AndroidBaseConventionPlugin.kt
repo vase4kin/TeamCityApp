@@ -4,8 +4,6 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidBaseConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
@@ -38,11 +36,6 @@ class AndroidBaseConventionPlugin : Plugin<Project> {
         pluginManager.withPlugin("com.android.application") {
             extensions.configure(ApplicationExtension::class.java) {
                 defaultConfig.targetSdk = Config.targetSdk
-            }
-        }
-        pluginManager.withPlugin("org.jetbrains.kotlin.android") {
-            extensions.configure(KotlinAndroidProjectExtension::class.java) {
-                compilerOptions.jvmTarget.set(JvmTarget.fromTarget(Config.KotlinOptions.jvmTarget))
             }
         }
     }

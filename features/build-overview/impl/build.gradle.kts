@@ -42,5 +42,5 @@ dependencies {
     implementation(libs.google.analytics)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockito.mockitoCore)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

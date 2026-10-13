@@ -38,13 +38,16 @@ class AndroidConventionPluginsTest {
             }
             tasks.register("verifyConventions") {
                 doLast {
-                    check(android.compileSdkVersion == "android-37.0") { "Compile SDK: ${'$'}{android.compileSdkVersion}" }
-                    check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
+                    check(android.compileSdk == 37) { "Compile SDK: ${'$'}{android.compileSdk}" }
+                    check(android.defaultConfig.minSdk == 24)
                     check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
                     check(android.defaultConfig.consumerProguardFiles.single().name == "consumer-rules.pro")
+                    check(!android.enableKotlin)
+                    check(tasks.findByName("compileDebugKotlin") == null)
                     check(plugins.hasPlugin("jacoco"))
                     check(!plugins.hasPlugin("org.jetbrains.kotlin.android"))
-                    check(!plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+                    check(!plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(!plugins.hasPlugin("com.android.legacy-kapt"))
                 }
             }
             """.trimIndent()
@@ -63,9 +66,9 @@ class AndroidConventionPluginsTest {
         listOf(
             "app/build/intermediates/javac/mockDebug/classes/OriginalApp.class",
             "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/com/github/vase4kin/teamcityapp/App.class",
-            "library/build/tmp/kotlin-classes/debug/teamcityapp/sample/Library.class",
-            "library/build/tmp/kotlin-classes/debug/R.class",
-            "library/build/tmp/kotlin-classes/debug/dagger/Generated.class",
+            "library/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/teamcityapp/sample/Library.class",
+            "library/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/R.class",
+            "library/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/dagger/Generated.class",
             "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/androidx/databinding/DataBindingComponent.class",
             "app/jacococli.jar",
             "app/src/main/java/example/App.java",
@@ -177,20 +180,22 @@ class AndroidConventionPluginsTest {
             plugins {
                 id("teamcityapp.android.$kind")
                 id("teamcityapp.android.hilt")
-                id("teamcityapp.android.data-binding")
             }
 
             // Reapplying optional conventions must not duplicate dependencies.
             pluginManager.apply("teamcityapp.android.hilt")
-            pluginManager.apply("teamcityapp.android.data-binding")
 
-            check(android.compileSdkVersion == "android-37.0") { "Compile SDK: ${'$'}{android.compileSdkVersion}" }
-            check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
-            ${if (kind == "application") "check(android.defaultConfig.targetSdkVersion?.apiLevel == 36)" else "check(android.testOptions.targetSdk == 36)"}
+            check(android.compileSdk == 37) { "Compile SDK: ${'$'}{android.compileSdk}" }
+            check(android.defaultConfig.minSdk == 24)
+            ${if (kind == "application") "check(android.defaultConfig.targetSdk == 36)" else "check(android.testOptions.targetSdk == 36)"}
 
             android {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_11
+                    targetCompatibility = JavaVersion.VERSION_11
+                }
                 namespace = "teamcityapp.conventiontest"
-                compileSdkVersion(35)
+                compileSdk = 35
                 defaultConfig {
                     minSdk = 26
                     testInstrumentationRunner = "teamcityapp.CustomRunner"
@@ -205,22 +210,25 @@ class AndroidConventionPluginsTest {
                     check(agent.isIncludeNoLocationClasses)
                     check(agent.excludes == listOf("jdk.internal.*"))
                     check(project.extensions.getByType<org.gradle.testing.jacoco.plugins.JacocoPluginExtension>().toolVersion == "0.8.14")
-                    check(android.compileSdkVersion == "android-35")
-                    check(android.defaultConfig.minSdkVersion?.apiLevel == 26)
+                    check(android.compileSdk == 35)
+                    check(android.defaultConfig.minSdk == 26)
                     check(android.defaultConfig.testInstrumentationRunner == "teamcityapp.CustomRunner")
                     check(android.defaultConfig.testInstrumentationRunnerArguments["notAnnotation"] == "org.junit.Ignore")
-                    check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
-                    check(android.compileOptions.targetCompatibility == JavaVersion.VERSION_17)
-                    check(kotlin.compilerOptions.jvmTarget.get().target == "17")
+                    check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_11)
+                    check(android.compileOptions.targetCompatibility == JavaVersion.VERSION_11)
+                    val kotlinCompile = tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>("compileDebugKotlin").get()
+                    check(kotlinCompile.compilerOptions.jvmTarget.get().target == "11")
                     check(android.lint.abortOnError)
                     check(android.lint.disable.contains("InvalidPackage"))
-                    check(android.dataBinding.enable)
-                    check(plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+                    check(plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(!plugins.hasPlugin("com.android.legacy-kapt"))
+                    check(!plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+                    check(!plugins.hasPlugin("org.jetbrains.kotlin.android"))
                     check(plugins.hasPlugin("com.google.dagger.hilt.android"))
                     check(configurations.getByName("implementation").dependencies.count {
                         it.group == "com.google.dagger" && it.name == "hilt-android"
                     } == 1)
-                    check(configurations.getByName("kapt").dependencies.count {
+                    check(configurations.getByName("ksp").dependencies.count {
                         it.group == "com.google.dagger" && it.name == "hilt-compiler"
                     } == 1)
                 }
@@ -245,7 +253,8 @@ class AndroidConventionPluginsTest {
                 doLast {
                     check(android.buildFeatures.compose == true)
                     check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
-                    check(!plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+                    check(!plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(!plugins.hasPlugin("com.android.legacy-kapt"))
                     val implementation = configurations.getByName("implementation").dependencies
                     check(implementation.count { it.name == "compose-bom" } == 1)
                     check(implementation.count { it.name == "material3" } == 1)
@@ -316,9 +325,6 @@ class AndroidConventionPluginsTest {
                 }
             }
             """.trimIndent() + modules.joinToString("") { "\ninclude(\"$it\")" }
-        )
-        File(projectDir, "gradle.properties").writeText(
-            "android.builtInKotlin=false\nandroid.newDsl=false\n"
         )
         return projectDir
     }

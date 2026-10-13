@@ -45,5 +45,5 @@ dependencies {
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.androidx.paging.testing)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

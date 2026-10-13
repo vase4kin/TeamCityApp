@@ -41,7 +41,7 @@ class UnitTestCiTest(unittest.TestCase):
             if name != ":libraries:shared":
                 self.write(self.root, f"{module}/src/test/kotlin/ScreenTest.kt", "@RunWith(RobolectricTestRunner::class) class ScreenTest")
             variant = "mockDebug" if name == ":app" else "debug"
-            self.write(self.root, f"{module}/build/tmp/kotlin-classes/{variant}/Screen.class", name)
+            self.write(self.root, f"{module}/build/intermediates/built_in_kotlinc/{variant}/compile{variant[0].upper() + variant[1:]}Kotlin/classes/Screen.class", name)
             self.write(self.root, f"{module}/build/jacoco/test.exec", name + " coverage")
         self.inputs = Path(self.temporary.name) / "inputs"
         self.inputs.mkdir()
@@ -116,14 +116,14 @@ class UnitTestCiTest(unittest.TestCase):
         ci.pack(self.root, 0, self.inputs / "shard-0.zip")
         shard = ci.plan(self.root)["include"][0]
         with zipfile.ZipFile(self.inputs / "shard-0.zip") as archive:
-            self.assertIn("libraries/shared/build/tmp/kotlin-classes/debug/Screen.class", archive.namelist())
+            self.assertIn("libraries/shared/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/Screen.class", archive.namelist())
             for name in self.names:
                 execution = name[1:].replace(":", "/") + "/build/jacoco/test.exec"
                 self.assertEqual(execution in archive.namelist(), name in shard["modules"])
 
     def test_transformed_classes_take_precedence_and_prod_data_is_excluded(self):
         self.write(self.root, "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/Screen.class", "transformed")
-        self.write(self.root, "app/build/tmp/kotlin-classes/prodDebug/Screen.class", "prod")
+        self.write(self.root, "app/build/intermediates/built_in_kotlinc/prodDebug/compileProdDebugKotlin/classes/Screen.class", "prod")
         self.write(self.root, "app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/test.exec", "prod")
         self.write(self.root, "app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/test.exec", "mock")
         self.assertEqual([p.read_text() for p in ci.coverage_paths(self.root, ":app")], ["transformed"])
@@ -135,7 +135,7 @@ class UnitTestCiTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Missing unit coverage execution"):
             ci.pack(self.root, shard, self.inputs / "shard.zip")
         self.write(self.root, "app/build/jacoco/test.exec", "coverage")
-        (self.root / "app/build/tmp/kotlin-classes/mockDebug/Screen.class").unlink()
+        (self.root / "app/build/intermediates/built_in_kotlinc/mockDebug/compileMockDebugKotlin/classes/Screen.class").unlink()
         with self.assertRaisesRegex(ValueError, "Missing compiled coverage"):
             ci.pack(self.root, shard, self.inputs / "shard.zip")
 
@@ -159,7 +159,7 @@ class UnitTestCiTest(unittest.TestCase):
 
     def test_conflicting_class_bytes_are_rejected(self):
         self.pack_all()
-        self.rewrite_archive(1, lambda contents: contents.update({"app/build/tmp/kotlin-classes/mockDebug/Screen.class": b"different revision"}))
+        self.rewrite_archive(1, lambda contents: contents.update({"app/build/intermediates/built_in_kotlinc/mockDebug/compileMockDebugKotlin/classes/Screen.class": b"different revision"}))
         with self.assertRaisesRegex(ValueError, "Conflicting coverage input"):
             ci.restore(self.consumer(), self.inputs)
 

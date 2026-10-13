@@ -26,7 +26,7 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
     testImplementation(libs.junit)
     testImplementation(libs.hamcrestJunit)
     testImplementation(libs.robolectric)

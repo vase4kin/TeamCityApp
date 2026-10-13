@@ -27,5 +27,5 @@ extensions.configure<LibraryExtension> {
 dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.junit)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

@@ -8,6 +8,7 @@ kotlin {
 
 dependencies {
     implementation(libs.tools.gradleAndroid)
+    implementation(libs.ksp.gradlePlugin)
     implementation(libs.kotlin.tools.gradlePlugin)
     implementation(libs.kotlin.compose.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)
@@ -41,10 +42,6 @@ gradlePlugin {
         register("androidHilt") {
             id = "teamcityapp.android.hilt"
             implementationClass = "teamcityapp.buildlogic.AndroidHiltConventionPlugin"
-        }
-        register("androidDataBinding") {
-            id = "teamcityapp.android.data-binding"
-            implementationClass = "teamcityapp.buildlogic.AndroidDataBindingConventionPlugin"
         }
         register("androidScreenshot") {
             id = "teamcityapp.android.screenshot"
