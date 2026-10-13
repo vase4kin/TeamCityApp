@@ -17,6 +17,9 @@
 package teamcityapp.features.change_details.impl
 
 import android.app.Application
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
@@ -36,7 +39,7 @@ import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Every Change Details state, in both themes, sizes, and enlarged text. */
-@OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class, ExperimentalMaterial3Api::class)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -86,7 +89,12 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
 
             else -> error("Unknown screenshot state: $stateName")
         }
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { ChangeDetailsScreen(state, {}, { _, _ -> }, {}) } }
+        compose.setContent {
+            // Native ripple animations run on render-thread time, outside the Compose test clock.
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                TeamCityTheme(darkTheme = variant.dark) { ChangeDetailsScreen(state, {}, { _, _ -> }, {}) }
+            }
+        }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (state is ChangeDetailsUiState.Content) {
@@ -97,7 +105,21 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
         val name = "change_details_${stateName}_${variant.name}"
         compose.onRoot().captureRoboImage("$name.png")
         if (stateName == "long_content") {
+            compose.onNodeWithText((state as ChangeDetailsUiState.Content).details.comment).performClick()
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onRoot().captureRoboImage("${name}_expanded.png")
+            compose.onNodeWithText("Show less").performScrollTo().assertIsDisplayed()
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onRoot().captureRoboImage("${name}_collapse_action.png")
+            compose.onNodeWithText("Show less").performClick()
+            compose.onNodeWithTag("change_details:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onRoot().captureRoboImage("${name}_collapsed.png")
             compose.onNodeWithText("More details").performScrollTo().assertIsDisplayed()
+            compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
             compose.onRoot().captureRoboImage("${name}_action.png")
             compose.onNodeWithTag("change_details:list").performScrollToIndex(0)
@@ -107,7 +129,7 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
             compose.waitForIdle()
             compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
             compose.onRoot().captureRoboImage("change_details_${stateName}_${variant.name}_scrolled.png")
-            compose.onNodeWithTag("change_details:list").performScrollToIndex((state as ChangeDetailsUiState.Content).details.files.size + 1)
+            compose.onNodeWithTag("change_details:list").performScrollToIndex(state.details.files.size + 1)
             compose.waitForIdle()
             compose.onRoot().captureRoboImage("${name}_bottom.png")
             compose.mainClock.autoAdvance = true

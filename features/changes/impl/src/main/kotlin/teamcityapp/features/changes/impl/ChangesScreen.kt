@@ -101,7 +101,7 @@ private fun ChangeRow(row: ChangeRowUiState, onClick: () -> Unit, position: List
         }
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
-            Text(change.comment.trim(), style = MaterialTheme.typography.titleMedium)
+            Text(change.comment.trim(), style = MaterialTheme.typography.titleMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
             Text(stringResource(R.string.changes_author_date, change.userName, change.date), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(change.revision, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(pluralStringResource(R.plurals.changes_files, change.files.size, change.files.size), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

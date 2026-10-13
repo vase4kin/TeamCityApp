@@ -17,8 +17,10 @@
 package teamcityapp.features.changes.impl
 
 import android.app.Application
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.text.TextLayoutResult
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -69,6 +71,24 @@ class ChangesScreenTest {
         compose.onNodeWithText("Retry count").performClick()
         assertEquals(1, countRetries)
         assertEquals(1, pageRetries)
+    }
+
+    @Test fun longCommentShowsThreeLinesButDispatchesTheCompleteChange() {
+        val comment = (1..8).joinToString("\n") { "Commit comment line $it" }
+        val detail = change().copy(comment = "  $comment  ")
+        var selected: ChangeDetails? = null
+        compose.setContent {
+            TeamCityTheme {
+                ChangesScreen(ListUiState.Content(listOf(detail)), ChangesCountState.Available(1), 1, { ChangeRowUiState(detail) }, { detail.id }, ChangesAppendState.Idle, {}, {}, {}, { selected = it })
+            }
+        }
+        val layouts = mutableListOf<TextLayoutResult>()
+        compose.onNodeWithText(comment, useUnmergedTree = true).performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        assertEquals(3, layouts.single().lineCount)
+        assertTrue(layouts.single().isLineEllipsized(2))
+        compose.onNodeWithText("By john-117 on 30 Jul 16 00:36").assertIsDisplayed()
+        compose.onNodeWithTag("changes:change:42").performClick()
+        assertEquals(detail, selected)
     }
 
     @Test fun emptyStateKeepsOptionalCountFailureVisible() {

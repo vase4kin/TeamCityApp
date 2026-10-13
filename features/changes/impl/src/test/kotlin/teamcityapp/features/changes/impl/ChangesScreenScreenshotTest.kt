@@ -70,7 +70,10 @@ class ChangesScreenScreenshotTest(private val stateName: String, private val var
     @Test fun rendersState() {
         val rows = listOf(
             change(),
-            change("43").copy(comment = "Allow a cancelled build to finish cleanup before the next queued build starts", files = List(12) { teamcityapp.features.change_details.api.ChangedFile("File$it.kt", "edited") }),
+            change("43").copy(
+                comment = if (stateName == "long_comments") (1..8).joinToString("\n") { "Commit comment line $it" } else "Allow a cancelled build to finish cleanup before the next queued build starts",
+                files = List(12) { teamcityapp.features.change_details.api.ChangedFile("File$it.kt", "edited") }
+            ),
             change("44").copy(comment = "Update documentation", files = emptyList())
         )
         val state: ListUiState<teamcityapp.features.change_details.api.ChangeDetails> = when (stateName) {
@@ -120,7 +123,7 @@ class ChangesScreenScreenshotTest(private val stateName: String, private val var
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "append_loading", "append_failed", "count_unavailable").flatMap { state ->
+            listOf("loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "long_comments", "refreshing", "refresh_failed", "append_loading", "append_failed", "count_unavailable").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

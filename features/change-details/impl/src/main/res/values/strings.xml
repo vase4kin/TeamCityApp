@@ -1,5 +1,6 @@
 <!--
   ~ Copyright 2020 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,5 +23,7 @@
     <string name="text_user">User:</string>
     <string name="text_description">By %s on %s</string>
     <string name="text_button_open_in_browser">More details</string>
+    <string name="text_show_more">Show more</string>
+    <string name="text_show_less">Show less</string>
     <string name="text_info">Click on a file to view a diff</string>
 </resources>

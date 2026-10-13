@@ -23,7 +23,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,13 +82,13 @@ fun ChangeDetailsScreen(
 private fun ChangeCard(details: ChangeDetails, onOpenUrl: () -> Unit, modifier: Modifier = Modifier) {
     Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
         Column(Modifier.padding(TeamCityDimensions.sectionSpacing)) {
-            DetailField(stringResource(R.string.text_comment), details.comment, MaterialTheme.typography.headlineSmall)
+            ChangeComment(details.id, details.comment)
             HorizontalDivider(Modifier.padding(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.outlineVariant)
             SelectionContainer { DetailField(stringResource(R.string.text_revision), details.revision, TeamCityMonospace) }
             HorizontalDivider(Modifier.padding(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.outlineVariant)
             DetailField(stringResource(R.string.text_user), stringResource(R.string.text_description, details.userName, details.date), MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(TeamCityDimensions.smallSpacing))
-            OutlinedButton(onClick = onOpenUrl) {
+            Button(onClick = onOpenUrl) {
                 Icon(painterResource(R.drawable.ic_web_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
                 Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
                 Text(stringResource(R.string.text_button_open_in_browser))
@@ -96,11 +98,41 @@ private fun ChangeCard(details: ChangeDetails, onOpenUrl: () -> Unit, modifier: 
 }
 
 @Composable
-private fun DetailField(label: String, value: String, style: TextStyle) {
+private fun ChangeComment(changeId: String, comment: String) {
+    var expanded by rememberSaveable(changeId, comment) { mutableStateOf(false) }
+    var overflows by remember(changeId, comment) { mutableStateOf(false) }
+    val expandLabel = stringResource(if (expanded) R.string.text_show_less else R.string.text_show_more)
+    Column {
+        DetailField(
+            stringResource(R.string.text_comment),
+            comment,
+            MaterialTheme.typography.headlineSmall,
+            valueModifier = if (expanded || overflows) Modifier.clickable(role = Role.Button, onClickLabel = expandLabel) { expanded = !expanded } else Modifier,
+            maxLines = if (expanded) Int.MAX_VALUE else 3,
+            onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow }
+        )
+        if (expanded || overflows) {
+            TextButton(onClick = { expanded = !expanded }) {
+                Text(expandLabel)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailField(label: String, value: String, style: TextStyle, valueModifier: Modifier = Modifier, maxLines: Int = Int.MAX_VALUE, onTextLayout: (TextLayoutResult) -> Unit = {}) {
     Column {
         Text(label, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelSmall)
         Spacer(Modifier.height(TeamCityDimensions.extraSmallSpacing))
-        Text(value, Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface, style = style)
+        Text(
+            value,
+            valueModifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = style,
+            maxLines = maxLines,
+            overflow = if (maxLines == Int.MAX_VALUE) TextOverflow.Clip else TextOverflow.Ellipsis,
+            onTextLayout = onTextLayout
+        )
     }
 }
 
