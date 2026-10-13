@@ -8,6 +8,7 @@ kotlin {
 
 dependencies {
     implementation(libs.tools.gradleAndroid)
+    implementation(libs.android.legacyKapt.gradlePlugin)
     implementation(libs.kotlin.tools.gradlePlugin)
     implementation(libs.kotlin.compose.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)

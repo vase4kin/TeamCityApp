@@ -87,7 +87,11 @@ extensions.configure<ApplicationExtension> {
 
     if (r8VerificationEnabled) {
         testBuildType = "r8Verification"
-        sourceSets.getByName("androidTest").setRoot("src/r8VerificationTest")
+        sourceSets.getByName("androidTest").apply {
+            setRoot("src/r8VerificationTest")
+            kotlin.directories.clear()
+            kotlin.directories.add("src/r8VerificationTest/kotlin")
+        }
     }
 
     flavorDimensions += "default"
@@ -313,16 +317,6 @@ dependencies {
     implementation(libs.google.crashlytics)
 
     implementation(libs.kotlin.stdlib)
-}
-
-// External Kotlin still owns its source sets; the public Android Kotlin directories
-// do not redirect KGP's common androidTest sources in the legacy DSL integration.
-if (r8VerificationEnabled) {
-    extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
-        sourceSets.getByName("androidTest").kotlin.setSrcDirs(
-            listOf("src/r8VerificationTest/java", "src/r8VerificationTest/kotlin")
-        )
-    }
 }
 
 // Kapt processes both Kotlin and Java sources. Avoid loading the processors again.

@@ -8,6 +8,5 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         // Register shared defaults before applying Android.
         pluginManager.apply("teamcityapp.android.base")
         pluginManager.apply("com.android.library")
-        pluginManager.apply("org.jetbrains.kotlin.android")
     }
 }

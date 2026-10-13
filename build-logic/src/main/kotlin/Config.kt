@@ -26,10 +26,6 @@ object Config {
     val versionCode = androidVersionCode(versionName)
     const val applicationId = "com.github.vase4kin.teamcityapp"
     val javaVersion = JavaVersion.VERSION_17
-
-    object KotlinOptions {
-        const val jvmTarget = "17"
-    }
 }
 
 internal fun androidVersionCode(version: String): Int {

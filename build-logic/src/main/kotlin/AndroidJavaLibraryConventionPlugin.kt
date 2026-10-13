@@ -1,5 +1,6 @@
 package teamcityapp.buildlogic
 
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -8,5 +9,8 @@ class AndroidJavaLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("teamcityapp.android.base")
         pluginManager.apply("com.android.library")
+        extensions.configure(LibraryExtension::class.java) {
+            enableKotlin = false
+        }
     }
 }

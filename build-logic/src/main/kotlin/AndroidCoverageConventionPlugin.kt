@@ -79,7 +79,7 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                                 } else {
                                     listOf(
                                         module.layout.buildDirectory.dir("intermediates/javac/$variant").get().asFile,
-                                        module.layout.buildDirectory.dir("tmp/kotlin-classes/$variant").get().asFile
+                                        module.layout.buildDirectory.dir("intermediates/built_in_kotlinc/$variant/compile${capitalizedVariant}Kotlin/classes").get().asFile
                                     )
                                 }
                                 paths.map { directory ->
