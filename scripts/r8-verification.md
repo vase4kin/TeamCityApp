@@ -1,9 +1,14 @@
 # R8 verification
 
-Release builds use R8 full mode, obfuscation, and resource shrinking. Optimized
-resource shrinking remains disabled because ButterKnife annotations require final
-resource IDs. Remove that opt-out together with `android.nonFinalResIds=false`
-after migrating the bindings.
+Release builds use R8 full mode, obfuscation, and optimized resource shrinking
+with AGP defaults. Application compilation uses the compile-time R class, and
+resource fields are non-final. Use `if`/`when` comparisons rather than Java
+`switch` labels or Kotlin `const val` definitions for resource IDs.
+
+The OSS licenses SDK loads its layouts and generated license files by name.
+`app/src/main/res/raw/teamcityapp_oss_licenses_keep.xml` preserves those dynamic
+resources through optimization; the minified smoke suite checks their presence
+and opens the external licenses screen.
 
 Use JDK 17. Build the isolated, debug-signed verification app and instrumentation:
 
@@ -27,8 +32,9 @@ This avoids instrumentation-generated rules keeping the
 app APIs under test. They cover unannotated Gson fields and inherited/generic
 models, account persistence with Keystore, Java serialization, Retrofit service
 reflection/decoding, RxCache disk restoration, EventBus subscribers, Joda timezone
-resources, and login screen startup. Retrofit responses are supplied by a local
-interceptor; no TeamCity server is needed.
+resources, login screen startup, and the external OSS licenses screen with its
+generated raw resources. Retrofit responses are supplied by a local interceptor;
+no TeamCity server is needed.
 
 CI always builds the minified verification application. It also builds the R8
 test APK and runs it on an ARM64 Android OS version 17 emulator when the full UI

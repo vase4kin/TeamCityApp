@@ -132,7 +132,6 @@ Some warnings still require separate migrations:
 | Warning | Current dependency or behavior |
 | --- | --- |
 | Jetifier | Mugen 1.0.3 contains `android/support/` references. Remove or replace this legacy pagination dependency before disabling Jetifier. |
-| Final resource IDs / app compile-time R / resource shrinking | ButterKnife annotations require constant IDs. Remove ButterKnife before adopting non-final IDs and optimized resource shrinking. |
 | Deprecated Fragment and activity transition APIs | Legacy ViewPager screens, fragment menus/permissions, and activity animations need their own migration and integration checks. |
 | Deprecated test rules / Compose rules | ActivityTestRule/IntentsTestRule and Compose v1 rules need lifecycle and scheduler migration, including device tests and reviewed screenshot verification. |
 | Mockito/JVM class sharing and annotation processors | Test instrumentation appends to the JVM bootstrap classpath; generated Hilt processor options may reach processors that do not consume them. Data Binding also prevents incremental annotation processing in modules that still use it. These diagnostics remain visible. |
