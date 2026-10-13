@@ -185,6 +185,14 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
             val action = compose.onNodeWithTag("details:action:${state.primaryAction.action}").fetchSemanticsNode().boundsInRoot
             assertEquals("Primary action should match the floating toolbar height", toolbar.height, action.height, 0.5f)
         }
+        val actionBounds = if (!stateName.startsWith("section_") && state.prompt == null && state.confirmation == null) {
+            compose.onNodeWithTag("details:action:${state.primaryAction.action}").assertIsDisplayed().fetchSemanticsNode().boundsInRoot.also { bounds ->
+                assertEquals("Primary action stays at the right edge", variant.width - 16f, bounds.right, .5f)
+                compose.onNodeWithTag("details:toolbar").assertIsDisplayed()
+            }
+        } else {
+            null
+        }
         if (stateName.endsWith("_scrolled")) {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("details:scroll").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
@@ -192,6 +200,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
             compose.waitForIdle()
             compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
         }
+        if (actionBounds != null) assertEquals("Scrolling keeps the action fixed", actionBounds, compose.onNodeWithTag("details:action:${state.primaryAction.action}").fetchSemanticsNode().boundsInRoot)
         compose.onRoot().captureRoboImage("details_${stateName}_${variant.name}.png")
         if (stateName.endsWith("_scrolled")) {
             compose.onNodeWithTag("details:scroll").performScrollToIndex(0)

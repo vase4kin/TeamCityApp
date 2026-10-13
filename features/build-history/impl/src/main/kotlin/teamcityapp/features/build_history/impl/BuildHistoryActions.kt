@@ -16,9 +16,6 @@
 
 package teamcityapp.features.build_history.impl
 
-import android.content.Context
-import android.view.accessibility.AccessibilityManager
-import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,12 +35,11 @@ import teamcityapp.libraries.theme.TeamCityFloatingToolbar
 import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
-/** The extended FAB is separate so its label and trailing position survive toolbar collapse. */
+/** Persistent secondary actions and a trailing primary action share one floating group. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BuildHistoryActions(
     controls: BuildHistoryControls,
-    expanded: Boolean,
     showRunBuild: Boolean,
     onRunBuild: () -> Unit,
     onFilters: () -> Unit,
@@ -56,36 +51,27 @@ internal fun BuildHistoryActions(
     // Wrap at narrow widths or large text sizes instead of truncating the primary action.
     FlowRow(
         modifier.testTag("history:actions"),
-        horizontalArrangement = Arrangement.End,
+        horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing, Alignment.End),
         verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
     ) {
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandHorizontally(MaterialTheme.motionScheme.defaultSpatialSpec(), expandFrom = Alignment.End) + fadeIn(MaterialTheme.motionScheme.defaultEffectsSpec()),
-            exit = shrinkHorizontally(MaterialTheme.motionScheme.defaultSpatialSpec(), shrinkTowards = Alignment.End) + fadeOut(MaterialTheme.motionScheme.defaultEffectsSpec())
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TeamCityFloatingToolbar(modifier = Modifier.testTag("history:toolbar")) {
-                    IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
-                        Icon(painterResource(R.drawable.ic_history_filter), stringResource(R.string.history_filter))
-                    }
-                    val favorite = controls.favorite
-                    IconButton(
-                        onClick = if (favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite,
-                        enabled = favorite != FavoriteState.Loading && (favorite !is FavoriteState.Available || !favorite.updating),
-                        modifier = Modifier.testTag("history:favorite").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Favorite, it.boundsInRoot()) }
-                    ) {
-                        if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
-                            TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize))
-                        } else {
-                            Icon(
-                                painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
-                                stringResource(controls.favoriteActionLabelRes)
-                            )
-                        }
-                    }
+        TeamCityFloatingToolbar(modifier = Modifier.testTag("history:toolbar")) {
+            IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
+                Icon(painterResource(R.drawable.ic_history_filter), stringResource(R.string.history_filter))
+            }
+            val favorite = controls.favorite
+            IconButton(
+                onClick = if (favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite,
+                enabled = favorite != FavoriteState.Loading && (favorite !is FavoriteState.Available || !favorite.updating),
+                modifier = Modifier.testTag("history:favorite").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Favorite, it.boundsInRoot()) }
+            ) {
+                if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
+                    TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize))
+                } else {
+                    Icon(
+                        painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
+                        stringResource(controls.favoriteActionLabelRes)
+                    )
                 }
-                if (showRunBuild) Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
             }
         }
         if (showRunBuild) {
@@ -101,24 +87,10 @@ internal fun BuildHistoryActions(
     }
 }
 
-@Composable
-internal fun rememberHistoryTouchExplorationEnabled(): Boolean {
-    val context = LocalContext.current
-    val manager = remember(context) { context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager }
-    var enabled by remember(manager) { mutableStateOf(manager.isTouchExplorationEnabled) }
-    DisposableEffect(manager) {
-        val listener = AccessibilityManager.TouchExplorationStateChangeListener { enabled = it }
-        manager.addTouchExplorationStateChangeListener(listener)
-        enabled = manager.isTouchExplorationEnabled
-        onDispose { manager.removeTouchExplorationStateChangeListener(listener) }
-    }
-    return enabled
-}
-
 @Preview
 @Composable
 private fun BuildHistoryActionsPreview() {
     TeamCityTheme {
-        BuildHistoryActions(BuildHistoryControls(FavoriteState.Available(true), OnboardingState.Available()), true, true, {}, {}, {}, {}, { _, _ -> })
+        BuildHistoryActions(BuildHistoryControls(FavoriteState.Available(true), OnboardingState.Available()), true, {}, {}, {}, {}, { _, _ -> })
     }
 }

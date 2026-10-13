@@ -127,11 +127,11 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "toolbar_collapsed" || stateName == "toolbar_returned") {
+        if (stateName == "toolbar_scrolled" || stateName == "toolbar_returned") {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
-            compose.onNodeWithTag("history:filter").assertDoesNotExist()
-            compose.onNodeWithTag("history:favorite").assertDoesNotExist()
+            compose.onNodeWithTag("history:filter").assertIsDisplayed()
+            compose.onNodeWithTag("history:favorite").assertIsDisplayed()
             if (stateName == "toolbar_returned") {
                 compose.onNodeWithTag("history:list").performTouchInput { swipeDown(startY = height * .25f, endY = height * .65f, durationMillis = 500) }
                 compose.onNodeWithTag("history:filter").assertIsDisplayed()
@@ -181,7 +181,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
                 "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed",
-                "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_collapsed", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
+                "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_scrolled", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
             ).flatMap { name ->
                 variants.map { arrayOf<Any>(name, it) }
             }

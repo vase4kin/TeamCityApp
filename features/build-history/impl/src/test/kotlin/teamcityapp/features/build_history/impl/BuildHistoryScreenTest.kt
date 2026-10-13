@@ -166,7 +166,7 @@ class BuildHistoryScreenTest {
         assertEquals(listOf(1, 1, 1, 1), listOf(backs, runs, filters, favorites))
     }
 
-    @Test fun scrollingDownCollapsesSecondaryActionsAndScrollingUpRestoresThemWithoutMovingRun() {
+    @Test fun scrollingInBothDirectionsKeepsAllActionsVisibleFixedAndClickable() {
         val rows = (0..29).map { historyBuild(it.toString()) }
         var runs = 0
         var filters = 0
@@ -174,12 +174,20 @@ class BuildHistoryScreenTest {
         compose.setContent { TeamCityTheme { HistoryTestScreen(rows = rows, onRun = { runs++ }, onFilter = { filters++ }, onFavorite = { favorites++ }) } }
         val runBounds = compose.onNodeWithTag("history:run").fetchSemanticsNode().boundsInRoot
         val filterBounds = compose.onNodeWithTag("history:filter").fetchSemanticsNode().boundsInRoot
+        val favoriteBounds = compose.onNodeWithTag("history:favorite").fetchSemanticsNode().boundsInRoot
+        val toolbarBounds = compose.onNodeWithTag("history:toolbar").fetchSemanticsNode().boundsInRoot
+        val screenBounds = compose.onRoot().fetchSemanticsNode().boundsInRoot
+        assertEquals(screenBounds.right - with(compose.density) { 16.dp.toPx() }, runBounds.right, .5f)
+        assertEquals(toolbarBounds.top, runBounds.top, .5f)
+        assertEquals(toolbarBounds.bottom, runBounds.bottom, .5f)
         assertEquals(runBounds.top, filterBounds.top - (runBounds.height - filterBounds.height) / 2)
         compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
-        compose.onNodeWithTag("history:filter").assertDoesNotExist()
-        compose.onNodeWithTag("history:favorite").assertDoesNotExist()
+        compose.onNodeWithTag("history:filter").assertIsDisplayed()
+        compose.onNodeWithTag("history:favorite").assertIsDisplayed()
         compose.onNodeWithText("Run build").assertIsDisplayed()
         assertEquals(runBounds, compose.onNodeWithTag("history:run").fetchSemanticsNode().boundsInRoot)
+        assertEquals(filterBounds, compose.onNodeWithTag("history:filter").fetchSemanticsNode().boundsInRoot)
+        assertEquals(favoriteBounds, compose.onNodeWithTag("history:favorite").fetchSemanticsNode().boundsInRoot)
         compose.onNodeWithTag("history:run").performClick()
         compose.onNodeWithTag("history:list").performTouchInput { swipeDown(startY = height * .25f, endY = height * .65f, durationMillis = 500) }
         compose.onNodeWithTag("history:filter").assertIsDisplayed().performClick()
@@ -217,19 +225,21 @@ class BuildHistoryScreenTest {
         compose.onNodeWithTag("history:filter").assertIsDisplayed()
         compose.onNodeWithTag("history:favorite").assertIsDisplayed()
         compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
-        compose.onNodeWithTag("history:filter").assertDoesNotExist()
+        compose.onNodeWithTag("history:filter").assertIsDisplayed()
         assertEquals(runBounds, compose.onNodeWithTag("history:run").fetchSemanticsNode().boundsInRoot)
     }
 
-    @Test fun collapsedActionsAndScrollPositionSurviveRecreation() {
+    @Test fun fixedActionsAndScrollPositionSurviveRecreation() {
         val restoration = StateRestorationTester(compose)
         val rows = (0..29).map { historyBuild(it.toString()) }
         restoration.setContent { TeamCityTheme { HistoryTestScreen(rows = rows) } }
         compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
-        compose.onNodeWithTag("history:filter").assertDoesNotExist()
+        compose.onNodeWithTag("history:filter").assertIsDisplayed()
+        compose.onNodeWithTag("history:build:0").assertIsNotDisplayed()
         restoration.emulateSavedInstanceStateRestore()
-        compose.onNodeWithTag("history:filter").assertDoesNotExist()
-        compose.onNodeWithTag("history:favorite").assertDoesNotExist()
+        compose.onNodeWithTag("history:build:0").assertIsNotDisplayed()
+        compose.onNodeWithTag("history:filter").assertIsDisplayed()
+        compose.onNodeWithTag("history:favorite").assertIsDisplayed()
         compose.onNodeWithText("Run build").assertIsDisplayed()
         compose.onNodeWithTag("history:list").performTouchInput { swipeDown(startY = height * .25f, endY = height * .65f, durationMillis = 500) }
         compose.onNodeWithTag("history:filter").assertIsDisplayed()
@@ -251,13 +261,13 @@ class BuildHistoryScreenTest {
         }
     }
 
-    @Test fun onboardingExpandsCollapsedActionsAndAnchorsTipsAboveTheToolbar() {
+    @Test fun onboardingAfterScrollingAnchorsTipsAboveTheFixedToolbar() {
         val prompt = androidx.compose.runtime.mutableStateOf<BuildHistoryPrompt?>(null)
         val rows = (0..29).map { historyBuild(it.toString()) }
         compose.setContent { TeamCityTheme { HistoryTestScreen(rows = rows, controls = BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available(prompt.value))) } }
         val runTop = compose.onNodeWithTag("history:run").fetchSemanticsNode().boundsInRoot.top
         compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
-        compose.onNodeWithTag("history:filter").assertDoesNotExist()
+        compose.onNodeWithTag("history:filter").assertIsDisplayed()
         compose.runOnIdle { prompt.value = BuildHistoryPrompt.Filter }
         compose.onNodeWithTag("history:coachmark:Filter").assertIsDisplayed()
         val dismissBounds = compose.onNodeWithTag("history:prompt-dismiss").fetchSemanticsNode().boundsInRoot

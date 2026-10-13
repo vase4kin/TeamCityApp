@@ -109,7 +109,17 @@ class BuildDetailsScreenTest {
         }
         val viewport = compose.onNodeWithTag("content").fetchSemanticsNode().boundsInRoot
         val actions = compose.onNodeWithTag("details:actions").fetchSemanticsNode().boundsInRoot
+        val action = compose.onNodeWithTag("details:action:Cancel").fetchSemanticsNode().boundsInRoot
+        val toolbar = compose.onNodeWithTag("details:toolbar").fetchSemanticsNode().boundsInRoot
+        assertEquals(viewport.right - with(compose.density) { 16.dp.toPx() }, action.right, .5f)
+        assertEquals(toolbar.top, action.top, .5f)
+        assertEquals(toolbar.bottom, action.bottom, .5f)
         assertTrue("Content should extend behind the actions", viewport.bottom > actions.bottom)
+        compose.onNodeWithTag("content").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
+        compose.onNodeWithTag("details:toolbar").assertIsDisplayed()
+        compose.onNodeWithTag("details:action:Cancel").assertIsDisplayed()
+        assertEquals(toolbar, compose.onNodeWithTag("details:toolbar").fetchSemanticsNode().boundsInRoot)
+        assertEquals(action, compose.onNodeWithTag("details:action:Cancel").fetchSemanticsNode().boundsInRoot)
         compose.onNodeWithTag("content").performScrollToIndex(29)
         compose.onNodeWithTag("item:29").assertIsDisplayed()
         assertTrue(compose.onNodeWithTag("item:29").fetchSemanticsNode().boundsInRoot.bottom <= actions.top)

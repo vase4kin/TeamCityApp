@@ -25,9 +25,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -49,7 +47,6 @@ import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityAppBarSurface
 import teamcityapp.libraries.theme.TeamCityDimensions
-import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
@@ -91,10 +88,6 @@ internal fun BuildHistoryScreen(
         it.prompt != null && (it.prompt != BuildHistoryPrompt.Run || state != ListUiState.Error)
     }
     val promptBounds = prompt?.prompt?.let(anchors::get)
-    var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
-    val touchExplorationEnabled = rememberHistoryTouchExplorationEnabled()
-    val atTop by remember(listState) { derivedStateOf { !listState.canScrollBackward } }
-    val actionsExpanded = toolbarExpanded || atTop || prompt != null || touchExplorationEnabled || state !is ListUiState.Content
     var actionHeight by remember { mutableStateOf(FloatingToolbarDefaults.ContainerSize) }
     val density = LocalDensity.current
     BoxWithConstraints(modifier.fillMaxSize()) {
@@ -118,10 +111,10 @@ internal fun BuildHistoryScreen(
                     }
                 }
             },
+            floatingActionButtonPosition = FabPosition.End,
             floatingActionButton = {
                 BuildHistoryActions(
                     controls = controls,
-                    expanded = actionsExpanded,
                     showRunBuild = state != ListUiState.Error,
                     onRunBuild = onRunBuild,
                     onFilters = onFilters,
@@ -164,19 +157,7 @@ internal fun BuildHistoryScreen(
                         empty = { TeamCityListEmpty(stringResource(R.string.history_empty)) }
                     ) {
                         LazyColumn(
-                            Modifier.fillMaxSize().testTag("history:list").then(
-                                if (prompt == null && !touchExplorationEnabled) {
-                                    Modifier.floatingToolbarVerticalNestedScroll(
-                                        expanded = toolbarExpanded,
-                                        onExpand = { toolbarExpanded = true },
-                                        onCollapse = { toolbarExpanded = false },
-                                        expandScrollDistanceThreshold = TeamCityDimensions.sectionSpacing,
-                                        collapseScrollDistanceThreshold = TeamCityDimensions.sectionSpacing
-                                    )
-                                } else {
-                                    Modifier
-                                }
-                            ),
+                            Modifier.fillMaxSize().testTag("history:list"),
                             state = listState,
                             contentPadding = PaddingValues(top = TeamCityDimensions.smallSpacing, bottom = actionClearance - retryClearance + TeamCityDimensions.contentPadding)
                         ) {
