@@ -44,14 +44,6 @@ data class HomeUiState(
         ?.split(Regex("[\\s._-]+"))?.filter { it.isNotEmpty() }?.takeIf { it.isNotEmpty() }?.let { parts ->
             if (parts.size > 1) "${parts.first().first()}${parts.last().first()}".uppercase() else parts.first().take(2).uppercase()
         }
-    val activityBadge: HomeBadge get() {
-        val counts = listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents).map { badges[it] ?: HomeBadge.Loading }
-        return when {
-            counts.any { it is HomeBadge.Failed } -> HomeBadge.Failed()
-            counts.any { it is HomeBadge.Loading } -> HomeBadge.Loading
-            else -> HomeBadge.Count(counts.sumOf { (it as HomeBadge.Count).value.toLong() }.coerceIn(0, Int.MAX_VALUE.toLong()).toInt())
-        }
-    }
 
     @get:StringRes val filterSummaryRes: Int? get() = when (selected) {
         HomeTab.Running -> when (query?.runningFilter) {

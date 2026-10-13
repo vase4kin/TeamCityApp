@@ -83,18 +83,13 @@ fun HomeScreen(
         else -> onActivity()
     }
 
-    @Composable fun DestinationIcon(name: String, icon: Int) {
-        BadgedBox(badge = { if (name == "Activity") HomeCountBadge(state.activityBadge, "Activity") }) {
-            Icon(painterResource(icon), contentDescription = null)
-        }
-    }
     Box(modifier.fillMaxSize().coachmarkHost(anchors)) {
         CompositionLocalProvider(LocalCoachmarkAnchors provides anchors) {
             Row(Modifier.fillMaxSize().then(if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier)) {
                 if (expanded && showNavigation) {
                     NavigationRail {
                         destinations.forEach { (name, label, icon) ->
-                            NavigationRailItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, label = { Text(stringResource(label)) }, modifier = Modifier.testTag("home:tab:$name"))
+                            NavigationRailItem(selected(name), { select(name) }, { Icon(painterResource(icon), contentDescription = null) }, label = { Text(stringResource(label)) }, modifier = Modifier.testTag("home:tab:$name"))
                         }
                     }
                 }
@@ -176,7 +171,7 @@ fun HomeScreen(
                                         NavigationBar {
                                             destinations.forEach { (name, label, icon) ->
                                                 val destinationLabel = stringResource(label)
-                                                NavigationBarItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, modifier = Modifier.testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
+                                                NavigationBarItem(selected(name), { select(name) }, { Icon(painterResource(icon), contentDescription = null) }, modifier = Modifier.testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
                                             }
                                         }
                                     }
