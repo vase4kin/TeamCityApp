@@ -167,11 +167,38 @@ class HomeViewModelTest {
         Assert.assertEquals(HomeTab.Running, model.state.value.selected)
     }
 
-    @Test fun activityCountsNeverSumUnknownCountsOrIncludeAgents() {
+    @Test fun activityCountsIncludeAllThreeViewsAndNeverSumUnknownCounts() {
         val healthy = HomeUiState(badges = mapOf(HomeTab.Running to HomeBadge.Count(2), HomeTab.Queue to HomeBadge.Count(4), HomeTab.Agents to HomeBadge.Count(20)))
-        Assert.assertEquals(HomeBadge.Count(6), healthy.activityBadge)
-        Assert.assertEquals(HomeBadge.Loading, healthy.copy(badges = healthy.badges - HomeTab.Queue).activityBadge)
-        Assert.assertTrue(healthy.copy(badges = healthy.badges + (HomeTab.Queue to HomeBadge.Failed())).activityBadge is HomeBadge.Failed)
+        Assert.assertEquals(HomeBadge.Count(26), healthy.activityBadge)
+        listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents).forEach { tab ->
+            Assert.assertEquals(HomeBadge.Loading, healthy.copy(badges = healthy.badges - tab).activityBadge)
+            Assert.assertEquals(HomeBadge.Loading, healthy.copy(badges = healthy.badges + (tab to HomeBadge.Loading)).activityBadge)
+            Assert.assertTrue(healthy.copy(badges = healthy.badges + (tab to HomeBadge.Failed())).activityBadge is HomeBadge.Failed)
+        }
+        Assert.assertTrue(healthy.copy(badges = healthy.badges + (HomeTab.Running to HomeBadge.Loading) + (HomeTab.Agents to HomeBadge.Failed())).activityBadge is HomeBadge.Failed)
+    }
+
+    @Test fun agentsAloneContributeToActivityAndTheTotalCannotOverflow() {
+        val agentsOnly = HomeUiState(badges = mapOf(HomeTab.Running to HomeBadge.Count(0), HomeTab.Queue to HomeBadge.Count(0), HomeTab.Agents to HomeBadge.Count(20)))
+        Assert.assertEquals(HomeBadge.Count(20), agentsOnly.activityBadge)
+        Assert.assertEquals(HomeBadge.Count(0), agentsOnly.copy(badges = agentsOnly.badges + (HomeTab.Agents to HomeBadge.Count(0))).activityBadge)
+        Assert.assertEquals(HomeBadge.Count(Int.MAX_VALUE), agentsOnly.copy(badges = agentsOnly.badges + (HomeTab.Running to HomeBadge.Count(Int.MAX_VALUE))).activityBadge)
+    }
+
+    @Test fun changingAgentsFilterUpdatesItsBadgeAndTheActivityTotal() = runTest(dispatcher) {
+        val old = CompletableDeferred<HomeCounts>()
+        load = { if (it.agentsFilter == QuickFilter.AgentsConnected) old.await() else counts.copy(queue = HomeCount.Available(4), agents = HomeCount.Available(7)) }
+        val model = model()
+        observe(model)
+        runCurrent()
+        query.value = query.value.copy(agentsFilter = QuickFilter.AgentsDisconnected)
+        runCurrent()
+        old.complete(counts)
+        runCurrent()
+        Assert.assertEquals(1, cancelled)
+        Assert.assertEquals(HomeBadge.Count(7), model.state.value.badges[HomeTab.Agents])
+        Assert.assertEquals(HomeBadge.Count(13), model.state.value.activityBadge)
+        Assert.assertEquals(QuickFilter.AgentsDisconnected, model.state.value.query?.agentsFilter)
     }
 
     @Test fun accountPresentationUsesOnlyTheCurrentQueriesPublicIdentity() {
