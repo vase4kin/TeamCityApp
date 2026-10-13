@@ -92,6 +92,8 @@ class AgentListFragmentTest {
         compose.onNodeWithText("agent 3").assertIsDisplayed()
         showDisconnected()
         assertTextVisible("Mac mini 3434")
+        compose.onNodeWithTag("home:filter:AgentsDisconnected").assertIsSelected()
+        compose.onNodeWithTag("home:snackbar").assertDoesNotExist()
         compose.onNodeWithText("agent 1").assertDoesNotExist()
         compose.onNodeWithText("agent 2").assertDoesNotExist()
         compose.onNodeWithText("agent 3").assertDoesNotExist()

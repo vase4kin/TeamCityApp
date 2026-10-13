@@ -143,7 +143,8 @@ class RunningBuildsFragmentTest {
         assertTextVisible(text(FeatureR.string.running_builds_empty_favorites))
         showAllFromFilterChip()
         assertTextVisible(text(FeatureR.string.running_builds_empty_all))
-        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_filters_applied)).assertIsDisplayed()
+        compose.onNodeWithTag("home:filter:RunningAll").assertIsSelected()
+        compose.onNodeWithTag("home:snackbar").assertDoesNotExist()
         assertBadgeCount(0)
         verify(teamCityService).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)
     }
