@@ -172,12 +172,7 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
                         }
                     }
                 }
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                    tooltip = { PlainTooltip { Text(stringResource(R.string.accounts_remove)) } },
-                    state = rememberTooltipState(),
-                    enableUserInput = enabled
-                ) {
+                TeamCityTooltip(stringResource(R.string.accounts_remove), enabled = enabled) {
                     FilledTonalIconButton(
                         onClick = onRemove,
                         enabled = enabled,

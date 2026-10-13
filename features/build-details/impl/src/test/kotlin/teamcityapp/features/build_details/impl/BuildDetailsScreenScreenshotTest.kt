@@ -28,6 +28,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -180,7 +181,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName in listOf("finished", "running", "queued", "floating_content")) {
+        if (stateName in listOf("tooltip", "finished", "running", "queued", "floating_content")) {
             val toolbar = compose.onNodeWithTag("details:toolbar").fetchSemanticsNode().boundsInRoot
             val action = compose.onNodeWithTag("details:action:${state.primaryAction.action}").fetchSemanticsNode().boundsInRoot
             assertEquals("Primary action should match the floating toolbar height", toolbar.height, action.height, 0.5f)
@@ -201,6 +202,15 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
             compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
         }
         if (actionBounds != null) assertEquals("Scrolling keeps the action fixed", actionBounds, compose.onNodeWithTag("details:action:${state.primaryAction.action}").fetchSemanticsNode().boundsInRoot)
+        if (stateName == "tooltip") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("details:action:Browser").performTouchInput { longClick() }
+            compose.waitForIdle()
+            compose.onNode(isPopup()).assertExists()
+            compose.mainClock.autoAdvance = false
+            captureScreenRoboImage("details_${stateName}_${variant.name}.png")
+            return
+        }
         compose.onRoot().captureRoboImage("details_${stateName}_${variant.name}.png")
         if (stateName.endsWith("_scrolled")) {
             compose.onNodeWithTag("details:scroll").performScrollToIndex(0)
@@ -217,7 +227,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("finished", "running", "queued", "preparing_confirmation", "floating_content", "overview_scrolled", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.flatMap { listOf("section_${it.name}", "section_${it.name}_scrolled") } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("tooltip", "finished", "running", "queued", "preparing_confirmation", "floating_content", "overview_scrolled", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.flatMap { listOf("section_${it.name}", "section_${it.name}_scrolled") } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

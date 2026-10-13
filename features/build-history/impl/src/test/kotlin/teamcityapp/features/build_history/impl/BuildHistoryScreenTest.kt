@@ -77,6 +77,46 @@ internal fun HistoryTestScreen(
 class BuildHistoryScreenTest {
     @get:Rule val compose = createComposeRule()
 
+    @Test fun toolbarAndRunHintsNeverExecuteTheirActions() {
+        var calls = 0
+        compose.setContent { TeamCityTheme { HistoryTestScreen(onRun = { calls++ }, onFilter = { calls++ }, onFavorite = { calls++ }) } }
+        listOf("filter" to "Filter builds", "favorite" to "Add to favorites", "run" to "Run build").forEach { (tag, label) ->
+            compose.onNodeWithTag("history:$tag").performTouchInput { longClick() }
+            compose.onNode(hasText(label) and hasAnyAncestor(isPopup())).assertIsDisplayed()
+            assertEquals(0, calls)
+            compose.mainClock.advanceTimeBy(2500)
+        }
+        compose.onNodeWithTag("history:filter").performClick()
+        compose.onNodeWithTag("history:favorite").performClick()
+        compose.onNodeWithTag("history:run").performClick()
+        assertEquals(3, calls)
+    }
+
+    @Test fun favoriteKeepsAnAccurateLabelAndStateWhileLoadingUpdatingAndRetrying() {
+        val favorite = androidx.compose.runtime.mutableStateOf<FavoriteState>(FavoriteState.Loading)
+        var retries = 0
+        var changes = 0
+        compose.setContent { TeamCityTheme { HistoryTestScreen(controls = BuildHistoryControls(favorite.value, OnboardingState.Available()), onFavoriteRetry = { retries++ }, onFavorite = { changes++ }) } }
+        val button = compose.onNodeWithTag("history:favorite")
+        button.assertIsNotEnabled().assertContentDescriptionEquals("Favorites")
+            .assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.StateDescription, "Loading favorites…"))
+        listOf(false, true).forEach { saved ->
+            compose.runOnIdle { favorite.value = FavoriteState.Available(saved, updating = true) }
+            button.assertIsNotEnabled().assertContentDescriptionEquals(if (saved) "Remove from favorites" else "Add to favorites")
+                .assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.StateDescription, if (saved) "Removing from favorites…" else "Adding to favorites…"))
+            button.performClick()
+        }
+        assertEquals(0, changes)
+        compose.runOnIdle { favorite.value = FavoriteState.Unavailable }
+        button.assertIsEnabled().assertContentDescriptionEquals("Retry loading favorites").performTouchInput { longClick() }
+        compose.onNode(hasText("Retry loading favorites") and hasAnyAncestor(isPopup())).assertIsDisplayed()
+        assertEquals(0, retries)
+        compose.mainClock.advanceTimeBy(2500)
+        button.performClick()
+        assertEquals(1, retries)
+        assertEquals(0, changes)
+    }
+
     @Test fun appBarStaysPinnedAndChangesColorOnlyWhileScrolled() {
         var flat = androidx.compose.ui.graphics.Color.Unspecified
         var raised = androidx.compose.ui.graphics.Color.Unspecified

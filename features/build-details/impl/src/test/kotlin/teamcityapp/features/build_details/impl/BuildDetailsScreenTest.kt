@@ -47,6 +47,21 @@ class BuildDetailsScreenTest {
     @get:Rule val compose = createComposeRule()
     private val build = BuildLaunchData("1", "/builds/1", number = "1", state = "running", changes = BuildCollectionLink("/changes"), webUrl = "https://server/build/1")
 
+    @Test fun floatingActionHintsPreserveClickAndConfirmationCallbacks() {
+        val actions = mutableListOf<BuildDetailsAction>()
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build), {}, actions::add, {}, {}, remember { SnackbarHostState() }) { Surface {} } } }
+        listOf(BuildDetailsAction.Share, BuildDetailsAction.Browser, BuildDetailsAction.Cancel).forEach { action ->
+            compose.onNodeWithTag("details:action:$action").performTouchInput { longClick() }
+            compose.onNode(isPopup()).assertExists()
+            assertTrue(actions.isEmpty())
+            compose.mainClock.advanceTimeBy(2500)
+        }
+        compose.onNodeWithTag("details:action:Share").performClick()
+        compose.onNodeWithTag("details:action:Browser").performClick()
+        compose.onNodeWithTag("details:action:Cancel").performClick()
+        assertEquals(listOf(BuildDetailsAction.Share, BuildDetailsAction.Browser, BuildDetailsAction.Cancel), actions)
+    }
+
     @Test fun floatingBuildActionCallsUiRouterAndTabsAreAbsent() {
         var action: BuildDetailsAction? = null
         compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build), {}, { action = it }, {}, {}, remember { SnackbarHostState() }) { Surface {} } } }

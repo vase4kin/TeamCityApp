@@ -43,6 +43,7 @@ import teamcityapp.libraries.theme.LocalTeamCityAppBarState
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +72,11 @@ fun ArtifactsScreen(
                 colors = teamCityTopAppBarColors(),
                 scrollBehavior = scrollBehavior,
                 title = { Text(state.title) },
-                navigationIcon = { IconButton(onNavigateUp) { Icon(painterResource(R.drawable.ic_artifacts_back), stringResource(R.string.artifacts_back)) } }
+                navigationIcon = {
+                    TeamCityTooltip(stringResource(R.string.artifacts_back)) {
+                        IconButton(onNavigateUp) { Icon(painterResource(R.drawable.ic_artifacts_back), stringResource(R.string.artifacts_back)) }
+                    }
+                }
             )
         }
     }) { padding ->
@@ -117,6 +122,7 @@ internal fun ArtifactRow(file: Artifact, onClick: () -> Unit, onLongClick: () ->
     TeamCityListRow(
         onClick = { if (enabled) onClick() },
         onLongClick = { if (enabled) onLongClick() },
+        onLongClickLabel = stringResource(R.string.artifacts_show_actions),
         modifier = Modifier.testTag("artifacts:row:${file.href}").then(if (enabled) Modifier else Modifier.semantics { disabled() }),
         position = position,
         leadingContent = {

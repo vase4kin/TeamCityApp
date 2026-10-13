@@ -308,6 +308,7 @@ dependencies {
         // Dagger mock
         androidTestImplementation(platform(libs.compose.bom))
         androidTestImplementation(libs.compose.ui.testJunit4)
+        androidTestImplementation(libs.compose.ui.testAccessibility)
         androidTestImplementation(libs.hilt.testing)
         kspAndroidTest(libs.hilt.compiler)
         // Resolve conflits between apks

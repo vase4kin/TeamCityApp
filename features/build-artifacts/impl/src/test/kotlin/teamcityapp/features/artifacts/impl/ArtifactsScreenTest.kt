@@ -75,7 +75,11 @@ class ArtifactsScreenTest {
         compose.setContent { TeamCityTheme { ArtifactsScreen(ArtifactsUiState("Artifacts", rows), true, null, {}, {}, {}, { clicked = it }, { longClicked = it }, {}, {}, {}) } }
         compose.onNodeWithTag("artifacts:row:/folder").performClick()
         assertEquals(folder, clicked)
-        compose.onNodeWithTag("artifacts:row:/zip").performTouchInput { longClick() }
+        compose.onNodeWithTag("artifacts:row:/zip").assert(
+            SemanticsMatcher("Describes the long-press action") {
+                it.config[androidx.compose.ui.semantics.SemanticsActions.OnLongClick].label == "Show artifact actions"
+            }
+        ).performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnLongClick) { it() }
         assertEquals(file, longClicked)
     }
 

@@ -94,7 +94,9 @@ fun HomeScreen(
                 if (expanded && showNavigation) {
                     NavigationRail {
                         destinations.forEach { (name, label, icon) ->
-                            NavigationRailItem(selected(name), { select(name) }, { Icon(painterResource(icon), contentDescription = null) }, label = { Text(stringResource(label)) }, modifier = Modifier.testTag("home:tab:$name"))
+                            TeamCityTooltip(stringResource(label)) {
+                                NavigationRailItem(selected(name), { select(name) }, { Icon(painterResource(icon), contentDescription = null) }, label = { Text(stringResource(label)) }, modifier = Modifier.testTag("home:tab:$name"))
+                            }
                         }
                     }
                 }
@@ -115,12 +117,14 @@ fun HomeScreen(
                                     },
                                     actions = {
                                         val description = state.query?.account?.userName?.let { stringResource(R.string.home_open_named_account, it) } ?: stringResource(R.string.home_open_account)
-                                        FilledTonalIconButton(onAccount, Modifier.padding(end = TeamCityDimensions.smallSpacing).testTag("home:account").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR, anchors).semantics { contentDescription = description }) {
-                                            val initials = state.accountInitials
-                                            if (initials == null) {
-                                                Icon(painterResource(R.drawable.ic_account), null)
-                                            } else {
-                                                Text(initials, style = MaterialTheme.typography.labelLarge)
+                                        TeamCityTooltip(description) {
+                                            FilledTonalIconButton(onAccount, Modifier.padding(end = TeamCityDimensions.smallSpacing).testTag("home:account").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR, anchors).semantics { contentDescription = description }) {
+                                                val initials = state.accountInitials
+                                                if (initials == null) {
+                                                    Icon(painterResource(R.drawable.ic_account), null)
+                                                } else {
+                                                    Text(initials, style = MaterialTheme.typography.labelLarge)
+                                                }
                                             }
                                         }
                                     }
@@ -174,7 +178,9 @@ fun HomeScreen(
                                         NavigationBar {
                                             destinations.forEach { (name, label, icon) ->
                                                 val destinationLabel = stringResource(label)
-                                                NavigationBarItem(selected(name), { select(name) }, { Icon(painterResource(icon), contentDescription = null) }, modifier = Modifier.testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
+                                                TeamCityTooltip(destinationLabel, modifier = Modifier.weight(1f)) {
+                                                    NavigationBarItem(selected(name), { select(name) }, { Icon(painterResource(icon), contentDescription = null) }, modifier = Modifier.fillMaxWidth().testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
+                                                }
                                             }
                                         }
                                     }

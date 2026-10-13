@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -41,7 +42,7 @@ import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Loading/list/append, favorite/tip failures, all contextual tips, queued Show and snackbars. */
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, com.github.takahirom.roborazzi.ExperimentalRoborazziApi::class)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -151,6 +152,15 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
         }
         val roots = compose.onAllNodes(isRoot())
+        if (stateName == "tooltip") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("history:filter").performTouchInput { longClick() }
+            compose.waitForIdle()
+            compose.onNode(isPopup()).assertExists()
+            compose.mainClock.autoAdvance = false
+            captureScreenRoboImage("history_${stateName}_${variant.name}.png")
+            return
+        }
         roots[roots.fetchSemanticsNodes().lastIndex].captureRoboImage("history_${stateName}_${variant.name}.png")
         if (!(stateName.startsWith("toolbar_") || stateName.startsWith("app_bar_")) && state is ListUiState.Content && variant.fontScale > 1f && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
             compose.mainClock.autoAdvance = true
@@ -178,7 +188,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
             listOf(
-                "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
+                "tooltip", "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
                 "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed",
                 "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_scrolled", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"

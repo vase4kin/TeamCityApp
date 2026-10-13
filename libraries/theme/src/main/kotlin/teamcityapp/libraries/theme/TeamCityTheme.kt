@@ -94,11 +94,7 @@ fun TeamCityScreen(
                     title = { Text(title, modifier = Modifier.padding(start = titleStartPadding), style = titleStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     expandedHeight = appBarHeight,
                     navigationIcon = {
-                        TooltipBox(
-                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                            tooltip = { PlainTooltip { Text(description) } },
-                            state = rememberTooltipState()
-                        ) {
+                        TeamCityTooltip(description) {
                             IconButton(onClick = onClose) {
                                 Icon(
                                     painterResource(

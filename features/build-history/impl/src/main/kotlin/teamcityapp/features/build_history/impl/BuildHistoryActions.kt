@@ -27,6 +27,9 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
 import teamcityapp.libraries.theme.TeamCityDimensions
@@ -34,6 +37,7 @@ import teamcityapp.libraries.theme.TeamCityExtendedFloatingActionButton
 import teamcityapp.libraries.theme.TeamCityFloatingToolbar
 import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 
 /** Persistent secondary actions and a trailing primary action share one floating group. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -55,33 +59,44 @@ internal fun BuildHistoryActions(
         verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
     ) {
         TeamCityFloatingToolbar(modifier = Modifier.testTag("history:toolbar")) {
-            IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
-                Icon(painterResource(R.drawable.ic_history_filter), stringResource(R.string.history_filter))
+            TeamCityTooltip(stringResource(R.string.history_filter)) {
+                IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
+                    Icon(painterResource(R.drawable.ic_history_filter), stringResource(R.string.history_filter))
+                }
             }
             val favorite = controls.favorite
-            IconButton(
-                onClick = if (favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite,
-                enabled = favorite != FavoriteState.Loading && (favorite !is FavoriteState.Available || !favorite.updating),
-                modifier = Modifier.testTag("history:favorite").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Favorite, it.boundsInRoot()) }
-            ) {
-                if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
-                    TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize))
-                } else {
-                    Icon(
-                        painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
-                        stringResource(controls.favoriteActionLabelRes)
-                    )
+            val favoriteLabel = stringResource(controls.favoriteActionLabelRes)
+            val favoriteState = controls.favoriteStateDescriptionRes?.let { stringResource(it) }
+            TeamCityTooltip(favoriteLabel) {
+                IconButton(
+                    onClick = if (favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite,
+                    enabled = favorite != FavoriteState.Loading && (favorite !is FavoriteState.Available || !favorite.updating),
+                    modifier = Modifier.testTag("history:favorite").semantics {
+                        contentDescription = favoriteLabel
+                        favoriteState?.let { stateDescription = it }
+                    }.onGloballyPositioned { onAnchor(BuildHistoryPrompt.Favorite, it.boundsInRoot()) }
+                ) {
+                    if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
+                        TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize))
+                    } else {
+                        Icon(
+                            painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
+                            null
+                        )
+                    }
                 }
             }
         }
         if (showRunBuild) {
-            TeamCityExtendedFloatingActionButton(
-                onRunBuild,
-                Modifier.heightIn(min = FloatingToolbarDefaults.ContainerSize).testTag("history:run").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Run, it.boundsInRoot()) }
-            ) {
-                Icon(painterResource(R.drawable.ic_history_run), null)
-                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
-                Text(stringResource(R.string.history_run))
+            TeamCityTooltip(stringResource(R.string.history_run)) {
+                TeamCityExtendedFloatingActionButton(
+                    onRunBuild,
+                    Modifier.heightIn(min = FloatingToolbarDefaults.ContainerSize).testTag("history:run").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Run, it.boundsInRoot()) }
+                ) {
+                    Icon(painterResource(R.drawable.ic_history_run), null)
+                    Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
+                    Text(stringResource(R.string.history_run))
+                }
             }
         }
     }

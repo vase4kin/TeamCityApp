@@ -68,6 +68,7 @@ fun TeamCityListRow(
     position: ListRowPosition = ListRowPosition.Single,
     leadingContent: (@Composable () -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    onLongClickLabel: String? = null,
     content: @Composable RowScope.() -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -81,6 +82,7 @@ fun TeamCityListRow(
             indication = androidx.compose.foundation.LocalIndication.current,
             role = Role.Button,
             onClick = { onClick?.invoke() },
+            onLongClickLabel = onLongClickLabel,
             onLongClick = onLongClick
         )
     }

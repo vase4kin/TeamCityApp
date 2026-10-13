@@ -41,6 +41,7 @@ import teamcityapp.libraries.theme.LocalTeamCityAppBarState
 import teamcityapp.libraries.theme.LocalTeamCityHeaderProvided
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.coachmarkAnchor
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
@@ -67,8 +68,10 @@ fun AgentsScreen(
                     scrollBehavior = scrollBehavior,
                     title = { Text(stringResource(R.string.agents_title)) },
                     navigationIcon = {
-                        IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("agents:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
-                            Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.agents_open_drawer))
+                        TeamCityTooltip(stringResource(R.string.agents_open_drawer)) {
+                            IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("agents:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
+                                Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.agents_open_drawer))
+                            }
                         }
                     }
                 )

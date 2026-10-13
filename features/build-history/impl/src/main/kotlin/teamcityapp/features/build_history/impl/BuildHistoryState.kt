@@ -68,7 +68,23 @@ data class BuildHistoryControls(
     val notice: BuildHistoryNotice? = null,
     val refreshPending: Boolean = false
 ) {
-    @get:StringRes val favoriteActionLabelRes: Int = if (favorite is FavoriteState.Available && favorite.favorite) R.string.history_remove_favorite else R.string.history_add_favorite
+    @get:StringRes val favoriteActionLabelRes: Int = when (favorite) {
+        FavoriteState.Loading -> R.string.history_favorites
+        FavoriteState.Unavailable -> R.string.history_retry_favorites
+        is FavoriteState.Available -> if (favorite.favorite) R.string.history_remove_favorite else R.string.history_add_favorite
+    }
+
+    @get:StringRes val favoriteStateDescriptionRes: Int? = when (favorite) {
+        FavoriteState.Loading -> R.string.history_loading_favorites
+
+        FavoriteState.Unavailable -> R.string.history_favorite_unavailable
+
+        is FavoriteState.Available -> if (favorite.updating) {
+            if (favorite.favorite) R.string.history_removing_favorite else R.string.history_adding_favorite
+        } else {
+            null
+        }
+    }
 
     @get:StringRes val favoriteFailureMessageRes: Int? = when (favorite) {
         FavoriteState.Unavailable -> R.string.history_favorite_unavailable
