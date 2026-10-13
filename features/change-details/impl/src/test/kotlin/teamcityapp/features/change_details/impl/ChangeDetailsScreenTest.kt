@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -80,6 +81,8 @@ class ChangeDetailsScreenTest {
         var closed = false
         compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(fixture), { url = it }, { id, name -> diff = id to name }, { closed = true }) } }
         compose.onNodeWithText(fixture.comment).assertIsDisplayed()
+        compose.onNodeWithText("Show more").assertDoesNotExist()
+        compose.onNodeWithText("Show less").assertDoesNotExist()
         compose.onNodeWithText(fixture.revision).assertIsDisplayed()
         compose.onNodeWithText("By Developer on 01 Oct 2026").assertIsDisplayed()
         compose.onNodeWithText("Changed files (3)").assertIsDisplayed()
@@ -101,6 +104,86 @@ class ChangeDetailsScreenTest {
         compose.onNodeWithTag("change_details:file:0").assertDoesNotExist()
         compose.runOnIdle { state.value = ChangeDetailsUiState.InvalidInput }
         compose.onNodeWithTag("change_details:list").assertDoesNotExist()
+    }
+
+    @Test fun longCommentExpandsAndCollapsesWithoutTriggeringBrowserAction() {
+        val comment = (1..6).joinToString("\n") { "Commit comment line $it" }
+        var browserOpens = 0
+        compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(fixture.copy(comment = comment)), { browserOpens++ }, { _, _ -> }, {}) } }
+        val collapsed = commentLayout(comment)
+        assertEquals(3, collapsed.lineCount)
+        assertTrue(collapsed.isLineEllipsized(2))
+        compose.onNodeWithText("More details").assertIsDisplayed()
+        compose.onNodeWithText("Show more").performClick()
+        val expanded = commentLayout(comment)
+        assertEquals(6, expanded.lineCount)
+        assertFalse(expanded.hasVisualOverflow)
+        compose.onNodeWithText("Show more").assertDoesNotExist()
+        compose.onNodeWithText("Show less").performScrollTo().performClick()
+        assertEquals(3, commentLayout(comment).lineCount)
+        compose.onNodeWithText("Show more").assertIsDisplayed()
+        assertEquals(0, browserOpens)
+    }
+
+    @Test fun expandedCommentSurvivesRestorationAndResetsForAnotherComment() {
+        val comment = (1..6).joinToString("\n") { "Commit comment line $it" }
+        val state = mutableStateOf(fixture.copy(comment = comment))
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(state.value), {}, { _, _ -> }, {}) } }
+        compose.onNodeWithText("Show more").performClick()
+        restoration.emulateSavedInstanceStateRestore()
+        assertEquals(6, commentLayout(comment).lineCount)
+        compose.onNodeWithText("Show less").performScrollTo().performClick()
+        assertEquals(3, commentLayout(comment).lineCount)
+        compose.onNodeWithText("Show more").performClick()
+        compose.runOnIdle { state.value = state.value.copy(id = "another-change") }
+        assertEquals(3, commentLayout(comment).lineCount)
+        compose.onNodeWithText("Show more").performClick()
+        val replacement = "$comment\nAnother comment line"
+        compose.runOnIdle { state.value = state.value.copy(comment = replacement) }
+        assertEquals(3, commentLayout(replacement).lineCount)
+        compose.onNodeWithText("Show more").assertIsDisplayed()
+        compose.onNodeWithText("Show less").assertDoesNotExist()
+    }
+
+    @Test fun expansionDependsOnRenderedOverflowIncludingWrappedComments() {
+        val state = mutableStateOf(fixture.copy(comment = "First line\nSecond line\nThird line"))
+        compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(state.value), {}, { _, _ -> }, {}) } }
+        assertEquals(3, commentLayout(state.value.comment).lineCount)
+        compose.onNodeWithText("Show more").assertDoesNotExist()
+        val wrapped = List(30) { "A long comment without explicit line breaks" }.joinToString(" ")
+        compose.runOnIdle { state.value = state.value.copy(comment = wrapped) }
+        assertEquals(3, commentLayout(wrapped).lineCount)
+        compose.onNodeWithText("Show more").performClick()
+        assertTrue(commentLayout(wrapped).lineCount > 3)
+        assertFalse(commentLayout(wrapped).hasVisualOverflow)
+        compose.onNodeWithText("Show less").performScrollTo().performClick()
+        compose.runOnIdle { state.value = state.value.copy(comment = "Short comment") }
+        compose.onNodeWithText("Show more").assertDoesNotExist()
+        compose.onNodeWithText("Show less").assertDoesNotExist()
+    }
+
+    private fun commentLayout(comment: String): TextLayoutResult {
+        val results = mutableListOf<TextLayoutResult>()
+        compose.onNodeWithText(comment, useUnmergedTree = true).performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+        return results.single()
+    }
+
+    @Test fun tappingLongCommentTogglesExpansionWhileShortCommentIsNotClickable() {
+        val comment = (1..6).joinToString("\n") { "Commit comment line $it" }
+        val state = mutableStateOf(fixture.copy(comment = comment))
+        var browserOpens = 0
+        compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(state.value), { browserOpens++ }, { _, _ -> }, {}) } }
+        val title = compose.onNodeWithText(comment)
+        title.assertHasClickAction().performTouchInput { click() }
+        assertEquals(6, commentLayout(comment).lineCount)
+        compose.onNodeWithText("Show less").assertIsDisplayed()
+        title.performTouchInput { click() }
+        assertEquals(3, commentLayout(comment).lineCount)
+        compose.onNodeWithText("Show more").assertIsDisplayed()
+        compose.runOnIdle { state.value = state.value.copy(comment = "Short comment") }
+        compose.onNodeWithText("Short comment").assertHasNoClickAction()
+        assertEquals(0, browserOpens)
     }
 
     @Test fun duplicateNamesRetainSeparateActionsAndTypes() {
