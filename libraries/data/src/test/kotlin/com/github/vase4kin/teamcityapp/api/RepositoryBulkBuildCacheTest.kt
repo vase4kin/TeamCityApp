@@ -173,7 +173,12 @@ class RepositoryBulkBuildCacheTest {
         val repo = repository()
         val pending = SingleSubject.create<Builds>()
         val subscribed = java.util.concurrent.CountDownLatch(1)
-        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(pending.doOnSubscribe { subscribed.countDown() })
+        val response = Single.wrap<Builds> { observer ->
+            pending.subscribe(observer)
+            // doOnSubscribe runs before SingleSubject registers its observer.
+            subscribed.countDown()
+        }
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(response)
         val observer = repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test()
         assertTrue(subscribed.await(10, java.util.concurrent.TimeUnit.SECONDS))
         assertTrue(pending.hasObservers())
