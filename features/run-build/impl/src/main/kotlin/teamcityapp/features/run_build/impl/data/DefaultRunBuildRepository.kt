@@ -22,25 +22,35 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.rx2.await
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import teamcityapp.features.filter_builds.api.FilterBuildsRepository
 import teamcityapp.features.properties.repository.models.Properties
 import teamcityapp.features.run_build.api.*
+import teamcityapp.libraries.coroutines.IoDispatcher
 
 /** Resolve the account repository per operation. Await also cancels the legacy Rx subscription. */
-class DefaultRunBuildRepository @Inject constructor(private val repositories: Provider<Repository>) :
-    RunBuildRepository,
+class DefaultRunBuildRepository @Inject constructor(
+    private val repositories: Provider<Repository>,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : RunBuildRepository,
     FilterBuildsRepository {
-    override suspend fun branches(buildTypeId: String): List<String> = repositories.get().listBranches(buildTypeId).await().branches.map { it.name }
-    override suspend fun agents(buildTypeId: String): List<BuildAgent> {
+    override suspend fun branches(buildTypeId: String): List<String> = withContext(ioDispatcher) {
+        repositories.get().listBranches(buildTypeId).await().branches.map { it.name }
+    }
+    override suspend fun agents(buildTypeId: String): List<BuildAgent> = withContext(ioDispatcher) {
         val repository = repositories.get()
         val type = repository.buildType(buildTypeId, false).await()
         val locator = if (type.compatibleAgents != null) "compatible:(buildType:(id:$buildTypeId))" else null
-        return repository.listAgents(if (locator == null) false else null, null, locator, false).await().objects.map { BuildAgent(it.id.orEmpty(), it.name) }
+        repository.listAgents(if (locator == null) false else null, null, locator, false).await().objects.map { BuildAgent(it.id.orEmpty(), it.name) }
     }
     override suspend fun queue(request: BuildRequest): QueueBuildResult = try {
-        QueueBuildResult.Success(repositories.get().queueBuild(request.toLegacyBuild()).await().href)
+        withContext(ioDispatcher) {
+            // Retrofit's legacy Rx adapter executes synchronously when await subscribes.
+            QueueBuildResult.Success(repositories.get().queueBuild(request.toLegacyBuild()).await().href)
+        }
     } catch (cancelled: CancellationException) {
         throw cancelled
     } catch (error: HttpException) {
