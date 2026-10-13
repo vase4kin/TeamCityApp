@@ -18,13 +18,16 @@ package teamcityapp.features.build_history.impl
 
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 import teamcityapp.libraries.builds.BuildLaunchData
 
 /** Legacy dates intentionally ignore the TeamCity offset suffix and use the device timezone. */
-internal fun historyDate(build: BuildLaunchData): String? {
+internal fun historyDate(build: BuildLaunchData, currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)): String? {
     val raw = build.startDate ?: return null
     val date = SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.US).apply { isLenient = false }.parse(raw, ParsePosition(0)) ?: return null
-    return SimpleDateFormat("dd MMMM", Locale.US).format(date)
+    val buildYear = Calendar.getInstance().apply { time = date }.get(Calendar.YEAR)
+    val pattern = if (buildYear == currentYear) "dd MMMM" else "dd MMMM yyyy"
+    return SimpleDateFormat(pattern, Locale.US).format(date)
 }
-internal fun historySectionKey(build: BuildLaunchData): String = if (build.isQueued) "queued" else historyDate(build) ?: "unknown"
+internal fun historySectionKey(build: BuildLaunchData, currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)): String = if (build.isQueued) "queued" else historyDate(build, currentYear) ?: "unknown"

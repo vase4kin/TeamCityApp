@@ -36,9 +36,28 @@ class BuildHistoryPresentationTest {
     }
 
     @Test fun validLegacyDateKeepsEnglishMonthAndIgnoresServerOffset() {
-        assertEquals("10 October", historyDate(historyBuild()))
-        assertEquals("10 October", historySectionKey(historyBuild().copy(startDate = "20261010T102030-1200")))
+        assertEquals("10 October", historyDate(historyBuild(), currentYear = 2026))
+        assertEquals("10 October", historySectionKey(historyBuild().copy(startDate = "20261010T102030-1200"), currentYear = 2026))
         assertEquals("queued", historySectionKey(historyBuild(state = "queued")))
+    }
+
+    @Test fun datesOutsideCurrentYearIncludeTheirYear() {
+        assertEquals("10 October 2025", historyDate(historyBuild().copy(startDate = "20251010T102030+0700"), currentYear = 2026))
+        assertEquals("10 October 2027", historyDate(historyBuild().copy(startDate = "20271010T102030+0700"), currentYear = 2026))
+    }
+
+    @Test fun sameDayInDifferentYearsHasDistinctSections() {
+        val current = historyBuild()
+        val previous = current.copy(startDate = "20251010T102030+0700")
+        assertEquals("10 October", historySectionKey(current, currentYear = 2026))
+        assertEquals("10 October 2025", historySectionKey(previous, currentYear = 2026))
+    }
+
+    @Test fun yearRolloverAddsYearToPreviousDecember() {
+        val december = historyBuild().copy(startDate = "20261231T235959-1200")
+        assertEquals("31 December", historyDate(december, currentYear = 2026))
+        assertEquals("31 December 2026", historyDate(december, currentYear = 2027))
+        assertEquals("01 January", historyDate(historyBuild().copy(startDate = "20270101T000000+1400"), currentYear = 2027))
     }
 
     @Test fun missingOrMalformedDateGetsStableUnknownSection() {

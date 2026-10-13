@@ -74,7 +74,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             historyBuild("queued", "queued").copy(number = null, waitReason = "Waiting for an agent with the required Android SDK and sufficient disk space", branchName = "feature/compose-build-history"),
             historyBuild("running", "running").copy(personal = true, pinned = true, statusText = "Running Android instrumented tests", branchName = "feature/lists"),
             historyBuild("42").copy(status = "FAILURE", statusText = "Compilation failed in the app integration module", branchName = "main"),
-            historyBuild("43").copy(startDate = "20261009T102030Z", statusText = "All 214 tests passed")
+            historyBuild("43").copy(startDate = if (stateName == "previous_year") "20251010T102030Z" else "20261009T102030Z", statusText = "All 214 tests passed")
         ) + if ((stateName.startsWith("toolbar_") || stateName.startsWith("app_bar_"))) (44..63).map { historyBuild(it.toString()).copy(startDate = "20261008T102030Z") } else emptyList()
         val state: ListUiState<BuildLaunchData> = when (stateName) {
             "loading" -> ListUiState.Loading
@@ -182,7 +182,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
             listOf(
-                "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "append_loading", "append_failed",
+                "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
                 "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed", "queued_loading", "queued_failed",
                 "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_collapsed", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
