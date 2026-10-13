@@ -143,12 +143,12 @@ fun HomeScreen(
                                                 if (largeText) {
                                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                                         Text(stringResource(tab.labelRes()), maxLines = 1)
-                                                        if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                                        HomeCountBadge(state.badges[tab], tab.name)
                                                     }
                                                 } else {
                                                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                                                         Text(stringResource(tab.labelRes()), maxLines = 1)
-                                                        if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                                        HomeCountBadge(state.badges[tab], tab.name)
                                                     }
                                                 }
                                             }

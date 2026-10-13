@@ -45,7 +45,7 @@ data class HomeUiState(
             if (parts.size > 1) "${parts.first().first()}${parts.last().first()}".uppercase() else parts.first().take(2).uppercase()
         }
     val activityBadge: HomeBadge get() {
-        val counts = listOf(HomeTab.Running, HomeTab.Queue).map { badges[it] ?: HomeBadge.Loading }
+        val counts = listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents).map { badges[it] ?: HomeBadge.Loading }
         return when {
             counts.any { it is HomeBadge.Failed } -> HomeBadge.Failed()
             counts.any { it is HomeBadge.Loading } -> HomeBadge.Loading

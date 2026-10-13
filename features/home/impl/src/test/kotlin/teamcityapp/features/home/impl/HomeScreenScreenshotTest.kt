@@ -80,6 +80,10 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
                 stateName == "loading" -> HomeUiState()
                 stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
                 stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
+                stateName == "agents_zero" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Count(0)))
+                stateName == "agents_loading" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Loading))
+                stateName == "agents_failed" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Failed()))
+                stateName == "agents_only" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Running to HomeBadge.Count(0)) + (HomeTab.Queue to HomeBadge.Count(0)))
                 stateName == "onboarding_failed" -> HomeUiState(badges = badges, onboardingFailed = true)
                 stateName == "favorites_count_failure" -> HomeUiState(selected = HomeTab.Favorites, badges = badges + (HomeTab.Running to HomeBadge.Failed()))
                 stateName == "favorites_toolbar" -> HomeUiState(selected = HomeTab.Favorites, badges = badges)
@@ -115,7 +119,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("loading", "counts_failed", "partial_failure", "onboarding_failed", "favorites_toolbar", "favorites_count_failure") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("loading", "counts_failed", "partial_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.Density
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -46,7 +48,7 @@ class HomeScreenTest {
         compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(query = query, badges = badges), false, {}, {}, {}, {}, remember { SnackbarHostState() }, onAccount = { accounts++ }) { Text("Project content") } } }
         listOf("Projects", "Favorites", "Activity").forEach { compose.onNodeWithTag("home:tab:$it").assertIsDisplayed() }
         listOf("Running", "Queue", "Agents").forEach { compose.onNodeWithTag("home:tab:$it").assertDoesNotExist() }
-        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("5")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("14")
         compose.onNodeWithTag("home:count:Favorites", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithContentDescription("Open account for Andrey Tolpeev").performClick()
         assertEquals(1, accounts)
@@ -70,12 +72,44 @@ class HomeScreenTest {
         compose.onNodeWithText("All configurations").assertIsDisplayed()
         compose.onNodeWithTag("home:tab:Agents").performClick()
         compose.onNodeWithText("Connected agents").assertIsDisplayed()
-        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("9")
         compose.onNodeWithText("Filters").performClick()
         assertEquals(1, actions)
     }
 
     @Test fun compactCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(false)
+
+    @Test fun compactAgentsBadgeMatchesTheOtherActivityCounts() = assertAgentsBadges(false, 1f)
+
+    @Test fun expandedAgentsBadgeMatchesTheOtherActivityCounts() = assertAgentsBadges(true, 1f)
+
+    @Test fun enlargedTextShowsAgentsBadgeBelowItsLabel() = assertAgentsBadges(false, 1.5f)
+
+    private fun assertAgentsBadges(expanded: Boolean, fontScale: Float) {
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Agents, query = query, badges = badges))
+        compose.setContent {
+            val density = LocalDensity.current.density
+            CompositionLocalProvider(LocalDensity provides Density(density, fontScale)) {
+                TeamCityTheme { HomeScreen(state.value, expanded, {}, {}, {}, {}, remember { SnackbarHostState() }) { Text("Agent content") } }
+            }
+        }
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("9")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("14")
+        compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Agents to HomeBadge.Count(0))) }
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("5")
+        compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Agents to HomeBadge.Loading)) }
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
+        compose.runOnIdle { state.value = state.value.copy(badges = badges + (HomeTab.Agents to HomeBadge.Failed())) }
+        compose.onNodeWithTag("home:count-failed:Agents", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("!")
+        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertIsDisplayed().assertTextEquals("!")
+        compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals("2")
+        compose.onNodeWithTag("home:count:Queue", useUnmergedTree = true).assertTextEquals("3")
+        compose.runOnIdle { state.value = state.value.copy(badges = badges) }
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("9")
+        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertTextEquals("14")
+    }
 
     @Test fun expandedCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(true)
     private fun assertFooter(expanded: Boolean) {
