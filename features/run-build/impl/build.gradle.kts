@@ -44,5 +44,5 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.mockito.mockitoCore)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

@@ -17,6 +17,7 @@ spotless = "8.10.3"
 ktlint = "1.8.0"
 google-java-format = "1.24.0"
 kotlin = "2.4.20"
+ksp = "2.3.12"
 android-gradle = "9.4.1"
 google-services = "4.5.0"
 firebase-bom = "34.19.0"
@@ -34,7 +35,7 @@ robolectric = "4.17"
 paging = "3.4.2"
 
 [libraries]
-android-legacyKapt-gradlePlugin = { module = "com.android.tools.build:gradle-kotlin", version.ref = "android-gradle" }
+ksp-gradlePlugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 androidx-lifecycle-viewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }

@@ -42,5 +42,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

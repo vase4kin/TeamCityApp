@@ -248,7 +248,7 @@ dependencies {
     // Onboarding
     // Dagger
     implementation(libs.dagger.dagger)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 
     // Rx
     implementation(libs.androidx.activity.compose)
@@ -309,7 +309,7 @@ dependencies {
         androidTestImplementation(platform(libs.compose.bom))
         androidTestImplementation(libs.compose.ui.testJunit4)
         androidTestImplementation(libs.hilt.testing)
-        kaptAndroidTest(libs.hilt.compiler)
+        kspAndroidTest(libs.hilt.compiler)
         // Resolve conflits between apks
         androidTestImplementation(libs.google.material)
     }
@@ -317,24 +317,6 @@ dependencies {
     implementation(libs.google.crashlytics)
 
     implementation(libs.kotlin.stdlib)
-}
-
-// Kapt processes both Kotlin and Java sources. Avoid loading the processors again.
-tasks.withType<JavaCompile>().configureEach {
-    if (name.endsWith("JavaWithJavac")) {
-        doFirst {
-            options.annotationProcessorPath = files()
-        }
-    } else if (name.startsWith("hiltJavaCompile")) {
-        doFirst {
-            // Hilt does not process view bindings; ButterKnife's scanner uses JDK internals.
-            options.annotationProcessorPath = files(
-                options.annotationProcessorPath?.filter {
-                    !it.name.contains("butterknife-compiler")
-                }
-            )
-        }
-    }
 }
 
 if (r8VerificationEnabled) {

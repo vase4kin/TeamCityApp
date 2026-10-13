@@ -46,6 +46,7 @@ class AndroidConventionPluginsTest {
                     check(tasks.findByName("compileDebugKotlin") == null)
                     check(plugins.hasPlugin("jacoco"))
                     check(!plugins.hasPlugin("org.jetbrains.kotlin.android"))
+                    check(!plugins.hasPlugin("com.google.devtools.ksp"))
                     check(!plugins.hasPlugin("com.android.legacy-kapt"))
                 }
             }
@@ -179,12 +180,10 @@ class AndroidConventionPluginsTest {
             plugins {
                 id("teamcityapp.android.$kind")
                 id("teamcityapp.android.hilt")
-                id("teamcityapp.android.data-binding")
             }
 
             // Reapplying optional conventions must not duplicate dependencies.
             pluginManager.apply("teamcityapp.android.hilt")
-            pluginManager.apply("teamcityapp.android.data-binding")
 
             check(android.compileSdk == 37) { "Compile SDK: ${'$'}{android.compileSdk}" }
             check(android.defaultConfig.minSdk == 24)
@@ -221,14 +220,15 @@ class AndroidConventionPluginsTest {
                     check(kotlinCompile.compilerOptions.jvmTarget.get().target == "11")
                     check(android.lint.abortOnError)
                     check(android.lint.disable.contains("InvalidPackage"))
-                    check(android.buildFeatures.dataBinding == true)
-                    check(plugins.hasPlugin("com.android.legacy-kapt"))
+                    check(plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(!plugins.hasPlugin("com.android.legacy-kapt"))
+                    check(!plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
                     check(!plugins.hasPlugin("org.jetbrains.kotlin.android"))
                     check(plugins.hasPlugin("com.google.dagger.hilt.android"))
                     check(configurations.getByName("implementation").dependencies.count {
                         it.group == "com.google.dagger" && it.name == "hilt-android"
                     } == 1)
-                    check(configurations.getByName("kapt").dependencies.count {
+                    check(configurations.getByName("ksp").dependencies.count {
                         it.group == "com.google.dagger" && it.name == "hilt-compiler"
                     } == 1)
                 }
@@ -253,6 +253,7 @@ class AndroidConventionPluginsTest {
                 doLast {
                     check(android.buildFeatures.compose == true)
                     check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
+                    check(!plugins.hasPlugin("com.google.devtools.ksp"))
                     check(!plugins.hasPlugin("com.android.legacy-kapt"))
                     val implementation = configurations.getByName("implementation").dependencies
                     check(implementation.count { it.name == "compose-bom" } == 1)

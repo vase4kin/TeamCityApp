@@ -7,11 +7,11 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 class AndroidHiltConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("com.android.legacy-kapt")
+            pluginManager.apply("com.google.devtools.ksp")
             pluginManager.apply("com.google.dagger.hilt.android")
             val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
             dependencies.add("implementation", libs.findLibrary("hilt-android").get())
-            dependencies.add("kapt", libs.findLibrary("hilt-compiler").get())
+            dependencies.add("ksp", libs.findLibrary("hilt-compiler").get())
         }
     }
 }

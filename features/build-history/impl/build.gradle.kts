@@ -48,5 +48,5 @@ dependencies {
     implementation(libs.google.analytics)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.androidx.paging.testing)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

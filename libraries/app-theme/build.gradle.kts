@@ -32,5 +32,5 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }

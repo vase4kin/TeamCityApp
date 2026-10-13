@@ -42,5 +42,5 @@ dependencies {
     testImplementation(libs.coroutines.test)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 }
