@@ -52,7 +52,6 @@ object TeamCityDimensions {
     val modalProgressIndicatorSize = 48.dp
     val lowElevation = 1.dp
     val loginLogoSize = 96.dp
-    val splashLogoSize = 160.dp
     val floatingActionLaneHeight = 112.dp
 
     // Width limits and responsive layout thresholds.

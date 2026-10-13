@@ -146,6 +146,7 @@ dependencies {
     implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildDetails.impl)
     implementation(projects.libraries.navigation)
+    implementation(libs.androidx.core.splashscreen)
     implementation(fileTree("libs") { include("*.jar") })
 
     implementation(projects.libraries.coroutines)

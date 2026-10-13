@@ -1,5 +1,6 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2020 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -13,16 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <style name="SplashTheme" parent="Theme.MyApp">
-        <item name="android:statusBarColor" tools:ignore="NewApi">?attr/colorSurface</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:navigationBarColor">?attr/colorSurface</item>
-        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">
-            @android:color/transparent
-        </item>
+<resources>
+    <style name="Theme.TeamCityApp.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/launch_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/launch_splash_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyApp</item>
     </style>
-
+    <color name="launch_splash_background">@color/white_50</color>
 </resources>

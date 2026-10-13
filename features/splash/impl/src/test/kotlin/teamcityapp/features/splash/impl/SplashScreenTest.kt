@@ -27,7 +27,6 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.junit.Assert.*
 import org.junit.Rule
@@ -46,15 +45,16 @@ import teamcityapp.libraries.theme.TeamCityTheme
 class SplashScreenTest {
     @get:Rule val compose = createComposeRule()
 
-    @Test fun loadingPreservesCentered160DpAccessibleLogo() {
+    @Test fun loadingUsesCenteredProgressWithoutBranding() {
         compose.setContent { TeamCityTheme { SplashScreen(SplashUiState.Loading) } }
-        compose.onNodeWithTag("splash:logo").assertWidthIsEqualTo(160.dp).assertHeightIsEqualTo(160.dp).assertIsDisplayed().assertContentDescriptionEquals("TeamCityApp")
+        compose.onNodeWithTag("splash:logo").assertDoesNotExist()
+        compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
         val root = compose.onNodeWithTag("splash:screen").fetchSemanticsNode().boundsInRoot
-        val logo = compose.onNodeWithTag("splash:logo").fetchSemanticsNode().boundsInRoot
-        assertEquals(root.center.x, logo.center.x, 0.1f)
-        val group = compose.onNodeWithTag("splash:loading").fetchSemanticsNode().boundsInRoot
-        assertEquals(root.center.y, group.center.y, 0.1f)
-        compose.onNode(hasProgressBarRangeInfo(androidx.compose.ui.semantics.ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
+        val progress = compose.onNode(hasProgressBarRangeInfo(androidx.compose.ui.semantics.ProgressBarRangeInfo.Indeterminate))
+        progress.assertIsDisplayed()
+        val bounds = progress.fetchSemanticsNode().boundsInRoot
+        assertEquals(root.center.x, bounds.center.x, 0.1f)
+        assertEquals(root.center.y, bounds.center.y, 0.1f)
         compose.onNodeWithText("Try again").assertDoesNotExist()
     }
 
@@ -66,16 +66,23 @@ class SplashScreenTest {
         assertEquals(1, retries)
     }
 
-    @Test fun readyKeepsBrandingUntilUiPerformsNavigation() {
+    @Test fun readyHasNoBrandingOrSpinnerWhileUiPerformsNavigation() {
         compose.setContent { TeamCityTheme { SplashScreen(SplashUiState.Ready(SplashDestination.Home)) } }
         compose.onNodeWithTag("splash:ready:Home").assertExists()
-        compose.onNodeWithContentDescription("TeamCityApp").assertIsDisplayed()
+        compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
+        compose.onNode(hasProgressBarRangeInfo(androidx.compose.ui.semantics.ProgressBarRangeInfo.Indeterminate)).assertDoesNotExist()
     }
 
-    @Test fun navigatedKeepsBrandingWhileActivityFinishes() {
+    @Test fun navigatedHasNoBrandingOrSpinnerWhileDestinationChanges() {
         compose.setContent { TeamCityTheme { SplashScreen(SplashUiState.Navigated) } }
         compose.onNodeWithTag("splash:navigated").assertExists()
-        compose.onNodeWithContentDescription("TeamCityApp").assertIsDisplayed()
+        compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
+        compose.onNode(hasProgressBarRangeInfo(androidx.compose.ui.semantics.ProgressBarRangeInfo.Indeterminate)).assertDoesNotExist()
+    }
+
+    @Test fun loadingUsesProvidedSurface() {
+        compose.setContent { MaterialTheme(colorScheme = lightColorScheme(surface = Color.Green)) { SplashScreen(SplashUiState.Loading) } }
+        assertEquals(Color.Green, compose.onNodeWithTag("splash:screen").captureToImage().toPixelMap()[0, 0])
     }
 
     @Test fun errorUsesProvidedSurfaceAndTypography() {

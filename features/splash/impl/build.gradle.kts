@@ -30,7 +30,6 @@ dependencies {
     implementation(projects.libraries.navigation)
     implementation(projects.features.splash.api)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.resources)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

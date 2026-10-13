@@ -30,6 +30,7 @@ import teamcityapp.libraries.navigation.*
 
 class AccountActivationRegistration @Inject constructor(private val accounts: AccountFlowNavigation) : FeatureDestination<AccountActivationDestination>(AccountActivationDestination::class, AccountActivationDestination.serializer()) {
     @Composable override fun Content(destination: AccountActivationDestination, navigator: Navigator, entryId: String) {
+        if (destination.failed) ReportNavigationDrawReady()
         SplashScreen(if (destination.failed) SplashUiState.Error else SplashUiState.Loading, onRetry = {
             destination.destination?.let { accounts.activate(it, destination.resetSession) } ?: accounts.home(destination.resetSession)
         })
