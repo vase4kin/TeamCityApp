@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.0.0-beta.1](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.0...v2.0.0-beta.1) (2026-10-13)
+
+
+### Features
+
+* **build-history:** show year for dates outside the current year ([#454](https://github.com/vase4kin/TeamCityApp/issues/454)) ([29d9c2c](https://github.com/vase4kin/TeamCityApp/commit/29d9c2c7f8351199a968287af6008604d621edbe))
+* **build:** migrate Android compilation and resource optimization ([#449](https://github.com/vase4kin/TeamCityApp/issues/449)) ([436ad8c](https://github.com/vase4kin/TeamCityApp/commit/436ad8c0a806857c05ad3a1710c6ee08883675b9))
+* **home:** add compact Activity filter chips ([#453](https://github.com/vase4kin/TeamCityApp/issues/453)) ([681bc61](https://github.com/vase4kin/TeamCityApp/commit/681bc610f6ba02f71764131f1b1a533f696ca8d6))
+* **home:** remove Activity navigation counter ([2a4c8f1](https://github.com/vase4kin/TeamCityApp/commit/2a4c8f19564358ce68e6cb3ee65d2f281e834eed))
+* **home:** show agents counts in activity navigation ([#446](https://github.com/vase4kin/TeamCityApp/issues/446)) ([87fa7a5](https://github.com/vase4kin/TeamCityApp/commit/87fa7a51dda373502ad2776fbb3acb02c2fd7f64))
+* **ui:** keep operation progress in screens ([#455](https://github.com/vase4kin/TeamCityApp/issues/455)) ([8566396](https://github.com/vase4kin/TeamCityApp/commit/8566396319233cc7e15254443be21495f686dc70))
+
+
+### Bug Fixes
+
+* **a11y:** add hints and accurate action semantics ([#457](https://github.com/vase4kin/TeamCityApp/issues/457)) ([659810f](https://github.com/vase4kin/TeamCityApp/commit/659810f8adabdd6021b74607b30b5444c4493308))
+* **changes:** improve comment previews and detail action ([#450](https://github.com/vase4kin/TeamCityApp/issues/450)) ([9e4869e](https://github.com/vase4kin/TeamCityApp/commit/9e4869ea4e234560bd284e89b34a4d93e8cbea3f))
+* **history:** render cached builds during back transitions ([#459](https://github.com/vase4kin/TeamCityApp/issues/459)) ([d30e0b4](https://github.com/vase4kin/TeamCityApp/commit/d30e0b4fc31046447a1ea504af9904f17ec9c7fa))
+* **home:** remove Activity filter confirmation snackbars ([#458](https://github.com/vase4kin/TeamCityApp/issues/458)) ([46b8c01](https://github.com/vase4kin/TeamCityApp/commit/46b8c0137e3e40dde24de58598a43bcdec84dfaa))
+* **run-build:** execute network requests on the IO dispatcher ([#452](https://github.com/vase4kin/TeamCityApp/issues/452)) ([cac6cc3](https://github.com/vase4kin/TeamCityApp/commit/cac6cc31dbab79b7a0d7a6d48f223dd6abf8e6e2))
+* **run-build:** show submission failures in a snackbar ([#448](https://github.com/vase4kin/TeamCityApp/issues/448)) ([de71ac6](https://github.com/vase4kin/TeamCityApp/commit/de71ac6b5d393cebc75010c69d2a44d38049b200))
+* **splash:** use a single Android launch splash ([#460](https://github.com/vase4kin/TeamCityApp/issues/460)) ([c43bff0](https://github.com/vase4kin/TeamCityApp/commit/c43bff0e429079fdcd1fd8d1fd95dacbf49da1fc))
+* **ui:** keep floating build actions fixed on the right ([#456](https://github.com/vase4kin/TeamCityApp/issues/456)) ([0cd3eef](https://github.com/vase4kin/TeamCityApp/commit/0cd3eefb16503bf948fc09dd8a598dbb8a14ef63))
+
 ## [2.0.0-beta.0](https://github.com/vase4kin/TeamCityApp/compare/v1.52.8...v2.0.0-beta.0) (2026-10-13)
 
 
