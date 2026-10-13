@@ -80,7 +80,7 @@ internal fun BuildDetailsScreen(
                     navigationIcon = { IconButton(onClick = onUp, enabled = !state.busy) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) } }
                 )
             },
-            floatingActionButtonPosition = FabPosition.Center,
+            floatingActionButtonPosition = FabPosition.End,
             floatingActionButton = {
                 BuildDetailsFloatingActions(
                     state,
@@ -154,8 +154,8 @@ private fun BuildDetailsPreview() {
 private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (BuildDetailsAction) -> Unit, anchors: CoachmarkAnchors, modifier: Modifier = Modifier) {
     FlowRow(
         modifier.fillMaxWidth().testTag("details:actions"),
-        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing, Alignment.End),
+        verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
     ) {
         if (state.floatingActions.isNotEmpty()) {
             TeamCityFloatingToolbar(modifier = Modifier.testTag("details:toolbar")) {
