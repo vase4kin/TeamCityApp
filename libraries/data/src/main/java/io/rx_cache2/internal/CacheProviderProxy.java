@@ -17,7 +17,9 @@
 package io.rx_cache2.internal;
 
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
+import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.rx_cache2.ConfigProvider;
 import java.lang.reflect.Proxy;
 
 /**
@@ -46,8 +48,17 @@ public final class CacheProviderProxy {
                                         throw new UnsupportedOperationException(method.getName());
                                 }
                             }
+                            ConfigProvider config = translator.processMethod(method, args);
+                            // RxCache checks its startup flag before subscribing to a shared,
+                            // non-replaying signal. If startup finishes in that gap, this request
+                            // completes empty without subscribing to its loader. Re-enter once:
+                            // the startup flag is now set and the same config can load normally.
                             return Single.fromObservable(
-                                    processor.process(translator.processMethod(method, args)));
+                                    processor
+                                            .process(config)
+                                            .switchIfEmpty(
+                                                    Observable.defer(
+                                                            () -> processor.process(config))));
                         });
     }
 }
