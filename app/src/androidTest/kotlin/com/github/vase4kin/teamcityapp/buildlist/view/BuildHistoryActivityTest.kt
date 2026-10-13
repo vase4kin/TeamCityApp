@@ -150,11 +150,11 @@ class BuildHistoryActivityTest {
     @Test fun legacyMockDuplicateIdsKeepNumbersStatusesBranchesAndDateSections() {
         launch().use {
             awaitText("Running tests")
-            listOf("22 June", "21 June", "#2458", "#2459", "#2460", "Success", "Error with smth").forEach(::awaitText)
+            listOf("22 June 2016", "21 June 2016", "#2458", "#2459", "#2460", "Success", "Error with smth").forEach(::awaitText)
             compose.onAllNodesWithText("refs/heads/master").assertCountEquals(2)
             compose.onAllNodesWithTag("history:build:randomId").assertCountEquals(3)
-            compose.onNodeWithTag("history:section:22 June").assertHasNoClickAction()
-            compose.onNodeWithTag("history:section:21 June").assertHasNoClickAction()
+            compose.onNodeWithTag("history:section:22 June 2016").assertHasNoClickAction()
+            compose.onNodeWithTag("history:section:21 June 2016").assertHasNoClickAction()
         }
     }
 
@@ -166,7 +166,7 @@ class BuildHistoryActivityTest {
             val finished = compose.onNodeWithTag("history:build:finished").fetchSemanticsNode().boundsInRoot
             Assert.assertTrue(queued.top < finished.top)
             compose.onNodeWithTag("history:section:queued").assertHasNoClickAction()
-            compose.onNodeWithTag("history:section:22 June").assertHasNoClickAction()
+            compose.onNodeWithTag("history:section:22 June 2016").assertHasNoClickAction()
             Assert.assertTrue(snapshot().entries.none { it.destination is BuildDetailsDestination })
         }
     }
