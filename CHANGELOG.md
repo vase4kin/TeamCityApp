@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-beta.4](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2026-10-14)
+
+
+### Bug Fixes
+
+* **paging:** keep paginated list callbacks on captured snapshots ([#470](https://github.com/vase4kin/TeamCityApp/issues/470)) ([9424254](https://github.com/vase4kin/TeamCityApp/commit/9424254d70f482ee6c77e5fa7c2fbb82c06eb1ce))
+* **ui:** keep filter option icons visible ([#472](https://github.com/vase4kin/TeamCityApp/issues/472)) ([0e989d5](https://github.com/vase4kin/TeamCityApp/commit/0e989d5a96d5eb5dfd3fba3b5b39c8b7fa7f3225))
+
 ## [2.0.0-beta.3](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2026-10-14)
 
 
