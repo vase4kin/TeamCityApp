@@ -27,7 +27,6 @@ dependencies {
     implementation(projects.libraries.navigation)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
-    implementation(libs.google.material)
     implementation(projects.features.filterBottomSheet.api)
 
     implementation(projects.libraries.theme)
