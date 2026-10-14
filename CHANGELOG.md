@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-beta.2](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2026-10-14)
+
+
+### Bug Fixes
+
+* **build-details:** keep View Log available during refresh ([#461](https://github.com/vase4kin/TeamCityApp/issues/461)) ([927ca80](https://github.com/vase4kin/TeamCityApp/commit/927ca80fa32188a9f819ee0cc5d8b82fb9603932))
+* **ui:** use back buttons consistently in app bars ([#462](https://github.com/vase4kin/TeamCityApp/issues/462)) ([5957bad](https://github.com/vase4kin/TeamCityApp/commit/5957badb462ad15cae32015c09730c3f0fe8ce91))
+
 ## [2.0.0-beta.1](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.0...v2.0.0-beta.1) (2026-10-13)
 
 
