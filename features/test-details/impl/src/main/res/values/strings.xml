@@ -17,4 +17,13 @@
 <resources>
     <string name="test_details_title">Details</string>
     <string name="text_empty_test_details">No test details</string>
+    <string name="test_details_copy_all">Copy all</string>
+    <string name="test_details_copied">Test output copied</string>
+    <string name="test_details_wrap_lines">Wrap lines</string>
+    <string name="test_details_find">Find in output</string>
+    <string name="test_details_clear_search">Clear</string>
+    <string name="test_details_no_matches">No matches</string>
+    <string name="test_details_match_position">Match %1$d of %2$d</string>
+    <string name="test_details_previous_match">Previous</string>
+    <string name="test_details_next_match">Next</string>
 </resources>

@@ -20,17 +20,29 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TestDetailsTextTest {
-    @Test fun markupAndEntitiesStayLiteral() {
-        val details = "<script>alert('test')</script> &lt; literal >"
-        assertEquals(details, formatTestDetails(details))
+    @Test fun contentKeepsMarkupWhitespaceAndLineEndingsUntouched() {
+        val details = "  <tag> &lt; literal >\r\n\tfirst   second\n\nlast \n"
+        assertEquals(details, TestDetailsUiState.Content(details).details)
     }
 
-    @Test fun lineBreaksTabsAndSingleLeadingSpacesMatchHtmlWhitespace() {
-        assertEquals("first second third", formatTestDetails(" first\n\r\nsecond\tthird "))
+    @Test fun searchIsCaseInsensitiveAndReturnsOriginalOffsets() {
+        assertEquals(listOf(0..4, 13..17), findTestDetailsMatches("Error\n    at ERROR", "error"))
     }
 
-    @Test fun repeatedSpacesRemainVisibleAndNonbreaking() {
-        assertEquals("first\u00A0\u00A0 second", formatTestDetails("first   second"))
-        assertEquals("\u00A0 first", formatTestDetails("  first"))
+    @Test fun searchTreatsMarkupAndRegexCharactersLiterally() {
+        assertEquals(listOf(6..9), findTestDetailsMatches("value <.*> end", "<.*>"))
+    }
+
+    @Test fun emptyAndMissingQueriesHaveNoMatches() {
+        assertEquals(emptyList<IntRange>(), findTestDetailsMatches("output", ""))
+        assertEquals(emptyList<IntRange>(), findTestDetailsMatches("output", "absent"))
+    }
+
+    @Test fun repeatedMatchesDoNotOverlap() {
+        assertEquals(listOf(0..1, 2..3), findTestDetailsMatches("aaaaa", "aa"))
+    }
+
+    @Test fun whitespaceQueriesSearchTheUnmodifiedOutput() {
+        assertEquals(listOf(1..2), findTestDetailsMatches("a\n\tb", "\n\t"))
     }
 }

@@ -16,16 +16,14 @@
 
 package teamcityapp.features.test_details.impl
 
-private val htmlWhitespace = Regex("[ \t\r\n\u000C]+")
-
-/** Match whitespace in the previous escaped HTML body without introducing an HTML renderer. */
-internal fun formatTestDetails(details: String): String {
-    val escapedSpaces = buildString {
-        details.forEachIndexed { index, character ->
-            // Html.escapeHtml preserves repeated spaces with nonbreaking spaces.
-            append(if (character == ' ' && details.getOrNull(index + 1) == ' ') '\u00A0' else character)
+/** Literal, case-insensitive, non-overlapping matches in the untouched server output. */
+internal fun findTestDetailsMatches(details: String, query: String): List<IntRange> {
+    if (query.isEmpty()) return emptyList()
+    return buildList {
+        var start = details.indexOf(query, ignoreCase = true)
+        while (start >= 0) {
+            add(start until start + query.length)
+            start = details.indexOf(query, startIndex = start + query.length, ignoreCase = true)
         }
     }
-    // HTML's normal whitespace collapses line breaks and tabs; literal markup stays literal.
-    return escapedSpaces.replace(htmlWhitespace, " ").trim(' ')
 }

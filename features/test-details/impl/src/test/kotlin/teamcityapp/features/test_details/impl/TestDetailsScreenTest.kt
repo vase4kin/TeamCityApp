@@ -20,9 +20,15 @@ import android.app.Application
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -48,6 +54,90 @@ class TestDetailsScreenTest {
         compose.setContent { TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Content(details), {}, {}) } }
         compose.onNodeWithText(details).assertIsDisplayed()
         compose.onNodeWithText("Details").assertIsDisplayed()
+    }
+
+    @Test fun outputAndCopyPreserveTheCompleteOriginalText() {
+        val details = "  <tag> &lt; literal\r\n\tframe   one\n\nlast \n"
+        var copied: ClipEntry? = null
+        val clipboard = object : Clipboard {
+            override suspend fun getClipEntry(): ClipEntry? = copied
+            override suspend fun setClipEntry(clipEntry: ClipEntry?) {
+                copied = clipEntry
+            }
+        }
+        compose.setContent {
+            CompositionLocalProvider(LocalClipboard provides clipboard) {
+                TeamCityTheme { TestDetailsReaderRoute(TestDetailsUiState.Content(details), {}, {}) }
+            }
+        }
+        compose.onNodeWithTag("test_details:text").assertTextEquals(details)
+        compose.onNodeWithTag("test_details:search").performTextInput("frame")
+        compose.onNode(isToggleable()).performClick()
+        compose.onNodeWithText("Copy all").performClick()
+        compose.runOnIdle { assertEquals(details, copied!!.clipData.getItemAt(0).text.toString()) }
+        compose.onNodeWithText("Test output copied").assertIsDisplayed()
+    }
+
+    @Test fun wrappingCanBeDisabledToScrollLongLinesHorizontally() {
+        val details = "    at example." + "LongPackageName".repeat(30) + "(Test.kt:42)"
+        compose.setContent { TeamCityTheme { TestDetailsReaderRoute(TestDetailsUiState.Content(details), {}, {}) } }
+        val output = compose.onNodeWithTag("test_details:text")
+        compose.onNode(isToggleable()).assertIsOn().performClick().assertIsOff()
+        val results = mutableListOf<TextLayoutResult>()
+        output.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+        assertFalse(results.single().layoutInput.softWrap)
+        val scroll = output.fetchSemanticsNode().config[SemanticsProperties.HorizontalScrollAxisRange]
+        assertTrue(scroll.maxValue() > 0)
+        output.performTouchInput { swipeLeft() }
+        compose.waitForIdle()
+        compose.runOnIdle { assertTrue(scroll.value() > 0) }
+        compose.onNode(isToggleable()).performClick().assertIsOn()
+        output.assertTextEquals(details)
+    }
+
+    @Test fun searchHighlightsMatchesAndMovesToTheNextOffscreenMatch() {
+        val details = "Needle at the top\n" + (1..70).joinToString("\n") { "    stack frame $it" } + "\nneedle at the bottom"
+        compose.setContent { TeamCityTheme { TestDetailsReaderRoute(TestDetailsUiState.Content(details), {}, {}) } }
+        compose.onNodeWithTag("test_details:search").performTextInput("NEEDLE")
+        compose.onNodeWithText("Match 1 of 2").assertIsDisplayed()
+        val results = mutableListOf<TextLayoutResult>()
+        val output = compose.onNodeWithTag("test_details:text")
+        output.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+        assertEquals(2, results.single().layoutInput.text.spanStyles.size)
+        output.assertTextEquals(details)
+        compose.onNodeWithText("Next").performClick()
+        compose.onNodeWithText("Match 2 of 2").assertIsDisplayed()
+        compose.waitForIdle()
+        val scroll = output.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange]
+        assertTrue(scroll.value() > 300f)
+        compose.onNodeWithText("Next").performClick()
+        compose.onNodeWithText("Match 1 of 2").assertIsDisplayed()
+        compose.onNodeWithText("Previous").performClick()
+        compose.onNodeWithText("Match 2 of 2").assertIsDisplayed()
+    }
+
+    @Test fun missingSearchAndClearLeaveAllOutputAvailable() {
+        compose.setContent { TeamCityTheme { TestDetailsReaderRoute(TestDetailsUiState.Content("original output"), {}, {}) } }
+        compose.onNodeWithTag("test_details:search").performTextInput("absent")
+        compose.onNodeWithText("No matches").assertIsDisplayed()
+        compose.onNodeWithText("Next").assertIsNotEnabled()
+        compose.onNodeWithText("Previous").assertIsNotEnabled()
+        compose.onNodeWithTag("test_details:text").assertTextEquals("original output")
+        compose.onNodeWithText("Clear").performClick()
+        compose.onNodeWithText("No matches").assertDoesNotExist()
+        compose.onNodeWithTag("test_details:search").assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, androidx.compose.ui.text.AnnotatedString("")))
+    }
+
+    @Test fun readerChoicesSurviveSavedStateRestoration() {
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent { TeamCityTheme { TestDetailsReaderRoute(TestDetailsUiState.Content("error\nERROR"), {}, {}) } }
+        compose.onNodeWithTag("test_details:search").performTextInput("error")
+        compose.onNodeWithText("Next").performClick()
+        compose.onNode(isToggleable()).performClick()
+        restoration.emulateSavedInstanceStateRestore()
+        compose.onNodeWithText("Match 2 of 2").assertIsDisplayed()
+        compose.onNodeWithTag("test_details:search").assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, androidx.compose.ui.text.AnnotatedString("error")))
+        compose.onNode(isToggleable()).assertIsOff()
     }
 
     @Test fun retryAndCloseInvokeTheirCallbacks() {
