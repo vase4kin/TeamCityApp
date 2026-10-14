@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.4...v2.0.0) (2026-10-14)
+
+
+### Bug Fixes
+
+* **release:** prepare stable 2.0.0 ([#474](https://github.com/vase4kin/TeamCityApp/issues/474)) ([21f9b98](https://github.com/vase4kin/TeamCityApp/commit/21f9b9814899e9d2b64cdfc31840f6a5244602b0))
+
 ## [2.0.0-beta.4](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2026-10-14)
 
 
