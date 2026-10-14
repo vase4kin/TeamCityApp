@@ -56,15 +56,13 @@ fun HomeScreen(
     onActivity: () -> Unit = { onTabSelected(HomeTab.Running) },
     showHomeHeader: Boolean = true,
     showNavigation: Boolean = true,
+    showActivityErrors: Boolean = showHomeHeader,
     content: @Composable () -> Unit
 ) {
-    val retryMessage = state.retryMessageRes?.let { stringResource(it) }
-    val retryLabel = stringResource(state.retryLabelRes)
-    val retryAction by rememberUpdatedState(onRetry)
-    LaunchedEffect(retryMessage, state.query?.accountKey, state.retryAttempt, showNavigation) {
-        if (showNavigation && retryMessage != null && snackbar.showSnackbar(retryMessage, retryLabel, withDismissAction = true, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) retryAction()
-    }
-    val filterError = state.filterErrorRes?.let { stringResource(it) }
+    val retryMessage = state.retryMessageRes?.takeIf { showActivityErrors }?.let { stringResource(it) }
+    val retryLabel = stringResource(R.string.home_retry)
+    TeamCityRetrySnackbar(retryMessage.takeIf { showNavigation }, retryLabel, snackbar, requestKey = listOf(state.query?.accountKey, state.retryAttempt, showNavigation), onRetry = onRetry)
+    val filterError = state.filterErrorRes?.takeIf { showActivityErrors }?.let { stringResource(it) }
     LaunchedEffect(filterError, state.query?.accountKey, showNavigation) {
         if (showNavigation && filterError != null) snackbar.showSnackbar(filterError)
     }
@@ -190,8 +188,7 @@ fun HomeScreen(
                     },
                     snackbarHost = {
                         if (showNavigation) {
-                            val largeText = LocalDensity.current.fontScale >= 1.3f
-                            SnackbarHost(snackbar) { Snackbar(it, modifier = Modifier.testTag("home:snackbar"), actionOnNewLine = largeText) }
+                            TeamCitySnackbarHost(snackbar, Modifier.testTag("home:snackbar"))
                         }
                     }
                 ) { padding ->

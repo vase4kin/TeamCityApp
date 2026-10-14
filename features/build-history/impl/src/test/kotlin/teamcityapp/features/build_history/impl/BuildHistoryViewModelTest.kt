@@ -198,6 +198,24 @@ class BuildHistoryViewModelTest {
         assertEquals(R.string.history_add_favorite, vm.controls.value.favoriteActionLabelRes)
     }
 
+    @Test fun favoriteRemovalFailureNamesTheFailedOperationAndRetainsMembership() = runTest(dispatcher) {
+        repository.loadFavorite = { true }
+        repository.writeFavorite = { _, _ -> error("disk") }
+        val vm = viewModel()
+        observe(vm)
+        runCurrent()
+        vm.toggleFavorite()
+        runCurrent()
+        assertEquals(FavoriteState.Available(true, updateFailed = true), vm.controls.value.favorite)
+        assertEquals(R.string.history_remove_favorite_failed, vm.controls.value.favoriteFailureMessageRes)
+        assertNull(vm.controls.value.notice)
+        repository.writeFavorite = { _, _ -> }
+        vm.toggleFavorite()
+        runCurrent()
+        assertEquals(FavoriteState.Available(false), vm.controls.value.favorite)
+        assertEquals(listOf("configuration" to false, "configuration" to false), repository.writes)
+    }
+
     @Test fun favoriteWriteFailureRetainsMembershipAndRetriesSameIntent() = runTest(dispatcher) {
         repository.writeFavorite = { _, _ -> error("disk") }
         val vm = viewModel()
@@ -206,7 +224,7 @@ class BuildHistoryViewModelTest {
         vm.toggleFavorite()
         runCurrent()
         assertEquals(FavoriteState.Available(false, updateFailed = true), vm.controls.value.favorite)
-        assertEquals(R.string.history_favorite_update_failed, vm.controls.value.favoriteFailureMessageRes)
+        assertEquals(R.string.history_add_favorite_failed, vm.controls.value.favoriteFailureMessageRes)
         assertNull(vm.controls.value.notice)
         repository.writeFavorite = { _, _ -> }
         vm.toggleFavorite()

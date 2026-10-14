@@ -88,7 +88,13 @@ data class BuildHistoryControls(
 
     @get:StringRes val favoriteFailureMessageRes: Int? = when (favorite) {
         FavoriteState.Unavailable -> R.string.history_favorite_unavailable
-        is FavoriteState.Available -> if (favorite.updateFailed) R.string.history_favorite_update_failed else null
+
+        is FavoriteState.Available -> when {
+            !favorite.updateFailed -> null
+            favorite.favorite -> R.string.history_remove_favorite_failed
+            else -> R.string.history_add_favorite_failed
+        }
+
         FavoriteState.Loading -> null
     }
 }

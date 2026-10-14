@@ -52,6 +52,8 @@ class TestsRouteTest {
         val vm = TestsViewModel(SavedStateHandle(mapOf("url" to "build:42", "passedCount" to 12, "failedCount" to 2, "ignoredCount" to 2)), repository)
         store.put("tests", vm)
         compose.setContent { TeamCityTheme { TestsRoute(router, vm) } }
+        compose.waitForIdle()
+        compose.onNodeWithTag("tests:total").assertExists()
     }
 
     @Test fun routePublishesTotalCountAndOpensFailedDetailsThroughUiRouter() {
@@ -126,12 +128,12 @@ class TestsRouteTest {
     @Test fun countFailureRetryUpdatesTabWithoutReloadingPages() {
         repository.loadCount = { error("offline") }
         render()
-        compose.waitUntil(5_000) { compose.onAllNodesWithText("Retry count").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Retry").fetchSemanticsNodes().isNotEmpty() }
         assertTrue(router.counts.isEmpty())
         compose.waitUntil(5_000) { repository.requests.isNotEmpty() }
         val requests = repository.requests.size
         repository.loadCount = { 21 }
-        compose.onNodeWithText("Retry count").performClick()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         compose.waitUntil(5_000) { router.counts.lastOrNull() == 21 }
         assertEquals(requests, repository.requests.size)
         assertEquals(listOf(21), router.counts)

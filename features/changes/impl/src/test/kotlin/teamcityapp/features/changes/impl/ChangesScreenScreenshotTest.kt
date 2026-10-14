@@ -100,7 +100,7 @@ class ChangesScreenScreenshotTest(private val stateName: String, private val var
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "count_unavailable") compose.onNodeWithText("Retry count").assertIsDisplayed()
+        if (stateName == "count_unavailable") compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).assertIsDisplayed()
         compose.onRoot().captureRoboImage("changes_${stateName}_${variant.name}.png")
         if (state is ListUiState.Content && variant.fontScale > 1f) {
             // Enlarged text can place the last row or append action below the viewport.

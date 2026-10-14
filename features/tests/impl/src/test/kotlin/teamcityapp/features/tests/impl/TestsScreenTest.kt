@@ -138,7 +138,7 @@ class TestsScreenTest {
         var retries = 0
         var countRetries = 0
         render(count = TestsCountState.Unavailable, onRetry = { retries++ }, onCountRetry = { countRetries++ })
-        compose.onNodeWithText("Retry count").performClick()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         assertEquals(1, countRetries)
         assertEquals(0, retries)
     }

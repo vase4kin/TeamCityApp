@@ -59,6 +59,9 @@ class ChangesRouteTest {
         } else {
             restoration.setContent { TeamCityTheme { ChangesRoute(router, vm) } }
         }
+        compose.mainClock.advanceTimeByFrame()
+        compose.waitForIdle()
+        compose.onRoot().assertExists()
     }
 
     @Test fun routePublishesTabCountAndOpensHydratedDetailsThroughUiRouter() {
@@ -78,8 +81,11 @@ class ChangesRouteTest {
         compose.onNodeWithText("Couldn’t load the change count.").assertIsDisplayed()
         compose.waitUntil(5_000) { repository.requests.isNotEmpty() }
         val requests = repository.requests.size
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText("Couldn’t load the change count.").assertIsDisplayed()
         repository.loadCount = { 7 }
-        compose.onNodeWithText("Retry count").performClick()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         compose.waitUntil(5_000) { router.counts.last() == 7 }
         assertEquals(listOf(0, 7), router.counts)
         assertEquals(requests, repository.requests.size)

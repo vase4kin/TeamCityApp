@@ -87,8 +87,11 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
                 stateName == "filter_loading" -> HomeUiState(selected = HomeTab.Running)
                 stateName == "filter_applying" -> HomeUiState(selected = HomeTab.Running, applyingFilter = QuickFilter.RunningAll)
                 stateName == "filter_failed" -> HomeUiState(selected = HomeTab.Running, filterFailed = true)
-                stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
-                stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
+                stateName == "counts_failed" -> HomeUiState(selected = HomeTab.Running, badges = badges.mapValues { HomeBadge.Failed() })
+                stateName == "partial_failure" -> HomeUiState(selected = HomeTab.Running, badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
+                stateName == "running_count_failed" -> HomeUiState(selected = HomeTab.Running, badges = badges + (HomeTab.Running to HomeBadge.Failed()))
+                stateName == "build_counts_failed" -> HomeUiState(selected = HomeTab.Running, badges = badges + setOf(HomeTab.Running, HomeTab.Queue).associateWith { HomeBadge.Failed() })
+                stateName == "projects_count_failure" -> HomeUiState(badges = badges + (HomeTab.Running to HomeBadge.Failed()))
                 stateName == "agents_zero" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Count(0)))
                 stateName == "agents_loading" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Loading))
                 stateName == "agents_failed" -> HomeUiState(selected = HomeTab.Agents, badges = badges + (HomeTab.Agents to HomeBadge.Failed()))
@@ -139,6 +142,10 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
             captureScreenRoboImage("home_${stateName}_${variant.name}.png")
             return
         }
+        if (stateName in listOf("counts_failed", "partial_failure", "running_count_failed", "build_counts_failed", "agents_failed")) {
+            compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).assertIsDisplayed()
+        }
+        if (stateName in listOf("onboarding_failed", "favorites_count_failure", "projects_count_failure")) compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
         compose.onRoot().captureRoboImage("home_${stateName}_${variant.name}.png")
     }
     companion object {
@@ -147,7 +154,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("tooltip", "loading", "counts_failed", "partial_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure", "running_all", "queue_favorites", "agents_disconnected", "filter_loading", "filter_applying", "filter_failed") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("tooltip", "loading", "counts_failed", "partial_failure", "running_count_failed", "build_counts_failed", "projects_count_failure", "agents_zero", "agents_loading", "agents_failed", "agents_only", "onboarding_failed", "favorites_toolbar", "favorites_count_failure", "running_all", "queue_favorites", "agents_disconnected", "filter_loading", "filter_applying", "filter_failed") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

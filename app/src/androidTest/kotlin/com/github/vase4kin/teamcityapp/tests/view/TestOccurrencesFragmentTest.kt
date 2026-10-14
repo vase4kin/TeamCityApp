@@ -212,7 +212,7 @@ class TestOccurrencesFragmentTest {
         assertTextVisible(text(TestsR.string.tests_count_unavailable))
         val beforeRetry = pageCalls.get()
         fails.set(false)
-        compose.onNodeWithText(text(TestsR.string.tests_retry_count)).performClick()
+        compose.onNode(hasText(text(TestsR.string.tests_retry_count)) and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithText(text(TestsR.string.tests_count_unavailable)).fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
         compose.onNodeWithText(text(TestsR.string.tests_count_unavailable)).assertDoesNotExist()
         assertTextVisible("Test 1")

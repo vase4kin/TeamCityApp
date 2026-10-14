@@ -28,6 +28,6 @@
     <string name="tests_empty_failed">There are no failed tests</string>
     <string name="tests_empty_passed">There are no passed tests</string>
     <string name="tests_empty_ignored">There are no ignored tests</string>
-    <string name="tests_count_unavailable">The total test count couldn’t be loaded.</string>
-    <string name="tests_retry_count">Retry count</string>
+    <string name="tests_count_unavailable">Couldn’t load the test count.</string>
+    <string name="tests_retry_count">Retry</string>
 </resources>

@@ -17,7 +17,7 @@
 <resources>
     <string name="changes_empty">No changes</string>
     <string name="changes_count_unavailable">Couldn’t load the change count.</string>
-    <string name="changes_retry_count">Retry count</string>
+    <string name="changes_retry_count">Retry</string>
     <string name="changes_author_date">By %1$s on %2$s</string>
     <string name="changes_many_files">9+</string>
     <plurals name="changes_files">

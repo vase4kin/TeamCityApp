@@ -117,7 +117,7 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "count_unavailable") compose.onNodeWithText("Retry count").assertIsDisplayed()
+        if (stateName == "count_unavailable") compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).assertIsDisplayed()
         compose.onRoot().captureRoboImage("tests_${stateName}_${variant.name}.png")
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true

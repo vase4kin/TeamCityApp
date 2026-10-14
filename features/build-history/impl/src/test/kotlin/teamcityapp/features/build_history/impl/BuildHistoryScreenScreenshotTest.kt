@@ -92,6 +92,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             "favorite_unavailable" -> FavoriteState.Unavailable
             "favorite_updating" -> FavoriteState.Available(false, updating = true)
             "favorite_update_failed" -> FavoriteState.Available(false, updateFailed = true)
+            "favorite_remove_failed" -> FavoriteState.Available(true, updateFailed = true)
             "favorite_selected", "notice_favorite_added" -> FavoriteState.Available(true)
             else -> FavoriteState.Available(false)
         }
@@ -128,6 +129,11 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName in listOf("favorite_unavailable", "favorite_update_failed", "favorite_remove_failed")) {
+            compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).assertIsDisplayed()
+            compose.onNodeWithTag("history:optional-errors").assertDoesNotExist()
+        }
+        if (stateName == "onboarding_unavailable") compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
         if (stateName == "toolbar_scrolled" || stateName == "toolbar_returned") {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
@@ -189,7 +195,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             )
             listOf(
                 "tooltip", "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
-                "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
+                "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_remove_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
                 "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed",
                 "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_scrolled", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
             ).flatMap { name ->

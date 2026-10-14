@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,9 +42,10 @@ import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.BindTeamCityAppBarToList
-import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityAppBarSurface
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityRetrySnackbar
+import teamcityapp.libraries.theme.TeamCitySnackbarHost
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.TeamCityTooltip
 import teamcityapp.libraries.theme.resolve
@@ -67,7 +66,6 @@ internal fun BuildHistoryScreen(
     onFilters: () -> Unit,
     onFavorite: () -> Unit,
     onFavoriteRetry: () -> Unit,
-    onOnboardingRetry: () -> Unit,
     onPromptDismiss: () -> Unit,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
@@ -77,6 +75,8 @@ internal fun BuildHistoryScreen(
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     listState: LazyListState = rememberLazyListState()
 ) {
+    val retryLabel = stringResource(R.string.history_retry)
+    TeamCityRetrySnackbar(controls.favoriteFailureMessageRes?.let { stringResource(it) }, retryLabel, snackbar, onRetry = if (controls.favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     BindTeamCityAppBarToList(listState, scrollBehavior.state)
     val itemKeys = remember(state, itemCount, itemPeek) {
@@ -128,30 +128,14 @@ internal fun BuildHistoryScreen(
                         .onSizeChanged { actionHeight = with(density) { it.height.toDp() } }
                 )
             },
-            snackbarHost = {
-                BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    val actionOnNewLine = maxWidth < TeamCityDimensions.historyInlineActionMinWidth && LocalDensity.current.fontScale > 1f
-                    SnackbarHost(snackbar) { data -> Snackbar(data, actionOnNewLine = actionOnNewLine) }
-                }
-            }
+            snackbarHost = { TeamCitySnackbarHost(snackbar) }
         ) { padding ->
             val actionClearance = actionHeight + TeamCityDimensions.sectionSpacing
             // A retry footer needs an unobstructed hit target even when only partly scrolled
             // into view. Ordinary history content can scroll behind the floating controls.
             val retryClearance = if (appendState == HistoryAppendState.Error) actionClearance else TeamCityDimensions.noSpacing
             BoxWithConstraints(Modifier.fillMaxSize().padding(padding).padding(bottom = retryClearance).testTag("history:body")) {
-                val noticeMaxHeight = maxHeight / 3
                 Column(Modifier.fillMaxSize()) {
-                    Column(
-                        Modifier.fillMaxWidth().heightIn(max = noticeMaxHeight).verticalScroll(rememberScrollState()).testTag("history:optional-errors")
-                    ) {
-                        when (val favorite = controls.favorite) {
-                            FavoriteState.Unavailable -> HistoryOptionalFailure(stringResource(requireNotNull(controls.favoriteFailureMessageRes)), onFavoriteRetry)
-                            is FavoriteState.Available -> if (favorite.updateFailed) HistoryOptionalFailure(stringResource(requireNotNull(controls.favoriteFailureMessageRes)), onFavorite)
-                            FavoriteState.Loading -> Unit
-                        }
-                        if (controls.onboarding == OnboardingState.Unavailable) HistoryOptionalFailure(stringResource(R.string.history_onboarding_unavailable), onOnboardingRetry)
-                    }
                     TeamCityListContainer(
                         state,
                         onRefresh,
@@ -203,11 +187,6 @@ private fun HistorySection(build: HistoryBuildRow) {
     TeamCityListSectionHeader(title, Modifier.testTag("history:section:${build.sectionKey}"))
 }
 
-@Composable
-private fun HistoryOptionalFailure(message: String, onRetry: () -> Unit) {
-    ErrorNotice(message, onRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.history_retry))
-}
-
 @Preview
 @Composable
 private fun BuildHistoryPreview() {
@@ -215,7 +194,7 @@ private fun BuildHistoryPreview() {
     TeamCityTheme {
         BuildHistoryScreen(
             "Build TeamCityApp", ListUiState.Content(rows), BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available()), rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, HistoryAppendState.Idle,
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
         )
     }
 }

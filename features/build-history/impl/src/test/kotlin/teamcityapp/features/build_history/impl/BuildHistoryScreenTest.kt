@@ -57,7 +57,6 @@ internal fun HistoryTestScreen(
     onFilter: () -> Unit = {},
     onFavorite: () -> Unit = {},
     onFavoriteRetry: () -> Unit = {},
-    onPromptRetry: () -> Unit = {},
     onPromptDismiss: () -> Unit = {},
     onRetry: () -> Unit = {},
     onAppendRetry: () -> Unit = {},
@@ -66,7 +65,7 @@ internal fun HistoryTestScreen(
 ) {
     BuildHistoryScreen(
         "Build Android and check all supported configurations", state, controls, rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, append,
-        onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, snackbar = snackbar
+        onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, snackbar = snackbar
     )
 }
 
@@ -330,17 +329,16 @@ class BuildHistoryScreenTest {
         var toggles = 0
         val favorite = androidx.compose.runtime.mutableStateOf<FavoriteState>(FavoriteState.Unavailable)
         compose.setContent { TeamCityTheme { HistoryTestScreen(controls = BuildHistoryControls(favorite.value, OnboardingState.Available()), onFavorite = { toggles++ }, onFavoriteRetry = { retries++ }) } }
-        compose.onNodeWithText("Favorites are unavailable.").assertIsDisplayed()
-        compose.onNodeWithTag("history:favorite").performClick()
+        compose.onNodeWithText("Couldn’t check if this configuration is in your favorites.").assertIsDisplayed()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         assertEquals(1, retries)
         assertEquals(0, toggles)
         compose.runOnIdle { favorite.value = FavoriteState.Available(true, updating = true) }
         compose.onNodeWithTag("history:favorite").assertIsNotEnabled()
     }
 
-    @Test fun optionalFailuresKeepTheMainSurfaceAndBothRecoveryActionsAvailableOnShortLargeTextScreens() {
+    @Test fun favoriteFailureKeepsContentAndRetryAvailableWhileGuidanceFailureStaysQuiet() {
         var favoriteRetries = 0
-        var onboardingRetries = 0
         val state = androidx.compose.runtime.mutableStateOf<ListUiState<BuildLaunchData>>(ListUiState.Content(listOf(historyBuild())))
         compose.setContent {
             TeamCityTheme {
@@ -349,8 +347,7 @@ class BuildHistoryScreenTest {
                         HistoryTestScreen(
                             state = state.value,
                             controls = BuildHistoryControls(FavoriteState.Unavailable, OnboardingState.Unavailable),
-                            onFavoriteRetry = { favoriteRetries++ },
-                            onPromptRetry = { onboardingRetries++ }
+                            onFavoriteRetry = { favoriteRetries++ }
                         )
                     }
                 }
@@ -359,14 +356,22 @@ class BuildHistoryScreenTest {
         val bodyHeight = compose.onNodeWithTag("history:body").fetchSemanticsNode().boundsInRoot.height
         val mainHeight = compose.onNodeWithTag("history:main-content").fetchSemanticsNode().boundsInRoot.height
         assertTrue("Optional notices must preserve at least half the body for the list", mainHeight >= bodyHeight / 2)
-        compose.onAllNodesWithText("Retry")[0].performScrollTo().performClick()
-        compose.onAllNodesWithText("Retry")[1].performScrollTo().performClick()
+        compose.onNodeWithTag("history:optional-errors").assertDoesNotExist()
+        compose.onNodeWithText("Couldn’t check if this configuration is in your favorites.").assertIsDisplayed()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).assertIsDisplayed().performClick()
+        compose.onNodeWithText("Build controls tips are unavailable.").assertDoesNotExist()
         assertEquals(1, favoriteRetries)
-        assertEquals(1, onboardingRetries)
         compose.runOnIdle { state.value = ListUiState.Error }
         val errorHeight = compose.onNodeWithTag("history:main-content").fetchSemanticsNode().boundsInRoot.height
         assertTrue("Optional notices must preserve the initial-error recovery surface", errorHeight >= bodyHeight / 2)
         compose.onNodeWithText("Try again").assertHasClickAction()
+    }
+
+    @Test fun guidanceLoadingFailureDoesNotShowASnackbar() {
+        compose.setContent { TeamCityTheme { HistoryTestScreen(controls = BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Unavailable)) } }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.onNodeWithTag("history:build:42").assertIsDisplayed()
+        compose.onNodeWithTag("history:run").assertIsDisplayed()
     }
 
     @Test fun appendRetryKeepsBuildRowsVisible() {

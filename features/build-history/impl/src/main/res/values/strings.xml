@@ -29,9 +29,9 @@
     <string name="history_empty">No builds</string>
     <string name="history_queued_section">Queued</string>
     <string name="history_unknown_date">Date unavailable</string>
-    <string name="history_favorite_unavailable">Favorites are unavailable.</string>
-    <string name="history_favorite_update_failed">Could not update favorites.</string>
-    <string name="history_onboarding_unavailable">Build controls tips are unavailable.</string>
+    <string name="history_favorite_unavailable">Couldn’t check if this configuration is in your favorites.</string>
+    <string name="history_add_favorite_failed">Couldn’t add this configuration to favorites.</string>
+    <string name="history_remove_favorite_failed">Couldn’t remove this configuration from favorites.</string>
     <string name="history_retry">Retry</string>
     <string name="history_cancel">Cancel</string>
     <string name="history_show">Show</string>
