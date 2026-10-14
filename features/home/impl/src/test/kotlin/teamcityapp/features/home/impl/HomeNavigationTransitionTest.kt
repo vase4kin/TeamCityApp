@@ -145,6 +145,37 @@ class HomeNavigationTransitionTest(private val variant: HomeScreenScreenshotTest
         compose.onNodeWithTag("build:content").assertDoesNotExist()
         assertStable(navigationBounds)
     }
+
+    @Test fun activityCountFailureDisappearsInBuildDetailsAndReturnsAtTheActivityRoot() {
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            activity = checkNotNull(LocalActivity.current) as ComponentActivity
+            val registry = remember { registry() }
+            navigator = rememberNavigator(HomeDestination(HomeTab.Running), registry)
+            TeamCityTheme(darkTheme = variant.dark) {
+                HomeNavigationScreen(
+                    HomeUiState(selected = HomeTab.Running, badges = mapOf(HomeTab.Running to HomeBadge.Failed())), variant.width >= 600,
+                    mapOf("host/Running" to navigator), registry, "host",
+                    {}, {}, {}, {}, remember { SnackbarHostState() }, {}, {}
+                )
+            }
+        }
+        settle()
+        compose.onNodeWithText("Couldn’t load the running build count.").assertIsDisplayed()
+        compose.onNodeWithTag("open-build").performClick()
+        settle()
+        compose.onNodeWithTag("build:content").assertIsDisplayed()
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.runOnIdle { activity.onBackPressedDispatcher.onBackPressed() }
+        compose.mainClock.advanceTimeByFrame()
+        compose.waitForIdle()
+        settle()
+        settle()
+        assertEquals(1, navigator.snapshot.entries.size)
+        compose.onNodeWithTag("home:title").assertIsDisplayed()
+        compose.onNodeWithText("Couldn’t load the running build count.").assertIsDisplayed()
+    }
+
     private fun assertStable(bounds: androidx.compose.ui.geometry.Rect) {
         compose.onNodeWithTag("running:standalone-header").assertDoesNotExist()
         assertEquals(bounds, compose.onNodeWithTag("home:tab:Activity").fetchSemanticsNode().boundsInRoot)

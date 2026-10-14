@@ -50,7 +50,8 @@ internal fun HomeNavigationScreen(
         snackbar,
         onAccount = onAccount,
         onActivity = onActivity,
-        showHomeHeader = false
+        showHomeHeader = false,
+        showActivityErrors = stacks.getValue("$entryId/${state.selected.name}").snapshot.entries.size == 1
     ) {
         RetainedNavigationStacks(stacks, "$entryId/${state.selected.name}", registry, entryId) { stackId, content ->
             val tab = HomeTab.entries.first { "$entryId/${it.name}" == stackId }

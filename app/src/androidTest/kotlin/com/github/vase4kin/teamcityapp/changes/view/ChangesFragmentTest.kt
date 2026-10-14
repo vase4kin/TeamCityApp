@@ -124,7 +124,7 @@ class ChangesFragmentTest {
         assertTextVisible("Do you believe?")
         assertTextVisible(text(ChangesR.string.changes_count_unavailable))
         countFails.set(false)
-        compose.onNodeWithText(text(ChangesR.string.changes_retry_count)).performClick()
+        compose.onNode(hasText(text(ChangesR.string.changes_retry_count)) and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithText(text(ChangesR.string.changes_count_unavailable)).fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
         compose.onNodeWithText(text(ChangesR.string.changes_count_unavailable)).assertDoesNotExist()
         assertTextVisible("Do you believe?")

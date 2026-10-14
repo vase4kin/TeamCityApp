@@ -16,7 +16,10 @@
 
 package teamcityapp.features.changes.impl
 
+import androidx.annotation.StringRes
+
 internal sealed interface ChangesCountState {
+    @get:StringRes val failureMessageRes: Int? get() = if (this == Unavailable) R.string.changes_count_unavailable else null
     data object Loading : ChangesCountState
     data class Available(val count: Int) : ChangesCountState
     data object Unavailable : ChangesCountState

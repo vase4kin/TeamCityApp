@@ -16,10 +16,12 @@
 
 package teamcityapp.features.tests.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.features.tests.api.TestsCounts
 import teamcityapp.libraries.theme.UiText
 
 internal sealed interface TestsCountState {
+    @get:StringRes val failureMessageRes: Int? get() = if (this == Unavailable) R.string.tests_count_unavailable else null
     data object Loading : TestsCountState
     data class Available(val count: Int, val counts: TestsCounts? = null) : TestsCountState
     data object Unavailable : TestsCountState

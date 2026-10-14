@@ -20,7 +20,7 @@ package teamcityapp.features.changes.impl
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -32,8 +32,9 @@ import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
-import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityRetrySnackbar
+import teamcityapp.libraries.theme.TeamCitySnackbarHost
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
@@ -54,35 +55,37 @@ internal fun ChangesScreen(
     onCountRetry: () -> Unit,
     onChange: (ChangeDetails) -> Unit,
     onAppendRetry: () -> Unit = onRetry,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    snackbar: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val listState = rememberTeamCityLazyListState()
+    TeamCityRetrySnackbar(countState.failureMessageRes?.let { stringResource(it) }, stringResource(R.string.changes_retry_count), snackbar, onRetry = onCountRetry)
     Surface(modifier.fillMaxSize()) {
-        Column {
-            if (countState == ChangesCountState.Unavailable) {
-                ErrorNotice(stringResource(R.string.changes_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.changes_retry_count))
-            }
-            TeamCityListContainer(
-                state,
-                onRefresh,
-                onRetry,
-                Modifier.weight(1f).fillMaxWidth(),
-                empty = { TeamCityListEmpty(stringResource(R.string.changes_empty)) }
-            ) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
-                        items(itemCount, key = itemKey, contentType = { "change" }) { index ->
-                            val change = itemAt(index)
-                            if (change == null) TeamCityListLoadingRow(position = listRowPosition(index, itemCount)) else ChangeRow(change, { onChange(change.change) }, listRowPosition(index, itemCount))
-                        }
-                        when (appendState) {
-                            ChangesAppendState.Loading -> item(key = "changes:append-loading") { TeamCityListAppendLoading() }
-                            ChangesAppendState.Error -> item(key = "changes:append-error") { TeamCityListAppendRetry(onAppendRetry) }
-                            ChangesAppendState.Idle -> Unit
+        Box(Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxSize()) {
+                TeamCityListContainer(
+                    state,
+                    onRefresh,
+                    onRetry,
+                    Modifier.weight(1f).fillMaxWidth(),
+                    empty = { TeamCityListEmpty(stringResource(R.string.changes_empty)) }
+                ) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                        LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+                            items(itemCount, key = itemKey, contentType = { "change" }) { index ->
+                                val change = itemAt(index)
+                                if (change == null) TeamCityListLoadingRow(position = listRowPosition(index, itemCount)) else ChangeRow(change, { onChange(change.change) }, listRowPosition(index, itemCount))
+                            }
+                            when (appendState) {
+                                ChangesAppendState.Loading -> item(key = "changes:append-loading") { TeamCityListAppendLoading() }
+                                ChangesAppendState.Error -> item(key = "changes:append-error") { TeamCityListAppendRetry(onAppendRetry) }
+                                ChangesAppendState.Idle -> Unit
+                            }
                         }
                     }
                 }
             }
+            TeamCitySnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
         }
     }
 }

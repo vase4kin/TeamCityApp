@@ -54,9 +54,11 @@
     <string name="home_filter">Filters</string>
     <string name="home_add_favorite">Add to favorites</string>
     <string name="home_count_failed">Count unavailable</string>
-    <string name="home_retry_counts">Retry counts</string>
-    <string name="home_counts_failed">Some tab counts couldn’t be loaded.</string>
-    <string name="home_onboarding_failed">Home tips couldn’t be loaded.</string>
+    <string name="home_running_count_failed">Couldn’t load the running build count.</string>
+    <string name="home_queue_count_failed">Couldn’t load the queued build count.</string>
+    <string name="home_agents_count_failed">Couldn’t load the agent count.</string>
+    <string name="home_build_counts_failed">Couldn’t load the build counts.</string>
+    <string name="home_build_and_agent_counts_failed">Couldn’t load the build and agent counts.</string>
     <string name="home_continue">Got it</string>
     <string name="home_retry">Retry</string>
 </resources>

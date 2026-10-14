@@ -123,7 +123,6 @@ private fun BuildHistoryPagingContent(
         onFilters = { router.openFilterBuilds(viewModel.configurationId) },
         onFavorite = viewModel::toggleFavorite,
         onFavoriteRetry = viewModel::retryFavorite,
-        onOnboardingRetry = viewModel::retryOnboarding,
         onPromptDismiss = viewModel::dismissPrompt,
         onRefresh = refresh,
         onRetry = refresh,

@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -34,9 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.tests.api.*
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
-import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityRetrySnackbar
 import teamcityapp.libraries.theme.TeamCitySelectionChip
+import teamcityapp.libraries.theme.TeamCitySnackbarHost
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
@@ -59,77 +60,79 @@ internal fun TestsScreen(
     onCountRetry: () -> Unit,
     onFailedTest: (String) -> Unit,
     onAppendRetry: () -> Unit = onRetry,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    snackbar: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+    TeamCityRetrySnackbar(countState.failureMessageRes?.let { stringResource(it) }, stringResource(R.string.tests_retry_count), snackbar, onRetry = onCountRetry)
     Surface(modifier.fillMaxSize()) {
-        Column {
-            FlowRow(
-                Modifier.fillMaxWidth().selectableGroup().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.extraSmallSpacing),
-                horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
-            ) {
-                presentation.filterOptions.forEach { option ->
-                    TeamCitySelectionChip(
-                        selected = option.filter == presentation.filter,
-                        onClick = { onFilter(option.filter) },
-                        label = stringResource(option.labelRes),
-                        modifier = Modifier.testTag("tests:filter:${option.filter.name}")
-                    )
-                }
-            }
-            Text(
-                countState.totalLabel.resolve(),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("tests:total")
-            )
-            if (countState == TestsCountState.Unavailable) {
-                ErrorNotice(stringResource(R.string.tests_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.tests_retry_count))
-            }
-            val content = TestsListContent(state, presentation, itemCount, itemAt, itemPeek, appendState)
-            AnimatedContent(
-                targetState = content,
-                contentKey = { it.presentation.filter to it.state::class },
-                transitionSpec = { fadeIn(tween(180, delayMillis = 60)) togetherWith fadeOut(tween(120)) using SizeTransform(sizeAnimationSpec = { _, _ -> tween(0) }) },
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                label = "tests filter content"
-            ) { data ->
-                val listState = rememberTeamCityLazyListState()
-                TeamCityListContainer(
-                    data.state,
-                    onRefresh,
-                    onRetry,
-                    Modifier.fillMaxSize(),
-                    empty = { TeamCityListEmpty(stringResource(data.presentation.emptyMessageRes)) }
+        Box(Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxSize()) {
+                FlowRow(
+                    Modifier.fillMaxWidth().selectableGroup().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.extraSmallSpacing),
+                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
                 ) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("tests:list"),
-                            contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)
-                        ) {
-                            items(data.itemCount, key = { data.itemPeek(it)?.test?.id ?: "tests:placeholder:$it" }, contentType = { "test" }) { index ->
-                                val test = data.itemAt(index)
-                                if (test == null) {
-                                    TeamCityListLoadingRow()
-                                } else {
-                                    // Adjacent pages can belong to the same status section. peek
-                                    // examines their boundary without requesting additional pages.
-                                    if (index == 0 || data.itemPeek(index - 1)?.section != test.section) {
-                                        TeamCityListSectionHeader(data.presentation.sectionTitles.getValue(test.section).resolve())
+                    presentation.filterOptions.forEach { option ->
+                        TeamCitySelectionChip(
+                            selected = option.filter == presentation.filter,
+                            onClick = { onFilter(option.filter) },
+                            label = stringResource(option.labelRes),
+                            modifier = Modifier.testTag("tests:filter:${option.filter.name}")
+                        )
+                    }
+                }
+                Text(
+                    countState.totalLabel.resolve(),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("tests:total")
+                )
+                val content = TestsListContent(state, presentation, itemCount, itemAt, itemPeek, appendState)
+                AnimatedContent(
+                    targetState = content,
+                    contentKey = { it.presentation.filter to it.state::class },
+                    transitionSpec = { fadeIn(tween(180, delayMillis = 60)) togetherWith fadeOut(tween(120)) using SizeTransform(sizeAnimationSpec = { _, _ -> tween(0) }) },
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    label = "tests filter content"
+                ) { data ->
+                    val listState = rememberTeamCityLazyListState()
+                    TeamCityListContainer(
+                        data.state,
+                        onRefresh,
+                        onRetry,
+                        Modifier.fillMaxSize(),
+                        empty = { TeamCityListEmpty(stringResource(data.presentation.emptyMessageRes)) }
+                    ) {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                            LazyColumn(
+                                state = listState,
+                                modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("tests:list"),
+                                contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)
+                            ) {
+                                items(data.itemCount, key = { data.itemPeek(it)?.test?.id ?: "tests:placeholder:$it" }, contentType = { "test" }) { index ->
+                                    val test = data.itemAt(index)
+                                    if (test == null) {
+                                        TeamCityListLoadingRow()
+                                    } else {
+                                        // Adjacent pages can belong to the same status section. peek
+                                        // examines their boundary without requesting additional pages.
+                                        if (index == 0 || data.itemPeek(index - 1)?.section != test.section) {
+                                            TeamCityListSectionHeader(data.presentation.sectionTitles.getValue(test.section).resolve())
+                                        }
+                                        val previousInSection = index > 0 && data.itemPeek(index - 1)?.section == test.section
+                                        val nextInSection = index + 1 < data.itemCount && data.itemPeek(index + 1)?.section == test.section
+                                        TestRow(test, { onFailedTest(test.test.href) }, position = listRowPosition(previousInSection, nextInSection))
                                     }
-                                    val previousInSection = index > 0 && data.itemPeek(index - 1)?.section == test.section
-                                    val nextInSection = index + 1 < data.itemCount && data.itemPeek(index + 1)?.section == test.section
-                                    TestRow(test, { onFailedTest(test.test.href) }, position = listRowPosition(previousInSection, nextInSection))
                                 }
-                            }
-                            when (data.appendState) {
-                                TestsAppendState.Loading -> item(key = "tests:append-loading") { TeamCityListAppendLoading() }
-                                TestsAppendState.Error -> item(key = "tests:append-error") { TeamCityListAppendRetry(onAppendRetry) }
-                                TestsAppendState.Idle -> Unit
+                                when (data.appendState) {
+                                    TestsAppendState.Loading -> item(key = "tests:append-loading") { TeamCityListAppendLoading() }
+                                    TestsAppendState.Error -> item(key = "tests:append-error") { TeamCityListAppendRetry(onAppendRetry) }
+                                    TestsAppendState.Idle -> Unit
+                                }
                             }
                         }
                     }
                 }
             }
+            TeamCitySnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
         }
     }
 }

@@ -53,7 +53,6 @@ internal fun BuildDetailsScreen(
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
     onDismissPrompt: () -> Unit = {},
-    onRetryMetadata: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -97,9 +96,6 @@ internal fun BuildDetailsScreen(
             snackbarHost = { SnackbarHost(snackbar) }
         ) { padding ->
             Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
-                if (state.countFailures.isNotEmpty() || state.onboardingFailed) {
-                    TextButton(onClick = onRetryMetadata, enabled = !state.busy, modifier = Modifier.testTag("details:retry-metadata")) { Text(stringResource(R.string.retry_build_metadata)) }
-                }
                 CompositionLocalProvider(LocalFloatingActionClearance provides (actionHeight + TeamCityDimensions.extraLargeSpacing)) {
                     Box(Modifier.weight(1f)) { CompositionLocalProvider(LocalTeamCityAppBarState provides scrollBehavior.state) { content() } }
                 }

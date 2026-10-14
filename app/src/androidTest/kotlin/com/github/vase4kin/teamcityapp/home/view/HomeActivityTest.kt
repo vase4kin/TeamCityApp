@@ -203,7 +203,7 @@ class HomeActivityTest {
         assertThat(title.top.toInt(), greaterThanOrEqualTo(inset))
     }
 
-    @Test fun failedRunningCountShowsSnackbarAndRetriesWithoutMovingFavoritesContent() {
+    @Test fun failedRunningCountStaysQuietOnFavoritesAndRetriesOnlyOnActivity() {
         (context.applicationContext as TeamCityApplicationBase).appInjector.sharedUserStorage().addBuildTypeToFavorites("build_type_id")
         val runningCount = SingleSubject.create<Builds>()
         doReturn(runningCount).`when`(teamCityService).listRunningBuilds(anyString(), eq("count"))
@@ -219,21 +219,17 @@ class HomeActivityTest {
         }
         assertThat(beforeFailure.top.toInt(), greaterThanOrEqualTo(statusInset))
         runningCount.onError(RuntimeException("count unavailable"))
-        compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:snackbar").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitForIdle()
+        compose.onNodeWithTag("home:snackbar").assertDoesNotExist()
         assertEquals(beforeFailure, titleBounds())
-        val notice = compose.onNodeWithTag("home:snackbar").assertIsDisplayed().fetchSemanticsNode().boundsInWindow
-        Assert.assertTrue(notice.top >= beforeFailure.bottom)
-        Assert.assertTrue(notice.bottom <= compose.onNodeWithTag("home:tab:Favorites").fetchSemanticsNode().boundsInWindow.top)
-        compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
-        compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
-        compose.onNodeWithTag("home:count:Favorites", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("favorites:configuration:build_type_id").assertIsDisplayed()
-        doReturn(Single.just(Builds(3, emptyList()))).`when`(teamCityService).listRunningBuilds(anyString(), eq("count"))
-        compose.onNodeWithText(text(HomeR.string.home_retry_counts)).performClick()
-        compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:snackbar").fetchSemanticsNodes().isEmpty() }
-        assertEquals(beforeFailure, titleBounds())
         compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:Running").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithText(text(HomeR.string.home_running_count_failed)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("home:snackbar").assertIsDisplayed()
+        doReturn(Single.just(Builds(3, emptyList()))).`when`(teamCityService).listRunningBuilds(anyString(), eq("count"))
+        compose.onNode(hasText(text(HomeR.string.home_retry)) and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:snackbar").fetchSemanticsNodes().isEmpty() }
         compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals("3")
         compose.onNodeWithTag("home:count:Activity", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()

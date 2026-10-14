@@ -59,7 +59,6 @@
     <string name="build_actions">Build actions</string>
     <string name="build_element_copy_text">Text copied!</string>
     <string name="platform_action_failed">Couldn’t open this action.</string>
-    <string name="retry_build_metadata">Retry build counts and tips</string>
     <string name="continue_build_tip">Continue</string>
     <string name="title_onboarding_stop_build">Stop build</string>
     <string name="title_onboarding_restart_build">Restart build</string>

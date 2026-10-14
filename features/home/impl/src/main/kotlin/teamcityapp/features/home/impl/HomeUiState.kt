@@ -75,15 +75,20 @@ data class HomeUiState(
         }
     }
 
-    @get:StringRes val retryMessageRes: Int? get() = when {
-        onboardingFailed -> R.string.home_onboarding_failed
-        badges.values.any { it is HomeBadge.Failed } -> R.string.home_counts_failed
-        else -> null
+    @get:StringRes val retryMessageRes: Int? get() {
+        if (!isActivity) return null
+        val failed = setOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents).filter { badges[it] is HomeBadge.Failed }.toSet()
+        return when {
+            failed.isEmpty() -> null
+            failed == setOf(HomeTab.Running) -> R.string.home_running_count_failed
+            failed == setOf(HomeTab.Queue) -> R.string.home_queue_count_failed
+            failed == setOf(HomeTab.Agents) -> R.string.home_agents_count_failed
+            HomeTab.Agents !in failed -> R.string.home_build_counts_failed
+            else -> R.string.home_build_and_agent_counts_failed
+        }
     }
 
-    @get:StringRes val retryLabelRes: Int get() = if (onboardingFailed) R.string.home_retry else R.string.home_retry_counts
-
-    @get:StringRes val filterErrorRes: Int? get() = if (filterFailed) R.string.home_filter_failed else null
+    @get:StringRes val filterErrorRes: Int? get() = if (filterFailed && isActivity) R.string.home_filter_failed else null
 }
 internal fun HomePrompt.ui() = when (this) {
     HomePrompt.Drawer -> HomePromptUi(this, R.string.home_account_tip_title, R.string.home_account_tip_description)

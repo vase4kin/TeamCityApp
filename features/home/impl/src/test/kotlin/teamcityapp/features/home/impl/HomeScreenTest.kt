@@ -216,7 +216,7 @@ class HomeScreenTest {
 
     @Test fun expandedCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(true)
     private fun assertFooter(expanded: Boolean) {
-        val healthy = HomeUiState(selected = HomeTab.Favorites, query = query, badges = badges)
+        val healthy = HomeUiState(selected = HomeTab.Running, query = query, badges = badges)
         val state = mutableStateOf(healthy)
         var retries = 0
         compose.setContent {
@@ -224,17 +224,17 @@ class HomeScreenTest {
                 HomeScreen(state.value, expanded, {}, {}, {
                     retries++
                     state.value = healthy
-                }, {}, remember { SnackbarHostState() }) { Text("Favorite configuration") }
+                }, {}, remember { SnackbarHostState() }) { Text("Activity content") }
             }
         }
         val title = compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot
         compose.runOnIdle { state.value = healthy.copy(badges = healthy.badges + (HomeTab.Running to HomeBadge.Failed())) }
         assertEquals(title, compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot)
-        val notice = compose.onNodeWithText("Some tab counts couldn’t be loaded.").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        val notice = compose.onNodeWithText("Couldn’t load the running build count.").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
         assertTrue(notice.top > title.bottom)
-        compose.onNodeWithTag("home:action").assertDoesNotExist()
+        compose.onNodeWithTag("home:action").assertIsDisplayed()
         compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertDoesNotExist()
-        compose.onNodeWithText("Retry counts").performClick()
+        compose.onNodeWithText("Retry").performClick()
         assertEquals(1, retries)
         compose.onNodeWithTag("home:retry-notice").assertDoesNotExist()
         assertEquals(title, compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot)
@@ -278,7 +278,7 @@ class HomeScreenTest {
     }
 
     @Test fun repeatedCountFailureOffersRetryAgainAfterAnExplicitAttempt() {
-        val state = mutableStateOf(HomeUiState(badges = badges + (HomeTab.Running to HomeBadge.Failed())))
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Running, badges = badges + (HomeTab.Running to HomeBadge.Failed())))
         var retries = 0
         compose.setContent {
             TeamCityTheme {
@@ -288,17 +288,68 @@ class HomeScreenTest {
                 }, {}, remember { SnackbarHostState() }) { Text("Content") }
             }
         }
-        repeat(2) { compose.onNodeWithText("Retry counts").assertIsDisplayed().performClick() }
+        repeat(2) { compose.onNodeWithText("Retry").assertIsDisplayed().performClick() }
         assertEquals(2, retries)
-        compose.onNodeWithText("Some tab counts couldn’t be loaded.").assertIsDisplayed()
+        compose.onNodeWithText("Couldn’t load the running build count.").assertIsDisplayed()
     }
 
-    @Test fun onboardingFailureShowsSnackbarRetry() {
-        var retries = 0
-        compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(onboardingFailed = true), false, {}, {}, { retries++ }, {}, remember { SnackbarHostState() }) { Text("Content") } } }
-        compose.onNodeWithText("Home tips couldn’t be loaded.").assertIsDisplayed()
-        compose.onNodeWithText("Retry").performClick()
-        assertEquals(1, retries)
+    @Test fun optionalGuidanceFailureDoesNotInterruptHome() {
+        compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(onboardingFailed = true), false, {}, {}, {}, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.onNodeWithText("Home tips couldn’t be loaded.").assertDoesNotExist()
+        compose.onNodeWithText("Content").assertIsDisplayed()
+    }
+
+    @Test fun activityCountFailureStaysQuietOnOtherTabsAndDismissesWhenLeavingActivity() {
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Projects, badges = badges + (HomeTab.Running to HomeBadge.Failed())))
+        compose.setContent { TeamCityTheme { HomeScreen(state.value, false, {}, {}, {}, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Favorites) }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Running) }
+        compose.onNodeWithText("Couldn’t load the running build count.").assertIsDisplayed()
+        compose.onNodeWithText("Retry").assertIsDisplayed()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Favorites) }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Agents) }
+        compose.onNodeWithText("Couldn’t load the running build count.").assertIsDisplayed()
+    }
+
+    @Test fun activityFilterFailureStaysQuietAwayFromActivityAndClearsOnDeparture() {
+        val state = mutableStateOf(HomeUiState(selected = HomeTab.Projects, query = query, badges = badges, filterFailed = true))
+        compose.setContent { TeamCityTheme { HomeScreen(state.value, false, {}, {}, {}, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Favorites) }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Running) }
+        compose.onNodeWithText("Couldn’t change the filter. Tap a chip to try again.").assertIsDisplayed()
+        compose.runOnIdle { state.value = state.value.copy(selected = HomeTab.Favorites) }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+    }
+
+    @Test fun nestedContentDoesNotShowActivityCountFailures() {
+        compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(selected = HomeTab.Running, badges = badges + (HomeTab.Running to HomeBadge.Failed())), false, {}, {}, {}, {}, remember { SnackbarHostState() }, showHomeHeader = false) { Text("Build details") } } }
+        compose.onNodeWithTag("retry:snackbar").assertDoesNotExist()
+        compose.onNodeWithText("Build details").assertIsDisplayed()
+    }
+
+    @Test fun countMessagesNameTheFailedCountsAndIgnoreOptionalGuidance() {
+        val failures = listOf(
+            setOf(HomeTab.Running) to R.string.home_running_count_failed,
+            setOf(HomeTab.Queue) to R.string.home_queue_count_failed,
+            setOf(HomeTab.Agents) to R.string.home_agents_count_failed,
+            setOf(HomeTab.Running, HomeTab.Queue) to R.string.home_build_counts_failed,
+            setOf(HomeTab.Running, HomeTab.Agents) to R.string.home_build_and_agent_counts_failed,
+            setOf(HomeTab.Queue, HomeTab.Agents) to R.string.home_build_and_agent_counts_failed,
+            setOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents) to R.string.home_build_and_agent_counts_failed
+        )
+        failures.forEach { (failed, message) ->
+            val state = HomeUiState(selected = HomeTab.Running, badges = badges + failed.associateWith { HomeBadge.Failed() }, onboardingFailed = true)
+            assertEquals(message, state.retryMessageRes)
+            assertNull(state.copy(selected = HomeTab.Projects).retryMessageRes)
+            assertNull(state.copy(selected = HomeTab.Favorites).retryMessageRes)
+        }
+        assertNull(HomeUiState(selected = HomeTab.Running, badges = badges, onboardingFailed = true).retryMessageRes)
     }
 
     @Test fun nestedScreensKeepNavigationVisibleAndOwnTheirHeader() {

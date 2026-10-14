@@ -65,10 +65,10 @@ class ChangesScreenTest {
             }
         }
         compose.onNodeWithText("Keep the build queue responsive").assertIsDisplayed()
-        compose.onNodeWithText("Retry").performClick()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("changes:list"))).performClick()
         assertEquals(1, pageRetries)
         assertEquals(0, countRetries)
-        compose.onNodeWithText("Retry count").performClick()
+        compose.onNode(hasText("Retry") and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         assertEquals(1, countRetries)
         assertEquals(1, pageRetries)
     }
