@@ -96,12 +96,15 @@ class TestsScreenTest {
         }
         val nodes = TestsFilter.entries.map { compose.onNodeWithTag("tests:filter:${it.name}") }
         val bounds = nodes.map { it.fetchSemanticsNode().boundsInRoot }
-        compose.onNodeWithTag("tests:filter:Passed").performClick()
-        compose.waitForIdle()
-        assertEquals(bounds, nodes.map { it.fetchSemanticsNode().boundsInRoot })
-        compose.onNodeWithTag("tests:filter:Passed").assertIsSelected()
-        compose.onNodeWithTag("tests:filter:Failed").assertIsNotSelected()
-        compose.onNodeWithTag("tests:filter:Ignored").assertIsNotSelected()
+        listOf(TestsFilter.Passed, TestsFilter.Ignored, TestsFilter.Failed).forEach { selected ->
+            compose.onNodeWithTag("tests:filter:${selected.name}").performClick()
+            compose.waitForIdle()
+            assertEquals(bounds, nodes.map { it.fetchSemanticsNode().boundsInRoot })
+            TestsFilter.entries.forEach { option ->
+                val node = compose.onNodeWithTag("tests:filter:${option.name}")
+                if (option == selected) node.assertIsSelected() else node.assertIsNotSelected()
+            }
+        }
     }
 
     @Test fun clickingSelectedFilterDoesNotReload() {

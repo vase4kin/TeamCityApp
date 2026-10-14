@@ -43,6 +43,12 @@ internal fun HomeFilterChips(
                 enabled = enabled,
                 onClick = { onSelected(option.filter) },
                 label = stringResource(option.labelRes),
+                iconRes = when (option.filter) {
+                    QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.drawable.ic_filter_layers
+                    QuickFilter.RunningFavorites, QuickFilter.QueuedFavorites -> R.drawable.ic_filter_star
+                    QuickFilter.AgentsConnected -> R.drawable.ic_filter_plug
+                    QuickFilter.AgentsDisconnected -> R.drawable.ic_filter_unplug
+                },
                 modifier = Modifier.testTag("home:filter:${option.filter.name}")
             )
         }
