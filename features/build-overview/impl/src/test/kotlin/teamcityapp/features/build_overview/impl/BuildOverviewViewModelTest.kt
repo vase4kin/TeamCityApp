@@ -85,7 +85,7 @@ class BuildOverviewViewModelTest {
         assertFalse(BuildOverviewAction.Stop in vm.state.value.actions)
     }
 
-    @Test fun refreshStatusChangeUpdatesMenuAndDisablesActionsWhilePending() = runTest(dispatcher) {
+    @Test fun refreshStatusChangeKeepsLogAvailableWhileOtherActionsArePending() = runTest(dispatcher) {
         repository.load = { _, _ -> BuildOverviewFixtures.build("running") }
         val vm = vm()
         observe(vm)
@@ -95,11 +95,36 @@ class BuildOverviewViewModelTest {
         repository.load = { _, _ -> result.await() }
         vm.refresh()
         runCurrent()
-        assertTrue(vm.state.value.actions.isEmpty())
+        assertEquals(listOf(BuildOverviewAction.Log), vm.state.value.actions)
         assertTrue((vm.state.value.list as ListUiState.Content).isRefreshing)
         result.complete(BuildOverviewFixtures.finished)
         runCurrent()
         assertTrue(BuildOverviewAction.Restart in vm.state.value.actions)
+    }
+
+    @Test fun finishedBuildKeepsLogAvailableDuringRefresh() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.load = { _, _ -> awaitCancellation() }
+        vm.refresh()
+        runCurrent()
+        assertTrue((vm.state.value.list as ListUiState.Content).isRefreshing)
+        assertEquals(BuildOverviewFixtures.finished, vm.state.value.build)
+        assertEquals(listOf(BuildOverviewAction.Log), vm.state.value.actions)
+    }
+
+    @Test fun queuedBuildDoesNotExposeLogDuringRefresh() = runTest(dispatcher) {
+        repository.load = { _, _ -> BuildOverviewFixtures.build("queued") }
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        assertFalse(BuildOverviewAction.Log in vm.state.value.actions)
+        repository.load = { _, _ -> awaitCancellation() }
+        vm.refresh()
+        runCurrent()
+        assertTrue((vm.state.value.list as ListUiState.Content).isRefreshing)
+        assertTrue(vm.state.value.actions.isEmpty())
     }
 
     @Test fun laterRefreshUsesTheLatestServerBuildHref() = runTest(dispatcher) {
