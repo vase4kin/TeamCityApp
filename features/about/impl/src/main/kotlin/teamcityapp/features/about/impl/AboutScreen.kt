@@ -39,7 +39,6 @@ import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LoadingContent
 import teamcityapp.libraries.theme.R as ThemeR
-import teamcityapp.libraries.theme.ScreenNavigation
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityScreen
 import teamcityapp.libraries.theme.TeamCityTheme
@@ -57,7 +56,7 @@ fun AboutScreen(
 ) {
     val configuration = LocalConfiguration.current
     val window = WindowSizeClass.calculateFromSize(DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp))
-    TeamCityScreen(stringResource(SharedR.string.drawer_item_about), onClose, ScreenNavigation.Back, contentMaxWidth = TeamCityDimensions.aboutContentMaxWidth) { modifier ->
+    TeamCityScreen(stringResource(SharedR.string.drawer_item_about), onClose, contentMaxWidth = TeamCityDimensions.aboutContentMaxWidth) { modifier ->
         when (state) {
             AboutUiState.Loading -> LoadingContent(modifier)
 

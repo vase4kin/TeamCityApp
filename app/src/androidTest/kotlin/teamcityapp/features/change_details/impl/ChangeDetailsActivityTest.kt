@@ -137,7 +137,7 @@ class ChangeDetailsActivityTest {
     @Test fun closeFinishesActivity() {
         ActivityScenario.launch<MainActivity>(intent()).use { scenario ->
             awaitText(comment)
-            compose.onNodeWithContentDescription("Close").performClick()
+            compose.onNodeWithContentDescription("Back").performClick()
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }

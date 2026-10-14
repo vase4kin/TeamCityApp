@@ -90,7 +90,7 @@ class ChangeDetailsScreenTest {
         assertEquals(fixture.webUrl, url)
         compose.onNodeWithTag("change_details:file:1").performClick()
         assertEquals(fixture.id to fixture.files[1].name, diff)
-        compose.onNodeWithContentDescription("Close").performClick()
+        compose.onNodeWithContentDescription("Back").performClick()
         assertTrue(closed)
     }
 

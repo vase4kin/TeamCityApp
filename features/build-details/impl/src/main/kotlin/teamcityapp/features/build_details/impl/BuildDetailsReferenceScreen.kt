@@ -25,7 +25,7 @@ import teamcityapp.libraries.theme.*
 
 @Composable
 internal fun BuildDetailsReferenceScreen(state: BuildDetailsReferenceState, onUp: () -> Unit, onRetry: () -> Unit) {
-    TeamCityScreen(stringResource(R.string.build_details_title), onUp, navigation = ScreenNavigation.Back) { modifier ->
+    TeamCityScreen(stringResource(R.string.build_details_title), onUp) { modifier ->
         when (state) {
             BuildDetailsReferenceState.Loading -> LoadingContent(modifier.fillMaxSize().testTag("details:reference-loading"))
             BuildDetailsReferenceState.Error -> ErrorContent(modifier.fillMaxSize().testTag("details:reference-error"), onRetry, message = stringResource(BuildDetailsReferenceState.Error.messageRes), actionLabel = stringResource(BuildDetailsReferenceState.Error.retryLabelRes))

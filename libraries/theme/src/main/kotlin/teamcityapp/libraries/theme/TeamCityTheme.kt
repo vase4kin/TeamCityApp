@@ -44,8 +44,6 @@ import androidx.compose.ui.unit.Dp
 
 internal val LocalDarkTheme = staticCompositionLocalOf { false }
 
-enum class ScreenNavigation { Back, Close }
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
@@ -65,7 +63,6 @@ fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composab
 fun TeamCityScreen(
     title: String,
     onClose: () -> Unit,
-    navigation: ScreenNavigation = ScreenNavigation.Close,
     appBarHeight: Dp = TopAppBarDefaults.TopAppBarExpandedHeight,
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
     titleStartPadding: Dp = TeamCityDimensions.noSpacing,
@@ -79,9 +76,7 @@ fun TeamCityScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val colors = appBarColors ?: teamCityTopAppBarColors()
-    val description = stringResource(
-        if (navigation == ScreenNavigation.Back) R.string.action_back else R.string.action_close
-    )
+    val description = stringResource(R.string.action_back)
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).then(if (bottomBar != null) Modifier.imePadding() else Modifier),
         containerColor = containerColor,
@@ -97,13 +92,7 @@ fun TeamCityScreen(
                         TeamCityTooltip(description) {
                             IconButton(onClick = onClose) {
                                 Icon(
-                                    painterResource(
-                                        if (navigation == ScreenNavigation.Back) {
-                                            R.drawable.ic_arrow_back_24dp
-                                        } else {
-                                            R.drawable.ic_close_black_24dp
-                                        }
-                                    ),
+                                    painterResource(R.drawable.ic_arrow_back_24dp),
                                     contentDescription = description
                                 )
                             }
