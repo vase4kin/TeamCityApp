@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.remote
 
-import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import teamcityapp.libraries.remote.RemoteService
 
@@ -24,20 +23,5 @@ class RemoteServiceImpl(
     @Suppress("UNUSED_PARAMETER") remoteConfig: FirebaseRemoteConfig
 ) : RemoteService {
 
-    var showTryItOut: Boolean = false
-    var showTryItOutUrl: String = Mocks.URL
-
     override fun isNotChurn(): Boolean = false
-
-    override fun showTryItOut(
-        onSuccess: (showTryItOut: Boolean) -> Unit,
-        onStart: () -> Unit,
-        onFinish: () -> Unit
-    ) {
-        onStart()
-        onFinish()
-        onSuccess(showTryItOut)
-    }
-
-    override fun getTryItOutUrl(): String = showTryItOutUrl
 }

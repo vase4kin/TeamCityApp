@@ -47,7 +47,6 @@ import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.login.dagger.LoginActivityTestAppModule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
-import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.testing.BindValue
@@ -502,21 +501,14 @@ class LoginActivityTest {
     }
 
     @Test
-    fun testUserCannotSeeTryItOutIfItIsNotEnabled() {
-        setTryItOutValue(false)
-
+    fun testUserAlwaysSeesTryItOut() {
         activityRule.launchActivity(null)
 
-        compose.onNodeWithTag("login:demo-card")
-            .assertDoesNotExist()
+        compose.onNodeWithTag("login:demo").performScrollTo().assertIsDisplayed()
     }
 
     @Test
-    fun testUserCanSeeDeclinesItOutIfItIsEnabled() {
-        val urlWithPath = "https://test.com/test"
-        setTryItOutValue(true)
-        setTryItOutValueUrl(urlWithPath)
-
+    fun testUserCanDeclineTryItOut() {
         activityRule.launchActivity(null)
 
         compose.onNodeWithTag("login:demo").performScrollTo()
@@ -527,14 +519,14 @@ class LoginActivityTest {
     }
 
     @Test
-    fun testUserCanSeeTryItOutIfItIsEnabled() {
-        val urlWithPath = "https://test.com/test"
-        val savedUrl = "$urlWithPath/"
+    fun testUserCanSignInToDemoAsGuest() {
+        val demoUrl = "https://teamcity.jetbrains.com"
+        val savedUrl = "$demoUrl/"
         doAnswer {
             callbackArgumentCaptor.value.onResponse(
                 call,
                 Response.Builder()
-                    .request(Request.Builder().url(urlWithPath).build())
+                    .request(Request.Builder().url(demoUrl).build())
                     .protocol(Protocol.HTTP_1_0)
                     .message(messageEmpty)
                     .code(200)
@@ -543,9 +535,6 @@ class LoginActivityTest {
             )
             null
         }.`when`(call).enqueue(capture(callbackArgumentCaptor))
-
-        setTryItOutValue(true)
-        setTryItOutValueUrl(urlWithPath)
 
         activityRule.launchActivity(null)
 
@@ -563,20 +552,6 @@ class LoginActivityTest {
         assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(savedUrl))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(false))
-    }
-
-    private fun setTryItOutValue(value: Boolean) {
-        val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
-        val remoteService = app.appInjector.remoteService() as RemoteServiceImpl
-        remoteService.showTryItOut = value
-    }
-
-    private fun setTryItOutValueUrl(value: String) {
-        val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
-        val remoteService = app.appInjector.remoteService() as RemoteServiceImpl
-        remoteService.showTryItOutUrl = value
     }
 
     @Module(includes = [LoginActivityTestAppModule::class])

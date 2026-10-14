@@ -36,38 +36,6 @@ class RemoteServiceImpl(
         return remoteConfig.getBoolean(RemoteService.PARAMETER_NOT_CHURN)
     }
 
-    override fun showTryItOut(
-        onSuccess: (showTryItOut: Boolean) -> Unit,
-        onStart: () -> Unit,
-        onFinish: () -> Unit
-    ) {
-        onStart()
-        getData(
-            onFetchSuccess = {
-                val showTryItOut = remoteConfig.getBoolean(RemoteService.PARAMETER_SHOW_TRY_IT_OUT)
-                onFinish()
-                onSuccess(showTryItOut)
-            },
-            onFetchFailed = {
-                onFinish()
-            }
-        )
-    }
-
-    override fun getTryItOutUrl(): String = remoteConfig.getString(RemoteService.PARAMETER_URL_SHOW_TRY_IT_OUT)
-
-    private fun getData(onFetchSuccess: () -> Unit, onFetchFailed: () -> Unit) {
-        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onFetchSuccess()
-            } else {
-                onFetchFailed()
-                val exception = task.exception
-                logException(exception)
-            }
-        }
-    }
-
     private fun fetch() {
         var cacheExpiration = CACHE
         if (BuildConfig.DEBUG) {

@@ -17,55 +17,16 @@
 package com.github.vase4kin.teamcityapp.authentication
 
 import com.github.vase4kin.teamcityapp.integration.authentication.AppLoginRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.test.*
-import org.junit.Assert.*
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.kotlin.*
 import teamcityapp.features.login.api.DemoServer
-import teamcityapp.libraries.remote.RemoteService
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AppLoginRepositoryTest {
-    @Test fun successfulResultWinsWhenLegacyServiceFinishesBeforeReportingSuccess() = runTest {
-        val remote = mock<RemoteService>()
-        whenever(remote.getTryItOutUrl()).thenReturn("https://demo.example")
-        whenever(remote.showTryItOut(any(), any(), any())).thenAnswer {
-            it.getArgument<() -> Unit>(2).invoke()
-            it.getArgument<(Boolean) -> Unit>(0).invoke(true)
-            Unit
-        }
-        assertEquals(DemoServer(true, "https://demo.example"), AppLoginRepository(remote).demoServer())
-    }
-
-    @Test fun failedRemoteLoadFinishesWithoutLeavingTheScreenLoading() = runTest {
-        val remote = mock<RemoteService>()
-        whenever(remote.getTryItOutUrl()).thenReturn("https://demo.example")
-        whenever(remote.showTryItOut(any(), any(), any())).thenAnswer {
-            it.getArgument<() -> Unit>(2).invoke()
-            Unit
-        }
-        assertEquals(DemoServer(false, "https://demo.example"), AppLoginRepository(remote).demoServer())
-    }
-
-    @Test fun cancelledLoadIgnoresLateRemoteCallbacks() = runTest {
-        val remote = mock<RemoteService>()
-        var success: ((Boolean) -> Unit)? = null
-        var finish: (() -> Unit)? = null
-        whenever(remote.showTryItOut(any(), any(), any())).thenAnswer {
-            success = it.getArgument(0)
-            finish = it.getArgument(2)
-            Unit
-        }
-        val pending = async { AppLoginRepository(remote).demoServer() }
-        runCurrent()
-        pending.cancel()
-        runCurrent()
-        success!!(true)
-        finish!!()
-        runCurrent()
-        assertTrue(pending.isCancelled)
-        verify(remote, never()).getTryItOutUrl()
+    @Test fun demoIsAlwaysAvailableWithoutRemoteConfiguration() = runTest {
+        val repository = AppLoginRepository()
+        val expected = DemoServer(true, "https://teamcity.jetbrains.com")
+        assertEquals(expected, repository.demoServer())
+        assertEquals(expected, repository.demoServer())
     }
 }

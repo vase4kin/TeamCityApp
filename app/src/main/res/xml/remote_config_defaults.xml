@@ -19,12 +19,4 @@
         <key>param_not_churn</key>
         <value>false</value>
     </entry>
-    <entry>
-        <key>param_show_try_it_out</key>
-        <value>false</value>
-    </entry>
-    <entry>
-        <key>param_url_try_it_out</key>
-        <value>https://teamcity.jetbrains.com</value>
-    </entry>
 </defaultsMap>
