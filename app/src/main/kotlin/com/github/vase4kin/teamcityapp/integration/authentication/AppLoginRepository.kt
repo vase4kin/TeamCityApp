@@ -17,27 +17,8 @@
 package com.github.vase4kin.teamcityapp.integration.authentication
 
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.yield
 import teamcityapp.features.login.api.*
-import teamcityapp.libraries.remote.RemoteService
 
-class AppLoginRepository @Inject constructor(private val remote: RemoteService) : LoginRepository {
-    override suspend fun demoServer(): DemoServer = coroutineScope {
-        suspendCancellableCoroutine { continuation ->
-            remote.showTryItOut(
-                onSuccess = { if (continuation.isActive) continuation.resume(DemoServer(it, remote.getTryItOutUrl())) },
-                onStart = {},
-                onFinish = {
-                    launch {
-                        yield()
-                        if (continuation.isActive) continuation.resume(DemoServer(false, remote.getTryItOutUrl()))
-                    }
-                }
-            )
-        }
-    }
+class AppLoginRepository @Inject constructor() : LoginRepository {
+    override suspend fun demoServer(): DemoServer = DemoServer(true, "https://teamcity.jetbrains.com")
 }
