@@ -86,6 +86,9 @@ class BuildOverviewScreenScreenshotTest(private val stateName: String, private v
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { BuildOverviewScreen(state, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName == "refreshing") {
+            compose.onNodeWithTag("overview:log").assertIsDisplayed().assertIsEnabled()
+        }
         compose.onRoot().captureRoboImage("overview_${stateName}_${variant.name}.png")
         if (stateName == "long_content" || stateName == "full_optional" || stateName.startsWith("hub_") || stateName.startsWith("counts_") || stateName == "partial_context" || stateName == "configuration_only") {
             compose.mainClock.autoAdvance = true

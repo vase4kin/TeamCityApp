@@ -42,7 +42,7 @@ internal fun buildOverviewState(state: ListUiState<BuildLaunchData>, incoming: B
 
     is ListUiState.Content -> {
         val build = state.items.single()
-        val actions = if (state.isRefreshing) emptyList() else overviewActions(build)
+        val actions = overviewActions(build).filter { !state.isRefreshing || it == BuildOverviewAction.Log }
         BuildOverviewUiState(
             ListUiState.Content(overviewRows(build), state.isRefreshing, state.refreshFailed),
             build,

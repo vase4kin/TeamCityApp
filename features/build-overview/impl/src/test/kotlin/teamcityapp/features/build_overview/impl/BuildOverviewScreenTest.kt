@@ -17,6 +17,7 @@
 package teamcityapp.features.build_overview.impl
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
@@ -75,6 +76,22 @@ class BuildOverviewScreenTest {
         assertNull(selected)
         compose.onNodeWithTag("overview:section:Tests").performClick()
         assertEquals(BuildDetailsSection.Tests, selected)
+    }
+
+    @Test fun refreshingKeepsLogClickableAndStatusCardLayoutStable() {
+        val build = BuildOverviewFixtures.finished
+        val state = mutableStateOf(buildOverviewState(ListUiState.Content(listOf(build))))
+        var logs = 0
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state.value, {}, {}, {}, onLog = { logs++ }) } }
+        val logBounds = compose.onNodeWithTag("overview:log").fetchSemanticsNode().boundsInRoot
+        val resultsBounds = compose.onNodeWithText("Results").fetchSemanticsNode().boundsInRoot
+
+        compose.runOnIdle { state.value = buildOverviewState(ListUiState.Content(listOf(build), isRefreshing = true)) }
+
+        compose.onNodeWithTag("overview:log").assertIsDisplayed().assertIsEnabled().performClick()
+        assertEquals(1, logs)
+        assertEquals(logBounds, compose.onNodeWithTag("overview:log").fetchSemanticsNode().boundsInRoot)
+        assertEquals(resultsBounds, compose.onNodeWithText("Results").fetchSemanticsNode().boundsInRoot)
     }
 
     @Test fun initialErrorOffersRetry() {
