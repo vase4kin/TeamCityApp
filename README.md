@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/vase4kin/TeamCityApp/branch/dev/graph/badge.svg)](https://codecov.io/gh/vase4kin/TeamCityApp)
 [![Release](https://img.shields.io/badge/release-1.52.4-blue.svg)](https://github.com/vase4kin/TeamCityApp/releases/latest)
 
-<img src="https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/feature-graphic.png">
+![TeamCityApp feature graphic](res/screenshots/feature-graphic.png)
 
 # TeamCityApp
 
@@ -11,9 +11,13 @@ This GitHub repository hosts the code for the Android application [TeamCityApp](
 
 ## Screenshots
 
-Screenshot 1 | Screenshot 2 | Screenshot 3 | Screenshot 4 | Screenshot 5 | 
-:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|
-![Screenshot 1](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%201.png) | ![Screenshot 2](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%202.png) | ![Screenshot 3](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%203.png) | ![Screenshot 4](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%206.png) | ![Screenshot 5](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%207.png)
+| Projects | Build details | Build history | Running builds |
+| :---: | :---: | :---: | :---: |
+| ![Projects in light theme](res/screenshots/Phone%20Screenshot%201.png) | ![Build details in dark theme](res/screenshots/Phone%20Screenshot%202.png) | ![Build history in light theme](res/screenshots/Phone%20Screenshot%203.png) | ![Running builds in dark theme](res/screenshots/Phone%20Screenshot%204.png) |
+
+| Test results | Artifacts | Agents | Run build |
+| :---: | :---: | :---: | :---: |
+| ![Test results in light theme](res/screenshots/Phone%20Screenshot%205.png) | ![Build artifacts in dark theme](res/screenshots/Phone%20Screenshot%206.png) | ![Build agents in light theme](res/screenshots/Phone%20Screenshot%207.png) | ![Run build setup in dark theme](res/screenshots/Phone%20Screenshot%208.png) |
 
 ## Contribution
 

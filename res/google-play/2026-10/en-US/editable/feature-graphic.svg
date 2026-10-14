@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Andrey Tolpeev
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500" role="img">
+<title>TeamCityApp. TeamCity in your pocket. Builds, tests, and artifacts wherever you are.</title>
+  <defs><linearGradient id="blue" x2="1" y2="1"><stop stop-color="#1858b8"/><stop offset="1" stop-color="#0d357c"/></linearGradient></defs>
+  <rect width="1024" height="500" fill="url(#blue)"/>
+  <circle cx="880" cy="310" r="250" fill="none" stroke="#8bb7ff" stroke-width="2" opacity="0.3"/>
+  <circle cx="880" cy="310" r="320" fill="none" stroke="#8bb7ff" stroke-width="2" opacity="0.2"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="128" y="135" fill="#cadfff" font-size="27" font-weight="700">TeamCityApp</text>
+    <text x="125" y="225" fill="#ffffff" font-size="62" font-weight="700" letter-spacing="-2">TeamCity in</text>
+    <text x="125" y="292" fill="#ffffff" font-size="62" font-weight="700" letter-spacing="-2">your pocket.</text>
+    <text x="128" y="365" fill="#cadfff" font-size="26">Builds. Tests. Artifacts.</text>
+  </g>
+  <g transform="translate(792 244)">
+    <circle r="55" fill="#a9efbf"/>
+    <path d="M-23 0 -6 17 25 -18" fill="none" stroke="#0d4b2b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
