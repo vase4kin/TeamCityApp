@@ -25,9 +25,11 @@ import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
 import teamcityapp.features.tests.api.TestOccurrence
 import teamcityapp.features.tests.api.TestStatus
+import teamcityapp.features.tests.api.TestsCounts
 import teamcityapp.features.tests.api.TestsFilter
 import teamcityapp.features.tests.api.TestsPage
 import teamcityapp.features.tests.api.TestsRepository
+import teamcityapp.features.tests.api.TestsSummary
 import teamcityapp.libraries.coroutines.IoDispatcher
 
 /** Keeps serialized legacy DTOs and cache policy behind the feature's immutable contract. */
@@ -60,7 +62,8 @@ class DefaultTestsRepository @Inject constructor(
         TestsPage(items, page.nextHref?.takeIf { items.isNotEmpty() && it.isNotBlank() })
     }
 
-    override suspend fun count(url: String): Int = withContext(ioDispatcher) {
-        repository.get().listTestOccurrences("$url,count:${Int.MAX_VALUE}&fields=count", true).await().count
+    override suspend fun summary(url: String): TestsSummary = withContext(ioDispatcher) {
+        val summary = repository.get().listTestOccurrences("$url,count:${Int.MAX_VALUE}&fields=count,passed,failed,ignored", true).await()
+        TestsSummary(summary.count, TestsCounts(summary.passed, summary.failed, summary.ignored))
     }
 }

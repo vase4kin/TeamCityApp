@@ -17,6 +17,7 @@
 package teamcityapp.features.tests.impl
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.*
@@ -68,19 +69,46 @@ class TestsScreenTest {
         compose.onNodeWithTag("tests:test:3").assertHasNoClickAction()
     }
 
-    @Test fun selectedAndPositiveCountFiltersAreShown() {
+    @Test fun allFiltersRemainVisibleRegardlessOfCounts() {
         var selected: TestsFilter? = null
         render(counts = TestsCounts(3, 0, 0), onFilter = { selected = it })
         compose.onNodeWithTag("tests:filter:Failed").assertIsSelected()
-        compose.onNodeWithTag("tests:filter:Ignored").assertDoesNotExist()
+        compose.onNodeWithTag("tests:filter:Ignored").assertIsDisplayed()
         compose.onNodeWithTag("tests:filter:Passed").performClick()
         assertEquals(TestsFilter.Passed, selected)
     }
 
-    @Test fun zeroCountsHideAllFilterControls() {
+    @Test fun zeroCountsKeepStableFilterControls() {
         render(counts = TestsCounts(0, 0, 0), state = ListUiState.Empty())
-        TestsFilter.entries.forEach { compose.onNodeWithTag("tests:filter:${it.name}").assertDoesNotExist() }
+        TestsFilter.entries.forEach { compose.onNodeWithTag("tests:filter:${it.name}").assertIsDisplayed() }
         compose.onNodeWithText("There are no failed tests").assertIsDisplayed()
+    }
+
+    @Test fun selectionKeepsChipBoundsAndSingleChoiceSemanticsStable() {
+        val filter = mutableStateOf(TestsFilter.Failed)
+        compose.setContent {
+            TeamCityTheme {
+                TestsScreen(
+                    ListUiState.Empty(), TestsPresentation(filter.value, TestsCounts(3, 0, 0)), TestsCountState.Available(3),
+                    0, { null }, { null }, TestsAppendState.Idle, { filter.value = it }, {}, {}, {}, {}
+                )
+            }
+        }
+        val nodes = TestsFilter.entries.map { compose.onNodeWithTag("tests:filter:${it.name}") }
+        val bounds = nodes.map { it.fetchSemanticsNode().boundsInRoot }
+        compose.onNodeWithTag("tests:filter:Passed").performClick()
+        compose.waitForIdle()
+        assertEquals(bounds, nodes.map { it.fetchSemanticsNode().boundsInRoot })
+        compose.onNodeWithTag("tests:filter:Passed").assertIsSelected()
+        compose.onNodeWithTag("tests:filter:Failed").assertIsNotSelected()
+        compose.onNodeWithTag("tests:filter:Ignored").assertIsNotSelected()
+    }
+
+    @Test fun clickingSelectedFilterDoesNotReload() {
+        var selections = 0
+        render(onFilter = { selections++ })
+        compose.onNodeWithTag("tests:filter:Failed").performClick()
+        assertEquals(0, selections)
     }
 
     @Test fun emptyMessageMatchesPassedFilter() {

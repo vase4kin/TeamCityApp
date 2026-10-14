@@ -54,6 +54,7 @@ class BuildDetailsSectionContractTest {
     private fun <T : NavKey> entry(type: kotlin.reflect.KClass<T>, serializer: KSerializer<T>) = object : FeatureDestination<T>(type, serializer) {
         override fun registerSerializers(builder: SerializersModuleBuilder) {
             super.registerSerializers(builder)
+            if (type == BuildDetailsSectionDestination::class) builder.polymorphic(NavigationResult::class) { subclass(BuildDetailsSectionCountResult::class, BuildDetailsSectionCountResult.serializer()) }
             if (type == ActionSheetDestination::class) builder.polymorphic(NavigationResult::class) { subclass(ActionSheetResult::class, ActionSheetResult.serializer()) }
         }
 
@@ -94,6 +95,26 @@ class BuildDetailsSectionContractTest {
         assertNull(restored.consumeResult("parent", ActionSheetResult::class) { it.consumerId == "parent/Artifacts" })
         assertEquals(ActionSheetResult(child, SheetItem(SheetAction.Branch, "refs/heads/opaque:branch")), restored.consumeResult("parent", ActionSheetResult::class) { it.consumerId == child })
         assertNull(restored.consumeResult("parent", ActionSheetResult::class))
+    }
+
+    @Test fun sectionCountReturnsOnceToOriginatingVisitAfterRestoration() {
+        val nav = navigator()
+        val destination = BuildDetailsSectionDestination(build, BuildDetailsSection.Tests, originEntryId = "parent")
+        nav.push(destination)
+        val restored = Navigator(mutableStateOf(registry.decodeSnapshot(registry.encodeSnapshot(nav.snapshot))))
+        assertEquals(destination, restored.current.destination)
+        assertTrue(restored.finish(BuildDetailsSectionCountResult("42", BuildDetailsSection.Tests, 65), "parent"))
+        val returned = Navigator(mutableStateOf(registry.decodeSnapshot(registry.encodeSnapshot(restored.snapshot))))
+        assertNull(returned.consumeResult("parent", BuildDetailsSectionCountResult::class) { it.buildId == "other" })
+        assertEquals(BuildDetailsSectionCountResult("42", BuildDetailsSection.Tests, 65), returned.consumeResult("parent", BuildDetailsSectionCountResult::class))
+        assertNull(returned.consumeResult("parent", BuildDetailsSectionCountResult::class))
+    }
+
+    @Test fun sectionCountCannotReturnToRemovedOrigin() {
+        val nav = navigator()
+        nav.push(BuildDetailsSectionDestination(build, BuildDetailsSection.Tests, originEntryId = "removed"))
+        assertFalse(nav.finish(BuildDetailsSectionCountResult("42", BuildDetailsSection.Tests, 65), "removed"))
+        assertTrue(nav.snapshot.results.isEmpty())
     }
 
     @Test fun equalArtifactFoldersHaveIndependentResultRecipientsAndPopDropsRemovedResults() {

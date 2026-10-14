@@ -15,6 +15,9 @@
   -->
 
 <resources>
+    <string name="tests_total">Total tests: %d</string>
+    <string name="tests_total_loading">Total tests: …</string>
+    <string name="tests_total_unavailable">Total tests: unavailable</string>
     <string name="tests_filter_failed">Failed</string>
     <string name="tests_filter_passed">Passed</string>
     <string name="tests_filter_ignored">Ignored</string>

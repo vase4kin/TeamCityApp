@@ -26,13 +26,14 @@ internal class FakeTestsRepository : TestsRepository {
     var countCalls = 0
     var load: suspend (Request) -> TestsPage = { TestsPage(listOf(testOccurrence()), null) }
     var loadCount: suspend () -> Int = { 16 }
+    var loadCounts: suspend () -> TestsCounts = { TestsCounts(12, 2, 2) }
     override suspend fun tests(url: String, filter: TestsFilter, nextHref: String?, forceRefresh: Boolean): TestsPage {
         val request = Request(url, filter, nextHref, forceRefresh)
         requests += request
         return load(request)
     }
-    override suspend fun count(url: String): Int {
+    override suspend fun summary(url: String): TestsSummary {
         countCalls++
-        return loadCount()
+        return TestsSummary(loadCount(), loadCounts())
     }
 }

@@ -33,7 +33,7 @@ import teamcityapp.libraries.navigation.*
 
 class TestsDestinationRegistration @Inject constructor() : FeatureDestination<TestsDestination>(TestsDestination::class, TestsDestination.serializer()) {
     @Composable override fun Content(destination: TestsDestination, navigator: Navigator, entryId: String) {
-        val host = LocalBuildDetailsUiHost.current
+        val host = LocalBuildDetailsSectionCountHost.current
         val arguments = remember(destination) {
             Bundle().apply {
                 putString("url", destination.href)
@@ -48,18 +48,11 @@ class TestsDestinationRegistration @Inject constructor() : FeatureDestination<Te
                     navigator.push(TestDetailsDestination(url))
                 }
                 override fun updateTabCount(count: Int) {
-                    // The parent metadata owner publishes the shared count state.
+                    host?.updated(count)
                 }
             }
         }
-        val count = host?.countStates?.get(BuildDetailsSection.Tests)?.let { count ->
-            when (count) {
-                is BuildDetailsCount.Available -> TestsCountState.Available(count.count)
-                BuildDetailsCount.Loading -> TestsCountState.Loading
-                BuildDetailsCount.Unavailable -> TestsCountState.Unavailable
-            }
-        }
-        DestinationArguments(arguments) { TestsRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsSection.Tests) } }) }
+        DestinationArguments(arguments) { TestsRoute(router) }
     }
 }
 

@@ -23,6 +23,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents
@@ -48,6 +49,7 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -68,8 +70,9 @@ import teamcityapp.libraries.navigation.DestinationRegistry
 private const val FAILED_URL = "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10"
 private const val PASSED_URL = "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:SUCCESS,count:10"
 private const val IGNORED_URL = "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:UNKNOWN,count:10"
+private const val SUMMARY_URL = "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count,passed,failed,ignored"
 
-/** The Tests feature lives inside the retained legacy Build Details tab host. */
+/** Tests is a separate section visit that returns fresh metadata to Build Details. */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class TestOccurrencesFragmentTest {
@@ -117,6 +120,20 @@ class TestOccurrencesFragmentTest {
         assertTextVisible(text(TestsR.string.tests_section_failed, 2))
         listOf("Test 1", "Test 6").forEach(::assertTextVisible)
         compose.onNodeWithText("Test 1").assertHasClickAction()
+    }
+
+    @Test fun freshCountsReplaceOpeningSnapshotAndReturnToOverviewOnSystemBack() {
+        val summary = Gson().fromJson("""{"count":21,"passed":16,"failed":3,"ignored":2}""", TestOccurrences::class.java)
+        `when`(teamCityService.listTestOccurrences(SUMMARY_URL)).thenReturn(Single.just(summary))
+        openTests()
+        assertTextVisible(text(TestsR.string.tests_total, 21))
+        assertTextVisible(text(TestsR.string.tests_section_failed, 3))
+        pressBack()
+        compose.waitUntil(10_000) {
+            compose.onAllNodes(hasTestTag("overview:section:Tests") and hasText("21"))
+                .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        compose.onNode(hasTestTag("overview:section:Tests") and hasText("21")).assertIsDisplayed()
     }
 
     @Test fun failedRowOpensTestDetailsWithTheExistingOccurrenceUrl() {

@@ -40,6 +40,8 @@ dependencies {
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.paging.compose)
     implementation(libs.coroutines.android)
+    testImplementation(libs.mockito.mockitoCore)
+    testImplementation(libs.mockito.mockitoKotlin)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.androidx.paging.testing)
     ksp(libs.dagger.compiler)

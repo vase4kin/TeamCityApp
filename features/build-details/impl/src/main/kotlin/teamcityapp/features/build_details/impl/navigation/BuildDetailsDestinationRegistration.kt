@@ -73,6 +73,13 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             val latestMetadata by rememberUpdatedState(metadataState)
             LaunchedEffect(state.current, metadata) { metadata.loaded(state.current) }
             val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsStateWithLifecycle()
+            LifecycleResumeEffect(navigator.snapshot.results, metadata) {
+                while (true) {
+                    val result = navigator.consumeResult(entryId, BuildDetailsSectionCountResult::class) { it.buildId == destination.build.id } ?: break
+                    metadata.updateCount(result.section, result.count)
+                }
+                onPauseOrDispose {}
+            }
             val latest by rememberUpdatedState(state)
             val snackbar = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
@@ -95,7 +102,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                     override fun openSection(section: BuildDetailsSection) {
                         val currentState = model.state.value
                         if (!currentState.busy && section in destination.build.detailsSections()) {
-                            navigator.push(BuildDetailsSectionDestination(destination.build, section, currentState.subtitle, currentState.current.number ?: currentState.current.id))
+                            navigator.push(BuildDetailsSectionDestination(destination.build, section, currentState.subtitle, currentState.current.number ?: currentState.current.id, entryId))
                         }
                     }
                     override fun copied() {

@@ -146,6 +146,12 @@ internal class BuildDetailsMetadataViewModel @Inject constructor(
         savedState.remove<String>(countKey(tab))
         request.value++
     }
+    fun updateCount(tab: BuildDetailsSection, count: Int) {
+        val request = requests[tab] ?: return
+        require(count >= 0)
+        savedState[countKey(tab)] = Json.encodeToString<BuildDetailsCount>(BuildDetailsCount.Available(count))
+        request.value++
+    }
     fun retryFailed() {
         state.value.counts.filterValues { it == BuildDetailsCount.Unavailable }.keys.forEach(::retryCount)
         if (state.value.onboardingFailed) {

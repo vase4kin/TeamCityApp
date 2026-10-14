@@ -67,12 +67,12 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
 
     @Test fun rendersState() {
         val filter = when (stateName) {
-            "empty_passed", "content_passed" -> TestsFilter.Passed
+            "empty_passed", "content_passed", "all_passed" -> TestsFilter.Passed
             "empty_ignored", "content_ignored" -> TestsFilter.Ignored
             else -> TestsFilter.Failed
         }
         val status = when (stateName) {
-            "content_passed" -> TestStatus.Passed
+            "content_passed", "all_passed" -> TestStatus.Passed
             "content_ignored" -> TestStatus.Ignored
             "content_error" -> TestStatus.Error
             else -> TestStatus.Failed
@@ -85,7 +85,7 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
         val state: ListUiState<teamcityapp.features.tests.api.TestOccurrence> = when (stateName) {
             "loading" -> ListUiState.Loading
             "error" -> ListUiState.Error
-            "empty_failed", "empty_passed", "empty_ignored", "zero_counts", "default_failed_only_passed" -> ListUiState.Empty()
+            "empty_failed", "empty_passed", "empty_ignored", "zero_counts" -> ListUiState.Empty()
             "empty_refreshing" -> ListUiState.Empty(isRefreshing = true)
             "empty_refresh_failed" -> ListUiState.Empty(refreshFailed = true)
             "refreshing" -> ListUiState.Content(rows, isRefreshing = true)
@@ -94,12 +94,16 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
         }
         val counts = when (stateName) {
             "zero_counts" -> TestsCounts(0, 0, 0)
-            "default_failed_only_passed" -> TestsCounts(10, 0, 0)
+            "all_passed" -> TestsCounts(10, 0, 0)
             "mixed_sections" -> TestsCounts(1, 1, 2)
             "long_content" -> TestsCounts(0, 30, 0)
             else -> TestsCounts(12, 3, 3)
         }
-        val count = if (stateName == "count_unavailable") TestsCountState.Unavailable else TestsCountState.Available(counts.passed + counts.failed + counts.ignored)
+        val count = when (stateName) {
+            "count_unavailable" -> TestsCountState.Unavailable
+            "count_loading" -> TestsCountState.Loading
+            else -> TestsCountState.Available(counts.passed + counts.failed + counts.ignored)
+        }
         val append = when (stateName) {
             "append_loading" -> TestsAppendState.Loading
             "append_failed" -> TestsAppendState.Error
@@ -108,7 +112,7 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
         compose.mainClock.autoAdvance = false
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
-                TestsScreen(state, TestsPresentation(filter, counts), count, rows.size, { TestRowUiState(rows[it]) }, { TestRowUiState(rows[it]) }, append, {}, {}, {}, {}, {})
+                TestsScreen(state, TestsPresentation(filter, counts, count is TestsCountState.Available), count, rows.size, { TestRowUiState(rows[it]) }, { TestRowUiState(rows[it]) }, append, {}, {}, {}, {}, {})
             }
         }
         compose.mainClock.advanceTimeBy(500)
@@ -143,7 +147,7 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty_failed", "empty_passed", "empty_ignored", "empty_refreshing", "empty_refresh_failed", "content_failed", "content_passed", "content_ignored", "content_error", "mixed_sections", "refreshing", "refresh_failed", "append_loading", "append_failed", "count_unavailable", "long_content", "zero_counts", "default_failed_only_passed").flatMap { state ->
+            listOf("loading", "error", "empty_failed", "empty_passed", "empty_ignored", "empty_refreshing", "empty_refresh_failed", "content_failed", "content_passed", "content_ignored", "content_error", "mixed_sections", "refreshing", "refresh_failed", "append_loading", "append_failed", "count_unavailable", "count_loading", "long_content", "zero_counts", "all_passed").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

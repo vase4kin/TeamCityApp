@@ -30,63 +30,52 @@ import teamcityapp.features.tests.impl.router.TestsRouter
 import teamcityapp.libraries.list_state.ListUiState
 
 @Composable
-internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel(), parentCount: TestsCountState? = null, onParentCountRetry: (() -> Unit)? = null) {
+internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel()) {
     val selection by viewModel.selection.collectAsStateWithLifecycle()
-    val count = parentCount ?: run {
-        val ownCount by viewModel.count.collectAsStateWithLifecycle()
-        ownCount
+    val count by viewModel.count.collectAsStateWithLifecycle()
+    LaunchedEffect(count, router) {
+        if (count is TestsCountState.Available) router.updateTabCount((count as TestsCountState.Available).count)
     }
-    if (parentCount == null) {
-        LaunchedEffect(count, router) {
-            when (val current = count) {
-                is TestsCountState.Available -> router.updateTabCount(current.count)
-                TestsCountState.Unavailable -> router.updateTabCount(0)
-                TestsCountState.Loading -> Unit
-            }
+    // The controls stay in the same composition. Only the list presenter changes with its
+    // generation; the screen animates the captured list content for each filter.
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val visiblePages = remember(selection.pages, lifecycle) { selection.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
+    val tests = visiblePages.collectAsLazyPagingItems()
+    var completed by rememberSaveable(selection.filter.name) { mutableStateOf(false) }
+    val refresh = tests.loadState.refresh
+    if (refresh is LoadState.NotLoading) SideEffect { completed = true }
+    val state: ListUiState<TestOccurrence> = if (tests.itemCount > 0) {
+        ListUiState.Content(tests.itemSnapshotList.items.map { it.test }, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
+    } else {
+        when (refresh) {
+            is LoadState.Loading -> if (completed) ListUiState.Empty(isRefreshing = true) else ListUiState.Loading
+            is LoadState.Error -> if (completed) ListUiState.Empty(refreshFailed = true) else ListUiState.Error
+            is LoadState.NotLoading -> ListUiState.Empty()
         }
     }
-    // A new filter gets a fresh Paging presenter and scroll state; its previous rows never
-    // render with the newly selected filter. A configuration recreation reuses its generation.
-    key(selection.filter.name) {
-        val lifecycle = LocalLifecycleOwner.current.lifecycle
-        val visiblePages = remember(selection.rows, lifecycle) { selection.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
-        val tests = visiblePages.collectAsLazyPagingItems()
-        var completed by rememberSaveable { mutableStateOf(false) }
-        val refresh = tests.loadState.refresh
-        if (refresh is LoadState.NotLoading) SideEffect { completed = true }
-        val state: ListUiState<TestOccurrence> = if (tests.itemCount > 0) {
-            ListUiState.Content(tests.itemSnapshotList.items.map { it.test }, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
-        } else {
-            when (refresh) {
-                is LoadState.Loading -> if (completed) ListUiState.Empty(isRefreshing = true) else ListUiState.Loading
-                is LoadState.Error -> if (completed) ListUiState.Empty(refreshFailed = true) else ListUiState.Error
-                is LoadState.NotLoading -> ListUiState.Empty()
-            }
-        }
-        TestsScreen(
-            state = state,
-            presentation = selection.presentation,
-            countState = count,
-            itemCount = tests.itemCount,
-            itemAt = { tests[it] },
-            itemPeek = { tests.peek(it) },
-            appendState = when (tests.loadState.append) {
-                is LoadState.Loading -> TestsAppendState.Loading
-                is LoadState.Error -> TestsAppendState.Error
-                is LoadState.NotLoading -> TestsAppendState.Idle
-            },
-            onFilter = viewModel::selectFilter,
-            onRefresh = {
-                viewModel.prepareRefresh()
-                tests.refresh()
-            },
-            onRetry = {
-                viewModel.prepareRefresh()
-                tests.refresh()
-            },
-            onCountRetry = onParentCountRetry ?: viewModel::retryCount,
-            onFailedTest = router::openFailedTest,
-            onAppendRetry = tests::retry
-        )
-    }
+    TestsScreen(
+        state = state,
+        presentation = selection.presentation.copy(countsKnown = count is TestsCountState.Available),
+        countState = count,
+        itemCount = tests.itemCount,
+        itemAt = { tests[it] },
+        itemPeek = { tests.peek(it) },
+        appendState = when (tests.loadState.append) {
+            is LoadState.Loading -> TestsAppendState.Loading
+            is LoadState.Error -> TestsAppendState.Error
+            is LoadState.NotLoading -> TestsAppendState.Idle
+        },
+        onFilter = viewModel::selectFilter,
+        onRefresh = {
+            viewModel.prepareRefresh()
+            tests.refresh()
+        },
+        onRetry = {
+            viewModel.prepareRefresh()
+            tests.refresh()
+        },
+        onCountRetry = viewModel::retryCount,
+        onFailedTest = router::openFailedTest,
+        onAppendRetry = tests::retry
+    )
 }

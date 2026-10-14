@@ -16,8 +16,10 @@
 
 package teamcityapp.features.build_details.impl.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,6 +27,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlinx.serialization.modules.*
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_details.impl.BuildDetailsSectionScreen
@@ -45,11 +48,27 @@ internal fun BuildDetailsSectionDestination.contentDestination() = when (section
 }
 
 class BuildDetailsSectionDestinationRegistration @Inject constructor(private val registry: Provider<DestinationRegistry>) : FeatureDestination<BuildDetailsSectionDestination>(BuildDetailsSectionDestination::class, BuildDetailsSectionDestination.serializer()) {
+    override fun registerSerializers(builder: SerializersModuleBuilder) {
+        super.registerSerializers(builder)
+        builder.polymorphic(NavigationResult::class) { subclass(BuildDetailsSectionCountResult::class, BuildDetailsSectionCountResult.serializer()) }
+    }
+
     @Composable override fun Content(destination: BuildDetailsSectionDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
         val content = remember(destination, entryId) { NavigationEntry("$entryId/content", destination.contentDestination()) }
-        BuildDetailsSectionScreen(destination.section, destination.buildNumber, destination.configurationName ?: destination.build.configuration?.name.orEmpty(), { if (!navigator.pop()) activity.finish() }) {
-            RetainedNavigationPane(listOf(content), content.id, navigator, registry.get(), resultRecipientId = entryId)
+        var count by rememberSaveable(destination, entryId) { mutableStateOf<Int?>(null) }
+        val countHost = remember(destination, entryId) { BuildDetailsSectionCountHost { count = it } }
+        val up = {
+            val updated = count
+            val origin = destination.originEntryId
+            val finished = updated != null && origin != null && navigator.finish(BuildDetailsSectionCountResult(destination.build.id, destination.section, updated), origin)
+            if (!finished && !navigator.pop()) activity.finish()
+        }
+        BackHandler(enabled = count != null && destination.originEntryId != null && navigator.current.id == entryId, onBack = up)
+        BuildDetailsSectionScreen(destination.section, destination.buildNumber, destination.configurationName ?: destination.build.configuration?.name.orEmpty(), up) {
+            CompositionLocalProvider(LocalBuildDetailsSectionCountHost provides countHost) {
+                RetainedNavigationPane(listOf(content), content.id, navigator, registry.get(), resultRecipientId = entryId)
+            }
         }
     }
 }

@@ -82,6 +82,22 @@ class BuildDetailsMetadataViewModelTest {
         assertEquals(1, promptReads)
     }
 
+    @Test fun returnedSectionCountReplacesAndPersistsMetadataWithoutAnotherRequest() = runTest(dispatcher) {
+        val saved = handle()
+        val vm = model(saved)
+        observe(vm)
+        runCurrent()
+        vm.updateCount(BuildDetailsSection.Tests, 21)
+        runCurrent()
+        assertEquals(BuildDetailsCount.Available(21), vm.state.value.counts[BuildDetailsSection.Tests])
+        assertEquals(2, calls.size)
+        val recreated = model(saved, "restored")
+        observe(recreated)
+        runCurrent()
+        assertEquals(BuildDetailsCount.Available(21), recreated.state.value.counts[BuildDetailsSection.Tests])
+        assertEquals(2, calls.size)
+    }
+
     @Test fun optionalFailureNeverBecomesZeroAndRetryOnlyReadsTheFailedSection() = runTest(dispatcher) {
         count = { if (it == BuildDetailsSection.Tests) error("offline") else 12 }
         val vm = model()
