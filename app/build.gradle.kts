@@ -147,7 +147,6 @@ dependencies {
     implementation(projects.features.buildDetails.impl)
     implementation(projects.libraries.navigation)
     implementation(libs.androidx.core.splashscreen)
-    implementation(fileTree("libs") { include("*.jar") })
 
     implementation(projects.libraries.coroutines)
     implementation(projects.libraries.api)
@@ -239,14 +238,10 @@ dependencies {
     implementation(libs.retrofit.retrofit)
     implementation(libs.retrofit.gsonConverter)
     implementation(libs.retrofit.retrofitRxjavaAdapter)
-    // Dialogs
-    // Views
-    // View injection
     // Event bus
     implementation(libs.eventBus)
     // Others
     implementation(libs.jodaTime)
-    // Onboarding
     // Dagger
     implementation(libs.dagger.dagger)
     ksp(libs.dagger.compiler)
@@ -256,8 +251,6 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.rx2)
     implementation(libs.rxjava.rxJava)
-    implementation(libs.rxjava.rxAndroid)
-    implementation(libs.rxjava.rxjava.kotlin)
     // Rx cache
     implementation(libs.rxcache.rxCache)
     implementation(libs.rxcache.jolyglot)
@@ -267,7 +260,6 @@ dependencies {
     implementation(libs.google.firebaseConfig)
     implementation(libs.google.firebasePerf)
     implementation(libs.google.openSourceLicensesLibrary)
-    // Bottom nav libries
     // Unit tests
     testImplementation(libs.robolectric)
     testImplementation(libs.coroutines.test)
@@ -295,12 +287,7 @@ dependencies {
         // Espresso dependenciesd
         androidTestImplementation(libs.androidx.test.espresso.core)
         androidTestImplementation(libs.androidx.test.espresso.intents)
-        androidTestImplementation(libs.androidx.test.espresso.contrib) {
-            // Its accessibility dependency brings protobuf-lite 3.0.1, which shadows Firebase's runtime.
-            exclude(group = "com.google.protobuf", module = "protobuf-lite")
-        }
-        androidTestImplementation(libs.androidx.test.espresso.web)
-        // Espresso's runtime-only accessibility dependency upgrades Hamcrest to 2.2.
+        // Accessibility test dependencies use Hamcrest 2.2 at runtime.
         // Use its shim on both classpaths so Kotlin cannot call removed 1.3 overloads.
         androidTestImplementation(libs.hamcrestLibrary)
         // Mockito

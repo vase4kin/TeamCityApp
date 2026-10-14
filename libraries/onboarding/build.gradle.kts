@@ -25,7 +25,7 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.annotationn)
     implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.datastore.preferences)
 }

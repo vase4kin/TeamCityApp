@@ -12,7 +12,6 @@ mockito = "5.24.0"
 okhttp = "5.4.0"
 retrofit = "3.0.0"
 dagger = "2.60.1"
-butterknife = "10.2.1"
 spotless = "8.10.3"
 ktlint = "1.8.0"
 google-java-format = "1.24.0"
@@ -72,26 +71,15 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagge
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "dagger" }
 hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
-errorView = { module = "com.github.xiprox:ErrorView", version = "3.0.0" }
 eventBus = { module = "org.greenrobot:eventbus", version = "3.0.0" }
-materialTapTargetPrompt = { module = "uk.co.samuelwall:material-tap-target-prompt", version = "3.0.0" }
 jodaTime = { module = "joda-time:joda-time", version = "2.8.1" }
 junit = { module = "junit:junit", version = "4.13.2" }
 hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
 hamcrestLibrary = { module = "org.hamcrest:hamcrest-library", version.ref = "hamcrest" }
-androidx-fragment = { module = "androidx.fragment:fragment", version = "1.5.4" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
-androidx-cardView = { module = "androidx.cardview:cardview", version = "1.0.0" }
-androidx-legacySupport = { module = "androidx.legacy:legacy-support-v13", version = "1.0.0" }
-androidx-recyclerView = { module = "androidx.recyclerview:recyclerview", version = "1.4.0" }
 androidx-annotationn = { module = "androidx.annotation:annotation", version = "1.11.0" }
 androidx-browser = { module = "androidx.browser:browser", version = "1.10.0" }
-androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.2.2" }
-androidx-lifecycle-lifeCycle = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-lifeCycleCompiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-lifeCycleLiveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-lifeCycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-lifeCycleCommonJava8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
@@ -99,8 +87,6 @@ androidx-test-orchestrator = { module = "androidx.test:orchestrator", version = 
 androidx-test-extJunit = { module = "androidx.test.ext:junit", version = "1.3.0" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso" }
-androidx-test-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espresso" }
-androidx-test-espresso-web = { module = "androidx.test.espresso:espresso-web", version.ref = "espresso" }
 google-material = { module = "com.google.android.material:material", version = "1.14.0" }
 google-firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 google-firebaseConfig = { module = "com.google.firebase:firebase-config" }
@@ -108,28 +94,20 @@ google-firebasePerf = { module = "com.google.firebase:firebase-perf" }
 google-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-openSourceLicensesLibrary = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
-google-tools-openSourceLicensesPlugin = { module = "com.google.android.gms:oss-licenses-plugin", version.ref = "oss-licenses-plugin" }
 okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 retrofit-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-retrofitRxjavaAdapter = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
 retrofit-gsonConverter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 rxjava-rxJava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.19" }
-rxjava-rxAndroid = { module = "io.reactivex.rxjava2:rxandroid", version = "2.1.1" }
-rxjava-rxjava-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version = "2.4.0" }
 rxcache-rxCache = { module = "com.github.VictorAlbertos.RxCache:runtime", version = "1.8.3-2.x" }
 rxcache-jolyglot = { module = "com.github.VictorAlbertos.Jolyglot:gson", version = "0.0.4" }
 dagger-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-butterknife-butterKnife = { module = "com.jakewharton:butterknife", version.ref = "butterknife" }
-butterknife-butterKnifeCompiler = { module = "com.jakewharton:butterknife-compiler", version.ref = "butterknife" }
 mockito-mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockito" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-tools-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 tools-gradleAndroid = { module = "com.android.tools.build:gradle", version.ref = "android-gradle" }
-tools-googleServices = { module = "com.google.gms:google-services", version.ref = "google-services" }
-tools-firebasePerf = { module = "com.google.firebase:perf-plugin", version.ref = "firebase-perf-plugin" }
-tools-crashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics-plugin" }
 mockito-mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "6.4.0" }
 mockito-mockitoCore = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 

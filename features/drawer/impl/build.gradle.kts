@@ -42,7 +42,6 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
-    implementation(libs.google.material)
     implementation(projects.libraries.appRating)
     implementation(projects.libraries.chromeTabs)
     testImplementation(libs.mockito.mockitoCore)

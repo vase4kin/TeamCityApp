@@ -29,7 +29,6 @@ dependencies {
     implementation(projects.libraries.theme)
 
     implementation(libs.google.material)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
     implementation(libs.kotlin.stdlib)
 }
