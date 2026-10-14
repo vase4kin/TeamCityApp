@@ -6,9 +6,8 @@
   "packages": {
     ".": {
       "component": "teamcityapp",
-      "versioning": "prerelease",
-      "prerelease": true,
-      "prerelease-type": "beta",
+      "versioning": "default",
+      "prerelease": false,
       "extra-files": [
         {
           "type": "generic",
