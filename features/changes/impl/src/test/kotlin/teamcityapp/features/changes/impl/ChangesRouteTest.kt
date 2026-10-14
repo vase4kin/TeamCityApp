@@ -120,6 +120,26 @@ class ChangesRouteTest {
         assertEquals(listOf(false, true), repository.requests.map { it.force })
     }
 
+    @Test fun refreshReplacesTwentyRowsWithTenAfterScrolling() {
+        repository.load = { request ->
+            val start = if (request.force) 100 else 0
+            val size = if (request.force) 10 else 20
+            ChangesPage((start until start + size).map { change("$it") }, null)
+        }
+        render()
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("changes:change:0").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("changes:list").performScrollToIndex(10)
+        compose.waitForIdle()
+        compose.onNodeWithTag("changes:list").performScrollToIndex(0)
+        compose.onRoot().performTouchInput {
+            swipe(start = center.copy(y = height * .15f), end = center.copy(y = height * .85f), durationMillis = 600)
+        }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("changes:change:100").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("changes:change:100").performClick()
+        assertEquals(change("100"), router.opened)
+        assertEquals(listOf(false, true), repository.requests.map { it.force })
+    }
+
     @Test fun pendingInitialRequestDisplaysLoadingInsteadOfPrematureEmptyContent() {
         repository.load = { awaitCancellation() }
         render()

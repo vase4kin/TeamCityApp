@@ -26,6 +26,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import teamcityapp.features.changes.impl.router.ChangesRouter
+import teamcityapp.libraries.list_ui.PagingListSnapshot
 
 @Composable
 internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = hiltViewModel(), parentCount: ChangesCountState? = null, onParentCountRetry: (() -> Unit)? = null) {
@@ -48,12 +49,12 @@ internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = h
     var completed by rememberSaveable { mutableStateOf(false) }
     val refresh = changes.loadState.refresh
     if (refresh is LoadState.NotLoading) SideEffect { completed = true }
-    // Snapshot items are used only for shell presentation; row access still uses Paging[index].
-    val state = changesListState(changes.itemSnapshotList.items.map { it.change }, refresh, completed)
+    val rows = PagingListSnapshot(changes)
+    val state = changesListState(rows.items.map { it.change }, refresh, completed)
     ChangesScreen(
-        state, count, changes.itemCount,
-        itemAt = { changes[it] },
-        itemKey = { changes.peek(it)?.change?.id ?: "changes:placeholder:$it" },
+        state, count, rows.itemCount,
+        itemAt = rows::get,
+        itemKey = { rows.peek(it)?.change?.id ?: "changes:placeholder:$it" },
         appendState = when (changes.loadState.append) {
             is LoadState.Loading -> ChangesAppendState.Loading
             is LoadState.Error -> ChangesAppendState.Error
