@@ -91,12 +91,11 @@ class BuildDetailsScreenTest {
         compose.onNodeWithTag("details:action:Cancel").assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.StateDescription, "Stopping…"))
     }
 
-    @Test fun unavailableCountIsExplicitAndMetadataRetryHasOneCallback() {
-        var retries = 0
-        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, countFailures = setOf(BuildDetailsSection.Changes)), {}, {}, {}, {}, remember { SnackbarHostState() }, onRetryMetadata = { retries++ }) { Surface {} } } }
-        compose.onNodeWithText("Retry build counts and tips").assertExists()
-        compose.onNodeWithTag("details:retry-metadata").performClick()
-        assertEquals(1, retries)
+    @Test fun metadataFailuresDoNotShowATopLevelRetry() {
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, countFailures = setOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests), onboardingFailed = true), {}, {}, {}, {}, remember { SnackbarHostState() }) { Surface { Text("Overview content") } } } }
+        compose.onNodeWithText("Retry build counts and tips").assertDoesNotExist()
+        compose.onNodeWithTag("details:retry-metadata").assertDoesNotExist()
+        compose.onNodeWithText("Overview content").assertIsDisplayed()
     }
 
     @Test fun actionTipUsesSharedCoachmarkAndDismissesThroughTheViewModelCallback() {

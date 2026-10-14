@@ -192,8 +192,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                     onConfirm = model::confirm,
                     onDismissConfirmation = model::dismissConfirmation,
                     snackbar = snackbar,
-                    onDismissPrompt = metadata::dismissPrompt,
-                    onRetryMetadata = metadata::retryFailed
+                    onDismissPrompt = metadata::dismissPrompt
                 ) { RetainedNavigationPane(listOf(overview), overview.id, navigator, registry.get()) }
             }
         }

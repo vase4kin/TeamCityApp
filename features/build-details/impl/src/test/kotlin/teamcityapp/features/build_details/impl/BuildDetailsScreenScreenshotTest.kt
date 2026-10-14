@@ -181,6 +181,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        compose.onNodeWithTag("details:retry-metadata").assertDoesNotExist()
         if (stateName in listOf("tooltip", "finished", "running", "queued", "floating_content")) {
             val toolbar = compose.onNodeWithTag("details:toolbar").fetchSemanticsNode().boundsInRoot
             val action = compose.onNodeWithTag("details:action:${state.primaryAction.action}").fetchSemanticsNode().boundsInRoot
