@@ -20,6 +20,7 @@ import android.app.Application
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
@@ -59,6 +60,24 @@ class SettingsScreenTest {
         compose.setContent { TeamCityTheme { SettingsScreen(content.copy(saving = true), { fail("No selection while saving") }, {}, {}, {}) } }
         content.options.forEach { compose.onNodeWithTag("settings:option:$it").assertIsNotEnabled().performClick() }
         compose.onNodeWithTag("settings:saving").assertIsDisplayed()
+    }
+
+    @Test fun savingAndRecoloringKeepChoicePositionsAndScrollOffset() {
+        val state = mutableStateOf(content)
+        val dark = mutableStateOf(false)
+        compose.setContent { TeamCityTheme(darkTheme = dark.value) { SettingsScreen(state.value, {}, {}, {}, {}) } }
+        compose.onNodeWithTag("settings:option:System").performScrollTo()
+        val positions = content.options.associateWith { compose.onNodeWithTag("settings:option:$it").fetchSemanticsNode().boundsInRoot }
+        compose.runOnIdle { state.value = content.copy(saving = true) }
+        compose.onNodeWithTag("settings:saving").assertIsDisplayed()
+        positions.forEach { (mode, bounds) -> assertEquals(bounds, compose.onNodeWithTag("settings:option:$mode").fetchSemanticsNode().boundsInRoot) }
+        compose.runOnIdle {
+            dark.value = true
+            state.value = content.copy(selected = ThemeMode.Dark)
+        }
+        compose.onNodeWithTag("settings:saving").assertDoesNotExist()
+        positions.forEach { (mode, bounds) -> assertEquals(bounds, compose.onNodeWithTag("settings:option:$mode").fetchSemanticsNode().boundsInRoot) }
+        compose.onNodeWithTag("settings:option:Dark").assertIsSelected()
     }
 
     @Test fun readFailureAndSaveFailureExposeSeparateRetries() {

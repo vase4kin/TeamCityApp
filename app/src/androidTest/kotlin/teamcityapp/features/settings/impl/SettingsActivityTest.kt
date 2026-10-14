@@ -19,18 +19,23 @@ package teamcityapp.features.settings.impl
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -39,7 +44,18 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.build_details.api.*
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
+import teamcityapp.features.home.api.*
+import teamcityapp.features.login.api.navigation.LoginDestination
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.libraries.app_theme.ThemeMode
+import teamcityapp.libraries.builds.BuildCollectionLink
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
+import teamcityapp.libraries.navigation.DestinationRegistry
+import teamcityapp.libraries.theme.teamCityColorScheme
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -58,10 +74,64 @@ class SettingsActivityTest {
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val repo get() = app.appInjector.themePreferences()
 
+    @Inject lateinit var registry: DestinationRegistry
+
     @Before fun before() {
+        TestUtils.disableOnboarding()
+        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.di.modules.Mocks.URL, false)
         runBlocking { repo.setTheme(ThemeMode.Light) }
+    }
+
+    @Test fun themeChangesPreserveOtherScreensAndRetainedPanes() {
+        val build = BuildLaunchMapper().toLaunchData(Mocks.failedBuild()).copy(snapshotDependencies = BuildCollectionLink(null))
+        val screens = listOf(
+            HomeDestination(HomeTab.Projects) to "home:tab:Projects",
+            HomeDestination(HomeTab.Favorites) to "home:tab:Favorites",
+            HomeDestination(HomeTab.Running) to "home:tab:Running",
+            HomeDestination(HomeTab.Queue) to "home:tab:Queue",
+            HomeDestination(HomeTab.Agents) to "home:tab:Agents",
+            AboutDestination to "about:section",
+            ManageAccountsDestination to "accounts:list",
+            LoginDestination to "login:form",
+            CreateAccountDestination to "create-account:form",
+            BuildHistoryDestination("id", "Theme regression") to "history:body",
+            BuildDetailsDestination(build) to "overview:list",
+            BuildDetailsSectionDestination(build, BuildDetailsSection.Changes) to "changes:list",
+            BuildDetailsSectionDestination(build, BuildDetailsSection.Tests) to "tests:list",
+            BuildDetailsSectionDestination(build, BuildDetailsSection.Parameters) to "properties:list",
+            BuildDetailsSectionDestination(build, BuildDetailsSection.Artifacts) to "artifacts:list",
+            BuildDetailsSectionDestination(build, BuildDetailsSection.Snapshots) to "snapshot:list"
+        )
+        screens.forEach { (destination, tag) ->
+            runBlocking { repo.setTheme(ThemeMode.Light) }
+            val intent = Intent(app, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(destination))
+            ActivityScenario.launch<MainActivity>(intent).use { scenario ->
+                try {
+                    compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
+                } catch (error: ComposeTimeoutException) {
+                    throw AssertionError("Screen did not open: $destination ($tag)", error)
+                }
+                var original: MainActivity? = null
+                scenario.onActivity { original = it }
+                val snapshot = original!!.navigationSnapshot
+                assertEquals(destination, snapshot!!.entries.last().destination)
+                if (destination is HomeDestination) compose.onNodeWithTag(tag).assertIsSelected()
+                val bounds = compose.onAllNodesWithTag(tag)[0].fetchSemanticsNode().boundsInRoot
+                listOf(ThemeMode.Dark, ThemeMode.Light).forEach { mode ->
+                    runBlocking { repo.setTheme(mode) }
+                    compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == if (mode == ThemeMode.Dark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO }
+                    assertRenderedTheme(mode == ThemeMode.Dark)
+                    scenario.onActivity {
+                        assertSame("$destination must retain its host", original, it)
+                        assertEquals("$destination must retain its visits", snapshot, it.navigationSnapshot)
+                    }
+                    assertEquals("$destination must keep its layout", bounds, compose.onAllNodesWithTag(tag)[0].fetchSemanticsNode().boundsInRoot)
+                    if (destination is HomeDestination) compose.onNodeWithTag(tag).assertIsSelected()
+                }
+            }
+        }
     }
 
     @After fun after() {
@@ -71,6 +141,39 @@ class SettingsActivityTest {
     private fun awaitSummary(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    private fun assertRenderedTheme(dark: Boolean) {
+        compose.waitForIdle()
+        val pixels = compose.onRoot().captureToImage().toPixelMap()
+        assertEquals(teamCityColorScheme(dark).background, pixels[1, pixels.height / 2])
+    }
+
+    @Test fun repeatedThemeSelectionsRecolorImmediatelyWithoutReplacingTheScreen() {
+        launch().use { scenario ->
+            awaitSummary("Light theme")
+            var original: MainActivity? = null
+            scenario.onActivity { original = it }
+            val snapshot = original!!.navigationSnapshot
+            assertRenderedTheme(false)
+            repeat(2) {
+                listOf(ThemeMode.Dark, ThemeMode.Light).forEach { mode ->
+                    val dark = mode == ThemeMode.Dark
+                    compose.onNodeWithTag("settings:option:$mode").performClick()
+                    compose.waitUntil(5_000) { runBlocking { repo.theme.first() } == mode }
+                    compose.waitUntil(5_000) { compose.onAllNodesWithTag("settings:saving").fetchSemanticsNodes().isEmpty() }
+                    compose.onNodeWithTag("settings:option:$mode").assertIsSelected()
+                    assertRenderedTheme(dark)
+                    scenario.onActivity {
+                        assertSame("Theme changes must keep the activity alive", original, it)
+                        assertEquals(snapshot, it.navigationSnapshot)
+                        val bars = WindowCompat.getInsetsController(it.window, it.window.decorView)
+                        assertEquals(!dark, bars.isAppearanceLightStatusBars)
+                        assertEquals(!dark, bars.isAppearanceLightNavigationBars)
+                    }
+                }
+            }
+        }
     }
 
     @Test fun selectingThemePersistsAppliesAndSurvivesRecreation() {

@@ -57,56 +57,59 @@ fun SettingsScreen(
 
             SettingsUiState.Error -> ErrorContent(modifier, onRetry, message = stringResource(R.string.theme_load_error))
 
-            is SettingsUiState.Content -> Column(modifier.verticalScroll(rememberScrollState())) {
-                Text(
-                    stringResource(R.string.title_general),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, top = TeamCityDimensions.sectionSpacing, bottom = TeamCityDimensions.smallSpacing)
-                )
-                Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).selectableGroup().testTag("settings:theme"), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
-                    Text(stringResource(R.string.title_theme), style = MaterialTheme.typography.headlineMedium)
-                    Text(stringResource(R.string.current_theme, stringResource(state.selectedThemeLabelRes)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (state.selected !in state.options) Text(stringResource(R.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (state.saving) TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth().testTag("settings:saving"))
-                    if (state.saveFailed) {
-                        ErrorNotice(stringResource(R.string.theme_save_error), onRetrySave, Modifier.testTag("settings:save_error"))
-                    }
-                    state.themeOptions.forEach { option ->
-                        val mode = option.mode
-                        Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
-                            Row(Modifier.padding(TeamCityDimensions.largeContentPadding).heightIn(min = TeamCityDimensions.minimumTouchTarget), verticalAlignment = Alignment.CenterVertically) {
-                                Column(Modifier.weight(1f)) {
-                                    Text(stringResource(option.labelRes), style = MaterialTheme.typography.titleMedium)
-                                    MaterialTheme(
-                                        colorScheme = teamcityapp.libraries.theme.teamCityColorScheme(
-                                            when (mode) {
-                                                ThemeMode.Light -> false
-                                                ThemeMode.Dark -> true
-                                                else -> androidx.compose.foundation.isSystemInDarkTheme()
-                                            }
-                                        )
-                                    ) {
-                                        Row(Modifier.padding(top = TeamCityDimensions.mediumSpacing), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
-                                            repeat(3) { index ->
-                                                Surface(
-                                                    Modifier.size(if (index == 0) TeamCityDimensions.largeIconSize else TeamCityDimensions.iconSize),
-                                                    shape = MaterialTheme.shapes.small,
-                                                    color = when (index) {
-                                                        0 -> MaterialTheme.colorScheme.primary
-                                                        1 -> MaterialTheme.colorScheme.secondaryContainer
-                                                        else -> MaterialTheme.colorScheme.tertiaryContainer
-                                                    }
-                                                ) {}
+            is SettingsUiState.Content -> Box(modifier) {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    Text(
+                        stringResource(R.string.title_general),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, top = TeamCityDimensions.sectionSpacing, bottom = TeamCityDimensions.smallSpacing)
+                    )
+                    Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).selectableGroup().testTag("settings:theme"), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
+                        Text(stringResource(R.string.title_theme), style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(R.string.current_theme, stringResource(state.selectedThemeLabelRes)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (state.selected !in state.options) Text(stringResource(R.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (state.saveFailed) {
+                            ErrorNotice(stringResource(R.string.theme_save_error), onRetrySave, Modifier.testTag("settings:save_error"))
+                        }
+                        state.themeOptions.forEach { option ->
+                            val mode = option.mode
+                            Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
+                                Row(Modifier.padding(TeamCityDimensions.largeContentPadding).heightIn(min = TeamCityDimensions.minimumTouchTarget), verticalAlignment = Alignment.CenterVertically) {
+                                    Column(Modifier.weight(1f)) {
+                                        Text(stringResource(option.labelRes), style = MaterialTheme.typography.titleMedium)
+                                        MaterialTheme(
+                                            colorScheme = teamcityapp.libraries.theme.teamCityColorScheme(
+                                                when (mode) {
+                                                    ThemeMode.Light -> false
+                                                    ThemeMode.Dark -> true
+                                                    else -> androidx.compose.foundation.isSystemInDarkTheme()
+                                                }
+                                            )
+                                        ) {
+                                            Row(Modifier.padding(top = TeamCityDimensions.mediumSpacing), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
+                                                repeat(3) { index ->
+                                                    Surface(
+                                                        Modifier.size(if (index == 0) TeamCityDimensions.largeIconSize else TeamCityDimensions.iconSize),
+                                                        shape = MaterialTheme.shapes.small,
+                                                        color = when (index) {
+                                                            0 -> MaterialTheme.colorScheme.primary
+                                                            1 -> MaterialTheme.colorScheme.secondaryContainer
+                                                            else -> MaterialTheme.colorScheme.tertiaryContainer
+                                                        }
+                                                    ) {}
+                                                }
                                             }
                                         }
                                     }
+                                    RadioButton(state.selected == mode, onClick = null, enabled = !state.saving)
                                 }
-                                RadioButton(state.selected == mode, onClick = null, enabled = !state.saving)
                             }
                         }
                     }
                 }
+                // Saving feedback overlays the content so choices and scroll position stay put.
+                if (state.saving) TeamCityLinearLoadingIndicator(Modifier.align(Alignment.TopCenter).testTag("settings:saving"))
             }
         }
     }
