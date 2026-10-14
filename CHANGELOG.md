@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.0-beta.3](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2026-10-14)
+
+
+### Features
+
+* **login:** make Try It Out available without remote config ([#468](https://github.com/vase4kin/TeamCityApp/issues/468)) ([3dbe08a](https://github.com/vase4kin/TeamCityApp/commit/3dbe08add4213072030ce666f0bd9fefb35ec3b4))
+* **test-details:** add a readable test output viewer ([#467](https://github.com/vase4kin/TeamCityApp/issues/467)) ([8f772f4](https://github.com/vase4kin/TeamCityApp/commit/8f772f4755cc18ee4486ae0eb7dfc9cc43e4f2ff))
+
+
+### Bug Fixes
+
+* **tests:** refresh counts and smooth filter selection ([#464](https://github.com/vase4kin/TeamCityApp/issues/464)) ([1874f0f](https://github.com/vase4kin/TeamCityApp/commit/1874f0f8f68e21c0ea5b4625b124ee245aa9be87))
+* **theme:** switch themes without restarting the UI ([#469](https://github.com/vase4kin/TeamCityApp/issues/469)) ([10f3def](https://github.com/vase4kin/TeamCityApp/commit/10f3def5bfc97a2ab5029238ae5ec94dfae0e315))
+* **ui:** unify optional failure retries with snackbars ([#465](https://github.com/vase4kin/TeamCityApp/issues/465)) ([a17f93f](https://github.com/vase4kin/TeamCityApp/commit/a17f93fa1b8398e2e44abcc2a3d85c70efa826a3))
+
 ## [2.0.0-beta.2](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2026-10-14)
 
 
