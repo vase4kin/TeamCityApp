@@ -132,12 +132,18 @@ class HomeScreenTest {
         }
         compose.onNodeWithTag("home:filter:RunningFavorites").performClick()
         assertTrue(applied.isEmpty())
+        val runningBounds = listOf("RunningAll", "RunningFavorites").map { compose.onNodeWithTag("home:filter:$it").fetchSemanticsNode().boundsInRoot }
         compose.onNodeWithTag("home:filter:RunningAll").performClick().assertIsSelected()
+        assertEquals(runningBounds, listOf("RunningAll", "RunningFavorites").map { compose.onNodeWithTag("home:filter:$it").fetchSemanticsNode().boundsInRoot })
         compose.onNodeWithTag("home:tab:Queue").performClick()
         compose.onNodeWithTag("home:filter:QueuedAll").assertIsSelected()
+        val queueBounds = listOf("QueuedAll", "QueuedFavorites").map { compose.onNodeWithTag("home:filter:$it").fetchSemanticsNode().boundsInRoot }
         compose.onNodeWithTag("home:filter:QueuedFavorites").performClick().assertIsSelected()
+        assertEquals(queueBounds, listOf("QueuedAll", "QueuedFavorites").map { compose.onNodeWithTag("home:filter:$it").fetchSemanticsNode().boundsInRoot })
         compose.onNodeWithTag("home:tab:Agents").performClick()
+        val agentBounds = listOf("AgentsConnected", "AgentsDisconnected").map { compose.onNodeWithTag("home:filter:$it").fetchSemanticsNode().boundsInRoot }
         compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick().assertIsSelected()
+        assertEquals(agentBounds, listOf("AgentsConnected", "AgentsDisconnected").map { compose.onNodeWithTag("home:filter:$it").fetchSemanticsNode().boundsInRoot })
         compose.onNodeWithTag("home:tab:Running").performClick()
         compose.onNodeWithTag("home:filter:RunningAll").assertIsSelected()
         compose.onNodeWithTag("home:tab:Queue").performClick()

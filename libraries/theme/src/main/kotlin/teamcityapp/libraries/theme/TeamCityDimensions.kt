@@ -39,6 +39,7 @@ object TeamCityDimensions {
     // Controls, icons, and feedback.
     val minimumTouchTarget = 48.dp
     val controlMinHeight = 56.dp
+    val selectionChipBorderWidth = 1.dp
     val leadingContentWidth = 56.dp
     val smallIconSize = 16.dp
     val statusIconSize = 18.dp

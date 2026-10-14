@@ -76,6 +76,11 @@ internal fun TestsScreen(
                             selected = option.filter == presentation.filter,
                             onClick = { onFilter(option.filter) },
                             label = stringResource(option.labelRes),
+                            iconRes = when (option.filter) {
+                                TestsFilter.Failed -> R.drawable.ic_filter_failed
+                                TestsFilter.Passed -> R.drawable.ic_filter_passed
+                                TestsFilter.Ignored -> R.drawable.ic_filter_ignored
+                            },
                             modifier = Modifier.testTag("tests:filter:${option.filter.name}")
                         )
                     }

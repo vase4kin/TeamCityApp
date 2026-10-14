@@ -16,10 +16,9 @@
 
 package teamcityapp.libraries.theme
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -28,17 +27,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 
-/** A single-choice filter with a fixed icon slot so selection never shifts its neighbors. */
+/** A single-choice filter whose persistent category icon keeps selection from shifting its neighbors. */
 @Composable
-fun TeamCitySelectionChip(selected: Boolean, label: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-    val checkAlpha by animateFloatAsState(if (selected) 1f else 0f, tween(160), label = "filter checkmark")
+fun TeamCitySelectionChip(selected: Boolean, label: String, @DrawableRes iconRes: Int, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
     val defaults = FilterChipDefaults.filterChipColors()
     val container by animateColorAsState(if (selected) defaults.selectedContainerColor else defaults.containerColor, tween(200), label = "filter background")
     val textColor by animateColorAsState(if (selected) defaults.selectedLabelColor else defaults.labelColor, tween(200), label = "filter label")
@@ -47,11 +44,10 @@ fun TeamCitySelectionChip(selected: Boolean, label: String, onClick: () -> Unit,
         enabled = enabled,
         onClick = { if (!selected) onClick() },
         label = { Text(label) },
-        colors = defaults.copy(containerColor = container, selectedContainerColor = container, labelColor = textColor, selectedLabelColor = textColor),
+        colors = defaults.copy(containerColor = container, selectedContainerColor = container, labelColor = textColor, selectedLabelColor = textColor, leadingIconColor = textColor, selectedLeadingIconColor = textColor),
+        border = FilterChipDefaults.filterChipBorder(enabled = enabled, selected = selected, selectedBorderColor = textColor, selectedBorderWidth = TeamCityDimensions.selectionChipBorderWidth),
         leadingIcon = {
-            Box(Modifier.size(FilterChipDefaults.IconSize)) {
-                Icon(painterResource(R.drawable.ic_selection_check), null, Modifier.size(FilterChipDefaults.IconSize).alpha(checkAlpha))
-            }
+            Icon(painterResource(iconRes), null, Modifier.size(FilterChipDefaults.IconSize))
         },
         modifier = modifier.semantics { role = Role.RadioButton }
     )
@@ -60,5 +56,5 @@ fun TeamCitySelectionChip(selected: Boolean, label: String, onClick: () -> Unit,
 @Preview
 @Composable
 private fun SelectionChipPreview() {
-    TeamCityTheme { TeamCitySelectionChip(true, "Selected", {}) }
+    TeamCityTheme { TeamCitySelectionChip(true, "Selected", R.drawable.ic_info_outline_black_24dp, {}) }
 }
