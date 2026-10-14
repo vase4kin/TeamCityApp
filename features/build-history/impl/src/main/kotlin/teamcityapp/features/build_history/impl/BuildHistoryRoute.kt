@@ -34,6 +34,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.delay
 import teamcityapp.features.build_history.impl.router.BuildHistoryRouter
+import teamcityapp.libraries.list_ui.PagingListSnapshot
 
 @Composable
 internal fun BuildHistoryRoute(router: BuildHistoryRouter, viewModel: BuildHistoryViewModel = hiltViewModel()) {
@@ -71,7 +72,8 @@ private fun BuildHistoryPagingContent(
     // lifecycle wrappers hide Paging's replay cache and make returning content start empty.
     val builds = selection.rows.collectAsLazyPagingItems()
     if (builds.loadState.refresh is LoadState.NotLoading) SideEffect { onCompleted() }
-    val state = historyListState(builds.itemSnapshotList.items.map { it.build }, builds.loadState.refresh, completed)
+    val rows = PagingListSnapshot(builds)
+    val state = historyListState(rows.items.map { it.build }, builds.loadState.refresh, completed)
     val refresh = {
         viewModel.prepareRefresh()
         builds.refresh()
@@ -107,9 +109,9 @@ private fun BuildHistoryPagingContent(
         title = viewModel.configurationName,
         state = state,
         controls = if (resumed) controls else controls.copy(onboarding = (controls.onboarding as? OnboardingState.Available)?.copy(prompt = null) ?: controls.onboarding),
-        itemCount = builds.itemCount,
-        itemAt = { builds[it] },
-        itemPeek = { builds.peek(it) },
+        itemCount = rows.itemCount,
+        itemAt = rows::get,
+        itemPeek = rows::peek,
         appendState = when (builds.loadState.append) {
             is LoadState.Loading -> HistoryAppendState.Loading
             is LoadState.Error -> HistoryAppendState.Error

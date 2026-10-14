@@ -28,6 +28,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import teamcityapp.features.tests.api.TestOccurrence
 import teamcityapp.features.tests.impl.router.TestsRouter
 import teamcityapp.libraries.list_state.ListUiState
+import teamcityapp.libraries.list_ui.PagingListSnapshot
 
 @Composable
 internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel()) {
@@ -44,8 +45,9 @@ internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltVie
     var completed by rememberSaveable(selection.filter.name) { mutableStateOf(false) }
     val refresh = tests.loadState.refresh
     if (refresh is LoadState.NotLoading) SideEffect { completed = true }
-    val state: ListUiState<TestOccurrence> = if (tests.itemCount > 0) {
-        ListUiState.Content(tests.itemSnapshotList.items.map { it.test }, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
+    val rows = PagingListSnapshot(tests)
+    val state: ListUiState<TestOccurrence> = if (rows.itemCount > 0) {
+        ListUiState.Content(rows.items.map { it.test }, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
     } else {
         when (refresh) {
             is LoadState.Loading -> if (completed) ListUiState.Empty(isRefreshing = true) else ListUiState.Loading
@@ -57,9 +59,9 @@ internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltVie
         state = state,
         presentation = selection.presentation.copy(countsKnown = count is TestsCountState.Available),
         countState = count,
-        itemCount = tests.itemCount,
-        itemAt = { tests[it] },
-        itemPeek = { tests.peek(it) },
+        itemCount = rows.itemCount,
+        itemAt = rows::get,
+        itemPeek = rows::peek,
         appendState = when (tests.loadState.append) {
             is LoadState.Loading -> TestsAppendState.Loading
             is LoadState.Error -> TestsAppendState.Error

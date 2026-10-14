@@ -101,6 +101,24 @@ class TestsRouteTest {
         assertTrue(repository.requests.all { it.next == null && it.force })
     }
 
+    @Test fun switchingFromTwentyRowsToTenKeepsOutgoingFilterContentSafe() {
+        repository.load = { request ->
+            val start = if (request.filter == TestsFilter.Passed) 100 else 0
+            val size = if (request.filter == TestsFilter.Passed) 10 else 20
+            val status = if (request.filter == TestsFilter.Passed) TestStatus.Passed else TestStatus.Failed
+            TestsPage((start until start + size).map { testOccurrence("$it", status) }, null)
+        }
+        render()
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("tests:test:0").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("tests:list").performScrollToIndex(10)
+        compose.waitForIdle()
+        compose.onNodeWithTag("tests:filter:Passed").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("tests:test:100").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("tests:test:100").assertHasNoClickAction()
+        compose.onNodeWithTag("tests:test:10").assertDoesNotExist()
+        compose.onNodeWithTag("tests:filter:Passed").assertIsSelected()
+    }
+
     @Test fun initialErrorRetryRepeatsFreshRequest() {
         var attempts = 0
         repository.load = { if (attempts++ == 0) error("offline") else TestsPage(listOf(testOccurrence()), null) }

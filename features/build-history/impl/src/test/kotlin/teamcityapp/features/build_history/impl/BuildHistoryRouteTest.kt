@@ -37,6 +37,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.build_history.api.BuildHistoryPage
+import teamcityapp.features.build_history.api.BuildHistoryQuery
 import teamcityapp.features.build_history.impl.router.BuildHistoryRouter
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.theme.TeamCityTheme
@@ -127,6 +128,42 @@ class BuildHistoryRouteTest {
         compose.runOnIdle { vm.applyFilter("running:true") }
         compose.waitUntil(5_000) { repository.requests.any { it.query.locator == "running:true" } }
         compose.onNodeWithTag("history:build:42").assertDoesNotExist()
+    }
+
+    @Test fun shrinkingRefreshWhileScrolledPastNewEndKeepsLaunchPayloadConsistent() {
+        repository.loadPage = { request ->
+            val start = if (request.force) 100 else 0
+            val size = if (request.force) 10 else 20
+            BuildHistoryPage((start until start + size).map { historyBuild("$it") })
+        }
+        val vm = viewModel()
+        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { BuildHistoryRoute(router, vm) } } }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:build:0").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:list").performScrollToIndex(12)
+        compose.runOnIdle { vm.onQueuedBuildResult("/queued") }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:build:109").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:list").performScrollToIndex(9)
+        compose.onNodeWithTag("history:build:109").performClick()
+        assertEquals(listOf(historyBuild("109")), router.builds)
+        assertEquals(listOf(false, true), repository.requests.map { it.force })
+    }
+
+    @Test fun queryReplacementWithFewerRowsKeepsNewKeysAndLaunchPayloadConsistent() {
+        repository.loadPage = { request ->
+            val filtered = request.query.locator == "running:true"
+            val start = if (filtered) 100 else 0
+            val size = if (filtered) 10 else 20
+            BuildHistoryPage((start until start + size).map { historyBuild("$it") })
+        }
+        val vm = viewModel()
+        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { BuildHistoryRoute(router, vm) } } }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:build:0").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:list").performScrollToIndex(12)
+        compose.runOnIdle { vm.applyFilter("running:true") }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:build:100").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:build:100").performClick()
+        assertEquals(listOf(historyBuild("100")), router.builds)
+        assertEquals(listOf(BuildHistoryQuery.DEFAULT_LOCATOR, "running:true"), repository.requests.map { it.query.locator })
     }
 
     @Test fun actualReturnUpdatesFavoriteAndDismissedGlobalPromptWithoutReloadingRows() {
