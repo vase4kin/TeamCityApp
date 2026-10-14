@@ -521,7 +521,7 @@ class LoginActivityTest {
     @Test
     fun testUserCanSignInToDemoAsGuest() {
         val demoUrl = "https://teamcity.jetbrains.com"
-        val savedUrl = "$demoUrl/"
+        val savedUrl = demoUrl
         doAnswer {
             callbackArgumentCaptor.value.onResponse(
                 call,
