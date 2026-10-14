@@ -95,7 +95,7 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
         }
-        compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
+        compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_back)).assertIsDisplayed()
         val tag = when (stateName) {
             "loading", "guest_loading" -> "create-account:submit"
             "ssl_dialog" -> "auth:warning"

@@ -154,7 +154,7 @@ class CreateAccountActivityValidationTest {
     @Test
     fun testUserSeesDiscardDialogOnCloseNavigationButtonClick() {
         compose.onNodeWithTag("auth:url").performTextInput("not empty")
-        compose.onNodeWithContentDescription("Close").performClick()
+        compose.onNodeWithContentDescription("Back").performClick()
         compose.onNodeWithText(context.getString(teamcityapp.features.create_account.impl.R.string.discard_dialog_content)).assertIsDisplayed()
     }
 

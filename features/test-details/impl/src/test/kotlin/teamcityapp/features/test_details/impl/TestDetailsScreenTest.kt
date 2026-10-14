@@ -55,7 +55,7 @@ class TestDetailsScreenTest {
         var closed = 0
         compose.setContent { TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Error, { retried++ }, { closed++ }) } }
         compose.onNodeWithText("Try again").performClick()
-        compose.onNodeWithContentDescription("Close").performClick()
+        compose.onNodeWithContentDescription("Back").performClick()
         assertEquals(1, retried)
         assertEquals(1, closed)
     }

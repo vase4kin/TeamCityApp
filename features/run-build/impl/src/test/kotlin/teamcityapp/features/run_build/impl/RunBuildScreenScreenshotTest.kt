@@ -121,7 +121,7 @@ class RunBuildScreenScreenshotTest(private val stateName: String, private val va
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
         }
-        compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
+        compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_back)).assertIsDisplayed()
         val tag = when (stateName) {
             "queuing" -> "run-build:submit"
             "agent_dialog" -> "run-build:agent-dialog"

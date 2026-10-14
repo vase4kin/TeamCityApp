@@ -37,7 +37,6 @@ import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LoadingContent
-import teamcityapp.libraries.theme.ScreenNavigation
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityScreen
@@ -52,7 +51,7 @@ fun SettingsScreen(
     onRetrySave: () -> Unit,
     onClose: () -> Unit
 ) {
-    TeamCityScreen(title = stringResource(SharedR.string.drawer_item_settings), onClose = onClose, navigation = ScreenNavigation.Back) { modifier ->
+    TeamCityScreen(title = stringResource(SharedR.string.drawer_item_settings), onClose = onClose) { modifier ->
         when (state) {
             SettingsUiState.Loading -> LoadingContent(modifier)
 

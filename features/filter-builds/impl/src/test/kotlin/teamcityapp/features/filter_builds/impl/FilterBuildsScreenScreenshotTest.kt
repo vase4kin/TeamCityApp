@@ -99,7 +99,7 @@ class FilterBuildsScreenScreenshotTest(private val stateName: String, private va
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
         }
-        compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
+        compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_back)).assertIsDisplayed()
         val node = compose.onRoot()
         node.captureRoboImage("filter_builds_${stateName}_${variant.name}.png")
     }

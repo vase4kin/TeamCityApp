@@ -66,8 +66,7 @@ fun ManageAccountsScreen(
 ) {
     TeamCityScreen(
         stringResource(R.string.title_activity_account_list),
-        onClose,
-        navigation = ScreenNavigation.Back
+        onClose
     ) { modifier ->
         val listState = rememberTeamCityLazyListState()
         BoxWithConstraints(modifier.testTag("accounts:body")) {

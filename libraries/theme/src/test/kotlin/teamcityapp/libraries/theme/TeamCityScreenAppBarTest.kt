@@ -49,6 +49,18 @@ class TeamCityScreenAppBarTest(private val dark: Boolean) {
     private var flat = Color.Unspecified
     private var raised = Color.Unspecified
 
+    @Test fun backNavigationInvokesTheScreenCallback() {
+        var backClicks = 0
+        compose.setContent {
+            TeamCityTheme(darkTheme = dark) {
+                TeamCityScreen("Screen", { backClicks++ }) { Text("Content", it) }
+            }
+        }
+        compose.onNodeWithContentDescription("Close").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Back").assertIsDisplayed().performClick()
+        assertEquals(1, backClicks)
+    }
+
     @Test fun programmaticScrollingAndShorterContentUpdateThePinnedHeader() {
         val count = mutableStateOf(40)
         compose.setContent {

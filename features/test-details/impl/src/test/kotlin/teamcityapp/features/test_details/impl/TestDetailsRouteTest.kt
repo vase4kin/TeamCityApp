@@ -57,10 +57,14 @@ class TestDetailsRouteTest {
         var loads = 0
         var closes = 0
         val tracker = object : TestDetailsTracker {
-            override fun trackView() { trackedViews++ }
+            override fun trackView() {
+                trackedViews++
+            }
         }
         fun router() = object : TestDetailsRouter {
-            override fun close() { closes++ }
+            override fun close() {
+                closes++
+            }
             override fun closeInvalidInput() = error("The input is valid")
         }
         val currentRouter = mutableStateOf(router())
@@ -75,7 +79,7 @@ class TestDetailsRouteTest {
                             return ""
                         }
                     },
-                    tracker,
+                    tracker
                 ).also { store.put("details", it) }
             }
             TeamCityTheme {
@@ -88,7 +92,7 @@ class TestDetailsRouteTest {
             currentRouter.value = router()
         }
         compose.runOnIdle { assertEquals(1, trackedViews) }
-        compose.onNodeWithContentDescription("Close").performClick()
+        compose.onNodeWithContentDescription("Back").performClick()
         compose.runOnIdle {
             assertEquals(1, closes)
             assertEquals(1, trackedViews)

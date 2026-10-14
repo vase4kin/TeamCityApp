@@ -101,7 +101,7 @@ class FormActivityAliasesTest {
                 assertEquals(destination, it.navigationSnapshot!!.entries.single().destination)
                 assertTrue(it.supportFragmentManager.fragments.isEmpty())
             }
-            compose.onNodeWithContentDescription(context.getString(ThemeR.string.action_close)).performClick()
+            compose.onNodeWithContentDescription(context.getString(ThemeR.string.action_back)).performClick()
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }

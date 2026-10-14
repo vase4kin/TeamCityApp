@@ -139,7 +139,7 @@ class TestDetailsActivityTest {
         `when`(service.testOccurrence(anyString())).thenReturn(Single.just(TestOccurrence(text)))
         launch().use { scenario ->
             awaitText(text)
-            compose.onNodeWithContentDescription("Close").performClick()
+            compose.onNodeWithContentDescription("Back").performClick()
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }
