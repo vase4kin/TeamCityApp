@@ -33,3 +33,9 @@ interface BuildDetailsUiHost {
 }
 enum class BuildDetailsCommand { Share, Browser, Log, Cancel, Restart, Configuration, Project }
 val LocalBuildDetailsUiHost = staticCompositionLocalOf<BuildDetailsUiHost?> { null }
+
+/** Section content reports fresh metadata to its visible UI owner. */
+fun interface BuildDetailsSectionCountHost {
+    fun updated(count: Int)
+}
+val LocalBuildDetailsSectionCountHost = staticCompositionLocalOf<BuildDetailsSectionCountHost?> { null }

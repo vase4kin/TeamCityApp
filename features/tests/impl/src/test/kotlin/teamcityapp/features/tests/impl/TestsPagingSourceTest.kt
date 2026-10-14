@@ -27,29 +27,29 @@ import teamcityapp.features.tests.api.*
 
 class TestsPagingSourceTest {
     private val repository = FakeTestsRepository()
-    private fun source(filter: TestsFilter = TestsFilter.Failed, force: Boolean = false) = TestsPagingSource(repository, "build:42", filter, force)
+    private fun source(filter: TestsFilter = TestsFilter.Failed) = TestsPagingSource(repository, "build:42", filter)
     private fun refresh() = PagingSource.LoadParams.Refresh<String>(null, 10, false)
 
-    @Test fun initialRequestAllowsCacheAndKeepsOpaqueContinuation() = runTest {
+    @Test fun initialRequestBypassesCacheAndKeepsOpaqueContinuation() = runTest {
         val token = "/tests?locator=status:FAILURE,count:10,start:10&fields=testOccurrence(id,name),nextHref"
         repository.load = { TestsPage(listOf(testOccurrence()), token) }
         val page = source().load(refresh()) as PagingSource.LoadResult.Page
         assertEquals(listOf(testOccurrence()), page.data)
         assertEquals(token, page.nextKey)
         assertNull(page.prevKey)
-        assertEquals(FakeTestsRepository.Request("build:42", TestsFilter.Failed, null, false), repository.requests.single())
+        assertEquals(FakeTestsRepository.Request("build:42", TestsFilter.Failed, null, true), repository.requests.single())
     }
 
     @Test fun appendAlwaysBypassesCacheAndUsesExactContinuation() = runTest {
         val source = source()
         source.load(refresh())
         source.load(PagingSource.LoadParams.Append("opaque next", 10, false))
-        assertEquals(listOf(false, true), repository.requests.map { it.force })
+        assertEquals(listOf(true, true), repository.requests.map { it.force })
         assertEquals("opaque next", repository.requests.last().next)
     }
 
     @Test fun eachFilterIsPassedToRepositoryAndPullRefreshBypassesCache() = runTest {
-        for (filter in TestsFilter.entries) source(filter, true).load(refresh())
+        for (filter in TestsFilter.entries) source(filter).load(refresh())
         assertEquals(TestsFilter.entries, repository.requests.map { it.filter })
         assertTrue(repository.requests.all { it.force })
     }

@@ -58,9 +58,29 @@ class TestsRouteTest {
         render()
         compose.waitUntil(5_000) { router.counts.isNotEmpty() }
         assertEquals(listOf(16), router.counts)
+        compose.onNodeWithText("Total tests: 16").assertIsDisplayed()
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("tests:test:1").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("tests:test:1").performClick()
         assertEquals("/testOccurrences/1", router.opened)
+    }
+
+    @Test fun routeShowsFreshCategoryCountersInsteadOfOpeningSnapshot() {
+        repository.loadCount = { 25 }
+        repository.loadCounts = { TestsCounts(20, 4, 1) }
+        render()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Failed (4)").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Total tests: 25").assertIsDisplayed()
+        compose.onNodeWithText("Failed (2)").assertDoesNotExist()
+        assertEquals(1, repository.requests.size)
+    }
+
+    @Test fun allPassedSummarySelectsPassedWithoutShowingAnEmptyFailedList() {
+        repository.loadCounts = { TestsCounts(16, 0, 0) }
+        repository.load = { request -> TestsPage(listOf(testOccurrence("2", if (request.filter == TestsFilter.Passed) TestStatus.Passed else TestStatus.Failed)), null) }
+        render()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Passed (16)").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("tests:filter:Passed").assertIsSelected()
+        compose.onNodeWithText("There are no failed tests").assertDoesNotExist()
     }
 
     @Test fun filterSwitchClearsOldRowsBeforeNewPageCompletes() {
@@ -76,20 +96,22 @@ class TestsRouteTest {
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("tests:test:2").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("tests:test:2").assertHasNoClickAction()
         assertEquals(listOf(TestsFilter.Failed, TestsFilter.Passed), repository.requests.map { it.filter })
-        assertTrue(repository.requests.all { it.next == null && !it.force })
+        assertTrue(repository.requests.all { it.next == null && it.force })
     }
 
-    @Test fun initialErrorRetryBypassesCacheAsLegacyPullRefreshDid() {
-        repository.load = { request -> if (!request.force) error("offline") else TestsPage(listOf(testOccurrence()), null) }
+    @Test fun initialErrorRetryRepeatsFreshRequest() {
+        var attempts = 0
+        repository.load = { if (attempts++ == 0) error("offline") else TestsPage(listOf(testOccurrence()), null) }
         render()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Try again").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Try again").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("tests:test:1").fetchSemanticsNodes().isNotEmpty() }
-        assertEquals(listOf(false, true), repository.requests.map { it.force })
+        assertEquals(listOf(true, true), repository.requests.map { it.force })
     }
 
     @Test fun failedPullRefreshRetainsCompletedEmptyList() {
-        repository.load = { request -> if (request.force) error("offline") else TestsPage(emptyList(), null) }
+        var attempts = 0
+        repository.load = { if (attempts++ > 0) error("offline") else TestsPage(emptyList(), null) }
         render()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("There are no failed tests").fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().performTouchInput {
@@ -98,21 +120,21 @@ class TestsRouteTest {
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Couldn’t refresh. Try again.").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("There are no failed tests").assertIsDisplayed()
         compose.onNodeWithText("Couldn’t load content").assertDoesNotExist()
-        assertEquals(listOf(false, true), repository.requests.map { it.force })
+        assertEquals(listOf(true, true), repository.requests.map { it.force })
     }
 
     @Test fun countFailureRetryUpdatesTabWithoutReloadingPages() {
         repository.loadCount = { error("offline") }
         render()
-        compose.waitUntil(5_000) { router.counts.isNotEmpty() }
-        assertEquals(listOf(0), router.counts)
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Retry count").fetchSemanticsNodes().isNotEmpty() }
+        assertTrue(router.counts.isEmpty())
         compose.waitUntil(5_000) { repository.requests.isNotEmpty() }
         val requests = repository.requests.size
         repository.loadCount = { 21 }
         compose.onNodeWithText("Retry count").performClick()
-        compose.waitUntil(5_000) { router.counts.last() == 21 }
+        compose.waitUntil(5_000) { router.counts.lastOrNull() == 21 }
         assertEquals(requests, repository.requests.size)
-        assertEquals(listOf(0, 21), router.counts)
+        assertEquals(listOf(21), router.counts)
     }
 
     private class FakeRouter : TestsRouter {

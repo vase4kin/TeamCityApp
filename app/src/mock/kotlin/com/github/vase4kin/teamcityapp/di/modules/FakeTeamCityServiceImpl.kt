@@ -30,6 +30,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.ArrayList
@@ -138,6 +139,10 @@ open class FakeTeamCityServiceImpl : TeamCityService {
 
         "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count" -> Single.just(
             TestOccurrences(16)
+        )
+
+        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count,passed,failed,ignored" -> Single.just(
+            Gson().fromJson("""{"count":16,"passed":10,"failed":2,"ignored":4}""", TestOccurrences::class.java)
         )
 
         else -> Observable.empty<TestOccurrences>().singleOrError()

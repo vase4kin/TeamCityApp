@@ -61,13 +61,13 @@ class TestsViewModelTest {
         assertEquals(0, repository.countCalls)
     }
 
-    @Test fun defaultFailedFilterIsKeptWhenOnlyPassedTestsExistAndUnavailableFiltersAreIgnored() = runTest(dispatcher) {
+    @Test fun allPassedBuildOpensPassedAndZeroCountFiltersRemainSelectable() = runTest(dispatcher) {
         handle["failedCount"] = 0
         handle["ignoredCount"] = 0
         val vm = viewModel()
-        assertEquals(TestsFilter.Failed, vm.selection.value.filter)
+        assertEquals(TestsFilter.Passed, vm.selection.value.filter)
         vm.selectFilter(TestsFilter.Ignored)
-        assertEquals(TestsFilter.Failed, vm.selection.value.filter)
+        assertEquals(TestsFilter.Ignored, vm.selection.value.filter)
         vm.selectFilter(TestsFilter.Passed)
         assertEquals(TestsFilter.Passed, vm.selection.value.filter)
         assertEquals(R.string.tests_empty_passed, vm.selection.value.presentation.emptyMessageRes)
@@ -82,7 +82,7 @@ class TestsViewModelTest {
         val vm = viewModel()
         observeCount(vm)
         runCurrent()
-        assertEquals(TestsCountState.Available(16), vm.count.value)
+        assertEquals(TestsCountState.Available(16, TestsCounts(12, 2, 2)), vm.count.value)
         assertEquals(1, repository.countCalls)
         assertTrue(repository.requests.isEmpty())
     }
@@ -98,7 +98,7 @@ class TestsViewModelTest {
         observeCount(vm)
         runCurrent()
         assertEquals(1, repository.countCalls)
-        assertEquals(TestsCountState.Available(16), vm.count.value)
+        assertEquals(TestsCountState.Available(16, TestsCounts(12, 2, 2)), vm.count.value)
     }
 
     @Test fun pendingCountSurvivesShortConfigurationGap() = runTest(dispatcher) {
@@ -112,7 +112,7 @@ class TestsViewModelTest {
         observeCount(vm)
         response.complete(20)
         runCurrent()
-        assertEquals(TestsCountState.Available(20), vm.count.value)
+        assertEquals(TestsCountState.Available(20, TestsCounts(12, 2, 2)), vm.count.value)
         assertEquals(1, repository.countCalls)
     }
 
@@ -125,7 +125,7 @@ class TestsViewModelTest {
         repository.loadCount = { 25 }
         vm.retryCount()
         runCurrent()
-        assertEquals(TestsCountState.Available(25), vm.count.value)
+        assertEquals(TestsCountState.Available(25, TestsCounts(12, 2, 2)), vm.count.value)
         assertTrue(repository.requests.isEmpty())
     }
 
@@ -160,7 +160,7 @@ class TestsViewModelTest {
         val rows = vm.selection.value.pages.asSnapshot { scrollTo(18) }
         assertEquals((0..19).map { testOccurrence("$it") }, rows)
         assertEquals(listOf(null, "opaque next"), repository.requests.map { it.next })
-        assertEquals(listOf(false, true), repository.requests.map { it.force })
+        assertEquals(listOf(true, true), repository.requests.map { it.force })
     }
 
     @Test fun completedPagesSurviveConfigurationCollectorsWithoutDuplicateRequests() = runTest(dispatcher) {
@@ -176,7 +176,7 @@ class TestsViewModelTest {
             vm.prepareRefresh()
             refresh()
         }
-        assertEquals(listOf(false, true), repository.requests.map { it.force })
+        assertEquals(listOf(true, true), repository.requests.map { it.force })
         assertTrue(repository.requests.all { it.filter == TestsFilter.Failed })
     }
 
@@ -202,8 +202,39 @@ class TestsViewModelTest {
         assertEquals(TestsFilter.Passed, vm.selection.value.filter)
         assertEquals(R.string.tests_empty_passed, vm.selection.value.presentation.emptyMessageRes)
         assertEquals(listOf(testOccurrence("2", TestStatus.Passed)), vm.selection.value.pages.asSnapshot())
-        assertEquals(FakeTestsRepository.Request("build:42", TestsFilter.Passed, null, false), repository.requests.last())
+        assertEquals(FakeTestsRepository.Request("build:42", TestsFilter.Passed, null, true), repository.requests.last())
         assertEquals(TestsFilter.Passed.name, handle.get<String>(TestsViewModel.ARG_FILTER))
+    }
+
+    @Test fun freshSummaryReplacesSnapshotCountersWithoutRestartingPages() = runTest(dispatcher) {
+        repository.loadCount = { 25 }
+        repository.loadCounts = { TestsCounts(20, 4, 1) }
+        val vm = viewModel()
+        val pages = vm.selection.value.pages
+        observeCount(vm)
+        runCurrent()
+        assertEquals(TestsCounts(20, 4, 1), vm.counts)
+        assertEquals(TestsCountState.Available(25, vm.counts), vm.count.value)
+        assertSame(pages, vm.selection.value.pages)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.tests_section_failed, listOf(4)), vm.selection.value.presentation.sectionTitles[TestsFilter.Failed])
+        repository.loadCount = { 30 }
+        repository.loadCounts = { TestsCounts(25, 4, 1) }
+        vm.prepareRefresh()
+        runCurrent()
+        assertEquals(TestsCountState.Available(30, TestsCounts(25, 4, 1)), vm.count.value)
+        assertEquals(2, repository.countCalls)
+    }
+
+    @Test fun freshAllPassedSummaryCorrectsDefaultButPreservesExplicitSelection() = runTest(dispatcher) {
+        repository.loadCounts = { TestsCounts(16, 0, 0) }
+        val vm = viewModel()
+        observeCount(vm)
+        runCurrent()
+        assertEquals(TestsFilter.Passed, vm.selection.value.filter)
+        vm.selectFilter(TestsFilter.Failed)
+        vm.retryCount()
+        runCurrent()
+        assertEquals(TestsFilter.Failed, vm.selection.value.filter)
     }
 
     @Test fun clearingViewModelCancelsPendingPagingWork() = runTest(dispatcher) {

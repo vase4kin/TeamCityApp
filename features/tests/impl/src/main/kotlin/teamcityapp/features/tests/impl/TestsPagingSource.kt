@@ -30,12 +30,11 @@ import teamcityapp.features.tests.api.TestsRepository
 internal class TestsPagingSource(
     private val repository: TestsRepository,
     private val url: String,
-    private val filter: TestsFilter,
-    private val forceRefresh: Boolean
+    private val filter: TestsFilter
 ) : PagingSource<String, TestOccurrence>() {
     override suspend fun load(params: LoadParams<String>): LoadResult<String, TestOccurrence> = try {
-        // Legacy append always bypasses cached pages; initial/filter requests may use cache.
-        val page = repository.tests(url, filter, params.key, params is LoadParams.Append || forceRefresh)
+        // A fresh summary must not be paired with rows from the legacy three-minute cache.
+        val page = repository.tests(url, filter, params.key, true)
         currentCoroutineContext().ensureActive()
         LoadResult.Page(page.items.toList(), prevKey = null, nextKey = page.nextHref?.takeUnless { it.isBlank() })
     } catch (cancelled: CancellationException) {

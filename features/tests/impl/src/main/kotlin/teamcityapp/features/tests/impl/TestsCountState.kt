@@ -16,8 +16,17 @@
 
 package teamcityapp.features.tests.impl
 
+import teamcityapp.features.tests.api.TestsCounts
+import teamcityapp.libraries.theme.UiText
+
 internal sealed interface TestsCountState {
     data object Loading : TestsCountState
-    data class Available(val count: Int) : TestsCountState
+    data class Available(val count: Int, val counts: TestsCounts? = null) : TestsCountState
     data object Unavailable : TestsCountState
+
+    val totalLabel: UiText get() = when (this) {
+        Loading -> UiText.Resource(R.string.tests_total_loading)
+        is Available -> UiText.Resource(R.string.tests_total, listOf(count))
+        Unavailable -> UiText.Resource(R.string.tests_total_unavailable)
+    }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.data
+package teamcityapp.features.tests.impl.data
 
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
@@ -28,11 +28,13 @@ import org.junit.Test
 import org.mockito.kotlin.*
 import teamcityapp.features.test_details.repository.models.TestOccurrence as LegacyTest
 import teamcityapp.features.tests.api.TestStatus
+import teamcityapp.features.tests.api.TestsCounts
 import teamcityapp.features.tests.api.TestsFilter
+import teamcityapp.features.tests.api.TestsSummary
 import teamcityapp.features.tests.impl.data.DefaultTestsRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AppTestsRepositoryTest {
+class DefaultTestsRepositoryTest {
     private fun page(rows: List<LegacyTest>, next: String? = null): TestOccurrences = mock {
         on { objects } doReturn rows
         on { nextHref } doReturn next
@@ -92,7 +94,7 @@ class AppTestsRepositoryTest {
         doReturn(Single.never<TestOccurrences>().doOnDispose { disposals++ }).whenever(legacy).listTestOccurrences(any(), any())
         val repository = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
         val page = async { repository.tests("build:42", TestsFilter.Failed, null, false) }
-        val count = async { repository.count("build:42") }
+        val count = async { repository.summary("build:42") }
         runCurrent()
         page.cancel()
         count.cancel()
@@ -100,14 +102,20 @@ class AppTestsRepositoryTest {
         assertEquals(2, disposals)
     }
 
-    @Test fun countUsesUnfilteredForcedRequestAndPropagatesOptionalFailure() = runTest {
+    @Test fun summaryLoadsTotalAndCategoriesTogetherAndPropagatesOptionalFailure() = runTest {
         val legacy = mock<Repository>()
-        val url = "build:42,count:${Int.MAX_VALUE}&fields=count"
-        doReturn(Single.just(TestOccurrences(17))).whenever(legacy).listTestOccurrences(url, true)
+        val url = "build:42,count:${Int.MAX_VALUE}&fields=count,passed,failed,ignored"
+        val response = mock<TestOccurrences> {
+            on { count } doReturn 17
+            on { passed } doReturn 12
+            on { failed } doReturn 3
+            on { ignored } doReturn 2
+        }
+        doReturn(Single.just(response)).whenever(legacy).listTestOccurrences(url, true)
         val repository = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
-        assertEquals(17, repository.count("build:42"))
+        assertEquals(TestsSummary(17, TestsCounts(12, 3, 2)), repository.summary("build:42"))
         doReturn(Single.error<TestOccurrences>(IllegalStateException("offline"))).whenever(legacy).listTestOccurrences(url, true)
-        assertEquals("offline", runCatching { repository.count("build:42") }.exceptionOrNull()?.message)
+        assertEquals("offline", runCatching { repository.summary("build:42") }.exceptionOrNull()?.message)
     }
 
     @Test fun resolvesCurrentAccountForEachRequest() = runTest {

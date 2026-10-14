@@ -19,14 +19,19 @@ package teamcityapp.features.build_details.api
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import teamcityapp.libraries.builds.BuildLaunchData
+import teamcityapp.libraries.navigation.NavigationResult
 
 /** A separate build-section visit with its complete, restorable launch arguments. */
 @Serializable
-data class BuildDetailsSectionDestination(val build: BuildLaunchData, val section: BuildDetailsSection, val configurationName: String? = null, val buildNumber: String = build.number ?: build.id) : NavKey {
+data class BuildDetailsSectionDestination(val build: BuildLaunchData, val section: BuildDetailsSection, val configurationName: String? = null, val buildNumber: String = build.number ?: build.id, val originEntryId: String? = null) : NavKey {
     init {
         require(section in build.detailsSections()) { "This build section is unavailable" }
     }
 }
+
+/** A refreshed section count belongs to the exact build visit that opened it. */
+@Serializable
+data class BuildDetailsSectionCountResult(val buildId: String, val section: BuildDetailsSection, val count: Int) : NavigationResult
 
 fun BuildLaunchData.detailsSections(): List<BuildDetailsSection> = buildList {
     if (changes?.href != null) add(BuildDetailsSection.Changes)

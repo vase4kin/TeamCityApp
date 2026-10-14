@@ -46,9 +46,8 @@ internal data class TestsSelection(val filter: TestsFilter, val pages: Flow<Pagi
     val rows: Flow<PagingData<TestRowUiState>> = pages.map { page -> page.map(::TestRowUiState) }
 }
 
-internal data class TestsPresentation(val filter: TestsFilter, val counts: TestsCounts) {
-    val filterOptions: List<TestFilterUiState> = TestsFilter.entries.filter { it == filter || counts.count(it) > 0 }.map { TestFilterUiState(it, testFilterLabel(it)) }
-    val showFilters: Boolean = TestsFilter.entries.any { counts.count(it) > 0 }
+internal data class TestsPresentation(val filter: TestsFilter, val counts: TestsCounts, val countsKnown: Boolean = true) {
+    val filterOptions: List<TestFilterUiState> = TestsFilter.entries.map { TestFilterUiState(it, testFilterLabel(it)) }
 
     @get:StringRes val emptyMessageRes: Int = when (filter) {
         TestsFilter.Failed -> R.string.tests_empty_failed
@@ -56,9 +55,9 @@ internal data class TestsPresentation(val filter: TestsFilter, val counts: Tests
         TestsFilter.Ignored -> R.string.tests_empty_ignored
     }
     val sectionTitles: Map<TestsFilter, UiText> = mapOf(
-        TestsFilter.Failed to UiText.Resource(R.string.tests_section_failed, listOf(counts.failed)),
-        TestsFilter.Passed to UiText.Resource(R.string.tests_section_passed, listOf(counts.passed)),
-        TestsFilter.Ignored to UiText.Resource(R.string.tests_section_ignored, listOf(counts.ignored))
+        TestsFilter.Failed to if (countsKnown) UiText.Resource(R.string.tests_section_failed, listOf(counts.failed)) else UiText.Resource(R.string.tests_filter_failed),
+        TestsFilter.Passed to if (countsKnown) UiText.Resource(R.string.tests_section_passed, listOf(counts.passed)) else UiText.Resource(R.string.tests_filter_passed),
+        TestsFilter.Ignored to if (countsKnown) UiText.Resource(R.string.tests_section_ignored, listOf(counts.ignored)) else UiText.Resource(R.string.tests_filter_ignored)
     )
 }
 
@@ -92,28 +91,37 @@ class TestsViewModel @Inject constructor(
     private val repository: TestsRepository
 ) : ViewModel() {
     private val url: String = checkNotNull(savedStateHandle[TestsViewModel.ARG_URL])
-    internal val counts = TestsCounts(
+    private var currentCounts = TestsCounts(
         passed = savedStateHandle[TestsViewModel.ARG_PASSED] ?: 0,
         failed = savedStateHandle[TestsViewModel.ARG_FAILED] ?: 0,
         ignored = savedStateHandle[TestsViewModel.ARG_IGNORED] ?: 0
     )
+    internal val counts get() = currentCounts
+    private var explicitlySelected = savedStateHandle.contains(ARG_FILTER)
+    private fun defaultFilter(counts: TestsCounts): TestsFilter = when {
+        counts.failed > 0 -> TestsFilter.Failed
+        counts.passed > 0 -> TestsFilter.Passed
+        counts.ignored > 0 -> TestsFilter.Ignored
+        else -> TestsFilter.Failed
+    }
     private var generation = newGeneration(
-        savedStateHandle.get<String>(ARG_FILTER)?.let { name -> TestsFilter.entries.find { it.name == name } } ?: TestsFilter.Failed
+        savedStateHandle.get<String>(ARG_FILTER)?.let { name -> TestsFilter.entries.find { it.name == name } } ?: defaultFilter(counts)
     )
     private val selected = MutableStateFlow(generation.selection)
     internal val selection = selected.asStateFlow()
 
     /** Switching a filter cancels its old page requests and starts again at the first page. */
     internal fun selectFilter(filter: TestsFilter) {
-        if (filter == selection.value.filter || counts.count(filter) <= 0) return
+        explicitlySelected = true
+        savedStateHandle[ARG_FILTER] = filter.name
+        if (filter == selection.value.filter) return
         generation.scope.cancel()
         generation = newGeneration(filter)
-        savedStateHandle[ARG_FILTER] = filter.name
         selected.value = generation.selection
     }
 
     internal fun prepareRefresh() {
-        generation.forceRefresh = true
+        retryCount()
     }
 
     private fun newGeneration(filter: TestsFilter): Generation {
@@ -123,14 +131,13 @@ class TestsViewModel @Inject constructor(
         // replacement or clearing this ViewModel cancels the paging generation's scope.
         val pages = Pager(
             PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 2, enablePlaceholders = false),
-            pagingSourceFactory = { TestsPagingSource(repository, url, filter, generation.forceRefresh) }
+            pagingSourceFactory = { TestsPagingSource(repository, url, filter) }
         ).flow.cachedIn(scope)
         generation.selection = TestsSelection(filter, pages, counts)
         return generation
     }
 
     private class Generation(val scope: CoroutineScope) {
-        var forceRefresh = false
         lateinit var selection: TestsSelection
     }
 
@@ -144,7 +151,20 @@ class TestsViewModel @Inject constructor(
             }
             emit(TestsCountState.Loading)
             val result = try {
-                TestsCountState.Available(repository.count(url))
+                repository.summary(url).let { summary ->
+                    currentCoroutineContext().ensureActive()
+                    require(summary.total >= 0 && TestsFilter.entries.all { summary.counts.count(it) >= 0 })
+                    currentCounts = summary.counts
+                    val filter = if (!explicitlySelected && counts.count(selection.value.filter) == 0) defaultFilter(counts) else selection.value.filter
+                    if (filter != selection.value.filter) {
+                        generation.scope.cancel()
+                        generation = newGeneration(filter)
+                        selected.value = generation.selection
+                    } else {
+                        selected.update { it.copy(counts = counts) }
+                    }
+                    TestsCountState.Available(summary.total, summary.counts)
+                }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {

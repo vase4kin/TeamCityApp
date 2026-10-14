@@ -32,7 +32,10 @@ data class TestsCounts(val passed: Int, val failed: Int, val ignored: Int) {
 
 data class TestsPage(val items: List<TestOccurrence>, val nextHref: String?)
 
+/** Total and status counters from the same unfiltered server response. */
+data class TestsSummary(val total: Int, val counts: TestsCounts)
+
 interface TestsRepository {
     suspend fun tests(url: String, filter: TestsFilter, nextHref: String?, forceRefresh: Boolean): TestsPage
-    suspend fun count(url: String): Int
+    suspend fun summary(url: String): TestsSummary
 }

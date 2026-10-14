@@ -18,19 +18,15 @@ package teamcityapp.features.home.impl
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCitySelectionChip
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @Composable
@@ -42,17 +38,12 @@ internal fun HomeFilterChips(
 ) {
     FlowRow(modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
         options.forEach { option ->
-            FilterChip(
+            TeamCitySelectionChip(
                 selected = option.selected,
                 enabled = enabled,
-                onClick = { if (!option.selected) onSelected(option.filter) },
-                label = { Text(stringResource(option.labelRes)) },
-                leadingIcon = if (option.selected) {
-                    { Icon(painterResource(R.drawable.ic_check), null, Modifier.size(FilterChipDefaults.IconSize)) }
-                } else {
-                    null
-                },
-                modifier = Modifier.testTag("home:filter:${option.filter.name}").semantics { role = Role.RadioButton }
+                onClick = { onSelected(option.filter) },
+                label = stringResource(option.labelRes),
+                modifier = Modifier.testTag("home:filter:${option.filter.name}")
             )
         }
     }
