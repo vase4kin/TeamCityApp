@@ -17,6 +17,12 @@
 package teamcityapp.features.test_details.impl
 
 import android.app.Application
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -73,12 +79,25 @@ class TestDetailsScreenScreenshotTest(private val stateName: String, private val
             "empty" -> TestDetailsUiState.Empty
             "error" -> TestDetailsUiState.Error
             "invalid_input" -> TestDetailsUiState.InvalidInput
-            "content" -> TestDetailsUiState.Content("Test details <tag> & literal text")
-            "long_content" -> TestDetailsUiState.Content((0..80).joinToString(" ") { "Stack frame $it: AssertionError at example.Test.test(Test.kt:$it)." })
+            "content", "search", "search_single_match", "search_no_matches", "unwrapped", "copied" -> TestDetailsUiState.Content("java.lang.AssertionError: expected <true> but was <false>\n\n    at example.auth.SessionTest.rejectsExpiredToken(SessionTest.kt:42)\n\tat example.auth.SessionTest.verifyToken(SessionTest.kt:27)\n\nLiteral output: <tag> & text")
+            "long_content" -> TestDetailsUiState.Content("java.lang.AssertionError: expected <true> but was <false>\n" + (0..80).joinToString("\n") { "    at example.auth.SessionTest.test(SessionTest.kt:$it)" })
             else -> error("Unknown screenshot state: $stateName")
         }
         compose.mainClock.autoAdvance = state != TestDetailsUiState.Loading
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { TestDetailsScreen(state, {}, {}) } }
+        val query = when (stateName) {
+            "search" -> "SessionTest"
+            "search_single_match" -> "AssertionError"
+            "search_no_matches" -> "missing"
+            else -> ""
+        }
+        compose.setContent {
+            val snackbar = remember { SnackbarHostState() }
+            val copied = stringResource(R.string.test_details_copied)
+            if (stateName == "copied") LaunchedEffect(snackbar) { snackbar.showSnackbar(copied, duration = SnackbarDuration.Indefinite) }
+            TeamCityTheme(darkTheme = variant.dark) {
+                TestDetailsScreen(state, {}, {}, query = query, wrapLines = stateName != "unwrapped", snackbarHost = { SnackbarHost(snackbar) })
+            }
+        }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         when (state) {
@@ -95,6 +114,11 @@ class TestDetailsScreenScreenshotTest(private val stateName: String, private val
             compose.waitForIdle()
             compose.onRoot().captureRoboImage("${name}_bottom.png")
         }
+        if (stateName == "unwrapped") {
+            compose.onNodeWithTag("test_details:text").performTouchInput { swipeLeft() }
+            compose.waitForIdle()
+            compose.onRoot().captureRoboImage("${name}_right.png")
+        }
     }
 
     companion object {
@@ -107,7 +131,7 @@ class TestDetailsScreenScreenshotTest(private val stateName: String, private val
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "empty", "error", "invalid_input", "content", "long_content").flatMap { state ->
+            listOf("loading", "empty", "error", "invalid_input", "content", "long_content", "search", "search_single_match", "search_no_matches", "unwrapped", "copied").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }
