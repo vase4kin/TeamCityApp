@@ -1,0 +1,79 @@
+{
+  "copyright": "Copyright 2026 Andrey Tolpeev",
+  "license": "Licensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.",
+  "locale": "en-US",
+  "phoneDimensions": [
+    1080,
+    1920
+  ],
+  "format": "24-bit RGB PNG, no alpha",
+  "listing": "https://play.google.com/store/apps/details?id=com.github.vase4kin.teamcityapp",
+  "requirements": "https://support.google.com/googleplay/android-developer/answer/9866151?hl=en",
+  "captures": "Current app on Android emulator; public guest data for light screens and running builds; bundled mock data for overview, artifacts, and build setup.",
+  "assets": [
+    {
+      "file": "phone/01-projects.png",
+      "title": "TeamCity, in your pocket.",
+      "theme": "light",
+      "altText": "TeamCityApp in light theme showing projects and build configurations on a connected TeamCity server.",
+      "source": "source/projects.png"
+    },
+    {
+      "file": "phone/02-build-overview.png",
+      "title": "Every build. All the details.",
+      "theme": "dark",
+      "altText": "A successful build in dark theme with its status, log link, changes, artifacts, and execution details.",
+      "source": "source/overview.png"
+    },
+    {
+      "file": "phone/03-build-history.png",
+      "title": "Follow your build history.",
+      "theme": "light",
+      "altText": "Build history in light theme showing successful builds, branches, test summaries, and build actions.",
+      "source": "source/history.png"
+    },
+    {
+      "file": "phone/04-running-builds.png",
+      "title": "See what’s running.",
+      "theme": "dark",
+      "altText": "Activity in dark theme showing running builds, status summaries, branches, and Running, Queue, and Agents tabs.",
+      "source": "source/running.png"
+    },
+    {
+      "file": "phone/05-test-results.png",
+      "title": "Inspect your test results.",
+      "theme": "light",
+      "altText": "Build test results in light theme with Failed, Passed, and Ignored filters and individual test results.",
+      "source": "source/tests.png"
+    },
+    {
+      "file": "phone/06-build-artifacts.png",
+      "title": "Find your build artifacts.",
+      "theme": "dark",
+      "altText": "Build artifacts in dark theme showing a resource folder and files with their sizes.",
+      "source": "source/artifacts.png"
+    },
+    {
+      "file": "phone/07-build-agents.png",
+      "title": "Keep track of your agents.",
+      "theme": "light",
+      "altText": "Activity in light theme showing TeamCity build agents and Connected and Disconnected filters.",
+      "source": "source/agents.png"
+    },
+    {
+      "file": "phone/08-run-build.png",
+      "title": "Run builds. Your way.",
+      "theme": "dark",
+      "altText": "The Run build form in dark theme with branch and agent selection, run options, and custom parameters.",
+      "source": "source/run-build.png"
+    }
+  ],
+  "featureGraphic": {
+    "file": "feature-graphic.png",
+    "dimensions": [
+      1024,
+      500
+    ],
+    "altText": "TeamCityApp: TeamCity in your pocket. Builds, tests, and artifacts wherever you are."
+  }
+}
