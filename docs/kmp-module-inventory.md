@@ -214,3 +214,26 @@ stacks; its public navigation envelope validates account identity, live roots an
 size limits before restoring. Explicit browser/diff/copy actions, management and
 artifacts remain phase-scoped later work. See [Phase 3](kmp-phase-3.md) for the
 verification record and actual platform evidence.
+
+
+## Phase 4 ownership delta (2026-10-22)
+
+The repository contains 108 included modules, 55 using KMP, and 21 shared feature
+presentations. There are 213 common production Kotlin files and 53 common test
+files. These are ownership counts, not code-sharing percentages.
+
+Phase 4 adds `presentation` modules for Run Build, Filter Builds, Quick Filter
+(`filter-bottom-sheet`), Action Bottom Sheet (`bottom-sheet`) and Build Details.
+Run Build, Filter Builds and Bottom Sheet APIs now use common roots. The legacy
+Java-Serializable Filter Builds result adapter remains in `androidMain`.
+
+The actual management layouts, form routes and ViewModels are common. Android
+impl modules supply thin Hilt subclasses, installed navigation/platform routers,
+analytics and existing Retrofit/RxCache adapters. Shared design-system ownership
+now includes BranchField, bottom action surfaces, sheet headers and floating-action
+clearance. The native composition root supplies account-scoped Ktor management
+repositories and typed live-origin navigation results. History arguments can be
+updated within the same live visit to retain effective filter locators during
+public navigation restoration.
+
+See [Phase 4](kmp-phase-4.md) for verification, actual UI evidence and limitations.

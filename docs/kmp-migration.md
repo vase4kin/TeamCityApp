@@ -51,7 +51,7 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 - [x] Phase 1 — Toolchain and shared foundation (P0; completed 2026-10-22)
 - [x] Phase 2 — Accounts and first real workflow (P0; completed 2026-10-22)
 - [x] Phase 3 — Home and build browsing (P1; completed 2026-10-22)
-- [ ] Phase 4 — Build management (P1)
+- [x] Phase 4 — Build management (P1; completed 2026-10-22)
 - [ ] Phase 5 — Downloads and platform integrations (P1)
 - [ ] Phase 6 — Release validation and cleanup (P1)
 - [ ] Phase 7 — Platform review and refinements (P2)
@@ -180,18 +180,31 @@ Phase 4 requires a new user instruction.
 
 **Depends on:** Phase 3. **Outcome:** build actions and origin-targeted results work.
 
-- [ ] Migrate Run Build, Filter Builds, Quick Filter, and Action Bottom Sheet.
-- [ ] Preserve locator/legacy filter semantics and return results once to the live
+- [x] Migrate Run Build, Filter Builds, Quick Filter, and Action Bottom Sheet.
+- [x] Preserve locator/legacy filter semantics and return results once to the live
   originating visit, including restoration and stale-recipient rejection.
-- [ ] Implement Stop, Remove, Restart, and queue actions with confirmations,
+- [x] Implement Stop, Remove, Restart, and queue actions with confirmations,
   progress, disabled interactions, errors, and retry behavior.
-- [ ] Preserve queued-build reference loading before normal Build Details entry.
-- [ ] Reject obsolete screen/account action results and cancel unfinished work.
-- [ ] Verify successful, failed, cancelled, restored, and repeated actions on both platforms.
-- [ ] Publish the detailed Sites report, save checkpoints, and record evidence.
+- [x] Preserve queued-build reference loading before normal Build Details entry.
+- [x] Reject obsolete screen/account action results and cancel unfinished work.
+- [x] Verify successful, failed, cancelled, restored, and repeated actions on both platforms.
+- [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
-**Gate:** management workflows pass behavioral and integration checks on both
-platforms with actual before/after evidence. **Report/commits:** pending.
+**Gate passed:** shared management workflows, exact option/parameter payloads,
+confirmations, queued references, failure/retry, account cancellation, retained
+filter arguments and one-time results are verified on both platforms. Evidence
+includes 443 common Native cases, 37 Android integration cases plus a final 10-case
+Run smoke, the 17-case signed iPhone regression suite, final exact-input journeys
+on phone/iPad/accessibility-largest dark layouts, and 1,120 unchanged Android
+baseline hashes. Physical-device validation retains Phase 6 ownership.
+
+**Report:** [Private Phase 4 review](https://teamcityapp-kmp-phase-four-20261022.andrey-tolpeev.chatgpt.site),
+published and verified on 2026-10-22. **Evidence:** [Implementation and verification](kmp-phase-4.md).
+**Checkpoint commits:** implementation `1be3c3f552a384a22735f966fd9516c2d6c984eb`;
+CI `12502dce705d1ab53f8ef844cf06ff0b2c449119`; this checklist, inventory, agent
+contract and evidence saved in the accompanying
+`chore(docs): record KMP phase four evidence` checkpoint on `codex/kmp-phase-1`.
+Application commits remain local. Phase 5 requires a new user instruction.
 
 ## Phase 5 — Downloads and platform integrations
 

@@ -142,7 +142,8 @@ to the requested behavior and the coherent migration slice needed to support it.
   Android destination registrations may remain in `androidMain` during migration.
   About, Login, Navigation, Build History, Build Overview, Home, Favorites,
   Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
-  Parameters and Snapshot Dependencies `presentation` modules own their common UI
+  Parameters, Snapshot Dependencies, Run Build, Filter Builds, Quick Filter,
+  Action Bottom Sheet and Build Details `presentation` modules own their common UI
   and ViewModels. Their existing `impl` modules are Android Hilt/router adapters
   and Roborazzi harnesses. This split is within one feature; cross-feature implementation dependencies remain
   prohibited. Do not duplicate shared layouts in platform adapters.
@@ -166,15 +167,26 @@ to the requested behavior and the coherent migration slice needed to support it.
   Changes/Change Details, Tests/Test Details, Parameters and Snapshot Dependencies.
   The deterministic About preview remains an explicit regression-test launch mode.
   Home uses retained independent stacks, account-scoped persisted favorites/filters,
-  and validated saved public navigation. Native management, artifacts and explicit
-  browser/diff/copy shortcuts belong to later phases; capability-gate unavailable
-  actions. Keep the native root responsible for top/horizontal safe areas. Return
+  and validated saved public navigation. Native History supports Run/Filter and
+  typed live-origin results; the shared Build Details shell supports confirmed
+  Stop/Remove/Restart and queued-reference loading. Effective History locators
+  survive public navigation restoration without replacing the live visit owner.
+  Native artifacts and explicit browser/share/diff/copy shortcuts belong to later
+  phases; capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
   section counts once to their exact live originating build visit. Android retains
   its Retrofit/RxCache/authentication compatibility adapters behind shared feature
   contracts; do not claim that its complete data stack has been replaced.
 - KMP UI harnesses can apply `teamcityapp.android.screenshot`; verify with
   `:shared-app:verifyRoborazziAndroidHostTest`. Shared native account tests and
   signed XCTest UI runs must not concurrently control the same simulator.
+- Management transport writes are account-generation scoped and use the same
+  origin/context/authentication guards as reads. Never automatically retry an
+  uncertain mutation. Only an explicit initial Basic challenge may replay it.
+  Keep technical parameter editing text/selection/composition in UI-owned
+  TextFieldState and read final field values at confirmation.
+  Verify management writes against `scripts/kmp-platform-fixture.py
+  --enable-mutations` and its local `/context/manage` contexts; public TeamCity
+  verification remains read-only. Keep fixture writes disabled by default.
 
 The following Android architecture rules continue to apply to unmigrated modules;
 the scoped shared-code rules above apply to migrated KMP modules.
