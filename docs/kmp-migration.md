@@ -52,7 +52,7 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 - [x] Phase 2 — Accounts and first real workflow (P0; completed 2026-10-22)
 - [x] Phase 3 — Home and build browsing (P1; completed 2026-10-22)
 - [x] Phase 4 — Build management (P1; completed 2026-10-22)
-- [ ] Phase 5 — Downloads and platform integrations (P1)
+- [x] Phase 5 — Downloads and platform integrations (P1; completed 2026-10-23)
 - [ ] Phase 6 — Release validation and cleanup (P1)
 - [ ] Phase 7 — Platform review and refinements (P2)
 
@@ -210,19 +210,37 @@ Application commits remain local. Phase 5 requires a new user instruction.
 
 **Depends on:** Phase 4. **Outcome:** platform-dependent capabilities are complete.
 
-- [ ] Complete artifact browsing, archive folders, and live-origin navigation results.
-- [ ] Implement downloads and inline progress/retry/cancel UI.
-- [ ] Preserve screen-owned lifetime through recreation/sheets; cancel on departure
+- [x] Complete artifact browsing, archive folders, and live-origin navigation results.
+- [x] Implement downloads and inline progress/retry/cancel UI.
+- [x] Preserve screen-owned lifetime through recreation/sheets; cancel on departure
   or backgrounding, close blocked reads, remove partial files, protect completed files.
-- [ ] Complete file open/export, browser/log URLs, sharing, clipboard, and permissions.
-- [ ] Keep browser cookies/authentication separate from stored API credentials.
-- [ ] Complete Settings/theme migration, account management, rating and licenses.
-- [ ] Complete selected analytics and crash-reporting integrations behind platform contracts.
-- [ ] Verify success/failure/unavailable handlers and lifecycle/resource cleanup.
-- [ ] Publish the detailed Sites report, save checkpoints, and record evidence.
+- [x] Complete file open/export, browser/log URLs, sharing, clipboard, and permissions.
+- [x] Keep browser cookies/authentication separate from stored API credentials.
+- [x] Complete Settings/theme migration, account management, rating and licenses.
+- [x] Complete selected analytics and crash-reporting integrations behind platform contracts.
+- [x] Verify success/failure/unavailable handlers and lifecycle/resource cleanup.
+- [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
 **Gate:** every supported platform action has implementation, error handling, and
-verification on both platforms. **Report/commits:** pending.
+verification on both platforms. **Gate passed on 2026-10-23.**
+
+**Report:** [Private Phase 5 Site](https://teamcityapp-kmp-phase-five-20261022.andrey-tolpeev.chatgpt.site)
+and [detailed implementation/evidence record](kmp-phase-5.md).
+
+**Checkpoints:** runtime/tests `b31c1ecdb133a044e338f7ff756a4dfaa5aa537b`;
+CI `a333e3f7b4b47b7a251deb20f92cdf6fb731a413`. This checklist, the detailed
+record and agent contract form the documentation checkpoint.
+
+Evidence includes 491 Native cases, 450 affected JVM cases (one opt-in skip),
+231 app unit tests, 35 Android integration tests plus a final progress check,
+14 signed iOS journeys plus a final-source artifact smoke, 69 Python tests and
+330 scoped renders. All 3,381 existing repository PNG baseline hashes are unchanged.
+The report labels 92 new render baselines and actual Android/iOS evidence.
+The selected native diagnostics boundary uses OS events and Apple crash reports;
+hosted iOS telemetry upload and the full release license inventory remain explicitly
+unconfigured/deferred as described in the record.
+
+Application commits remain local. Phase 6 requires a new user instruction.
 
 ## Phase 6 — Release validation and cleanup
 

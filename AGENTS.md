@@ -143,7 +143,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   About, Login, Navigation, Build History, Build Overview, Home, Favorites,
   Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
   Parameters, Snapshot Dependencies, Run Build, Filter Builds, Quick Filter,
-  Action Bottom Sheet and Build Details `presentation` modules own their common UI
+  Action Bottom Sheet, Build Details, Artifacts and Settings `presentation` modules own their common UI
   and ViewModels. Their existing `impl` modules are Android Hilt/router adapters
   and Roborazzi harnesses. This split is within one feature; cross-feature implementation dependencies remain
   prohibited. Do not duplicate shared layouts in platform adapters.
@@ -171,8 +171,19 @@ to the requested behavior and the coherent migration slice needed to support it.
   typed live-origin results; the shared Build Details shell supports confirmed
   Stop/Remove/Restart and queued-reference loading. Effective History locators
   survive public navigation restoration without replacing the live visit owner.
-  Native artifacts and explicit browser/share/diff/copy shortcuts belong to later
-  phases; capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
+  Native artifacts support folders, archive actions and byte-progress downloads.
+  Downloads belong to the screen, survive recreation/sheets, and cancel on departure,
+  app/scene backgrounding or account replacement; close blocked reads and remove
+  partial files. Native completed files use unique cache directories and export
+  through the system activity sheet. Android keeps its installed file provider,
+  permission adapters and successful replacement policy.
+  Native browser/log/diff, sharing and clipboard actions stay in UI-owned adapters;
+  API credentials never enter browser links. Settings shares presentation over the
+  portable theme-preference contract, retaining Android DataStore and native
+  UserDefaults. About links native account actions, Apple rating requests and bundled
+  runtime-license texts. Native diagnostics use fixed OS event labels and Apple's
+  crash reports; hosted iOS analytics/crash upload is unconfigured.
+  Capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
   section counts once to their exact live originating build visit. Android retains
   its Retrofit/RxCache/authentication compatibility adapters behind shared feature
   contracts; do not claim that its complete data stack has been replaced.
