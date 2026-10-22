@@ -35,8 +35,13 @@ def modules(root):
         if re.search(r'id\("teamcityapp\.kmp\.(?:library|compose)"\)', build):
             sources = [p for source_set in ("commonTest", "androidHostTest")
                        for p in (directory / f"src/{source_set}").rglob("*.kt")]
-            result[module] = {"tasks": [f"{module}:testAndroidHostTest"],
-                              "weight": max(1, len(sources) * .1), "has_tests": bool(sources)}
+            tasks = [f"{module}:testAndroidHostTest"]
+            if 'id("teamcityapp.android.screenshot")' in build:
+                tasks.append(f"{module}:verifyRoborazziAndroidHostTest")
+            startups = sum(len(re.findall(r"@RunWith\([^\n]*Robolectric", p.read_text())) for p in sources)
+            images = sum(1 for _ in (directory / "src/test/screenshots").rglob("*.png"))
+            result[module] = {"tasks": tasks,
+                              "weight": max(1, 20 * min(startups, 2) + images * .15 + len(sources) * .1), "has_tests": bool(sources)}
             continue
         if not re.search(r'id\("teamcityapp\.android\.(?:application|library(?:\.java)?)"\)', build):
             raise ValueError(f"Unrecognized test convention for {module}; update unit-test-ci.py")

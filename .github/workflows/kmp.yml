@@ -56,21 +56,23 @@ jobs:
           key: konan-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gradle/libs.versions.toml') }}
       - name: Compile device and simulator frameworks and run shared tests
         run: |
-          ./gradlew :shared-app:linkDebugFrameworkIosArm64 :shared-app:linkDebugFrameworkIosSimulatorArm64 :features:about:presentation:iosSimulatorArm64Test :libraries:design-system:iosSimulatorArm64Test --max-workers=2 --console=plain
-      - name: Run About UI smoke tests
+          ./gradlew :shared-app:linkDebugFrameworkIosArm64 :shared-app:linkDebugFrameworkIosSimulatorArm64 iosSimulatorArm64Test --max-workers=2 --console=plain
+      - name: Run shared UI and account-consent smoke tests
         run: |
-          mkdir -p build/kmp-phase-1
+          mkdir -p build/kmp-phase-2
           xcodebuild -project iosApp/TeamCityApp.xcodeproj -scheme TeamCityApp -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4' \
-            -derivedDataPath build/kmp-phase-1/DerivedData \
-            -resultBundlePath build/kmp-phase-1/ios-smoke.xcresult \
-            -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=NO test
+            -derivedDataPath build/kmp-phase-2/DerivedData \
+            -resultBundlePath build/kmp-phase-2/ios-smoke.xcresult \
+            -parallel-testing-enabled NO -collect-test-diagnostics never \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=YES test
       - name: Upload simulator test evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: kmp-ios-tests
           path: |
-            build/kmp-phase-1/ios-smoke.xcresult
-            features/about/presentation/build/test-results
-            features/about/presentation/build/reports/tests
+            build/kmp-phase-2/ios-smoke.xcresult
+            features/*/presentation/build/test-results
+            features/*/presentation/build/reports/tests
+            libraries/*/build/test-results/iosSimulatorArm64Test

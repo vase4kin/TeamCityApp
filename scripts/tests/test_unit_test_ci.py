@@ -120,6 +120,15 @@ class UnitTestCiTest(unittest.TestCase):
         ci.restore(consumer, self.inputs)
         self.assertEqual([p.read_text() for p in ci.coverage_paths(consumer, ":features:about:presentation")], ["shared"])
 
+    def test_kmp_screenshot_modules_schedule_the_host_golden_task(self):
+        self.write(self.root, "libraries/shared/build.gradle.kts",
+                   'id("teamcityapp.kmp.compose")\nid("teamcityapp.android.screenshot")')
+        self.write(self.root, "libraries/shared/src/androidHostTest/kotlin/ScreenTest.kt", "class ScreenTest")
+        tasks = " ".join(s["tasks"] for s in ci.plan(self.root)["include"])
+        self.assertIn(":libraries:shared:testAndroidHostTest", tasks)
+        self.assertIn(":libraries:shared:verifyRoborazziAndroidHostTest", tasks)
+        self.assertNotIn(":libraries:shared:verifyRoborazziDebug", tasks)
+
     def test_kmp_tests_require_execution_data_in_coverage_transport(self):
         self.write(self.root, "libraries/shared/build.gradle.kts", 'id("teamcityapp.kmp.library")')
         self.write(self.root, "libraries/shared/src/commonTest/kotlin/SharedTest.kt", "class SharedTest")
