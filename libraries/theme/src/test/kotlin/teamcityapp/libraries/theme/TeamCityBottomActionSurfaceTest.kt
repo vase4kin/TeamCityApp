@@ -166,7 +166,7 @@ class TeamCityBottomActionSurfaceTest {
         assertTone(dark, true)
         assertEquals(initial, compose.onNodeWithTag("action").fetchSemanticsNode().boundsInRoot)
         val pixels = compose.onNodeWithTag("bar").captureToImage().toPixelMap()
-        val expected = (if (dark) DarkColorScheme else LightColorScheme).surfaceContainer
+        val expected = teamCityColorScheme(dark).surfaceContainer
         assertEquals(expected, pixels[8, pixels.height - 8])
         assertEquals(expected, pixels[pixels.width - 8, 8])
 
@@ -188,7 +188,7 @@ class TeamCityBottomActionSurfaceTest {
     private fun assertTone(dark: Boolean, raised: Boolean) {
         compose.mainClock.advanceTimeBy(1_000)
         compose.waitForIdle()
-        val colors = if (dark) DarkColorScheme else LightColorScheme
+        val colors = teamCityColorScheme(dark)
         val expected = if (raised) colors.surfaceContainer else colors.surface
         val pixels = compose.onNodeWithTag("bar").captureToImage().toPixelMap()
         assertEquals(expected, pixels[8, 8])

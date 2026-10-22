@@ -17,7 +17,10 @@ ktlint = "1.8.0"
 google-java-format = "1.24.0"
 kotlin = "2.4.20"
 ksp = "2.3.12"
-android-gradle = "9.4.1"
+android-gradle = "9.3.1"
+compose-multiplatform = "1.12.2"
+# Expressive APIs require this port; Android retains its existing graphics renderer.
+multiplatform-material3 = "1.12.0-alpha03"
 google-services = "4.5.0"
 firebase-bom = "34.19.0"
 firebase-perf-plugin = "2.0.2"
@@ -35,6 +38,19 @@ robolectric = "4.17"
 paging = "3.4.2"
 
 [libraries]
+compose-multiplatform-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
+multiplatform-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+multiplatform-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+multiplatform-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+multiplatform-compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+multiplatform-compose-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+multiplatform-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "multiplatform-material3" }
+multiplatform-compose-windowSizeClass = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "multiplatform-material3" }
+multiplatform-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+multiplatform-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splashscreen" }
 ksp-gradlePlugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }

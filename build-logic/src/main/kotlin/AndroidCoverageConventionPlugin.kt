@@ -61,7 +61,9 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 )
                 sourceDirectories.setFrom(
                     rootProject.subprojects.flatMap { module ->
-                        listOf(module.file("src/main/java"), module.file("src/main/kotlin"))
+                        listOf("main/java", "main/kotlin", "commonMain/kotlin", "androidMain/kotlin").map {
+                            module.file("src/$it")
+                        }
                     }
                 )
                 // Hilt/Firebase transform bytecode before unit tests run. Analyse the
@@ -69,7 +71,9 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 classDirectories.setFrom(
                     provider {
                         rootProject.subprojects.flatMap { module ->
-                            listOf("debug", "mockDebug").flatMap { variant ->
+                            val sharedClasses = module.layout.buildDirectory.dir("classes/kotlin/android/main").get().asFile
+                            val sharedTrees = if (sharedClasses.isDirectory) listOf(module.fileTree(sharedClasses) { exclude(filters) }) else emptyList()
+                            sharedTrees + listOf("debug", "mockDebug").flatMap { variant ->
                                 val capitalizedVariant = variant.replaceFirstChar { it.uppercase() }
                                 val transformed = module.layout.buildDirectory.dir(
                                     "intermediates/classes/$variant/transform${capitalizedVariant}ClassesWithAsm/dirs"

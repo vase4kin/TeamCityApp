@@ -104,6 +104,30 @@ class UnitTestCiTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Unrecognized test"):
                 ci.plan(self.root)
 
+    def test_kmp_common_tests_are_scheduled_and_coverage_round_trips(self):
+        with (self.root / "settings.gradle.kts").open("a") as settings:
+            settings.write('\ninclude(":features:about:presentation")')
+        module = "features/about/presentation"
+        self.write(self.root, f"{module}/build.gradle.kts", 'id("teamcityapp.kmp.compose")')
+        self.write(self.root, f"{module}/src/commonTest/kotlin/AboutTest.kt", "class AboutTest")
+        self.write(self.root, f"{module}/build/classes/kotlin/android/main/About.class", "shared")
+        self.write(self.root, f"{module}/build/jacoco/testAndroidHostTest.exec", "shared coverage")
+        tasks = " ".join(s["tasks"] for s in ci.plan(self.root)["include"])
+        self.assertIn(":features:about:presentation:testAndroidHostTest", tasks)
+        self.assertNotIn(":features:about:presentation:testDebugUnitTest", tasks)
+        self.pack_all()
+        consumer = self.consumer()
+        ci.restore(consumer, self.inputs)
+        self.assertEqual([p.read_text() for p in ci.coverage_paths(consumer, ":features:about:presentation")], ["shared"])
+
+    def test_kmp_tests_require_execution_data_in_coverage_transport(self):
+        self.write(self.root, "libraries/shared/build.gradle.kts", 'id("teamcityapp.kmp.library")')
+        self.write(self.root, "libraries/shared/src/commonTest/kotlin/SharedTest.kt", "class SharedTest")
+        (self.root / "libraries/shared/build/jacoco/test.exec").unlink()
+        shard = next(s["shard"] for s in ci.plan(self.root)["include"] if ":libraries:shared" in s["modules"])
+        with self.assertRaisesRegex(ValueError, "Missing unit coverage execution"):
+            ci.pack(self.root, shard, self.inputs / "shared.zip")
+
     def test_coverage_round_trip_preserves_classes_and_execution_data(self):
         self.pack_all()
         consumer = self.consumer()

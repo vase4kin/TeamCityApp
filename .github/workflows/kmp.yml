@@ -1,0 +1,76 @@
+# Copyright 2026 Andrey Tolpeev
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: KMP iOS
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kmp-ios-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.4.app/Contents/Developer
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: enhanced
+          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
+      - name: Verify Apple Silicon and pinned Xcode
+        run: |
+          test "$(uname -m)" = arm64
+          xcodebuild -version
+      - name: Cache Kotlin Native distribution and dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      - name: Compile device and simulator frameworks and run shared tests
+        run: |
+          ./gradlew :shared-app:linkDebugFrameworkIosArm64 :shared-app:linkDebugFrameworkIosSimulatorArm64 :features:about:presentation:iosSimulatorArm64Test :libraries:design-system:iosSimulatorArm64Test --max-workers=2 --console=plain
+      - name: Run About UI smoke tests
+        run: |
+          mkdir -p build/kmp-phase-1
+          xcodebuild -project iosApp/TeamCityApp.xcodeproj -scheme TeamCityApp -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4' \
+            -derivedDataPath build/kmp-phase-1/DerivedData \
+            -resultBundlePath build/kmp-phase-1/ios-smoke.xcresult \
+            -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=NO test
+      - name: Upload simulator test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: kmp-ios-tests
+          path: |
+            build/kmp-phase-1/ios-smoke.xcresult
+            features/about/presentation/build/test-results
+            features/about/presentation/build/reports/tests

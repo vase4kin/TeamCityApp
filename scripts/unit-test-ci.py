@@ -26,12 +26,18 @@ SHARD_COUNT = 4
 
 
 def modules(root):
-    """Follow the repository's explicit includes and Android conventions."""
+    """Follow explicit includes and schedule Android and KMP host checks."""
     included = re.findall(r'^include\("(:[\w:-]+)"\)', (root / "settings.gradle.kts").read_text(), re.MULTILINE)
     result = {}
     for module in included:
         directory = root / module[1:].replace(":", "/")
         build = (directory / "build.gradle.kts").read_text()
+        if re.search(r'id\("teamcityapp\.kmp\.(?:library|compose)"\)', build):
+            sources = [p for source_set in ("commonTest", "androidHostTest")
+                       for p in (directory / f"src/{source_set}").rglob("*.kt")]
+            result[module] = {"tasks": [f"{module}:testAndroidHostTest"],
+                              "weight": max(1, len(sources) * .1), "has_tests": bool(sources)}
+            continue
         if not re.search(r'id\("teamcityapp\.android\.(?:application|library(?:\.java)?)"\)', build):
             raise ValueError(f"Unrecognized test convention for {module}; update unit-test-ci.py")
         variant = "MockDebug" if module == ":app" else "Debug"
@@ -65,6 +71,7 @@ def plan(root):
 
 def coverage_paths(root, module):
     directory = root / module[1:].replace(":", "/") / "build"
+    yield from sorted((directory / "classes/kotlin/android/main").rglob("*.class"))
     for variant in ("debug", "mockDebug"):
         capitalized = variant[0].upper() + variant[1:]
         transformed = directory / f"intermediates/classes/{variant}/transform{capitalized}ClassesWithAsm/dirs"

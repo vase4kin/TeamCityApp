@@ -1,5 +1,6 @@
 /*
  * Copyright 2019 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +15,11 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
+    id("teamcityapp.kmp.library")
     alias(libs.plugins.kotlin.serialization)
 }
 
-extensions.configure<LibraryExtension> {
-    namespace = "teamcityapp.features.about.api"
-}
-
-dependencies {
-    api(projects.libraries.navigation)
+kotlin.sourceSets.named("androidMain") {
+    dependencies { api(projects.libraries.navigation) }
 }

@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.ksp.gradlePlugin)
     implementation(libs.kotlin.tools.gradlePlugin)
     implementation(libs.kotlin.compose.gradlePlugin)
+    implementation(libs.compose.multiplatform.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)
     implementation(libs.roborazzi.gradlePlugin)
     testImplementation(gradleTestKit())

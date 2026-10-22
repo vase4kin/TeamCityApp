@@ -36,6 +36,7 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
+    api(projects.features.about.presentation)
     implementation(projects.libraries.navigation)
     implementation(projects.features.about.api)
     implementation(projects.libraries.appRating)

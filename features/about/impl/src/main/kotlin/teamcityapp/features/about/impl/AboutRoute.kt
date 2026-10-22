@@ -25,7 +25,7 @@ import teamcityapp.features.about.impl.router.AboutRouter
 
 /** Wires lifecycle-aware state and UI actions to the stateless screen. */
 @Composable
-internal fun AboutRoute(router: AboutRouter, viewModel: AboutViewModel = hiltViewModel()) {
+internal fun AboutRoute(router: AboutRouter, viewModel: AndroidAboutViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LifecycleStartEffect(router) {
         router.start()
