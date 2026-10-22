@@ -31,7 +31,7 @@ concurrency:
 jobs:
   ios:
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.4.app/Contents/Developer
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g
@@ -57,16 +57,16 @@ jobs:
       - name: Compile device and simulator frameworks and run shared tests
         run: |
           ./gradlew :shared-app:linkDebugFrameworkIosArm64 :shared-app:linkDebugFrameworkIosSimulatorArm64 iosSimulatorArm64Test --max-workers=2 --console=plain
-      - name: Run shared UI, account-consent, browsing and build-management smoke tests
+      - name: Run shared UI, accounts, browsing, management and platform smoke tests
         run: |
-          mkdir -p build/kmp-phase-3
-          python3 scripts/kmp-platform-fixture.py --enable-mutations --output build/kmp-phase-3/platform-fixture > build/kmp-phase-3/platform-fixture.log 2>&1 &
+          mkdir -p build/kmp-phase-5
+          python3 scripts/kmp-platform-fixture.py --enable-mutations --output build/kmp-phase-5/platform-fixture > build/kmp-phase-5/platform-fixture.log 2>&1 &
           fixture_pid=$!
           trap 'kill "$fixture_pid"' EXIT
-          TEST_RUNNER_TEAMCITY_FIXTURE_UI=1 TEST_RUNNER_TEAMCITY_MANAGEMENT_UI=1 xcodebuild -project iosApp/TeamCityApp.xcodeproj -scheme TeamCityApp -configuration Debug \
+          TEST_RUNNER_TEAMCITY_FIXTURE_UI=1 TEST_RUNNER_TEAMCITY_MANAGEMENT_UI=1 TEST_RUNNER_TEAMCITY_PLATFORM_UI=1 xcodebuild -project iosApp/TeamCityApp.xcodeproj -scheme TeamCityApp -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4' \
-            -derivedDataPath build/kmp-phase-3/DerivedData \
-            -resultBundlePath build/kmp-phase-3/ios-smoke.xcresult \
+            -derivedDataPath build/kmp-phase-5/DerivedData \
+            -resultBundlePath build/kmp-phase-5/ios-smoke.xcresult \
             -parallel-testing-enabled NO -collect-test-diagnostics never \
             CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=YES test
       - name: Upload simulator test evidence
@@ -75,8 +75,8 @@ jobs:
         with:
           name: kmp-ios-tests
           path: |
-            build/kmp-phase-3/ios-smoke.xcresult
-            build/kmp-phase-3/platform-fixture.log
+            build/kmp-phase-5/ios-smoke.xcresult
+            build/kmp-phase-5/platform-fixture.log
             shared-app/build/test-results
             features/*/presentation/build/test-results
             features/*/presentation/build/reports/tests
