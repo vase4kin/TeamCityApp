@@ -158,3 +158,59 @@ platform integrations and screenshot harnesses. Android data/session/security
 modules retain installed encrypted account and Retrofit/RxCache compatibility.
 iOS now uses the real shared account graph instead of the About-only preview.
 See [Phase 2](kmp-phase-2.md) for behavior, UI differences and verification.
+
+## Phase 3 ownership delta (2026-10-22)
+
+Phase 3 ends with 103 included modules, 47 using the KMP conventions. Eleven
+presentation modules are added and twelve existing APIs are converted, including
+the Quick Filter contract. There are 16 shared feature presentations in total.
+These module counts describe ownership, not code-sharing percentages or complete
+iOS feature parity. The complete KMP graph contains 177 common production Kotlin
+files and 47 common test files at this checkpoint.
+
+| Added/affected KMP module | Common production files | Common test files | Platform production files |
+| --- | ---: | ---: | ---: |
+| `:features:test-details:api` | 2 | 0 | 0 |
+| `:libraries:design-system` | 18 | 1 | 0 |
+| `:shared-app` | 7 | 2 | 2 |
+| `:features:change-details:api` | 2 | 0 | 0 |
+| `:features:properties:api` | 2 | 0 | 0 |
+| `:features:filter-bottom-sheet:api` | 3 | 0 | 0 |
+| `:features:agents:api` | 3 | 0 | 0 |
+| `:features:changes:api` | 2 | 0 | 0 |
+| `:features:tests:api` | 2 | 0 | 0 |
+| `:features:favorites:api` | 3 | 0 | 0 |
+| `:features:running-builds:api` | 3 | 0 | 0 |
+| `:features:build-queue:api` | 3 | 0 | 0 |
+| `:features:snapshot-dependencies:api` | 2 | 0 | 0 |
+| `:features:home:api` | 2 | 0 | 0 |
+| `:libraries:accounts` | 3 | 2 | 1 |
+| `:libraries:network` | 2 | 2 | 2 |
+| `:libraries:shared-data` | 3 | 2 | 0 |
+| `:features:running-builds:presentation` | 3 | 2 | 0 |
+| `:features:build-queue:presentation` | 3 | 2 | 0 |
+| `:features:agents:presentation` | 3 | 1 | 0 |
+| `:features:home:presentation` | 6 | 1 | 0 |
+| `:features:favorites:presentation` | 3 | 1 | 0 |
+| `:features:changes:presentation` | 6 | 4 | 0 |
+| `:features:tests:presentation` | 5 | 3 | 0 |
+| `:features:properties:presentation` | 2 | 1 | 0 |
+| `:features:test-details:presentation` | 5 | 2 | 0 |
+| `:features:snapshot-dependencies:presentation` | 3 | 2 | 0 |
+| `:features:change-details:presentation` | 5 | 2 | 0 |
+
+Home, Favorites, Running, Queue, Agents, Changes, Change Details, Tests, Test
+Details, Parameters and Snapshot Dependencies share their actual layouts and
+ViewModels. Android impl modules remain Hilt/router/repository compatibility
+adapters and Roborazzi harnesses. Shared Changes/Tests collection routes retain
+the same paging and optional-count behavior across hosts. Common resources use
+portable StringResource/SharedUiText values, literal vector colors and positional
+format substitutions.
+
+The native account graph now supplies monitoring and section repositories plus
+persistent, account-bound favorites/filters. Android retains its encrypted account
+format, Retrofit/RxCache DTOs, hydration and caches. Native Home owns five retained
+stacks; its public navigation envelope validates account identity, live roots and
+size limits before restoring. Explicit browser/diff/copy actions, management and
+artifacts remain phase-scoped later work. See [Phase 3](kmp-phase-3.md) for the
+verification record and actual platform evidence.

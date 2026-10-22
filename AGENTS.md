@@ -140,10 +140,11 @@ to the requested behavior and the coherent migration slice needed to support it.
   code. Share portable theme definitions through `libraries/design-system`.
 - Feature APIs expose portable models and repository contracts in common code;
   Android destination registrations may remain in `androidMain` during migration.
-  About, Login, Navigation, Build History and Build Overview `presentation`
-  modules own their common UI and ViewModels. Their existing
-  `impl` modules are Android Hilt/router adapters and Roborazzi harnesses. This
-  split is within one feature; cross-feature implementation dependencies remain
+  About, Login, Navigation, Build History, Build Overview, Home, Favorites,
+  Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
+  Parameters and Snapshot Dependencies `presentation` modules own their common UI
+  and ViewModels. Their existing `impl` modules are Android Hilt/router adapters
+  and Roborazzi harnesses. This split is within one feature; cross-feature implementation dependencies remain
   prohibited. Do not duplicate shared layouts in platform adapters.
 - Shared ViewModels use plain constructor injection and lifecycle-owned factories.
   Hilt remains the Android composition mechanism, with thin Android ViewModels
@@ -160,11 +161,16 @@ to the requested behavior and the coherent migration slice needed to support it.
   images before changing goldens. iOS begins with an explicitly labeled first
   baseline. Keep generated screenshots and build logs under `build/`; commit only
   intentional golden fixtures and reproducible source/configuration.
-- The normal iOS application runs the real Phase 2 Login → Projects →
-  Configurations → History → Build Overview workflow. The deterministic About
-  preview remains an explicit regression-test launch mode. iOS Home parity,
-  management and platform actions belong to later phases. Android retains its
-  Retrofit/RxCache/authentication compatibility adapters behind shared feature
+- The normal iOS application runs Login → Home with Projects, Favorites and
+  Activity (Running, Queue, Agents), plus History → Build Overview and read-only
+  Changes/Change Details, Tests/Test Details, Parameters and Snapshot Dependencies.
+  The deterministic About preview remains an explicit regression-test launch mode.
+  Home uses retained independent stacks, account-scoped persisted favorites/filters,
+  and validated saved public navigation. Native management, artifacts and explicit
+  browser/diff/copy shortcuts belong to later phases; capability-gate unavailable
+  actions. Keep the native root responsible for top/horizontal safe areas. Return
+  section counts once to their exact live originating build visit. Android retains
+  its Retrofit/RxCache/authentication compatibility adapters behind shared feature
   contracts; do not claim that its complete data stack has been replaced.
 - KMP UI harnesses can apply `teamcityapp.android.screenshot`; verify with
   `:shared-app:verifyRoborazziAndroidHostTest`. Shared native account tests and

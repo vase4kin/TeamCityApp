@@ -50,7 +50,7 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 
 - [x] Phase 1 — Toolchain and shared foundation (P0; completed 2026-10-22)
 - [x] Phase 2 — Accounts and first real workflow (P0; completed 2026-10-22)
-- [ ] Phase 3 — Home and build browsing (P1)
+- [x] Phase 3 — Home and build browsing (P1; completed 2026-10-22)
 - [ ] Phase 4 — Build management (P1)
 - [ ] Phase 5 — Downloads and platform integrations (P1)
 - [ ] Phase 6 — Release validation and cleanup (P1)
@@ -148,20 +148,33 @@ Application commits remain local. Phase 3 requires a new user instruction.
 
 **Depends on:** Phase 2. **Outcome:** complete everyday monitoring and read-only sections.
 
-- [ ] Migrate Favorites, Running Builds, Queue, and Agents.
-- [ ] Preserve Home's independent retained panes, selected Activity view, saved
+- [x] Migrate Favorites, Running Builds, Queue, and Agents.
+- [x] Preserve Home's independent retained panes, selected Activity view, saved
   content/scroll, polling/visibility gates, refresh, query changes, and filters.
-- [ ] Preserve saved Favorites IDs during partial/all-failed loads.
-- [ ] Migrate Changes, Tests, Test Details, Parameters, and Snapshot Dependencies.
-- [ ] Preserve Paging retention, opaque continuation URLs, Tests status filters,
+- [x] Preserve saved Favorites IDs during partial/all-failed loads.
+- [x] Migrate Changes, Tests, Test Details, Parameters, and Snapshot Dependencies.
+- [x] Preserve Paging retention, opaque continuation URLs, Tests status filters,
   optional counts, independent retries, and optional-section failures.
-- [ ] Share portable row models and date/status formatting.
-- [ ] Verify loading/empty/error/content, account isolation, cancellation, background
+- [x] Share portable row models and date/status formatting.
+- [x] Verify loading/empty/error/content, account isolation, cancellation, background
   behavior, compact/expanded layouts, dark mode, and enlarged text.
-- [ ] Publish the detailed Sites report, save checkpoints, and record evidence.
+- [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
-**Gate:** monitoring/browsing works on both platforms with matching behavior and
-documented intentional platform differences. **Report/commits:** pending.
+**Gate passed:** shared monitoring and read-only browsing work on both platforms.
+Retained panes, polling, account-bound favorites/filters, paging/count failures,
+restoration and platform differences are recorded in [the Phase 3 evidence](kmp-phase-3.md).
+Verification includes 394 Native common tests, 98 Android integration cases,
+13 signed iPhone UI cases, dark/expanded/accessibility-large journeys and 1,318
+unchanged Android golden hashes. Native runs use simulators; physical-device and
+release validation retain their later phase ownership.
+
+**Report:** [Private Phase 3 review](https://teamcityapp-kmp-phase-three-20261022.andrey-tolpeev.chatgpt.site),
+published and verified on 2026-10-22. **Checkpoint commits:** implementation
+`0617fe939b972707ef865099358d54e17acf52ef`; CI
+`5702c076a39c8ee53cb5d7bbbc3db96ca353daa2`; checklist, inventory, agent contract
+and evidence saved in the accompanying `chore(docs): record KMP phase three evidence`
+checkpoint on `codex/kmp-phase-1`. Application commits remain local.
+Phase 4 requires a new user instruction.
 
 ## Phase 4 — Build management
 
