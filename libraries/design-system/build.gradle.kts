@@ -17,5 +17,6 @@
 plugins { id("teamcityapp.kmp.compose") }
 
 compose.resources {
+    publicResClass = true
     packageOfResClass = "teamcityapp.libraries.design_system.resources"
 }

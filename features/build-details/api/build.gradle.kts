@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
 plugins {
-    id("teamcityapp.android.library")
+    id("teamcityapp.kmp.compose")
     alias(libs.plugins.kotlin.serialization)
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_details.api" }
-dependencies {
-    api(projects.libraries.builds)
-    api(projects.libraries.navigation)
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        api(projects.libraries.builds)
+        api(projects.libraries.navigation)
+    }
 }

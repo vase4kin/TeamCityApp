@@ -17,4 +17,10 @@
 <resources>
     <string name="action_back">Back</string>
     <string name="action_close">Close</string>
+<string name="error_load_title">Couldn’t load content</string>
+
+<string name="error_load_message">Try again to reload this screen.</string>
+
+<string name="action_retry">Try again</string>
+
 </resources>

@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.navigation.impl" }
 dependencies {
+    api(projects.features.navigation.presentation)
     implementation(projects.libraries.data)
     implementation(projects.libraries.coroutines)
     implementation(libs.coroutines.rx2)

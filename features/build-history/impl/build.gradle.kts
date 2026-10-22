@@ -23,6 +23,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_history.impl" }
 dependencies {
+    api(projects.features.buildHistory.presentation)
     implementation(projects.libraries.onboarding)
     implementation(projects.libraries.session)
     implementation(libs.coroutines.rx2)

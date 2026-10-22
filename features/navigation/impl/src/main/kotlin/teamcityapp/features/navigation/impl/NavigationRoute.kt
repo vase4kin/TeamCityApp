@@ -30,7 +30,7 @@ import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 internal fun NavigationRoute(
     router: NavigationRouter,
     visible: Boolean = true,
-    viewModel: NavigationViewModel = hiltViewModel()
+    viewModel: NavigationViewModel = hiltViewModel<AndroidNavigationViewModel>()
 ) {
     ConfigurationRecreationEffect(viewModel) { viewModel.onConfigurationRecreation(wasVisible = visible) }
     if (visible) {

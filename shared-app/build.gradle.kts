@@ -17,7 +17,11 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import teamcityapp.buildlogic.Config
 
-plugins { id("teamcityapp.kmp.compose") }
+plugins {
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.android.screenshot")
+    alias(libs.plugins.kotlin.serialization)
+}
 
 compose.resources { packageOfResClass = "teamcityapp.shared.resources" }
 
@@ -31,6 +35,14 @@ kotlin {
     sourceSets.named("commonMain") {
         dependencies {
             implementation(projects.features.about.presentation)
+            implementation(projects.features.login.presentation)
+            implementation(projects.features.navigation.presentation)
+            implementation(projects.features.buildHistory.presentation)
+            implementation(projects.features.buildOverview.presentation)
+            implementation(projects.libraries.sharedData)
+            implementation(projects.libraries.designSystem)
+            implementation(libs.multiplatform.lifecycle.viewmodel)
+            implementation(libs.multiplatform.lifecycle.runtime)
             implementation(libs.coroutines.core)
         }
     }
@@ -55,3 +67,5 @@ val generateAppMetadata = tasks.register("generateAppMetadata") {
 kotlin.sourceSets.named("commonMain") {
     kotlin.srcDir(generateAppMetadata.map { generatedMetadata.get() })
 }
+
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }

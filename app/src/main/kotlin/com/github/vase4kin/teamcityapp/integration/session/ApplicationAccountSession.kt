@@ -20,10 +20,12 @@ import android.content.Context
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import teamcityapp.libraries.accounts.AccountSessionManager
 import teamcityapp.libraries.session.AccountSession
 
-class ApplicationAccountSession @Inject constructor(@ApplicationContext private val context: Context) : AccountSession {
+class ApplicationAccountSession @Inject constructor(@ApplicationContext private val context: Context, private val sessions: AccountSessionManager) : AccountSession {
     override fun clear() {
+        sessions.close()
         (context.applicationContext as TeamCityApplicationBase).clearApiSession()
     }
 }

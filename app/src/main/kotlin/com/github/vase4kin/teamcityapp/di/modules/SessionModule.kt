@@ -20,15 +20,31 @@ import android.app.Application
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.navigation.AccountNavigationScope
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import teamcityapp.libraries.accounts.AccountSessionManager
+import teamcityapp.libraries.accounts.AccountStorage
+import teamcityapp.libraries.coroutines.MainDispatcher
+import teamcityapp.libraries.security.CryptoManager
+import teamcityapp.libraries.session.LegacyAndroidAccountStorage
 
 /** Resolves API dependencies from the current account graph when a new screen is injected. */
 @Module
 @InstallIn(SingletonComponent::class)
 object SessionModule {
+    @Provides @Singleton
+    fun accountStorage(storage: SharedUserStorage, crypto: CryptoManager, @MainDispatcher dispatcher: CoroutineDispatcher): AccountStorage = LegacyAndroidAccountStorage(storage, crypto, dispatcher)
+
+    @Provides @Singleton
+    fun accountSessions(storage: AccountStorage, @AccountNavigationScope scope: CoroutineScope): AccountSessionManager = AccountSessionManager(storage, scope.coroutineContext)
+
     @Provides
     fun repository(application: Application): Repository = (application as TeamCityApplicationBase).restApiInjector.repository()
 

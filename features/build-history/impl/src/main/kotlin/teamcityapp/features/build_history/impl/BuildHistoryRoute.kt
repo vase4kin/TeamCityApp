@@ -23,7 +23,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalAccessibilityManager
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -33,11 +32,12 @@ import androidx.lifecycle.compose.currentStateAsState
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.build_history.impl.router.BuildHistoryRouter
 import teamcityapp.libraries.list_ui.PagingListSnapshot
 
 @Composable
-internal fun BuildHistoryRoute(router: BuildHistoryRouter, viewModel: BuildHistoryViewModel = hiltViewModel()) {
+internal fun BuildHistoryRoute(router: BuildHistoryRouter, viewModel: BuildHistoryViewModel = hiltViewModel<AndroidBuildHistoryViewModel>()) {
     LifecycleResumeEffect(viewModel) {
         viewModel.onResumed()
         onPauseOrDispose { viewModel.onPaused() }

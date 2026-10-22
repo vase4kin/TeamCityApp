@@ -50,85 +50,11 @@ import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.UiText
 import teamcityapp.libraries.theme.resolve
 
-/** Shared account fields; each screen owns state, validation, dialogs and submission. */
 @Composable
-fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, errorMessage: UiText? = state.errorMessage, horizontalPadding: Dp = TeamCityDimensions.noSpacing) {
-    var urlText by remember { mutableStateOf(TextFieldValue(state.serverUrl, TextRange(state.serverUrl.length))) }
-    val focus = LocalFocusManager.current
-    val submit = {
-        focus.clearFocus()
-        if (!state.busy) onSubmit()
-    }
-    val error = errorMessage?.resolve()
-    val urlError = state.error == AuthenticationError.EmptyUrl
-    val userError = state.error == AuthenticationError.EmptyUserName
-    val passwordError = state.error == AuthenticationError.EmptyPassword
-    val globalError = error != null && !urlError && !userError && !passwordError
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
-        if (globalError) {
-            ErrorNotice(error.orEmpty(), modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).testTag("auth:error"))
-        }
-        // Preserve the account fields' existing opt-out from platform autofill.
-        OutlinedTextField(
-            value = urlText.copy(text = state.serverUrl), onValueChange = {
-                urlText = it
-                onChange(state.copy(serverUrl = it.text))
-            },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).semantics { contentDataType = ContentDataType.None }.testTag("auth:url"), label = { Text(stringResource(R.string.server_field_hint)) },
-            singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = urlError,
-            supportingText = if (urlError) {
-                { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
-            } else {
-                null
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = if (state.guest) ImeAction.Done else ImeAction.Next),
-            keyboardActions = KeyboardActions(onDone = { submit() })
-        )
-        TeamCitySwitch(stringResource(R.string.text_guest_user_switch), state.guest, {
-            focus.clearFocus()
-            onChange(state.copy(guest = it))
-        }, Modifier.testTag("auth:guest"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.smallSpacing))
-        if (!state.guest) {
-            OutlinedTextField(
-                state.userName, { onChange(state.copy(userName = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.noSpacing).semantics { contentDataType = ContentDataType.None }.testTag("auth:username"), label = { Text(stringResource(R.string.hint_user_name)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = userError,
-                supportingText = if (userError) {
-                    { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
-                } else {
-                    null
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                state.password, { onChange(state.copy(password = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.noSpacing).semantics { contentDataType = ContentDataType.None }.testTag("auth:password"), label = { Text(stringResource(R.string.hint_password)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = passwordError,
-                supportingText = if (passwordError) {
-                    { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
-                } else {
-                    null
-                },
-                visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() })
-            )
-        }
-        TeamCitySwitch(stringResource(R.string.text_disable_ssl_switch), state.sslDisabled, onSslChange, Modifier.testTag("auth:ssl"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.smallSpacing))
-    }
-}
+fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, errorMessage: UiText? = state.errorMessage, horizontalPadding: Dp = TeamCityDimensions.noSpacing) = SharedAuthenticationForm(state, onChange, onSslChange, onSubmit, modifier, spaced, errorMessage?.resolve(), horizontalPadding)
 
 @Composable
-fun AuthenticationWarning(message: AuthenticationWarningText = AuthenticationWarningText.Ssl, onAccept: () -> Unit, onDecline: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = {},
-        modifier = Modifier.testTag("auth:warning"),
-        shape = MaterialTheme.shapes.large,
-        title = { Text(stringResource(R.string.warning_ssl_dialog_title)) },
-        text = { if (message.styled) Text(styledAuthenticationText(LocalResources.current.getText(message.messageRes))) else Text(stringResource(message.messageRes)) },
-        confirmButton = { TextButton(onClick = onAccept) { Text(stringResource(R.string.dialog_ok_title)) } },
-        dismissButton = { TextButton(onClick = onDecline) { Text(stringResource(R.string.warning_ssl_dialog_negative)) } }
-    )
-}
-
-@Preview @Composable
-private fun FormPreview() {
-    TeamCityTheme { AuthenticationForm(AuthenticationFormState(), {}, {}, {}) }
-}
+fun AuthenticationWarning(message: AuthenticationWarningText = AuthenticationWarningText.Ssl, onAccept: () -> Unit, onDecline: () -> Unit) = SharedAuthenticationWarning(message, onAccept, onDecline)
 
 @Composable
 fun styledAuthenticationText(text: CharSequence) = run {

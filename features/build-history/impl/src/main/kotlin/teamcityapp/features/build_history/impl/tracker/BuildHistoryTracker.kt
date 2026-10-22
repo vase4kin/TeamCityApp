@@ -21,11 +21,6 @@ package teamcityapp.features.build_history.impl.tracker
 import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 
-interface BuildHistoryTracker {
-    fun viewShown()
-    fun runBuildPressed()
-    fun queuedBuildRequested()
-}
 class BuildHistoryTrackerImpl @Inject constructor(private val analytics: FirebaseAnalytics) : BuildHistoryTracker {
     override fun viewShown() = analytics.logEvent("screen_build_list", null)
     override fun runBuildPressed() = analytics.logEvent("run_build_fab_click", null)

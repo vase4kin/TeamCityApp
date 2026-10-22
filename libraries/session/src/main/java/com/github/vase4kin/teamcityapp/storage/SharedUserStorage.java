@@ -248,6 +248,17 @@ public class SharedUserStorage implements Collectible<UserAccount>, Storage {
         return usersContainer.getUsersAccounts();
     }
 
+    /** Atomically replaces an account snapshot while preserving the installed JSON schema. */
+    public void replaceAccountSnapshot(List<UserAccount> accounts) {
+        UsersContainer replacement = new UsersContainer();
+        replacement.setUsersAccounts(new ArrayList<>(accounts));
+        String json = new Gson().toJson(replacement);
+        if (!getSharedPreferences().edit().putString(SHARED_PREF_NAME, json).commit()) {
+            throw new IllegalStateException("Account persistence failed");
+        }
+        usersContainer = replacement;
+    }
+
     /** Testing purpose */
     public void clearAll() {
         List<UserAccount> userAccounts = usersContainer.getUsersAccounts();

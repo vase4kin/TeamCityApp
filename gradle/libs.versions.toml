@@ -1,5 +1,8 @@
 # Dependency and plugin versions. Keep runtime versions unchanged during catalog migrations.
 [versions]
+atomicfu = "0.28.0"
+ktor = "3.6.0"
+multiplatform-navigation3 = "1.2.0-rc01"
 navigation3 = "1.2.0"
 serialization = "1.11.0"
 datastore = "1.2.1"
@@ -17,7 +20,7 @@ ktlint = "1.8.0"
 google-java-format = "1.24.0"
 kotlin = "2.4.20"
 ksp = "2.3.12"
-android-gradle = "9.3.1"
+android-gradle = "9.3.2"
 compose-multiplatform = "1.12.2"
 # Expressive APIs require this port; Android retains its existing graphics renderer.
 multiplatform-material3 = "1.12.0-alpha03"
@@ -28,6 +31,7 @@ crashlytics-plugin = "3.0.6"
 oss-licenses-plugin = "0.13.0"
 compose-bom = "2026.09.00"
 compose-material3 = "1.5.0-beta01"
+androidx-graphics-shapes = "1.0.1"
 androidx-activity = "1.12.3"
 androidx-splashscreen = "1.2.0"
 coroutines = "1.10.2"
@@ -38,6 +42,15 @@ robolectric = "4.17"
 paging = "3.4.2"
 
 [libraries]
+androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+multiplatform-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-navigation3" }
+multiplatform-lifecycle-viewModelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
+
 compose-multiplatform-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
 multiplatform-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 multiplatform-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }

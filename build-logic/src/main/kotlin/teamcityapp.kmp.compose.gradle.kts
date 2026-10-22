@@ -34,7 +34,7 @@ kotlin.sourceSets.named("commonMain") {
             // port dependency graph explicitly in nativeMain.
             exclude(group = "androidx.graphics", module = "graphics-shapes")
         }
-        implementation(libs.findLibrary("multiplatform-compose-resources").get())
+        api(libs.findLibrary("multiplatform-compose-resources").get())
         implementation(libs.findLibrary("multiplatform-compose-preview").get())
     }
 }
@@ -45,6 +45,7 @@ kotlin.sourceSets.named("androidMain") {
     dependencies {
         api(project.dependencies.platform(libs.findLibrary("compose-bom").get()))
         api(libs.findLibrary("compose-material3").get())
+        api(libs.findLibrary("androidx-graphics-shapes").get())
     }
 }
 

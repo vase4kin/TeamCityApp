@@ -351,6 +351,35 @@ class AndroidConventionPluginsTest {
         verify(projectDir)
     }
 
+    @Test
+    fun `screenshot convention supports KMP Android host tests`() {
+        val projectDir = createProject("kmp-screenshot")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+            import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
+            plugins {
+                id("teamcityapp.kmp.compose")
+                id("teamcityapp.android.screenshot")
+            }
+            tasks.register("verifyConventions") {
+                doLast {
+                    val target = kotlin.targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+                    val hostTest = target.compilations.getByName("hostTest") as KotlinMultiplatformAndroidHostTestCompilation
+                    check(hostTest.isIncludeAndroidResources)
+                    check(tasks.findByName("verifyRoborazziAndroidHostTest") != null)
+                    check(tasks.findByName("recordRoborazziAndroidHostTest") != null)
+                    val dependencies = configurations.getByName("androidHostTestImplementation").dependencies
+                    check(dependencies.any { it.name == "robolectric" })
+                    check(dependencies.any { it.name == "roborazzi" })
+                    check(dependencies.any { it.name == "ui-test-manifest" })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
     private fun createProject(name: String, vararg modules: String): File {
         val projectDir = temporaryFolder.newFolder(name)
         File(projectDir, "libs.versions.toml").writeText(

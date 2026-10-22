@@ -66,7 +66,7 @@ class BuildOverviewDestinationRegistration @Inject constructor() : FeatureDestin
                     }
                     val value = when (val text = row.value) {
                         is OverviewText.Literal -> text.value
-                        else -> activity.getString(text.resource())
+                        else -> activity.getString(text.androidResource())
                     }
                     val menu = when (row.action) {
                         OverviewRowAction.Copy -> SheetMenuType.Default
@@ -93,7 +93,7 @@ class BuildOverviewDestinationRegistration @Inject constructor() : FeatureDestin
             }
         }
         DestinationArguments(arguments) {
-            val model = hiltViewModel<BuildOverviewViewModel>()
+            val model = hiltViewModel<AndroidBuildOverviewViewModel>()
             LaunchedEffect(host.countStates, model) { model.metadata(host.countStates) }
             LaunchedEffect(host.refreshVersion, model) { model.refreshFromHost(host.refreshVersion) }
             LifecycleResumeEffect(navigator.snapshot.results, model, router) {

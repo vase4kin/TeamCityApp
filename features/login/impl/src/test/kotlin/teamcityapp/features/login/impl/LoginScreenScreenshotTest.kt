@@ -78,6 +78,9 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             "empty_password" -> AuthenticationError.EmptyPassword
             "save_error" -> AuthenticationError.SaveFailed
             "duplicate" -> AuthenticationError.DuplicateAccount
+            "invalid_url" -> AuthenticationError.InvalidUrl
+            "connection_error" -> AuthenticationError.Connection
+            "http_error" -> AuthenticationError.Http(403)
             "server_error" -> AuthenticationError.Server("Unable to connect to TeamCity server")
             else -> null
         }
@@ -112,7 +115,7 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             tag == null -> compose.onRoot().captureRoboImage(path)
             else -> captureScreenRoboImage(path)
         }
-        if (stateName in listOf("save_error", "server_error", "duplicate") && (variant.fontScale > 1f || variant.width >= 600)) {
+        if (stateName in listOf("save_error", "server_error", "duplicate", "invalid_url", "connection_error", "http_error") && (variant.fontScale > 1f || variant.width >= 600)) {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("login:submit").performScrollTo().assertIsDisplayed()
             compose.mainClock.autoAdvance = false
@@ -134,7 +137,7 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "save_error", "server_error", "demo_loading", "demo", "demo_signing_in", "guest_loading", "loading", "http", "unauthorized", "ssl_dialog", "demo_dialog", "scrolled").flatMap { state ->
+            listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "save_error", "server_error", "duplicate", "invalid_url", "connection_error", "http_error", "demo_loading", "demo", "demo_signing_in", "guest_loading", "loading", "http", "unauthorized", "ssl_dialog", "demo_dialog", "scrolled").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

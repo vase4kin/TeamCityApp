@@ -23,6 +23,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B8F1B3DA8B2B4EC6A76588BB /* PhaseTwoLiveSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */; };
 		223ABC5F1CE2F71350A0598F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94FA98DCBA29E4802B265B3A /* Foundation.framework */; };
 		9E274758FA5F20AFDCB9EA54 /* AboutSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3CC2D327487C67B9BCE3A5 /* AboutSmokeTests.swift */; };
 		E2C896DB33FB5692CA50D24C /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0891E31688C2C0F105FC1 /* App.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhaseTwoLiveSmokeTests.swift; sourceTree = "<group>"; };
 		309D16499181FB9957B42C68 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87FEBCB56D0FAB58EEE2291B /* TeamCityApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeamCityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94FA98DCBA29E4802B265B3A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -107,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				AD3CC2D327487C67B9BCE3A5 /* AboutSmokeTests.swift */,
+				7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */,
 			);
 			name = TeamCityAppUITests;
 			path = TeamCityAppUITests;
@@ -244,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E274758FA5F20AFDCB9EA54 /* AboutSmokeTests.swift in Sources */,
+				B8F1B3DA8B2B4EC6A76588BB /* PhaseTwoLiveSmokeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

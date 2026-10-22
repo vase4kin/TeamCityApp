@@ -17,10 +17,15 @@
 package teamcityapp.shared
 
 import androidx.compose.ui.window.ComposeUIViewController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
 import platform.Foundation.NSProcessInfo
 import platform.UIKit.UIViewController
+import teamcityapp.libraries.accounts.IosKeychainVault
+import teamcityapp.libraries.accounts.VaultAccountStorage
 
-/** UIKit host for the same shared About screen used by the Android application. */
+/** UIKit supplies platform storage; common code owns the account journey and presentation. */
+@OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 fun MainViewController(): UIViewController {
     val environment = NSProcessInfo.processInfo.environment
     val fixture = when (environment["PHASE1_STATE"] as? String) {
@@ -29,6 +34,17 @@ fun MainViewController(): UIViewController {
         else -> AboutFixture.Available
     }
     return ComposeUIViewController {
-        PhaseOneApp(fixture, darkTheme = environment["PHASE1_THEME"] == "dark")
+        if (environment["PHASE1_STATE"] != null) {
+            PhaseOneApp(fixture, darkTheme = environment["PHASE1_THEME"] == "dark")
+        } else {
+            val testNamespace = if (kotlin.native.Platform.isDebugBinary) environment["TEAMCITY_UI_TEST_VAULT"] as? String else null
+            val model = viewModel {
+                SharedAppViewModel(
+                    VaultAccountStorage(IosKeychainVault(Dispatchers.Default, testNamespace?.let { "app.teamcity.uitest.$it" } ?: "app.teamcity.accounts.v1")),
+                    IosSavedNavigationStore(testNamespace?.let { "navigation.uitest.$it" } ?: "navigation.phase2.snapshot.v1")
+                )
+            }
+            PhaseTwoApp(model)
+        }
     }
 }

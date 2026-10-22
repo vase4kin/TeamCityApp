@@ -28,7 +28,7 @@ import teamcityapp.features.build_overview.api.*
 import teamcityapp.features.build_overview.impl.router.BuildOverviewRouter
 
 @Composable
-internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, onState: (BuildOverviewUiState) -> Unit, viewModel: BuildOverviewViewModel = hiltViewModel(), onCountRetry: (teamcityapp.features.build_details.api.BuildDetailsSection) -> Unit = {}) {
+internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, onState: (BuildOverviewUiState) -> Unit, viewModel: BuildOverviewViewModel = hiltViewModel<AndroidBuildOverviewViewModel>(), onCountRetry: (teamcityapp.features.build_details.api.BuildDetailsSection) -> Unit = {}) {
     val state = if (visible) {
         val collected by viewModel.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
         collected

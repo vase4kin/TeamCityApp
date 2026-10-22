@@ -23,6 +23,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import teamcityapp.libraries.accounts.AccountSessionManager
+import teamcityapp.libraries.accounts.AccountSessionState
 import teamcityapp.libraries.coroutines.MainDispatcher
 import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.session.requireCurrentHomeBuildAccount
@@ -35,19 +37,25 @@ interface AccountSessionPreparation {
 class AppAccountSessionPreparation @Inject constructor(
     private val storage: SharedUserStorage,
     @ApplicationContext private val context: Context,
-    @MainDispatcher private val main: CoroutineDispatcher
+    @MainDispatcher private val main: CoroutineDispatcher,
+    private val sessions: AccountSessionManager
 ) : AccountSessionPreparation {
-    override fun currentKey() = if (storage.hasUserAccounts()) storage.activeUser.homeBuildAccountKey() else "signed-out"
+    override fun currentKey() = storage.activeUser.takeIf { it.teamcityUrl.isNotBlank() }?.homeBuildAccountKey() ?: "signed-out"
     override suspend fun prepare(expectedKey: String, resetSession: Boolean) = withContext(main) {
         requireCurrentHomeBuildAccount(storage, expectedKey)
+        sessions.restore()
+        val account = checkNotNull(sessions.state.value as? AccountSessionState.Active).scope
+        check(account.identity.key == expectedKey)
         val app = context.applicationContext as TeamCityApplicationBase
         if (resetSession) {
             app.appInjector.cacheManager().evictAllCache()
         }
         requireCurrentHomeBuildAccount(storage, expectedKey)
         app.buildRestApiInjectorWithBaseUrl(storage.activeUser.teamcityUrl)
+        account.requireCurrent()
     }
     override fun clear() {
+        sessions.close()
         (context.applicationContext as TeamCityApplicationBase).clearApiSession()
     }
 }

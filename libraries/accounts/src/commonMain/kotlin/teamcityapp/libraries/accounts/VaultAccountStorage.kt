@@ -1,0 +1,67 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.libraries.accounts
+
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+/** Secure platform storage owns encryption and durable atomic replacement of this payload. */
+interface SecureVault {
+    suspend fun read(): String?
+    suspend fun write(value: String)
+}
+
+@Serializable
+private class StoredAccount(val identity: AccountIdentity, val password: String)
+
+@Serializable
+private class StoredVault(val accounts: List<StoredAccount> = emptyList(), val activeKey: String? = null)
+
+class VaultAccountStorage(private val vault: SecureVault) : AccountStorage {
+    private val mutex = Mutex()
+    private val json = Json { ignoreUnknownKeys = true }
+    private suspend fun read(): StoredVault = vault.read()?.let { json.decodeFromString<StoredVault>(it) } ?: StoredVault()
+    private suspend fun save(value: StoredVault) = vault.write(json.encodeToString(value))
+    override suspend fun accounts(): List<AccountIdentity> = mutex.withLock { read().accounts.map { it.identity } }
+    override suspend fun active(): AccountSecret? = mutex.withLock {
+        val stored = read()
+        stored.accounts.firstOrNull { it.identity.key == stored.activeKey }?.let { AccountSecret(it.identity, it.password) }
+    }
+    override suspend fun secret(key: String): AccountSecret? = mutex.withLock {
+        read().accounts.firstOrNull { it.identity.key == key }?.let { AccountSecret(it.identity, it.password) }
+    }
+    override suspend fun saveAndActivate(account: AccountSecret) = mutex.withLock {
+        val current = read()
+        save(StoredVault(current.accounts.filterNot { it.identity.sameAccount(account.identity) } + StoredAccount(account.identity, account.password), account.identity.key))
+    }
+    override suspend fun activate(key: String) = mutex.withLock {
+        val current = read()
+        require(current.accounts.any { it.identity.key == key })
+        save(StoredVault(current.accounts, key))
+    }
+    override suspend fun remove(key: String) = mutex.withLock {
+        val current = read()
+        val remaining = current.accounts.filterNot { it.identity.key == key }
+        save(StoredVault(remaining, if (current.activeKey == key) remaining.firstOrNull()?.identity?.key else current.activeKey))
+    }
+    override suspend fun signOut() = mutex.withLock {
+        val current = read()
+        save(StoredVault(current.accounts))
+    }
+}

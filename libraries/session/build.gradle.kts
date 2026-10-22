@@ -17,8 +17,12 @@
 import com.android.build.api.dsl.LibraryExtension
 
 plugins { id("teamcityapp.android.library") }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.session" }
+extensions.configure<LibraryExtension> {
+    namespace = "teamcityapp.libraries.session"
+    testOptions.unitTests.isIncludeAndroidResources = true
+}
 dependencies {
+    api(projects.libraries.accounts)
     api(projects.libraries.storage)
     api(projects.libraries.storageModels)
     implementation(projects.libraries.api)
@@ -28,4 +32,6 @@ dependencies {
     implementation(libs.coroutines.android)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.coroutines.test)
 }

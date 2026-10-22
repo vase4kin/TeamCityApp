@@ -21,12 +21,12 @@ import TeamCityShared
 struct TeamCityApp: App {
     var body: some Scene {
         WindowGroup {
-            ComposeAboutView().ignoresSafeArea()
+            ComposeTeamCityView().ignoresSafeArea()
         }
     }
 }
 
-struct ComposeAboutView: UIViewControllerRepresentable {
+struct ComposeTeamCityView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController()
     }

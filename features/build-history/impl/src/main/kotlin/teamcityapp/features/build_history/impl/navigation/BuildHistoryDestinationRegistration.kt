@@ -56,7 +56,7 @@ class BuildHistoryDestinationRegistration @Inject constructor(
             }
         }
         DestinationArguments(arguments) {
-            val model = hiltViewModel<BuildHistoryViewModel>()
+            val model = hiltViewModel<teamcityapp.features.build_history.impl.AndroidBuildHistoryViewModel>()
             ConfigurationRecreationEffect(model, model::onConfigurationRecreation)
             LifecycleResumeEffect(navigator.snapshot.results, model) {
                 while (true) {

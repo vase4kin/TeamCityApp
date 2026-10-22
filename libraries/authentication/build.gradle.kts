@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.authentication" }
 dependencies {
+    api(projects.libraries.authenticationShared)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
     ksp(libs.dagger.compiler)

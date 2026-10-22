@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
-plugins {
-    id("teamcityapp.android.library")
-}
-
-extensions.configure<LibraryExtension> {
-    namespace = "teamcityapp.libraries.list_state"
-}
-
-dependencies {
-    api(libs.coroutines.android)
-    testImplementation(libs.junit)
-    testImplementation(libs.coroutines.test)
+plugins { id("teamcityapp.kmp.library") }
+kotlin.sourceSets {
+    named("commonMain") {
+        dependencies {
+            api(libs.coroutines.core)
+            implementation(libs.atomicfu)
+        }
+    }
+    named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
 }

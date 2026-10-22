@@ -33,4 +33,7 @@ Copyright 2026 Andrey Tolpeev
 <string name="warning_ssl_dialog_title">Warning</string>
 <string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making the app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
 <string name="dialog_ok_title">OK</string>
+    <string name="authentication_invalid_url">Enter an HTTP or HTTPS server URL without credentials, a query, or a fragment.</string>
+    <string name="authentication_connection_failed">Could not connect. Check the server URL, network connection, and certificate.</string>
+    <string name="authentication_http_error">TeamCity returned HTTP %1$d.</string>
 </resources>

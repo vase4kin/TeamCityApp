@@ -16,4 +16,17 @@
 
 <resources>
     <string name="preview_action_unavailable">This action is not available in this preview.</string>
+    <string name="journey_accounts">Accounts</string>
+    <string name="journey_back">Back</string>
+    <string name="journey_active">Active account</string>
+    <string name="journey_select">Use account</string>
+    <string name="journey_remove">Remove</string>
+    <string name="journey_add_account">Add account</string>
+    <string name="journey_sign_out">Sign out</string>
+    <string name="journey_no_accounts">No saved accounts</string>
+    <string name="journey_account_error">Could not read or update the saved accounts.</string>
+    <string name="journey_retry">Retry</string>
+    <string name="journey_remove_title">Remove saved account?</string>
+    <string name="journey_remove_detail">Remove the saved sign-in for %1$s on %2$s?</string>
+    <string name="journey_cancel">Cancel</string>
 </resources>

@@ -26,7 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.login.impl.router.LoginRouter
 
 @Composable
-fun LoginRoute(router: LoginRouter, viewModel: LoginViewModel = hiltViewModel()) {
+fun LoginRoute(router: LoginRouter, viewModel: LoginViewModel = hiltViewModel<AndroidLoginViewModel>()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     BackHandler(state.form.busy) {}
     var dialog by rememberSaveable { mutableStateOf(LoginDialog.None) }
