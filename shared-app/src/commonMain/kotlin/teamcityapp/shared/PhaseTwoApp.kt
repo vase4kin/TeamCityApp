@@ -81,18 +81,32 @@ internal class SharedEntry<T : NavKey>(
 
 @Composable
 fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
+    val platform = LocalNativePlatform.current
+    val themeMode by platform.theme.theme.collectAsStateWithLifecycle(teamcityapp.libraries.app_theme.ThemeMode.System)
+    val platformFailure by platform.failure.collectAsStateWithLifecycle()
     val session by model.sessions.state.collectAsStateWithLifecycle()
     val failed by model.restoreFailed.collectAsStateWithLifecycle()
-    TeamCityTheme(darkTheme ?: androidx.compose.foundation.isSystemInDarkTheme()) {
-        Surface(Modifier.fillMaxSize()) {
-            if (failed) {
-                SharedErrorContent(Modifier.fillMaxSize(), onRetry = model::restore)
-            } else {
-                when (val current = session) {
-                    AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
-                    AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null) }
-                    is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope) }
+    TeamCityTheme(
+        darkTheme ?: when (themeMode) {
+            teamcityapp.libraries.app_theme.ThemeMode.Light -> false
+            teamcityapp.libraries.app_theme.ThemeMode.Dark -> true
+            else -> androidx.compose.foundation.isSystemInDarkTheme()
+        }
+    ) {
+        CompositionLocalProvider(LocalNativeAppLifecycle provides androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle) {
+            Surface(Modifier.fillMaxSize()) {
+                if (failed) {
+                    SharedErrorContent(Modifier.fillMaxSize(), onRetry = model::restore)
+                } else {
+                    when (val current = session) {
+                        AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
+                        AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null) }
+                        is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope) }
+                    }
                 }
+            }
+            platformFailure?.let { failure ->
+                NativeFailureDialog(failure, platform::clearFailure)
             }
         }
     }
@@ -100,12 +114,13 @@ fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
 
 @Composable
 private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
+    val platform = LocalNativePlatform.current
     var graphFailure by remember(account) { mutableStateOf(false) }
     var graphRevision by remember(account) { mutableIntStateOf(0) }
     val graph by produceState<TeamCityAccountGraph?>(null, account, graphRevision) {
         graphFailure = false
         try {
-            if (account != null) value = TeamCityAccountGraph.create(model.sessions, account)
+            if (account != null) value = TeamCityAccountGraph.create(model.sessions, account, platform.files)
         } catch (c: CancellationException) {
             throw c
         } catch (_: Exception) {
@@ -130,7 +145,7 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
                 SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator, _ -> ProjectsContent(destination, checkNotNull(graph), navigator) },
                 SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator, entryId -> HistoryContent(destination, checkNotNull(graph), navigator, entryId) },
                 SharedEntry(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()) { destination, navigator, entryId -> OverviewContent(destination, checkNotNull(graph), navigator, entryId) }
-            ) + nativeBrowsingEntries(graph) + nativeManagementEntries(graph)
+            ) + nativeBrowsingEntries(graph) + nativeManagementEntries(graph) + nativeArtifactEntries(graph) + nativeSettingsEntries(graph)
         )
         result
     }
@@ -379,11 +394,11 @@ private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph
 private fun AccountsContent(model: SharedAppViewModel, navigator: Navigator) {
     val vm = viewModel { AccountsViewModel(model.sessions) }
     val state by vm.state.collectAsStateWithLifecycle()
-    SharedAccountsScreen(state, vm::select, vm::remove, vm::signOut, vm::retry, { navigator.push(LoginDestination) }, { navigator.pop() })
+    SharedAccountsScreen(state, vm::select, vm::remove, vm::signOut, vm::retry, { navigator.push(LoginDestination) }, { navigator.pop() }, onSettings = { navigator.push(teamcityapp.features.settings.api.navigation.SettingsDestination) }, onAbout = { navigator.push(NativeAboutDestination) })
 }
 
 @Composable
-fun SharedAccountsScreen(state: AccountsUiState, onSelect: (String) -> Unit, onRemove: (String) -> Unit, onSignOut: () -> Unit, onRetry: () -> Unit, onAdd: () -> Unit, onBack: () -> Unit) {
+fun SharedAccountsScreen(state: AccountsUiState, onSelect: (String) -> Unit, onRemove: (String) -> Unit, onSignOut: () -> Unit, onRetry: () -> Unit, onAdd: () -> Unit, onBack: () -> Unit, onSettings: (() -> Unit)? = null, onAbout: (() -> Unit)? = null) {
     val accounts = (state.list as? teamcityapp.libraries.list_state.ListUiState.Content)?.items.orEmpty()
     val busy = state.busy
     var removal by remember { mutableStateOf<AccountIdentity?>(null) }
@@ -410,6 +425,12 @@ fun SharedAccountsScreen(state: AccountsUiState, onSelect: (String) -> Unit, onR
                         }
                     }
                     if (accounts.isEmpty()) item { Text(stringResource(Res.string.journey_no_accounts)) }
+                }
+            }
+            if (onSettings != null || onAbout != null) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    if (onSettings != null) TextButton(onSettings, modifier = Modifier.testTag("accounts:settings")) { Text(stringResource(Res.string.platform_settings)) }
+                    if (onAbout != null) TextButton(onAbout, modifier = Modifier.testTag("accounts:about")) { Text(stringResource(Res.string.platform_about)) }
                 }
             }
             Button(onAdd, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("accounts:add")) { Text(stringResource(Res.string.journey_add_account)) }

@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.settings.impl.router.SettingsRouter
 
 @Composable
-fun SettingsRoute(router: SettingsRouter, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsRoute(router: SettingsRouter, viewModel: SettingsViewModel = hiltViewModel<AndroidSettingsViewModel>()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LifecycleResumeEffect(viewModel) {
         viewModel.onScreenViewed()

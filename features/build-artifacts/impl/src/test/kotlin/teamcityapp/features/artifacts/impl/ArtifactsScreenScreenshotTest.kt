@@ -86,6 +86,8 @@ class ArtifactsScreenScreenshotTest(private val stateName: String, private val v
             else -> ListUiState.Content(rows)
         }
         val download = when (stateName) {
+            "downloading_progress" -> ArtifactDownloadState.Downloading(ArtifactDownload("build.zip", "/content/build.zip"), 524288, 1048576)
+            "downloading_unknown_size" -> ArtifactDownloadState.Downloading(ArtifactDownload("build.zip", "/content/build.zip"), 524288)
             "downloading" -> ArtifactDownloadState.Downloading(ArtifactDownload("build.zip", "/content/build.zip"))
             "download_failed" -> ArtifactDownloadState.Failed(ArtifactDownload("build.zip", "/content/build.zip"))
             else -> ArtifactDownloadState.Idle
@@ -139,7 +141,7 @@ class ArtifactsScreenScreenshotTest(private val stateName: String, private val v
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "long_content", "downloading", "download_failed", "permission_denied", "file_unavailable", "browser_unavailable").flatMap { state ->
+            listOf("loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "long_content", "downloading", "downloading_progress", "downloading_unknown_size", "download_failed", "permission_denied", "file_unavailable", "browser_unavailable").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

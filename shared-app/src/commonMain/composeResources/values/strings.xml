@@ -29,4 +29,16 @@
     <string name="journey_remove_title">Remove saved account?</string>
     <string name="journey_remove_detail">Remove the saved sign-in for %1$s on %2$s?</string>
     <string name="journey_cancel">Cancel</string>
+<string name="platform_action_failed">Couldn’t complete action</string>
+<string name="platform_browser_failed">No browser or mail app could open this link. You can try again.</string>
+<string name="platform_share_failed">The share sheet is unavailable. Please try again.</string>
+<string name="platform_copy_failed">Couldn’t copy this text. Please try again.</string>
+<string name="platform_file_failed">This file is unavailable. Download it again, then choose an app or Save to Files.</string>
+<string name="platform_rating_failed">Rating is unavailable right now. Please try again from an active app window.</string>
+<string name="platform_ok">OK</string>
+<string name="platform_settings">Settings</string><string name="platform_about">About</string>
+<string name="platform_licenses">Open source licenses</string>
+<string name="platform_licenses_description">Open source software used by TeamCityApp. Select a project to read its bundled license. Upstream links provide project notices and additional information.</string>
+<string name="platform_license_source">Upstream license and notices</string>
+<string name="platform_license_read_error">Couldn’t read this bundled license. Please try again.</string>
 </resources>

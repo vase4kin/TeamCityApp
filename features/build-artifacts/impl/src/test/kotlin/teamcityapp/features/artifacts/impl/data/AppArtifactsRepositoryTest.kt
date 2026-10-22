@@ -223,6 +223,33 @@ class AppArtifactsRepositoryTest {
         assertEquals(listOf("folder"), temporary.root.listFiles().orEmpty().map { it.name })
     }
 
+    @Test fun unsafeNamesCannotEscapeThePrivateDirectory() = runTest {
+        val repository = mock<Repository>()
+        val adapter = adapter(repository, StandardTestDispatcher(testScheduler))
+        for (name in listOf("", ".", "..", "../file", "a/b", "a\\b")) {
+            val failure = runCatching { adapter.download(ArtifactDownload(name, "download/file")) }.exceptionOrNull()
+            assertTrue(failure is IllegalArgumentException)
+        }
+        verifyNoInteractions(repository)
+        assertTrue(temporary.root.listFiles().orEmpty().isEmpty())
+    }
+
+    @Test fun truncatedDownloadKeepsCompletedFileAndClosesPendingOutput() = runTest {
+        val repository = mock<Repository>()
+        val original = java.io.File(temporary.root, "file.txt").apply { writeText("complete") }
+        val body = object : ResponseBody() {
+            val bytes = Buffer().writeUtf8("short")
+            override fun contentType(): MediaType? = null
+            override fun contentLength(): Long = 100
+            override fun source(): BufferedSource = bytes
+        }
+        doReturn(Single.just<ResponseBody>(body)).whenever(repository).downloadFile("download/file")
+        val failure = runCatching { adapter(repository, StandardTestDispatcher(testScheduler)).download(ArtifactDownload("file.txt", "download/file")) }.exceptionOrNull()
+        assertTrue(failure is IOException)
+        assertEquals("complete", original.readText())
+        assertEquals(listOf("file.txt"), temporary.root.listFiles().orEmpty().map { it.name })
+    }
+
     private class TrackingBody(source: Source) : ResponseBody() {
         val closed = AtomicBoolean()
         private val buffered = object : ForwardingSource(source) {

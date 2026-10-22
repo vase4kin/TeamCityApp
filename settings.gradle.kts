@@ -163,3 +163,7 @@ include(":features:filter-bottom-sheet:presentation")
 include(":features:bottom-sheet:presentation")
 
 include(":features:build-details:presentation")
+
+include(":features:build-artifacts:presentation")
+
+include(":libraries:theme-preferences", ":features:settings:presentation")

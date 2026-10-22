@@ -17,18 +17,24 @@
 package teamcityapp.libraries.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeoutConfig
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.header
+import io.ktor.client.request.prepareRequest
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
+import io.ktor.http.contentLength
 import io.ktor.http.contentType
 import io.ktor.http.decodeURLPart
 import io.ktor.http.hostWithPort
+import io.ktor.utils.io.*
 import kotlin.io.encoding.Base64
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -75,7 +81,7 @@ class TeamCityTransport(private val client: HttpClient, private val account: Acc
         }
         require(candidate.protocol == base.protocol && candidate.host == base.host && candidate.port == base.port && candidate.user.isNullOrEmpty() && candidate.password.isNullOrEmpty()) { "A TeamCity link must stay on the active server" }
         require(candidate.encodedPath.startsWith(context) && candidate.fragment.isEmpty()) { "A TeamCity link must stay in the active server context" }
-        require(candidate.encodedPath.split('/').none { it.decodeURLPart() in setOf(".", "..") }) { "A TeamCity link cannot traverse outside its REST endpoint" }
+        require(candidate.encodedPath.split('/').flatMap { it.decodeURLPart().split('/', '\\') }.none { it in setOf(".", "..") }) { "A TeamCity link cannot traverse outside its REST endpoint" }
         val relative = candidate.encodedPath.removePrefix(context)
         val withoutAuth = relative.removePrefix("guestAuth/").removePrefix("httpAuth/")
         require(withoutAuth == "app/rest" || withoutAuth.startsWith("app/rest/")) { "A TeamCity link must target its REST API" }
@@ -105,9 +111,7 @@ class TeamCityTransport(private val client: HttpClient, private val account: Acc
         if (response.status.value == 401 && !account.identity.guest && initialAuthorization == null) {
             val challenge = response.headers.getAll(HttpHeaders.WWWAuthenticate).orEmpty().firstOrNull { it.trimStart().startsWith("Basic", ignoreCase = true) }
             if (challenge != null) {
-                val raw = "${account.identity.userName}:${account.password}"
-                val bytes = if (challenge.contains("charset=\"UTF-8\"", true) || challenge.contains("charset=UTF-8", true)) raw.encodeToByteArray() else ByteArray(raw.length) { index -> raw[index].code.takeIf { it <= 255 }?.toByte() ?: '?'.code.toByte() }
-                challengedAuthorization = "Basic ${Base64.Default.encode(bytes)}"
+                challengedAuthorization = basicAuthorization(challenge)
                 response.bodyAsText() // Release the challenge response before retrying.
                 response = client.request(url) {
                     method = verb
@@ -124,6 +128,63 @@ class TeamCityTransport(private val client: HttpClient, private val account: Acc
         currentCoroutineContext().ensureActive()
         if (response.status.value !in 200..299) throw TeamCityHttpFailure(response.status.value)
         return json.parseToJsonElement(body).jsonObject
+    }
+
+    /** A bounded buffer keeps large artifacts off the heap; execute closes on success or cancellation. */
+    suspend fun stream(path: String, write: (ByteArray, Int) -> Unit, progress: (Long, Long?) -> Unit) {
+        val url = resolve(path)
+        suspend fun receive(authorization: String?, mayChallenge: Boolean) {
+            var retry = false
+            client.prepareRequest(url) {
+                method = HttpMethod.Get
+                // Large transfers may exceed the JSON deadline while still making steady progress.
+                // Retain a socket inactivity limit and explicit screen/account cancellation.
+                timeout {
+                    requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+                    socketTimeoutMillis = 30_000
+                }
+                header(HttpHeaders.Accept, "application/octet-stream")
+                header(HttpHeaders.AcceptEncoding, "identity")
+                authorization?.let { header(HttpHeaders.Authorization, it) }
+            }.execute { response ->
+                val challenge = response.headers.getAll(HttpHeaders.WWWAuthenticate).orEmpty().firstOrNull { it.trimStart().startsWith("Basic", true) }
+                if (response.status.value == 401 && mayChallenge && challenge != null) {
+                    challengedAuthorization = basicAuthorization(challenge)
+                    retry = true
+                } else {
+                    if (response.status.value !in 200..299) throw TeamCityHttpFailure(response.status.value)
+                    // Platform engines may transparently decode HTTP compression; its wire length
+                    // then describes compressed bytes, not bytes written to the artifact file.
+                    val encoded = response.headers[HttpHeaders.ContentEncoding]?.let { !it.equals("identity", true) } ?: false
+                    val total = response.contentLength()?.takeIf { it >= 0 && !encoded }
+                    val channel = response.bodyAsChannel()
+                    val buffer = ByteArray(8192)
+                    var received = 0L
+                    progress(received, total)
+                    while (true) {
+                        currentCoroutineContext().ensureActive()
+                        val count = channel.readAvailable(buffer, 0, buffer.size)
+                        if (count == -1) break
+                        if (count == 0) continue
+                        write(buffer, count)
+                        received += count
+                        progress(received, total)
+                    }
+                    currentCoroutineContext().ensureActive()
+                    // Engines need not reject a truncated response themselves.
+                    check(total == null || received == total) { "Incomplete artifact response" }
+                }
+            }
+            if (retry) receive(challengedAuthorization, false)
+        }
+        val initial = challengedAuthorization
+        receive(initial, !account.identity.guest && initial == null)
+    }
+
+    private fun basicAuthorization(challenge: String): String {
+        val raw = "${account.identity.userName}:${account.password}"
+        val bytes = if (challenge.contains("charset=\"UTF-8\"", true) || challenge.contains("charset=UTF-8", true)) raw.encodeToByteArray() else ByteArray(raw.length) { index -> raw[index].code.takeIf { it <= 255 }?.toByte() ?: '?'.code.toByte() }
+        return "Basic ${Base64.Default.encode(bytes)}"
     }
     fun close() = client.close()
 }

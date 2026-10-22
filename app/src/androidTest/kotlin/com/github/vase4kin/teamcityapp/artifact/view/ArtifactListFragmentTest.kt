@@ -48,6 +48,7 @@ import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.PhaseFiveEvidence
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
@@ -65,6 +66,7 @@ import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.atomic.AtomicInteger
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.buffer
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Assert.*
 import org.junit.Before
@@ -143,6 +145,7 @@ class ArtifactListFragmentTest {
         awaitText(Formatter.formatFileSize(context, 7768L))
         awaitText("index.html")
         awaitText(Formatter.formatFileSize(context, 697840L))
+        PhaseFiveEvidence.capture("android_artifacts")
     }
 
     @Test fun emptyArtifactsHasExplicitEmptyState() {
@@ -166,6 +169,7 @@ class ArtifactListFragmentTest {
         clickFile("/metadata/res")
         assertRootDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res"))
         awaitText("Nested file.txt")
+        PhaseFiveEvidence.capture("android_artifact_folder")
     }
 
     @Test fun folderLongClickOpenActionUsesSameNavigationPayload() {
@@ -183,9 +187,11 @@ class ArtifactListFragmentTest {
         start()
         clickFile("/metadata/bundle.zip")
         awaitText(text(SheetR.string.artifact_download))
+        PhaseFiveEvidence.capture("android_archive_actions")
         sheet(text(SheetR.string.artifact_open))
         assertRootDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/bundle.zip!", "bundle.zip!"))
         awaitText("Inner file.txt")
+        PhaseFiveEvidence.capture("android_archive_folder")
     }
 
     @Test fun downloadedFileOpensWithProviderUriAndGrants() {
@@ -221,6 +227,7 @@ class ArtifactListFragmentTest {
         download("/metadata/retry")
         awaitText(text(ArtifactsR.string.artifacts_download_failed))
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(ArtifactsR.string.artifacts_download_failed))
+        PhaseFiveEvidence.capture("android_download_failure")
         `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just("retried".toResponseBody()))
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_retry_download)).performClick()
         compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
@@ -228,6 +235,43 @@ class ArtifactListFragmentTest {
             compose.onAllNodesWithText(text(ArtifactsR.string.artifacts_download_failed))
                 .fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
         }
+    }
+
+    @Test fun downloadReportsBytesAndCancellationClosesABlockedFileRead() {
+        val closed = java.util.concurrent.CountDownLatch(1)
+        val source = object : okio.Source {
+            var first = true
+            override fun read(sink: okio.Buffer, byteCount: Long): Long {
+                if (first) {
+                    first = false
+                    sink.write(ByteArray(8192))
+                    return 8192
+                }
+                check(closed.await(10, java.util.concurrent.TimeUnit.SECONDS))
+                throw java.io.IOException("closed")
+            }
+            override fun close() {
+                closed.countDown()
+            }
+            override fun timeout() = okio.Timeout.NONE
+        }
+        val body = object : ResponseBody() {
+            val bytes = source.buffer()
+            override fun contentType(): okhttp3.MediaType? = null
+            override fun contentLength(): Long = 16384
+            override fun source() = bytes
+        }
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just(body))
+        openArtifacts(Files(listOf(File("progress.txt", 16384L, File.Content("/content/progress.txt"), "/metadata/progress"))))
+        download("/metadata/progress")
+        awaitText("8192 bytes received")
+        PhaseFiveEvidence.capture("android_download_byte_progress")
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
+        compose.waitUntil(10_000) { closed.count == 0L }
+        compose.onNodeWithTag("artifacts:download-card").assertDoesNotExist()
+        val directory = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS) ?: context.filesDir
+        compose.waitUntil(10_000) { directory.listFiles().orEmpty().none { it.name.endsWith(".part") } }
+        PhaseFiveEvidence.capture("android_download_cancelled")
     }
 
     @Test fun cancelDownloadDisposesTheNetworkRequestWithoutFailureNotification() {

@@ -126,9 +126,16 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?): Set<Destinat
         SharedEntry(ActionSheetDestination::class, ActionSheetDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(ActionSheetResult::class, ActionSheetResult.serializer()) }
         }, DestinationPresentation.BottomSheet) { dest, nav, _ ->
-            // Explicit clipboard/export integrations retain Phase 5 ownership.
-            val items = sheetItems(dest.menu, dest.descriptions).filter { it.action in setOf(SheetAction.Branch, SheetAction.BuildType, SheetAction.Project) }
-            BottomSheetScreen(BottomSheetUiState(dest.title, items)) { item -> if (!nav.finish(ActionSheetResult(dest.consumerId, item), dest.recipientId)) nav.pop() }
+            val platform = LocalNativePlatform.current
+            val items = sheetItems(dest.menu, dest.descriptions)
+            BottomSheetScreen(BottomSheetUiState(dest.title, items)) { item ->
+                if (item.action == SheetAction.Copy) {
+                    platform.copy(item.description)
+                    nav.pop()
+                } else if (!nav.finish(ActionSheetResult(dest.consumerId, item), dest.recipientId)) {
+                    nav.pop()
+                }
+            }
         },
         SharedEntry(BuildDetailsDestination::class, BuildDetailsDestination.serializer()) { dest, nav, id -> NativeManagedBuild(dest, graph, nav, id) }
     )
@@ -136,6 +143,8 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?): Set<Destinat
 
 @Composable
 private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
+    val platform = LocalNativePlatform.current
+    val server = graph.account.identity.serverUrl
     val model = viewModel { BuildDetailsViewModel(SavedStateHandle(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, NativeDetailsTracker) }
     val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {
@@ -179,15 +188,18 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
         }
         onPauseOrDispose {}
     }
-    BuildDetailsScreen(state.copy(platformActionsAvailable = false), { nav.pop() }, { command ->
+    BuildDetailsScreen(state, { nav.pop() }, { command ->
         when (command) {
+            BuildDetailsCommand.Share -> runCatching { activeServerWebUrl(server, state.current.webUrl.orEmpty()) }.onSuccess(platform::share).onFailure { platform.rejected(NativePlatformFailure.Share) }.let { }
+            BuildDetailsCommand.Browser -> platform.serverBrowser(server, state.current.webUrl.orEmpty())
+            BuildDetailsCommand.Log -> platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest))
             BuildDetailsCommand.Cancel -> model.requestCancellation()
             BuildDetailsCommand.Restart -> model.requestRestart()
             else -> Unit
         }
     }, model::confirm, model::dismissConfirmation, snackbar) {
         SharedBuildOverviewScreen(
-            content.copy(actions = emptyList(), sections = content.sections.filter { it.section != BuildDetailsSection.Artifacts }),
+            content,
             overview::refresh,
             overview::retry,
             { row ->
@@ -196,14 +208,23 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
                         OverviewRowAction.Configuration -> state.current.buildTypeId?.let { nav.push(BuildHistoryDestination(it, state.subtitle)) }
                         OverviewRowAction.Project -> state.current.configuration?.projectId?.let { nav.push(ProjectDestination(it, state.current.configuration?.projectName.orEmpty())) }
                         OverviewRowAction.Branch -> (row.value as? OverviewText.Literal)?.let { nav.push(ActionSheetDestination(it.value, listOf(it.value), SheetMenuType.Branch, entryId, "overview")) }
-                        else -> Unit
+                        OverviewRowAction.Copy -> (row.value as? OverviewText.Literal)?.let { platform.copy(it.value) }
                     }
                 }
             },
-            onSection = { section -> if (!state.busy) nav.push(BuildDetailsSectionDestination(destination.build, section, state.subtitle, originEntryId = entryId)) },
+            onSection = { section ->
+                if (!state.busy) {
+                    if (section == BuildDetailsSection.Artifacts) {
+                        destination.build.artifacts?.href?.let { nav.push(teamcityapp.features.artifacts.api.navigation.ArtifactsDestination(destination.build, it, "")) }
+                    } else {
+                        nav.push(BuildDetailsSectionDestination(destination.build, section, state.subtitle, originEntryId = entryId))
+                    }
+                }
+            },
+            onLog = { platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest)) },
             onCountRetry = overview::retryCount,
             bottomContentPadding = LocalFloatingActionClearance.current,
-            rowActionAvailable = { !state.busy && it.action != OverviewRowAction.Copy }
+            rowActionAvailable = { !state.busy && (it.action != OverviewRowAction.Copy || it.value is OverviewText.Literal) }
         )
     }
 }

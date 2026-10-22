@@ -74,12 +74,12 @@ class AccountsScreenScreenshotTest(private val scene: String, private val varian
                 "empty" -> ListUiState.Empty()
                 else -> ListUiState.Content(listOf(alice, bob))
             },
-            activeKey = if (scene in listOf("content", "updating", "write_error", "confirmation")) alice.key else null,
+            activeKey = if (scene in listOf("content", "updating", "write_error", "confirmation", "app_actions")) alice.key else null,
             busy = scene == "updating",
             mutationFailed = scene == "write_error"
         )
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(variant.dark) { SharedAccountsScreen(state, {}, {}, {}, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme(variant.dark) { SharedAccountsScreen(state, {}, {}, {}, {}, {}, {}, onSettings = if (scene == "app_actions") ({}) else null, onAbout = if (scene == "app_actions") ({}) else null) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (scene == "confirmation") {
@@ -102,7 +102,7 @@ class AccountsScreenScreenshotTest(private val scene: String, private val varian
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("loading", "error", "empty", "content", "updating", "write_error", "confirmation").flatMap { scene ->
+            listOf("loading", "error", "empty", "content", "updating", "write_error", "confirmation", "app_actions").flatMap { scene ->
                 variants.map { arrayOf<Any>(scene, it) }
             }
         }

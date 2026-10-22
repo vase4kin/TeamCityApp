@@ -62,7 +62,10 @@ class DefaultArtifactsRepository internal constructor(
         }
     }
 
-    override suspend fun download(file: ArtifactDownload): DownloadedArtifact = withContext(ioDispatcher) {
+    override suspend fun download(file: ArtifactDownload): DownloadedArtifact = download(file) { _, _ -> }
+
+    override suspend fun download(file: ArtifactDownload, onProgress: (Long, Long?) -> Unit): DownloadedArtifact = withContext(ioDispatcher) {
+        require(file.name.isNotBlank() && file.name !in setOf(".", "..") && file.name.none { it == '/' || it == '\\' || it.code < 32 }) { "Invalid artifact filename" }
         val session = repository.get()
         val response = session.downloadFile(file.href).await()
         var temporary: File? = null
@@ -79,13 +82,18 @@ class DefaultArtifactsRepository internal constructor(
                         pendingFile.sink().buffer().use { sink ->
                             val source = response.source()
                             val buffer = Buffer()
+                            var received = 0L
+                            val total = response.contentLength().takeIf { it >= 0 }
                             while (true) {
                                 currentCoroutineContext().ensureActive()
                                 val count = source.read(buffer, 8192)
                                 if (count == -1L) break
                                 currentCoroutineContext().ensureActive()
                                 sink.write(buffer, count)
+                                received += count
+                                onProgress(received, total)
                             }
+                            if (total != null && received != total) throw IOException("Incomplete artifact response")
                         }
                     } catch (failure: Exception) {
                         // Closing a cancelled download can interrupt a blocking read with IOException.

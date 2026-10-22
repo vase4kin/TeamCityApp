@@ -34,6 +34,7 @@ class PlatformFixtureTest(unittest.TestCase):
             mutation_state = {}
             mutation_attempts = {}
             mutation_log = []
+            artifact_attempts = {}
         self.handler = Handler
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         self.thread = Thread(target=self.server.serve_forever, daemon=True)
@@ -52,6 +53,36 @@ class PlatformFixtureTest(unittest.TestCase):
         data = response.read()
         client.close()
         return response.status, json.loads(data) if data else None
+
+    def test_web_links_keep_the_active_fixture_context(self):
+        status, build = self.request("GET", "/context/platform/unique/guestAuth/app/rest/builds/id:1")
+        self.assertEqual(200, status)
+        self.assertTrue(build["webUrl"].startswith("http://127.0.0.1:18081/context/platform/unique/"))
+        _, change = self.request("GET", "/context/platform/unique/guestAuth/app/rest/changes/id:5")
+        self.assertTrue(change["webUrl"].startswith("http://127.0.0.1:18081/context/platform/unique/"))
+
+    def test_artifacts_expose_folder_archive_and_content_links_without_mutations(self):
+        prefix = "/context/platform/guestAuth/app/rest/"
+        status, listing = self.request("GET", prefix + "builds/id:1/artifacts/children?locator=browseArchives:true")
+        self.assertEqual(200, status)
+        self.assertEqual(["logs", "report.txt", "bundle.zip", "index.html"], [item["name"] for item in listing["file"]])
+        archive = listing["file"][2]
+        self.assertTrue(archive["children"]["href"].endswith("/bundle.zip!"))
+        _, child = self.request("GET", archive["children"]["href"])
+        self.assertEqual("report.txt", child["file"][0]["name"])
+        self.assertFalse(self.handler.mutation_log)
+
+    def test_artifact_retry_fails_once_then_returns_the_complete_stream(self):
+        path = "/context/artifact-retry/test/guestAuth/app/rest/builds/id:1/artifacts/content/report.txt"
+        for expected in [503, 200]:
+            client = HTTPConnection("127.0.0.1", self.server.server_port, timeout=5)
+            client.request("GET", path)
+            response = client.getresponse()
+            body = response.read()
+            self.assertEqual(expected, response.status)
+            if expected == 200: self.assertEqual(950272, len(body))
+            client.close()
+        self.assertFalse(self.handler.mutation_log)
 
     def test_mutations_require_opt_in_and_management_context(self):
         status, _ = self.request("POST", "/context/guestAuth/app/rest/buildQueue", {})

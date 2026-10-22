@@ -37,8 +37,17 @@ class Handler(BaseHTTPRequestHandler):
     mutation_state = {}
     mutation_attempts = {}
     mutation_log = []
+    artifact_attempts = {}
 
     def do_POST(self):
+        # Drain bounded request bytes before rejecting a POST, so closing the socket
+        # cannot reset a valid 401/405 response with unread client data still pending.
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if not 0 <= length < 100000: raise ValueError("body size")
+            raw_body = self.rfile.read(length)
+        except ValueError:
+            self.send_response(400); self.end_headers(); return
         # Synthetic writes exist only in explicitly enabled, local /manage contexts.
         parsed = urlsplit(self.path)
         prefix = parsed.path.split("/app/rest/", 1)[0].removesuffix("/guestAuth").removesuffix("/httpAuth")
@@ -51,9 +60,8 @@ class Handler(BaseHTTPRequestHandler):
             if name is None:
                 self.send_response(401); self.send_header("WWW-Authenticate", 'Basic realm="fixture"'); self.end_headers(); return
         try:
-            length = int(self.headers.get("Content-Length", "0"))
-            if not 0 < length < 100000: raise ValueError("body size")
-            body = json.loads(self.rfile.read(length))
+            if not length: raise ValueError("body size")
+            body = json.loads(raw_body)
             if not isinstance(body, dict): raise ValueError("body")
         except (ValueError, json.JSONDecodeError):
             self.send_response(400); self.end_headers(); return
@@ -121,6 +129,8 @@ class Handler(BaseHTTPRequestHandler):
         def build(number="1", state="finished"):
             value = {"id": number, "href": "/context/app/rest/builds/id:" + number,
                     "buildTypeId": "Demo_Build", "number": number, "state": state,
+                    "webUrl": "http://127.0.0.1:18081/context/viewLog.html?buildId=" + number,
+                    "artifacts": {"href": "/context/app/rest/builds/id:" + number + "/artifacts/children"},
                     "status": "FAILURE" if number == "1" else "SUCCESS", "statusText": "One failed test" if number == "1" else "Success",
                     "buildType": {"id": "Demo_Build", "name": "Verify", "projectId": "Demo", "projectName": "Demonstration"},
                     "startDate": "20261021T102030+0000", "finishDate": "20261021T103030+0000",
@@ -135,7 +145,37 @@ class Handler(BaseHTTPRequestHandler):
                 value.update(managed.get(number, {}))
             return value
         configuration = {"id": "Demo_Build", "name": "Verify", "projectId": "Demo", "projectName": "Demonstration"}
-        if rest.startswith("projects/"):
+        if "/artifacts/" in rest:
+            artifact_root = "/context/app/rest/builds/id:1/artifacts/"
+            if "/artifacts/content/" in rest:
+                key = (prefix, name, rest)
+                with self.mutation_lock:
+                    attempt = self.artifact_attempts.get(key, 0) + 1
+                    self.artifact_attempts[key] = attempt
+                if "/artifact-retry/" in path and attempt == 1:
+                    self.send_response(503); self.end_headers(); return
+                body = ("TeamCityApp artifact fixture\n" * 32768).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                try:
+                    for start in range(0, len(body), 8192):
+                        self.wfile.write(body[start:start + 8192]); self.wfile.flush()
+                        if "/artifact-slow/" in path: time.sleep(0.15)
+                        if "/artifact-long/" in path: time.sleep(0.3)
+                        if "/artifact-truncated/" in path: self.close_connection = True; break
+                except (BrokenPipeError, ConnectionResetError): pass
+                return
+            elif rest.endswith("/children/logs") or rest.endswith("/children/bundle.zip!"):
+                data = {"file": [{"name": "report.txt", "href": artifact_root + "metadata/report.txt", "size": 950272, "content": {"href": artifact_root + "content/report.txt"}}]}
+            else:
+                data = {"file": [
+                    {"name": "logs", "href": artifact_root + "metadata/logs", "children": {"href": artifact_root + "children/logs"}},
+                    {"name": "report.txt", "href": artifact_root + "metadata/report.txt", "size": 950272, "content": {"href": artifact_root + "content/report.txt"}},
+                    {"name": "bundle.zip", "href": artifact_root + "metadata/bundle.zip", "size": 1024, "content": {"href": artifact_root + "content/bundle.zip"}, "children": {"href": artifact_root + "children/bundle.zip!"}},
+                    {"name": "index.html", "href": artifact_root + "metadata/index.html", "size": 1024, "content": {"href": artifact_root + "content/index.html"}}]}
+        elif rest.startswith("projects/"):
             data = {"projects": {"project": []}, "buildTypes": {"buildType": [configuration]}}
         elif rest.startswith("buildTypes/") and rest.endswith("/builds"):
             data = {"count": 2, "build": [build("1"), build("2")]}
@@ -160,7 +200,7 @@ class Handler(BaseHTTPRequestHandler):
         elif rest == "changes":
             data = {"count": 1, "change": [{"id": "5", "href": "/context/app/rest/changes/id:5"}]}
         elif rest.startswith("changes/id:"):
-            data = {"id": "5", "comment": "Share Home and build browsing between Android and iOS", "username": "Developer", "date": "20261021T102030+0000", "version": "abc123def456", "webUrl": "https://example.invalid/change/5", "files": {"file": [{"file": "shared-app/NativeBrowsing.kt", "changeType": "added"}, {"file": "features/home/HomeScreen.kt", "changeType": "changed"}]}}
+            data = {"id": "5", "comment": "Share Home and build browsing between Android and iOS", "username": "Developer", "date": "20261021T102030+0000", "version": "abc123def456", "webUrl": "http://127.0.0.1:18081/context/viewModification.html?modId=5", "files": {"file": [{"file": "shared-app/NativeBrowsing.kt", "changeType": "added"}, {"file": "features/home/HomeScreen.kt", "changeType": "changed"}]}}
         elif rest == "testOccurrences":
             status = "SUCCESS" if "status:SUCCESS" in query.get("locator", [""])[0] else "FAILURE"
             if "status:UNKNOWN" in query.get("locator", [""])[0]:
@@ -178,7 +218,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             return
         prefix = path.split("/app/rest/", 1)[0].removesuffix("/guestAuth").removesuffix("/httpAuth")
-        body = json.dumps(data).replace("/context/app/rest/", prefix + "/app/rest/").encode()
+        body = json.dumps(data).replace("/context/app/rest/", prefix + "/app/rest/").replace("http://127.0.0.1:18081/context/", "http://127.0.0.1:18081" + prefix + "/").encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))

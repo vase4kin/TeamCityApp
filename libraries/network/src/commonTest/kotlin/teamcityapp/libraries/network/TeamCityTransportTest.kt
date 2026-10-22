@@ -21,6 +21,8 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
@@ -31,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -47,6 +50,70 @@ class TeamCityTransportTest {
         }
     )
     private fun client(handler: MockEngine) = HttpClient(handler) { followRedirects = false }
+
+    @Test fun artifactStreamingOutlivesTheJsonDeadlineWithoutDisablingJsonTimeouts() = runTest {
+        val engine = mockEngine {
+            delay(200)
+            respond("{}")
+        }
+        val client = HttpClient(engine) {
+            followRedirects = false
+            install(HttpTimeout) { requestTimeoutMillis = 50 }
+        }
+        val transport = TeamCityTransport(client, secret(true))
+        try {
+            var bytes = 0
+            transport.stream("/context/app/rest/artifacts/content/report.txt", { _, count -> bytes += count }, { _, _ -> })
+            assertEquals(2, bytes)
+            assertFailsWith<HttpRequestTimeoutException> { transport.get("/context/app/rest/server") }
+        } finally {
+            transport.close()
+        }
+    }
+
+    @Test fun decodedCompressedArtifactsDoNotCompareBytesWithTheEncodedWireLength() = runTest {
+        val engine = mockEngine { request ->
+            assertEquals("identity", request.headers[HttpHeaders.AcceptEncoding])
+            // Models engines which have already decoded a compressed network response.
+            respond("decoded", headers = headersOf(HttpHeaders.ContentEncoding to listOf("gzip"), HttpHeaders.ContentLength to listOf("2")))
+        }
+        val client = HttpClient(engine) { install(HttpTimeout) }
+        val transport = TeamCityTransport(client, secret(true))
+        try {
+            var final: Pair<Long, Long?>? = null
+            transport.stream("/context/app/rest/artifacts/content/report.txt", { _, _ -> }, { count, total -> final = count to total })
+            assertEquals(7L to null, final)
+        } finally {
+            transport.close()
+        }
+    }
+
+    @Test fun privateArtifactStreamingUsesOneBasicChallengeAndReportsItsCompleteBody() = runTest {
+        val authorizations = mutableListOf<String?>()
+        val engine = mockEngine { request ->
+            authorizations += request.headers[HttpHeaders.Authorization]
+            if (authorizations.size == 1) {
+                respond("challenge", HttpStatusCode.Unauthorized, headersOf(HttpHeaders.WWWAuthenticate, "Basic realm=fixture"))
+            } else {
+                respond("artifact", headers = headersOf(HttpHeaders.ContentLength, "8"))
+            }
+        }
+        val client = HttpClient(engine) {
+            followRedirects = false
+            install(HttpTimeout)
+        }
+        val transport = TeamCityTransport(client, secret())
+        try {
+            var received = 0
+            var final: Pair<Long, Long?>? = null
+            transport.stream("/context/app/rest/artifacts/content/report.txt", { _, count -> received += count }, { count, total -> final = count to total })
+            assertEquals(8, received)
+            assertEquals(8L to 8L, final)
+            assertEquals(listOf(null, "Basic YWxpY2U6cGFzc3dvcmQ="), authorizations)
+        } finally {
+            transport.close()
+        }
+    }
 
     @Test fun urlNormalizationPreservesLegacyRootAndContextConventions() {
         assertEquals("https://teamcity.example", normalizeServerUrl("https://teamcity.example"))
@@ -72,7 +139,7 @@ class TeamCityTransportTest {
 
     @Test fun continuationRejectsOtherOriginsCredentialsContextsAndTraversal() {
         val transport = TeamCityTransport(client(mockEngine { respond("{}") }), secret())
-        for (path in listOf("https://elsewhere.example/app/rest/builds", "//elsewhere.example/app/rest/builds", "http://teamcity.example/context/app/rest/builds", "https://alice:x@teamcity.example/context/app/rest/builds", "/app/rest/builds", "/context/app/rest/%2e%2e/projects", "/context/login.html")) {
+        for (path in listOf("https://elsewhere.example/app/rest/builds", "//elsewhere.example/app/rest/builds", "http://teamcity.example/context/app/rest/builds", "https://alice:x@teamcity.example/context/app/rest/builds", "/app/rest/builds", "/context/app/rest/%2e%2e/projects", "/context/app/rest/%2e%2e%2foutside", "/context/login.html")) {
             assertFails("Must reject $path") { transport.resolve(path) }
         }
         transport.close()

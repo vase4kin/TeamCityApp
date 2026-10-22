@@ -131,6 +131,7 @@ class TeamCityApi(private val transport: TeamCityTransport) {
             builds.clear()
         }
     }
+    suspend fun stream(path: String, write: (ByteArray, Int) -> Unit, progress: (Long, Long?) -> Unit) = transport.stream(path, write, progress)
     fun apiPath(path: String): String = transport.apiPath(path)
     fun close() {
         documents.clear()

@@ -34,7 +34,7 @@ internal fun ArtifactsRoute(
     router: ArtifactsRouter,
     showToolbar: Boolean,
     visible: Boolean = true,
-    viewModel: ArtifactsViewModel = hiltViewModel(),
+    viewModel: ArtifactsViewModel = hiltViewModel<AndroidArtifactsViewModel>(),
     screenActive: Boolean = true
 ) {
     val activity = LocalActivity.current

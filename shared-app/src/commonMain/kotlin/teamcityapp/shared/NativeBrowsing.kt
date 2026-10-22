@@ -15,7 +15,6 @@
  */
 
 package teamcityapp.shared
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
@@ -27,6 +26,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.ktor.http.encodeURLQueryComponent
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
@@ -197,7 +197,8 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                         BuildDetailsSection.Parameters -> {
                             val vm = viewModel { PropertiesViewModel(SavedStateHandle(mapOf(PropertiesViewModel.ARG_NAMES to ArrayList(dest.build.properties?.items.orEmpty().map { it.name.orEmpty() }), PropertiesViewModel.ARG_VALUES to ArrayList(dest.build.properties?.items.orEmpty().map { it.value.orEmpty() })))) }
                             val state by vm.state.collectAsStateWithLifecycle()
-                            PropertiesScreen(state, {}, copyAvailable = false)
+                            val platform = LocalNativePlatform.current
+                            PropertiesScreen(state, { platform.copy(it.value) })
                         }
 
                         BuildDetailsSection.Snapshots -> {
@@ -222,7 +223,9 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                 vm.onScreenViewed()
                 onPauseOrDispose {}
             }
-            ChangeDetailsScreen(state, {}, { _, _ -> }, { nav.pop() }, platformActionsAvailable = false)
+            val platform = LocalNativePlatform.current
+            val server = graph.account.identity.serverUrl
+            ChangeDetailsScreen(state, { platform.serverBrowser(server, it) }, { id, file -> platform.serverBrowser(server, "diffView.html?id=${id.encodeURLQueryComponent()}&vcsFileName=${file.encodeURLQueryComponent()}") }, { nav.pop() })
             LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
@@ -231,10 +234,11 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?): Set<Destinatio
             var query by rememberSaveable { mutableStateOf("") }
             var wrap by rememberSaveable { mutableStateOf(true) }
             var match by rememberSaveable { mutableIntStateOf(0) }
+            val platform = LocalNativePlatform.current
             TestDetailsScreen(state, vm::retry, { nav.pop() }, query, wrap, match, {
                 query = it
                 match = 0
-            }, { wrap = it }, { match = it }, copyAvailable = false)
+            }, { wrap = it }, { match = it }, onCopy = platform::copy)
         }
     )
 }

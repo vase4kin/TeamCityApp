@@ -30,6 +30,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.PhaseFiveEvidence
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
@@ -179,11 +180,13 @@ class SettingsActivityTest {
     @Test fun selectingThemePersistsAppliesAndSurvivesRecreation() {
         launch().use { scenario ->
             awaitSummary("Light theme")
+            PhaseFiveEvidence.capture("android_settings_light")
             compose.onNodeWithText("Dark theme").performClick()
             awaitSummary("Dark theme")
             compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES }
             scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
             assertEquals(ThemeMode.Dark, runBlocking { repo.theme.first() })
+            PhaseFiveEvidence.capture("android_settings_dark")
             scenario.recreate()
             awaitSummary("Dark theme")
             scenario.moveToState(Lifecycle.State.CREATED)

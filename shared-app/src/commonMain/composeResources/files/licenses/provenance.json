@@ -1,0 +1,69 @@
+{
+  "copyright": "Copyright 2026 Andrey Tolpeev",
+  "license": "Apache-2.0; upstream texts retain their original notices",
+  "entries": [
+    {
+      "id": "teamcityapp",
+      "name": "TeamCityApp",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "kotlin",
+      "name": "Kotlin",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "coroutines",
+      "name": "kotlinx.coroutines",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "serialization",
+      "name": "kotlinx.serialization",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "compose",
+      "name": "Compose Multiplatform",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "androidx",
+      "name": "AndroidX",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "ktor",
+      "name": "Ktor",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "skiko",
+      "name": "Skiko",
+      "license": "Apache-2.0",
+      "text_source": "Repository LICENSE.txt (standard Apache 2.0 text)",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "skia",
+      "name": "Skia",
+      "license": "BSD-3-Clause",
+      "text_source": "https://skia.googlesource.com/skia/+/main/LICENSE?format=TEXT",
+      "sha256": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd"
+    }
+  ]
+}

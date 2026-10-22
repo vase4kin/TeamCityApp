@@ -608,3 +608,227 @@ final class PhaseFourManagementSmokeTests: XCTestCase {
         capture("run_retry_success", retry)
     }
 }
+
+
+/// System integrations use local, read-only fixtures and app-private files.
+final class PhaseFivePlatformSmokeTests: XCTestCase {
+    private func element(_ app: XCUIApplication, _ id: String) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: id).firstMatch
+    }
+    private func capture(_ name: String, _ app: XCUIApplication) {
+        let bar = element(app, "screen:app-bar")
+        let systemSheet = element(app, "ActivityListView")
+        let anchor = systemSheet.exists ? systemSheet : (bar.exists ? bar : app)
+        var lastFrame = anchor.frame
+        var unchangedSince = Date()
+        let settled = NSPredicate { _, _ in
+            let frame = anchor.frame
+            if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
+            return Date().timeIntervalSince(unchangedSince) >= 0.6
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: anchor)], timeout: 10), .completed)
+        if !systemSheet.exists && bar.exists && XCUIDevice.shared.orientation == .portrait {
+            XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
+        }
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        let theme = ProcessInfo.processInfo.environment["TEAMCITY_UI_EVIDENCE_THEME"] ?? "light"
+        attachment.name = "phase5_" + name + "_" + theme
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+    private func tap(_ app: XCUIApplication, _ id: String, scroll: Bool = false) {
+        let target = element(app, id)
+        if scroll {
+            for _ in 0..<12 {
+                if target.exists && target.isHittable { break }
+                app.swipeUp(velocity: .slow)
+            }
+        }
+        XCTAssertTrue(target.waitForExistence(timeout: 25), id)
+        if scroll {
+            var lastFrame = target.frame
+            var unchangedSince = Date()
+            let settled = NSPredicate { _, _ in
+                let frame = target.frame
+                if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
+                return Date().timeIntervalSince(unchangedSince) >= 0.6
+            }
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: target)], timeout: 5), .completed)
+        }
+        target.press(forDuration: 0.2)
+    }
+    private func back(_ app: XCUIApplication) {
+        let back = app.buttons["Navigate up"].exists ? app.buttons["Navigate up"].firstMatch : app.buttons["Back"].firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
+        back.press(forDuration: 0.2)
+    }
+    private var fixtureSuffix = ""
+    private func fixtureApp(_ suffix: String = "") -> XCUIApplication {
+        fixtureSuffix = suffix
+        let app = XCUIApplication()
+        app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        tap(app, "auth:guest")
+        let url = element(app, "auth:url")
+        url.tap()
+        for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
+        for character in "http://127.0.0.1:18081/context" + suffix { url.typeText(String(character)) }
+        XCTAssertEqual(url.value as? String, "http://127.0.0.1:18081/context" + suffix)
+        url.typeText("\n")
+        XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
+        app.buttons["OK"].tap()
+        XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
+        return app
+    }
+
+    private func openHistory(_ app: XCUIApplication) {
+        tap(app, "navigation:row:configuration:Demo_Build")
+        XCTAssertTrue(element(app, "history:build:1").waitForExistence(timeout: 25))
+    }
+
+    private func platformApp(_ mode: String = "platform") throws -> XCUIApplication {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_PLATFORM_UI"] == "1" else { throw XCTSkip("Platform fixture is opt-in") }
+        continueAfterFailure = false
+        return fixtureApp("/" + mode + "/" + UUID().uuidString)
+    }
+    private func artifacts(_ app: XCUIApplication) {
+        openHistory(app)
+        tap(app, "history:build:1")
+        capture("build_overview_platform_actions", app)
+        tap(app, "overview:section:Artifacts", scroll: true)
+        XCTAssertTrue(app.staticTexts["report.txt"].firstMatch.waitForExistence(timeout: 20))
+    }
+    private func waitUntilGone(_ app: XCUIApplication, _ id: String) {
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element(app, id))
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 10), .completed, id)
+    }
+    private func assertFileExport(_ app: XCUIApplication, timeout: TimeInterval = 25) {
+        let sheet = element(app, "ActivityListView")
+        XCTAssertTrue(sheet.waitForExistence(timeout: timeout))
+        let save = element(app, "Save to Files")
+        // At accessibility sizes iOS collapses file actions behind this native disclosure.
+        let more = element(app, "View More")
+        if !save.exists && more.waitForExistence(timeout: 2) { more.tap() }
+        for _ in 0..<6 {
+            if save.exists { break }
+            sheet.swipeUp(velocity: .slow)
+        }
+        XCTAssertTrue(save.waitForExistence(timeout: 10), "The native activity sheet must offer Save to Files")
+    }
+    private func download(_ app: XCUIApplication) {
+        app.staticTexts["report.txt"].firstMatch.tap()
+        tap(app, "sheet:ArtifactDownload")
+    }
+    func testArtifactFoldersArchivesAndNativeExport() throws {
+        let app = try platformApp()
+        artifacts(app)
+        capture("artifacts", app)
+        app.staticTexts["logs"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["report.txt"].firstMatch.waitForExistence(timeout: 15))
+        capture("artifact_folder", app)
+        back(app)
+        app.staticTexts["bundle.zip"].firstMatch.tap()
+        capture("archive_actions", app)
+        tap(app, "sheet:ArtifactOpen")
+        XCTAssertTrue(app.staticTexts["report.txt"].firstMatch.waitForExistence(timeout: 15))
+        capture("archive_folder", app)
+        back(app)
+        download(app)
+        capture("file_export_initial", app)
+        assertFileExport(app)
+        capture("file_export", app)
+    }
+    func testDownloadCancelBackgroundAndDeparture() throws {
+        let app = try platformApp("artifact-slow")
+        artifacts(app)
+        download(app)
+        XCTAssertTrue(element(app, "artifacts:download-card").waitForExistence(timeout: 10))
+        capture("download_progress", app)
+        app.buttons["Cancel"].firstMatch.tap()
+        waitUntilGone(app, "artifacts:download-card")
+        download(app)
+        XCTAssertTrue(element(app, "artifacts:download-card").waitForExistence(timeout: 10))
+        XCUIDevice.shared.press(.home)
+        XCTAssertTrue(app.wait(for: .runningBackground, timeout: 10))
+        app.activate()
+        waitUntilGone(app, "artifacts:download-card")
+        capture("download_after_background", app)
+        download(app)
+        XCTAssertTrue(element(app, "artifacts:download-card").waitForExistence(timeout: 10))
+        back(app)
+        XCTAssertTrue(element(app, "overview:section:Artifacts").waitForExistence(timeout: 10))
+        tap(app, "overview:section:Artifacts")
+        waitUntilGone(app, "artifacts:download-card")
+        capture("download_after_departure", app)
+    }
+    func testDownloadFailureRetriesTheSameFile() throws {
+        let app = try platformApp("artifact-retry")
+        artifacts(app); download(app)
+        XCTAssertTrue(app.buttons["Retry download"].firstMatch.waitForExistence(timeout: 20))
+        capture("download_failure", app)
+        app.buttons["Retry download"].firstMatch.tap()
+        assertFileExport(app)
+        capture("download_retry_export", app)
+    }
+    func testBrowserSharingAndClipboard() throws {
+        let app = try platformApp()
+        openHistory(app); tap(app, "history:build:1")
+        tap(app, "details:action:Share")
+        XCTAssertTrue(element(app, "ActivityListView").waitForExistence(timeout: 15))
+        capture("build_share", app)
+        // Dismiss UIKit's sheet through its standard close control.
+        if app.buttons["Close"].firstMatch.exists { app.buttons["Close"].firstMatch.tap() }
+        else { app.swipeDown(velocity: .slow) }
+        tap(app, "overview:section:Parameters", scroll: true)
+        tap(app, "properties:row:0")
+        capture("parameter_copy", app)
+        back(app)
+        tap(app, "details:action:Browser")
+        XCTAssertTrue(app.wait(for: .runningBackground, timeout: 15))
+        capture("build_browser", app)
+        app.activate()
+        XCTAssertTrue(element(app, "details:action:Browser").waitForExistence(timeout: 15))
+    }
+
+    func testLongTransferSurvivesJsonDeadlineAndExports() throws {
+        let app = try platformApp("artifact-long")
+        artifacts(app); download(app)
+        XCTAssertTrue(element(app, "artifacts:download-card").waitForExistence(timeout: 10))
+        capture("long_download_progress", app)
+        assertFileExport(app, timeout: 70)
+        capture("long_download_export", app)
+    }
+
+    func testSettingsThemePersistenceAndAboutLicenses() throws {
+        let app = try platformApp()
+        tap(app, "home:account")
+        capture("accounts_platform_actions", app)
+        tap(app, "accounts:settings")
+        capture("settings", app)
+        tap(app, "settings:option:Dark")
+        capture("settings_dark", app)
+        app.terminate(); app.launch()
+        XCTAssertTrue(element(app, "settings:option:Dark").waitForExistence(timeout: 25))
+        capture("settings_dark_relaunched", app)
+        tap(app, "settings:option:System")
+        back(app)
+        tap(app, "accounts:about")
+        XCTAssertTrue(app.staticTexts["Version"].firstMatch.waitForExistence(timeout: 20))
+        capture("about", app)
+        tap(app, "Rate the app", scroll: true)
+        let dismissRating = app.buttons["Not Now"].firstMatch
+        if dismissRating.waitForExistence(timeout: 8) {
+            capture("rating_prompt", app)
+            dismissRating.tap()
+            waitUntilGone(app, "Not Now")
+        }
+        capture("rating_returned", app)
+        tap(app, "Open sources libraries", scroll: true)
+        XCTAssertTrue(element(app, "licenses:list").waitForExistence(timeout: 10))
+        capture("licenses", app)
+        tap(app, "licenses:kotlin")
+        XCTAssertTrue(element(app, "license:text").waitForExistence(timeout: 10))
+        capture("license_offline_text", app)
+    }
+}

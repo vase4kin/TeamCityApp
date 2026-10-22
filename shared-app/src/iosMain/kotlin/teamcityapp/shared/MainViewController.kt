@@ -33,7 +33,10 @@ fun MainViewController(): UIViewController {
         "unavailable" -> AboutFixture.Unavailable
         else -> AboutFixture.Available
     }
-    return ComposeUIViewController {
+    lateinit var controller: UIViewController
+    val testNamespace = if (kotlin.native.Platform.isDebugBinary) environment["TEAMCITY_UI_TEST_VAULT"] as? String else null
+    val platform = IosNativePlatform({ controller }, testNamespace)
+    controller = ComposeUIViewController {
         if (environment["PHASE1_STATE"] != null) {
             PhaseOneApp(fixture, darkTheme = environment["PHASE1_THEME"] == "dark")
         } else {
@@ -44,7 +47,8 @@ fun MainViewController(): UIViewController {
                     IosSavedNavigationStore(testNamespace?.let { "navigation.uitest.$it" } ?: "navigation.phase2.snapshot.v1")
                 )
             }
-            PhaseTwoApp(model)
+            androidx.compose.runtime.CompositionLocalProvider(LocalNativePlatform provides platform) { PhaseTwoApp(model) }
         }
     }
+    return controller
 }
