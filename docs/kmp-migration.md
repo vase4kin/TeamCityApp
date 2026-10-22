@@ -49,7 +49,7 @@ P0 establishes feasibility and the first usable iOS app. P1 delivers parity and
 release readiness. P2 covers the explicitly scoped final platform refinements.
 
 - [x] Phase 1 — Toolchain and shared foundation (P0; completed 2026-10-22)
-- [ ] Phase 2 — Accounts and first real workflow (P0)
+- [x] Phase 2 — Accounts and first real workflow (P0; completed 2026-10-22)
 - [ ] Phase 3 — Home and build browsing (P1)
 - [ ] Phase 4 — Build management (P1)
 - [ ] Phase 5 — Downloads and platform integrations (P1)
@@ -113,26 +113,36 @@ report source was synchronized for private publication.
 **Depends on:** Phase 1. **Outcome:** Login → Projects → Configurations → History
 → Build Overview works on Android and iOS against a real server.
 
-- [ ] Introduce shared coroutine networking behind feature repository contracts;
+- [x] Introduce shared coroutine networking behind feature repository contracts;
   evaluate Ktor/Kotlin serialization and keep legacy Android adapters as needed.
-- [ ] Preserve Basic challenges, guest paths, URL normalization, duplicate checks,
+- [x] Preserve Basic challenges, guest paths, URL normalization, duplicate checks,
   HTTP/SSL consent, error handling, and cancellation.
-- [ ] Implement platform secure credential storage; preserve Android persisted accounts.
-- [ ] Share account identity, session initialization/lifetime, logout and switching.
-- [ ] Reject work/results/restoration belonging to another account, including
+- [x] Implement platform secure credential storage; preserve Android persisted accounts.
+- [x] Share account identity, session initialization/lifetime, logout and switching.
+- [x] Reject work/results/restoration belonging to another account, including
   different users on the same server. Never persist passwords in screen state.
-- [ ] Port typed destinations, unique visits, saved state, ViewModel ownership,
+- [x] Port typed destinations, unique visits, saved state, ViewModel ownership,
   result serialization, back/reset/replace, and account restoration validation.
-- [ ] Migrate the first full journey's UI and repositories to shared implementations.
-- [ ] Preserve complete build snapshots, optional data, opaque pagination URLs,
+- [x] Migrate the first full journey's UI and repositories to shared implementations.
+- [x] Preserve complete build snapshots, optional data, opaque pagination URLs,
   cache/refresh distinctions, retries, and cancellation semantics.
-- [ ] Verify HTTPS, guest/private servers, selected HTTP/SSL consent behavior,
+- [x] Verify HTTPS, guest/private servers, selected HTTP/SSL consent behavior,
   account switching, relaunch, offline failures, and pagination on both platforms.
-- [ ] Publish the detailed Sites report, save checkpoints, and record evidence.
+- [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
-**Gate:** the journey works against a real TeamCity server on both platforms,
-with automated behavioral coverage and actual UI evidence. Use measured effort
-to estimate the remaining phases. **Report/commits:** pending.
+**Gate passed:** the journey works against JetBrains' approved public guest
+server on Android and iOS. Common/Android tests, real-engine local private-auth
+and HTTP/TLS fixtures, secure relaunch, pagination, failure/retry coverage and
+actual UI evidence are recorded in [the Phase 2 evidence](kmp-phase-2.md).
+That record includes measured scope and revised remaining-phase estimates.
+
+**Report:** [Private Phase 2 review](https://teamcityapp-kmp-phase-two-20261022.andrey-tolpeev.chatgpt.site),
+published and verified on 2026-10-22. **Checkpoint commits:** implementation
+`44676c6cedd34c7471086f6570aee8cfdcda9176`; CI
+`7175484662fef26af594bbabc88bae26beefe357`; this checklist, inventory, agent
+contract and evidence are saved in the accompanying
+`chore(docs): record KMP phase two evidence` checkpoint on `codex/kmp-phase-1`.
+Application commits remain local. Phase 3 requires a new user instruction.
 
 ## Phase 3 — Home and build browsing
 

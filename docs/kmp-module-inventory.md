@@ -111,3 +111,50 @@ Inventory captured during Phase 1. Counts cover production `main`, `prod`, and `
 - Retrofit/Gson/RxCache DTOs and encrypted Android accounts are unchanged in Phase 1.
 - Shared code cannot import Android, Java reflection, or Hilt. Platform implementations stay explicitly scoped.
 
+
+## Phase 2 ownership delta (2026-10-22)
+
+The preceding table is the historical Phase 1 inventory. Phase 2 ends with
+92 included modules, of which 24 use the KMP conventions. Eleven modules were
+added and nine existing modules converted. Counts below are production Kotlin
+files in commonMain and androidMain/iosMain; they exclude tests and resources.
+Module count does not measure shared code volume or feature parity.
+
+| KMP module | Common files | Platform files |
+| --- | ---: | ---: |
+| `:features:about:api` | 2 | 1 |
+| `:features:about:presentation` | 4 | 0 |
+| `:libraries:design-system` | 16 | 0 |
+| `:shared-app` | 5 | 2 |
+| `:features:login:api` | 3 | 0 |
+| `:libraries:list-state` | 2 | 0 |
+| `:libraries:build-configurations` | 1 | 0 |
+| `:features:navigation:api` | 3 | 0 |
+| `:libraries:builds` | 1 | 1 |
+| `:features:build-history:api` | 3 | 1 |
+| `:features:build-overview:api` | 4 | 0 |
+| `:libraries:navigation` | 11 | 1 |
+| `:features:build-details:api` | 6 | 0 |
+| `:libraries:accounts` | 2 | 1 |
+| `:libraries:network` | 2 | 2 |
+| `:libraries:authentication-shared` | 3 | 0 |
+| `:features:login:presentation` | 2 | 0 |
+| `:libraries:list-presentation` | 3 | 0 |
+| `:features:navigation:presentation` | 4 | 0 |
+| `:libraries:time` | 1 | 2 |
+| `:libraries:build-presentation` | 4 | 0 |
+| `:features:build-overview:presentation` | 6 | 0 |
+| `:features:build-history:presentation` | 8 | 0 |
+| `:libraries:shared-data` | 2 | 0 |
+
+The new modules are accounts, network, shared-data, authentication-shared,
+list-presentation, build-presentation, time, and the Login, Navigation, Build
+History and Build Overview presentation modules. The converted modules are
+those four feature APIs, Build Details API, builds, build-configurations,
+list-state and navigation.
+
+Android impl/theme/list-ui/build-ui/authentication modules retain adapters,
+platform integrations and screenshot harnesses. Android data/session/security
+modules retain installed encrypted account and Retrofit/RxCache compatibility.
+iOS now uses the real shared account graph instead of the About-only preview.
+See [Phase 2](kmp-phase-2.md) for behavior, UI differences and verification.

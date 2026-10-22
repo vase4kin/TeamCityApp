@@ -304,7 +304,7 @@ required by this workflow change.
 ## Compose golden tests
 
 Compose UI owners apply `teamcityapp.android.screenshot` after the Android and
-Compose conventions. It supplies Robolectric, Roborazzi, Compose test APIs, and
+Compose conventions, or after `teamcityapp.kmp.compose` for a shared UI host. It supplies Robolectric, Roborazzi, Compose test APIs, and
 an Android test host without requiring an emulator or a Hilt application. Test
 stateless screens with fixture state; retain behavior and integration tests.
 
@@ -321,12 +321,14 @@ With JDK 17:
 ./gradlew verifyRoborazziDebug
 ./gradlew :features:about:impl:verifyRoborazziDebug
 ./gradlew :features:about:impl:recordRoborazziDebug --tests '*AboutScreenScreenshotTest'
+./gradlew :shared-app:verifyRoborazziAndroidHostTest
+./gradlew :shared-app:recordRoborazziAndroidHostTest --tests '*AccountsScreenScreenshotTest'
 ```
 
 Normal unit tests verify by default. Record only intentional changes, inspect the
 PNG differences, then verify again. Commit baselines in the owning module's
 `src/test/screenshots/debug/` with the UI changes they document. Each variant has
-its own directory to avoid parallel test-task conflicts. Differences and HTML
+its own directory (`androidHostTest` for the Android target of a KMP library) to avoid parallel test-task conflicts. Differences and HTML
 reports go to `build/outputs/roborazzi` and `build/reports/roborazzi`; CI uploads
 both and verifies all participating debug modules via `verifyRoborazziDebug`.
 Dependency versions belong in the version catalog, as for runtime dependencies.
