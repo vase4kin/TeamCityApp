@@ -31,7 +31,7 @@ import teamcityapp.features.snapshot_dependencies.impl.tracker.SnapshotDependenc
 internal fun SnapshotDependenciesRoute(
     router: SnapshotDependenciesRouter,
     tracker: SnapshotDependenciesTracker,
-    viewModel: SnapshotDependenciesViewModel = hiltViewModel(),
+    viewModel: SnapshotDependenciesViewModel = hiltViewModel<AndroidSnapshotDependenciesViewModel>(),
     visible: Boolean = true
 ) {
     val state = if (visible) {

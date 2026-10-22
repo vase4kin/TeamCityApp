@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 import teamcityapp.features.test_details.impl.router.TestDetailsRouter
 
 @Composable
-internal fun TestDetailsRoute(router: TestDetailsRouter, viewModel: TestDetailsViewModel = hiltViewModel()) {
+internal fun TestDetailsRoute(router: TestDetailsRouter, viewModel: TestDetailsViewModel = hiltViewModel<AndroidTestDetailsViewModel>()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) { viewModel.onScreenViewed() }
     LaunchedEffect(state) {

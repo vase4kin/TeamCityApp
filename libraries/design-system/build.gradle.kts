@@ -20,3 +20,5 @@ compose.resources {
     publicResClass = true
     packageOfResClass = "teamcityapp.libraries.design_system.resources"
 }
+
+kotlin.sourceSets.named("commonMain") { dependencies { implementation(libs.multiplatform.compose.backhandler) } }

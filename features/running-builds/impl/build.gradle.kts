@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.running_builds.impl" }
 dependencies {
+    api(projects.features.runningBuilds.presentation)
     implementation(libs.androidx.activity.compose)
     implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildHistory.api)

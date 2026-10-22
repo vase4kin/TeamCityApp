@@ -31,53 +31,6 @@ import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.PagingListSnapshot
 
 @Composable
-internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel()) {
-    val selection by viewModel.selection.collectAsStateWithLifecycle()
-    val count by viewModel.count.collectAsStateWithLifecycle()
-    LaunchedEffect(count, router) {
-        if (count is TestsCountState.Available) router.updateTabCount((count as TestsCountState.Available).count)
-    }
-    // The controls stay in the same composition. Only the list presenter changes with its
-    // generation; the screen animates the captured list content for each filter.
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val visiblePages = remember(selection.pages, lifecycle) { selection.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
-    val tests = visiblePages.collectAsLazyPagingItems()
-    var completed by rememberSaveable(selection.filter.name) { mutableStateOf(false) }
-    val refresh = tests.loadState.refresh
-    if (refresh is LoadState.NotLoading) SideEffect { completed = true }
-    val rows = PagingListSnapshot(tests)
-    val state: ListUiState<TestOccurrence> = if (rows.itemCount > 0) {
-        ListUiState.Content(rows.items.map { it.test }, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
-    } else {
-        when (refresh) {
-            is LoadState.Loading -> if (completed) ListUiState.Empty(isRefreshing = true) else ListUiState.Loading
-            is LoadState.Error -> if (completed) ListUiState.Empty(refreshFailed = true) else ListUiState.Error
-            is LoadState.NotLoading -> ListUiState.Empty()
-        }
-    }
-    TestsScreen(
-        state = state,
-        presentation = selection.presentation.copy(countsKnown = count is TestsCountState.Available),
-        countState = count,
-        itemCount = rows.itemCount,
-        itemAt = rows::get,
-        itemPeek = rows::peek,
-        appendState = when (tests.loadState.append) {
-            is LoadState.Loading -> TestsAppendState.Loading
-            is LoadState.Error -> TestsAppendState.Error
-            is LoadState.NotLoading -> TestsAppendState.Idle
-        },
-        onFilter = viewModel::selectFilter,
-        onRefresh = {
-            viewModel.prepareRefresh()
-            tests.refresh()
-        },
-        onRetry = {
-            viewModel.prepareRefresh()
-            tests.refresh()
-        },
-        onCountRetry = viewModel::retryCount,
-        onFailedTest = router::openFailedTest,
-        onAppendRetry = tests::retry
-    )
+internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltViewModel<AndroidTestsViewModel>()) {
+    SharedTestsContent(viewModel, router::openFailedTest, router::updateTabCount)
 }

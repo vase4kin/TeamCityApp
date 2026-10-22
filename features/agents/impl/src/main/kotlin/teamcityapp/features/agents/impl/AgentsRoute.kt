@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.agents.impl.router.AgentsRouter
 
 @Composable
-internal fun AgentsRoute(router: AgentsRouter, viewModel: AgentsViewModel = hiltViewModel(), visible: Boolean = true) {
+internal fun AgentsRoute(router: AgentsRouter, viewModel: AgentsViewModel = hiltViewModel<AndroidAgentsViewModel>(), visible: Boolean = true) {
     val state = if (visible) {
         val collected by viewModel.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
         collected

@@ -26,7 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.change_details.impl.router.ChangeDetailsRouter
 
 @Composable
-internal fun ChangeDetailsRoute(router: ChangeDetailsRouter, viewModel: ChangeDetailsViewModel = hiltViewModel()) {
+internal fun ChangeDetailsRoute(router: ChangeDetailsRouter, viewModel: ChangeDetailsViewModel = hiltViewModel<AndroidChangeDetailsViewModel>()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) router.close() }
     if (state is ChangeDetailsUiState.Content) {

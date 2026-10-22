@@ -28,6 +28,7 @@ plugins {
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.test_details.impl" }
 
 dependencies {
+    api(projects.features.testDetails.presentation)
     implementation(projects.libraries.navigation)
     implementation(projects.features.testDetails.api)
     implementation(projects.libraries.resources)

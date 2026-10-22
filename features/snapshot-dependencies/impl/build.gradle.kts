@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.snapshot_dependencies.impl" }
 dependencies {
+    api(projects.features.snapshotDependencies.presentation)
     implementation(libs.coroutines.rx2)
     implementation(projects.libraries.coroutines)
     implementation(projects.libraries.data)

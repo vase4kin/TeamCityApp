@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 import teamcityapp.features.properties.impl.router.PropertiesRouter
 
 @Composable
-internal fun PropertiesRoute(router: PropertiesRouter, viewModel: PropertiesViewModel = hiltViewModel()) {
+internal fun PropertiesRoute(router: PropertiesRouter, viewModel: PropertiesViewModel = hiltViewModel<AndroidPropertiesViewModel>()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val feedback = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()

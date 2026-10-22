@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright 2020 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
+    <string name="text_onboarding_navigation_drawer">Manage your accounts and control theme settings</string>
+    <string name="title_onboarding_add_fav">Add to favorites</string>
+    <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
+    <string name="title_onboarding_filter">Filter running builds</string>
+    <string name="title_onboarding_filter_queued">Filter queued builds</string>
+    <string name="title_onboarding_filter_agents">Filter agents</string>
+    <string name="text_onboarding_filter">Filter builds by only your favorite configurations or show all running ones. Default filter is set to show only builds by your favorite configurations.</string>
+    <string name="text_onboarding_filter_queued">Filter builds by only your favorite configurations or show all queued ones. Default filter is set to show only builds by your favorite configurations.</string>
+    <string name="text_onboarding_filter_agents">Filter agents by connected or disconnected ones. Default filter is set to show only connected agents.</string>
+
+
+    <string name="text_info_add">Add a configuration to favorites for an easy access</string>
+    <string name="text_info_add_action">Add projects</string>
+
+
+
+
+
+
+    <string name="home_projects">Projects</string>
+    <string name="home_activity">Activity</string>
+    <string name="home_open_account">Open account</string>
+    <string name="home_open_named_account">Open account for %1$s</string>
+    <string name="home_account_tip_title">Your accounts and preferences</string>
+    <string name="home_account_tip_description">Tap the account icon to switch accounts, manage servers and change app settings.</string>
+    <string name="home_filter_favorites">Favorites</string>
+    <string name="home_filter_all_builds">All builds</string>
+    <string name="home_filter_connected">Connected</string>
+    <string name="home_filter_disconnected">Disconnected</string>
+    <string name="home_filter_failed">Couldn’t change the filter. Tap a chip to try again.</string>
+    <string name="home_favorites">Favorites</string>
+    <string name="home_running">Running</string>
+    <string name="home_queue">Queue</string>
+    <string name="home_agents">Agents</string>
+    <string name="home_filter">Filters</string>
+    <string name="home_add_favorite">Add to favorites</string>
+    <string name="home_count_failed">Count unavailable</string>
+    <string name="home_running_count_failed">Couldn’t load the running build count.</string>
+    <string name="home_queue_count_failed">Couldn’t load the queued build count.</string>
+    <string name="home_agents_count_failed">Couldn’t load the agent count.</string>
+    <string name="home_build_counts_failed">Couldn’t load the build counts.</string>
+    <string name="home_build_and_agent_counts_failed">Couldn’t load the build and agent counts.</string>
+    <string name="home_continue">Got it</string>
+    <string name="home_retry">Retry</string>
+</resources>

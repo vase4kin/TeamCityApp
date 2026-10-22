@@ -33,6 +33,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.*
+import teamcityapp.features.home.presentation.resources.*
 import teamcityapp.libraries.theme.*
 
 @OptIn(ExperimentalTestApi::class)
@@ -341,13 +342,13 @@ class HomeScreenTest {
 
     @Test fun countMessagesNameTheFailedCountsAndIgnoreOptionalGuidance() {
         val failures = listOf(
-            setOf(HomeTab.Running) to R.string.home_running_count_failed,
-            setOf(HomeTab.Queue) to R.string.home_queue_count_failed,
-            setOf(HomeTab.Agents) to R.string.home_agents_count_failed,
-            setOf(HomeTab.Running, HomeTab.Queue) to R.string.home_build_counts_failed,
-            setOf(HomeTab.Running, HomeTab.Agents) to R.string.home_build_and_agent_counts_failed,
-            setOf(HomeTab.Queue, HomeTab.Agents) to R.string.home_build_and_agent_counts_failed,
-            setOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents) to R.string.home_build_and_agent_counts_failed
+            setOf(HomeTab.Running) to Res.string.home_running_count_failed,
+            setOf(HomeTab.Queue) to Res.string.home_queue_count_failed,
+            setOf(HomeTab.Agents) to Res.string.home_agents_count_failed,
+            setOf(HomeTab.Running, HomeTab.Queue) to Res.string.home_build_counts_failed,
+            setOf(HomeTab.Running, HomeTab.Agents) to Res.string.home_build_and_agent_counts_failed,
+            setOf(HomeTab.Queue, HomeTab.Agents) to Res.string.home_build_and_agent_counts_failed,
+            setOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents) to Res.string.home_build_and_agent_counts_failed
         )
         failures.forEach { (failed, message) ->
             val state = HomeUiState(selected = HomeTab.Running, badges = badges + failed.associateWith { HomeBadge.Failed() }, onboardingFailed = true)

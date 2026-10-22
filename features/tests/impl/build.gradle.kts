@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.tests.impl" }
 dependencies {
+    api(projects.features.tests.presentation)
     implementation(projects.libraries.data)
     implementation(projects.libraries.coroutines)
     implementation(libs.coroutines.rx2)

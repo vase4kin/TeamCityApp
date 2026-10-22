@@ -56,7 +56,8 @@ fun SharedBuildOverviewScreen(
     onSection: (BuildDetailsSection) -> Unit = {},
     onLog: () -> Unit = {},
     onCountRetry: (BuildDetailsSection) -> Unit = {},
-    bottomContentPadding: androidx.compose.ui.unit.Dp = 0.dp
+    bottomContentPadding: androidx.compose.ui.unit.Dp = 0.dp,
+    rowActionAvailable: (OverviewRow) -> Boolean = { true }
 ) {
     val listState = rememberTeamCityLazyListState()
     TeamCityListContainer(state.list, onRefresh, onRetry, modifier = modifier.fillMaxSize().testTag("overview:screen"), empty = { TeamCityListEmpty(stringResource(Res.string.overview_empty)) }) {
@@ -69,14 +70,14 @@ fun SharedBuildOverviewScreen(
         val setup = state.sections.filter { it.section in listOf(BuildDetailsSection.Parameters, BuildDetailsSection.Snapshots) }
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list"), contentPadding = PaddingValues(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing + bottomContentPadding)) {
-                status?.let { row -> item(key = "status") { OverviewStatusCard(row, time, state.statusLabel, BuildOverviewAction.Log in state.actions, onRowClick, onLog) } }
+                status?.let { row -> item(key = "status") { OverviewStatusCard(row, time, state.statusLabel, BuildOverviewAction.Log in state.actions, onRowClick, onLog, rowActionAvailable) } }
                 if (results.isNotEmpty()) {
                     item(key = "results-title") { OverviewGroupHeading(Res.string.overview_results) }
                     itemsIndexed(results, key = { _, section -> section.section }) { index, section -> OverviewSectionRow(section, { onSection(section.section) }, { onCountRetry(section.section) }, listRowPosition(index, results.size)) }
                 }
                 if (execution.isNotEmpty()) {
                     item(key = "execution-title") { OverviewGroupHeading(Res.string.overview_execution) }
-                    itemsIndexed(execution, key = { _, row -> row.field }) { index, row -> OverviewRowContent(row, { onRowClick(row) }, listRowPosition(index, execution.size)) }
+                    itemsIndexed(execution, key = { _, row -> row.field }) { index, row -> OverviewRowContent(row, { onRowClick(row) }, listRowPosition(index, execution.size), actionAvailable = rowActionAvailable(row)) }
                 }
                 if (setup.isNotEmpty()) {
                     item(key = "setup-title") { OverviewGroupHeading(Res.string.overview_setup) }
@@ -84,7 +85,7 @@ fun SharedBuildOverviewScreen(
                 }
                 if (context.isNotEmpty()) {
                     item(key = "context-title") { OverviewGroupHeading(Res.string.overview_context) }
-                    itemsIndexed(context, key = { _, row -> row.field }) { index, row -> OverviewRowContent(row, { onRowClick(row) }, listRowPosition(index, context.size), showNavigation = row.action != OverviewRowAction.Copy) }
+                    itemsIndexed(context, key = { _, row -> row.field }) { index, row -> OverviewRowContent(row, { onRowClick(row) }, listRowPosition(index, context.size), showNavigation = row.action != OverviewRowAction.Copy && rowActionAvailable(row), actionAvailable = rowActionAvailable(row)) }
                 }
             }
         }
@@ -97,7 +98,7 @@ private fun OverviewGroupHeading(title: StringResource) {
 }
 
 @Composable
-private fun OverviewStatusCard(row: OverviewRow, time: OverviewRow?, label: StringResource, showLog: Boolean, onRow: (OverviewRow) -> Unit, onLog: () -> Unit) {
+private fun OverviewStatusCard(row: OverviewRow, time: OverviewRow?, label: StringResource, showLog: Boolean, onRow: (OverviewRow) -> Unit, onLog: () -> Unit, rowActionAvailable: (OverviewRow) -> Boolean) {
     val statusColors = teamCityStatusColors()
     val (containerColor, contentColor) = when {
         label == Res.string.overview_build_stopped || row.icon == OverviewIcon.Queued || row.icon == OverviewIcon.Unknown -> statusColors.warning.let { it.container to it.onContainer }
@@ -119,8 +120,8 @@ private fun OverviewStatusCard(row: OverviewRow, time: OverviewRow?, label: Stri
                 }
                 Text(stringResource(label), style = MaterialTheme.typography.labelLarge)
             }
-            Text(row.text.resolve(), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.testTag("overview:row:${row.field}").clickable { onRow(row) })
-            time?.let { Text(it.text.resolve(), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("overview:row:${it.field}").clickable { onRow(it) }) }
+            Text(row.text.resolve(), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.testTag("overview:row:${row.field}").then(if (rowActionAvailable(row)) Modifier.clickable { onRow(row) } else Modifier))
+            time?.let { Text(it.text.resolve(), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("overview:row:${it.field}").then(if (rowActionAvailable(it)) Modifier.clickable { onRow(it) } else Modifier)) }
             if (showLog) {
                 FilledTonalButton(onClick = onLog, modifier = Modifier.testTag("overview:log"), colors = ButtonDefaults.filledTonalButtonColors(containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.primary)) {
                     Text(stringResource(Res.string.overview_view_log))
@@ -166,10 +167,10 @@ private fun BuildDetailsSection.drawable(): org.jetbrains.compose.resources.Draw
 }
 
 @Composable
-fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single, showNavigation: Boolean = false) {
+fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single, showNavigation: Boolean = false, actionAvailable: Boolean = true) {
     val isError = row.icon == OverviewIcon.Failure || row.icon == OverviewIcon.Error
     TeamCityListRow(
-        onClick = onClick,
+        onClick = onClick.takeIf { actionAvailable },
         modifier = Modifier.testTag("overview:row:${row.field}"),
         position = position,
         leadingContent = {

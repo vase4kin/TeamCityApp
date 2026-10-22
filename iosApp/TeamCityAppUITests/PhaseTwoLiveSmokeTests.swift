@@ -116,6 +116,19 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         capture("phase2_demo_confirmation",app)
         XCTAssertTrue(app.buttons["Try it out"].waitForExistence(timeout: 5))
         app.buttons["Try it out"].tap()
+        XCTAssertTrue(element(app,"home:tab:Activity").waitForExistence(timeout: 40))
+        element(app,"home:tab:Activity").tap()
+        element(app,"home:filter:RunningAll").tap()
+        XCTAssertTrue(element(app,"running_builds:list").waitForExistence(timeout: 40))
+        capture("phase3_live_running_light",app)
+        element(app,"home:tab:Queue").tap()
+        element(app,"home:filter:QueuedAll").tap()
+        XCTAssertTrue(element(app,"build_queue:list").waitForExistence(timeout: 40))
+        capture("phase3_live_queue_light",app)
+        element(app,"home:tab:Agents").tap()
+        XCTAssertTrue(element(app,"agents:list").waitForExistence(timeout: 40))
+        capture("phase3_live_agents_light",app)
+        element(app,"home:tab:Projects").tap()
         let kotlin = element(app,"navigation:row:project:Kotlin")
         XCTAssertTrue(kotlin.waitForExistence(timeout: 40))
         capture("phase2_projects_light",app)
@@ -155,7 +168,7 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         XCTAssertTrue(element(app,"navigation:up").waitForExistence(timeout: 10))
         element(app,"navigation:up").tap()
         XCTAssertTrue(kotlin.waitForExistence(timeout: 10))
-        element(app,"navigation:up").tap()
+        element(app,"home:account").tap()
         let signOut = element(app,"accounts:sign-out")
         XCTAssertTrue(signOut.waitForExistence(timeout: 10))
         capture("phase2_saved_accounts",app)
@@ -171,3 +184,203 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
     }
 }
 
+
+/// Deterministic HTTP-backed coverage of the normal iOS app; no preview screen is substituted.
+final class PhaseThreeBrowsingSmokeTests: XCTestCase {
+    private func element(_ app: XCUIApplication, _ id: String) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: id).firstMatch
+    }
+    private func capture(_ name: String, _ app: XCUIApplication) {
+        let bar = element(app, "screen:app-bar")
+        var lastFrame = bar.frame
+        var unchangedSince = Date()
+        let settled = NSPredicate { _, _ in
+            let frame = bar.frame
+            if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
+            return Date().timeIntervalSince(unchangedSince) >= 0.6
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: bar)], timeout: 5), .completed)
+        if bar.exists && XCUIDevice.shared.orientation == .portrait {
+            XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
+        }
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        let theme = ProcessInfo.processInfo.environment["TEAMCITY_UI_EVIDENCE_THEME"] ?? "light"
+        attachment.name = "phase3_" + name + "_" + theme
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+    private func tap(_ app: XCUIApplication, _ id: String, scroll: Bool = false) {
+        let target = element(app, id)
+        if scroll {
+            for _ in 0..<12 {
+                if target.exists && target.isHittable { break }
+                app.swipeUp(velocity: .slow)
+            }
+        }
+        XCTAssertTrue(target.waitForExistence(timeout: 25), id)
+        if scroll {
+            var lastFrame = target.frame
+            var unchangedSince = Date()
+            let settled = NSPredicate { _, _ in
+                let frame = target.frame
+                if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
+                return Date().timeIntervalSince(unchangedSince) >= 0.6
+            }
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: target)], timeout: 5), .completed)
+        }
+        target.press(forDuration: 0.2)
+    }
+    private func back(_ app: XCUIApplication) {
+        let back = app.buttons["Back"].firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
+        back.press(forDuration: 0.2)
+    }
+    private func fixtureApp(_ suffix: String = "") -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        tap(app, "auth:guest")
+        let url = element(app, "auth:url")
+        url.tap()
+        for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
+        for character in "http://127.0.0.1:18081/context" + suffix { url.typeText(String(character)) }
+        XCTAssertEqual(url.value as? String, "http://127.0.0.1:18081/context" + suffix)
+        url.typeText("\n")
+        XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
+        app.buttons["OK"].tap()
+        XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
+        return app
+    }
+    func testHomeRetainedPanesFavoritesSectionsAndRelaunch() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else {
+            throw XCTSkip("Start scripts/kmp-platform-fixture.py and opt in to fixture UI verification.")
+        }
+        continueAfterFailure = false
+        let app = fixtureApp()
+        capture("home_projects", app)
+        tap(app, "home:tab:Favorites")
+        XCTAssertTrue(element(app, "favorites:add").waitForExistence(timeout: 20))
+        capture("favorites_empty", app)
+        tap(app, "home:tab:Activity")
+        tap(app, "home:filter:RunningAll")
+        XCTAssertTrue(element(app, "running_builds:list").waitForExistence(timeout: 20))
+        capture("running", app)
+        tap(app, "home:tab:Queue")
+        tap(app, "home:filter:QueuedAll")
+        XCTAssertTrue(element(app, "build_queue:list").waitForExistence(timeout: 20))
+        capture("queue", app)
+        tap(app, "home:tab:Agents")
+        XCTAssertTrue(element(app, "agents:list").waitForExistence(timeout: 20))
+        capture("agents", app)
+        tap(app, "home:filter:AgentsDisconnected")
+        tap(app, "home:tab:Queue")
+        tap(app, "home:tab:Projects")
+        tap(app, "home:tab:Activity")
+        XCTAssertTrue(element(app, "home:filter:QueuedAll").exists)
+        XCTAssertTrue(element(app, "build_queue:list").exists)
+        capture("retained_activity_queue", app)
+        tap(app, "home:tab:Projects")
+        tap(app, "navigation:row:configuration:Demo_Build")
+        XCTAssertTrue(element(app, "history:list").waitForExistence(timeout: 20))
+        tap(app, "history:favorite")
+        XCTAssertTrue(app.buttons["Remove from favorites"].waitForExistence(timeout: 10))
+        capture("history_favorite", app)
+        tap(app, "history:build:1")
+        XCTAssertTrue(element(app, "overview:row:Result").waitForExistence(timeout: 20))
+        capture("overview_sections", app)
+        tap(app, "overview:section:Changes", scroll: true)
+        tap(app, "changes:change:5")
+        XCTAssertTrue(element(app, "change_details:list").waitForExistence(timeout: 20))
+        XCTAssertGreaterThanOrEqual(app.staticTexts["Change details"].firstMatch.frame.minY, 40)
+        capture("change_details", app)
+        back(app)
+        XCTAssertTrue(element(app, "changes:list").waitForExistence(timeout: 20))
+        capture("changes", app)
+        back(app)
+        tap(app, "overview:section:Tests", scroll: true)
+        XCTAssertTrue(element(app, "tests:test:failure").waitForExistence(timeout: 20))
+        capture("tests_failed", app)
+        tap(app, "tests:test:failure")
+        XCTAssertTrue(element(app, "test_details:text").waitForExistence(timeout: 20))
+        capture("test_details", app)
+        tap(app, "test_details:search")
+        element(app, "test_details:search").typeText("Queue\n")
+        capture("test_details_search", app)
+        back(app)
+        tap(app, "tests:filter:Passed")
+        XCTAssertTrue(element(app, "tests:test:passed").waitForExistence(timeout: 20))
+        capture("tests_passed", app)
+        tap(app, "tests:filter:Ignored")
+        XCTAssertTrue(app.staticTexts["There are no ignored tests"].waitForExistence(timeout: 20))
+        capture("tests_empty_ignored", app)
+        back(app)
+        tap(app, "overview:section:Parameters", scroll: true)
+        XCTAssertTrue(element(app, "properties:list").waitForExistence(timeout: 20))
+        tap(app, "properties:expand:1", scroll: true)
+        capture("parameters_expanded", app)
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(element(app, "properties:list").waitForExistence(timeout: 30))
+        capture("section_relaunched", app)
+        back(app)
+        tap(app, "overview:section:Snapshots", scroll: true)
+        XCTAssertTrue(element(app, "snapshot:list").waitForExistence(timeout: 20))
+        capture("snapshot_dependencies", app)
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(element(app, "snapshot:list").waitForExistence(timeout: 20))
+        capture("snapshot_after_background", app)
+        tap(app, "home:tab:Favorites")
+        XCTAssertTrue(element(app, "favorites:configuration:Demo_Build").waitForExistence(timeout: 20))
+        capture("favorites_content", app)
+        tap(app, "home:tab:Projects")
+        XCTAssertTrue(element(app, "snapshot:list").waitForExistence(timeout: 20))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        capture("retained_section_expanded", app)
+        XCUIDevice.shared.orientation = .portrait
+    }
+    func testLoadingAndFailedMonitoringKeepHomeNavigationAvailable() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Fixture verification is opt-in") }
+        continueAfterFailure = false
+        let loading = fixtureApp("/loading")
+        capture("home_loading", loading)
+        XCTAssertTrue(element(loading, "navigation:row:configuration:Demo_Build").waitForExistence(timeout: 20))
+        loading.terminate()
+        let app = fixtureApp("/error")
+        tap(app, "home:tab:Activity")
+        tap(app, "home:filter:RunningAll")
+        XCTAssertTrue(element(app, "error:content").waitForExistence(timeout: 20))
+        capture("running_error", app)
+        app.buttons["Try again"].firstMatch.tap()
+        XCTAssertTrue(element(app, "error:content").waitForExistence(timeout: 20))
+        tap(app, "home:tab:Queue")
+        tap(app, "home:filter:QueuedAll")
+        XCTAssertTrue(element(app, "error:content").waitForExistence(timeout: 20))
+        capture("queue_error", app)
+        tap(app, "home:tab:Agents")
+        XCTAssertTrue(element(app, "error:content").waitForExistence(timeout: 20))
+        capture("agents_error", app)
+        tap(app, "home:tab:Projects")
+        XCTAssertTrue(element(app, "navigation:row:configuration:Demo_Build").exists)
+    }
+    func testOptionalCountFailuresKeepChangesAndTestsUsable() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Fixture verification is opt-in") }
+        continueAfterFailure = false
+        let app = fixtureApp("/optional")
+        tap(app, "navigation:row:configuration:Demo_Build")
+        tap(app, "history:build:1")
+        XCTAssertTrue(element(app, "overview:row:Result").waitForExistence(timeout: 20))
+        capture("overview_optional_counts_unavailable", app)
+        tap(app, "overview:section:Changes", scroll: true)
+        XCTAssertTrue(element(app, "changes:change:5").waitForExistence(timeout: 20))
+        capture("changes_optional_count_failure", app)
+        back(app)
+        tap(app, "overview:section:Tests", scroll: true)
+        XCTAssertTrue(element(app, "tests:test:failure").waitForExistence(timeout: 20))
+        capture("tests_optional_count_failure", app)
+        tap(app, "tests:filter:Passed")
+        XCTAssertTrue(element(app, "tests:test:passed").waitForExistence(timeout: 20))
+    }
+
+}

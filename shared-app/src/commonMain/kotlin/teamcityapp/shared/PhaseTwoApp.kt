@@ -36,6 +36,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModuleBuilder
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.build_details.api.BuildDetailsReferenceDestination
 import teamcityapp.features.build_history.api.*
@@ -61,12 +62,18 @@ import teamcityapp.shared.resources.*
 @Serializable
 internal data object AccountsDestination : NavKey
 
-private class SharedEntry<T : NavKey>(
+internal class SharedEntry<T : NavKey>(
     type: KClass<T>,
     serializer: KSerializer<T>,
-    private val content: @Composable (T, Navigator) -> Unit
+    private val additionalSerializers: (SerializersModuleBuilder) -> Unit = {},
+    private val content: @Composable (T, Navigator, String) -> Unit
 ) : FeatureDestination<T>(type, serializer) {
-    @Composable override fun Content(destination: T, navigator: Navigator, entryId: String) = content(destination, navigator)
+    override fun registerSerializers(builder: SerializersModuleBuilder) {
+        super.registerSerializers(builder)
+        additionalSerializers(builder)
+    }
+
+    @Composable override fun Content(destination: T, navigator: Navigator, entryId: String) = content(destination, navigator, entryId)
 }
 
 @Composable
@@ -74,13 +81,15 @@ fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
     val session by model.sessions.state.collectAsStateWithLifecycle()
     val failed by model.restoreFailed.collectAsStateWithLifecycle()
     TeamCityTheme(darkTheme ?: androidx.compose.foundation.isSystemInDarkTheme()) {
-        if (failed) {
-            SharedErrorContent(Modifier.fillMaxSize(), onRetry = model::restore)
-        } else {
-            when (val current = session) {
-                AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
-                AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null) }
-                is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope) }
+        Surface(Modifier.fillMaxSize()) {
+            if (failed) {
+                SharedErrorContent(Modifier.fillMaxSize(), onRetry = model::restore)
+            } else {
+                when (val current = session) {
+                    AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
+                    AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null) }
+                    is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope) }
+                }
             }
         }
     }
@@ -109,31 +118,35 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
         return
     }
     val registry = remember(graph, model) {
-        DestinationRegistry(
+        lateinit var result: DestinationRegistry
+        result = DestinationRegistry(
             setOf(
-                SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, navigator -> LoginContent(model, navigator, account != null) },
-                SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, navigator -> AccountsContent(model, navigator) },
-                SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator -> ProjectsContent(destination, checkNotNull(graph), navigator) },
-                SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator -> HistoryContent(destination, checkNotNull(graph), navigator) },
-                SharedEntry(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()) { destination, navigator -> OverviewContent(destination, checkNotNull(graph), navigator) }
-            )
+                SharedEntry(teamcityapp.features.home.api.HomeDestination::class, teamcityapp.features.home.api.HomeDestination.serializer()) { destination, navigator, entryId -> NativeHomeContent(destination, checkNotNull(graph), navigator, result, entryId) },
+                SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, navigator, _ -> LoginContent(model, navigator, account != null) },
+                SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, navigator, _ -> AccountsContent(model, navigator) },
+                SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator, _ -> ProjectsContent(destination, checkNotNull(graph), navigator) },
+                SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator, _ -> HistoryContent(destination, checkNotNull(graph), navigator) },
+                SharedEntry(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()) { destination, navigator, entryId -> OverviewContent(destination, checkNotNull(graph), navigator, entryId) }
+            ) + nativeBrowsingEntries(graph)
         )
+        result
     }
     val sessionKey = account?.identity?.key ?: "signed-out"
+    val journeyMemory = remember { NativeJourneyMemory() }
     var restorationReady by remember { mutableStateOf(false) }
     var restored by remember { mutableStateOf<NavigationSnapshot?>(null) }
     LaunchedEffect(sessionKey, registry) {
         if (model.claimRestoration()) {
             val encoded = model.navigationStore.read()
-            restored = runCatching { encoded?.takeIf { it.length < 200_000 }?.let(registry::decodeSnapshot) }
-                .getOrNull()?.takeIf {
-                    it.sessionKey == sessionKey && it.entries.size <= 100 &&
-                        if (account == null) {
-                            it.entries.all { visit -> visit.destination is LoginDestination || visit.destination == AccountsDestination }
-                        } else {
-                            it.entries.first().destination is ProjectDestination
-                        }
+            val decoded = decodeNativeSnapshot(encoded, registry, sessionKey)
+            restored = decoded?.first?.takeIf {
+                if (account == null) {
+                    it.entries.all { visit -> visit.destination is LoginDestination || visit.destination == AccountsDestination }
+                } else {
+                    it.entries.first().destination is teamcityapp.features.home.api.HomeDestination
                 }
+            }
+            if (restored != null) journeyMemory.homes = decoded?.second.orEmpty()
         }
         restorationReady = true
     }
@@ -141,10 +154,14 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
         LoadingContent(Modifier.fillMaxSize())
         return
     }
-    val navigator = rememberNavigator(if (account == null) LoginDestination else ProjectDestination(), registry, sessionKey, restoredSnapshot = restored)
+    val navigator = rememberNavigator(if (account == null) LoginDestination else teamcityapp.features.home.api.HomeDestination(), registry, sessionKey, restoredSnapshot = restored)
     val snapshot = navigator.snapshot
-    LaunchedEffect(snapshot) { model.navigationStore.write(registry.encodeSnapshot(snapshot)) }
-    NavigationHost(navigator, registry, onExit = {})
+    val homes = journeyMemory.homes.filterKeys { id -> snapshot.entries.any { it.id == id } }
+    LaunchedEffect(snapshot, homes) { model.navigationStore.write(nativeJourneyJson.encodeToString(SavedNativeJourney(registry.encodeSnapshot(snapshot), homes))) }
+    CompositionLocalProvider(LocalNativeJourneyMemory provides journeyMemory) {
+        val safeArea = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal).asPaddingValues()
+        NavigationHost(navigator, registry, onExit = {}, modifier = Modifier.padding(safeArea).consumeWindowInsets(safeArea))
+    }
 }
 
 @Composable
@@ -246,8 +263,8 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
             ),
             object : BuildHistoryRepository {
                 override suspend fun page(query: BuildHistoryQuery, nextHref: String?, forceRefresh: Boolean) = graph.page(query, nextHref, forceRefresh)
-                override suspend fun isFavorite(configurationId: String): Boolean = error("Favorites are unavailable in this host")
-                override suspend fun setFavorite(configurationId: String, favorite: Boolean): Unit = error("Favorites are unavailable in this host")
+                override suspend fun isFavorite(configurationId: String): Boolean = checkNotNull(graph.browsing).isFavorite(configurationId)
+                override suspend fun setFavorite(configurationId: String, favorite: Boolean): Unit = checkNotNull(graph.browsing).setFavorite(configurationId, favorite)
             },
             object : BuildHistoryOnboardingRepository {
                 override suspend fun pendingPrompts() = emptyList<BuildHistoryPrompt>()
@@ -256,6 +273,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
             NativeHistoryTracker
         )
     }
+    val controls by vm.controls.collectAsStateWithLifecycle()
     val selection by vm.selection.collectAsStateWithLifecycle()
     key(selection.pages) {
         val builds = selection.rows.collectAsLazyPagingItems()
@@ -268,25 +286,41 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
         }
         SharedBuildHistoryScreen(
             destination.configurationName, historyListState(rows.items.map { it.build }, builds.loadState.refresh, completed),
-            BuildHistoryControls(onboarding = OnboardingState.Available()), rows.itemCount, rows::get, rows::peek,
+            controls, rows.itemCount, rows::get, rows::peek,
             when (builds.loadState.append) {
                 is LoadState.Loading -> HistoryAppendState.Loading
                 is LoadState.Error -> HistoryAppendState.Error
                 else -> HistoryAppendState.Idle
             },
-            { navigator.pop() }, {}, {}, {}, {}, {}, refresh, refresh, builds::retry,
+            { navigator.pop() }, {}, {}, vm::toggleFavorite, vm::retryFavorite, {}, refresh, refresh, builds::retry,
             { navigator.push(BuildDetailsReferenceDestination(it.href, destination.configurationName)) },
-            showActions = false
+            showRunBuild = false, showFilters = false
         )
     }
 }
 
 @Composable
-private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph: TeamCityAccountGraph, navigator: Navigator) {
-    val vm = viewModel { BuildReferenceViewModel(destination.href, graph) }
+private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
+    val vm = viewModel { BuildReferenceViewModel(destination.href, graph, checkNotNull(graph.browsing).metadata) }
     val state by vm.state.collectAsStateWithLifecycle()
+    LaunchedEffect(navigator.snapshot.results, entryId, state.build?.id) {
+        val buildId = state.build?.id ?: return@LaunchedEffect
+        while (true) {
+            val result = navigator.consumeResult(entryId, teamcityapp.features.build_details.api.BuildDetailsSectionCountResult::class) ?: break
+            if (result.buildId == buildId) vm.updateCount(result.section, result.count)
+        }
+    }
     SharedTeamCityScreen(destination.configurationName.orEmpty(), { navigator.pop() }) { modifier ->
-        SharedBuildOverviewScreen(state.copy(actions = emptyList(), sections = emptyList()), vm::refresh, vm::retry, {}, modifier)
+        SharedBuildOverviewScreen(state.copy(actions = emptyList(), sections = state.sections.filter { it.section != teamcityapp.features.build_details.api.BuildDetailsSection.Artifacts }), vm::refresh, vm::retry, { row ->
+            val build = state.build
+            when (row.action) {
+                OverviewRowAction.Configuration -> build?.buildTypeId?.let { navigator.push(BuildHistoryDestination(it, build.configuration?.name.orEmpty())) }
+                OverviewRowAction.Project -> build?.configuration?.projectId?.let { navigator.push(ProjectDestination(it, build.configuration?.projectName.orEmpty())) }
+                else -> Unit
+            }
+        }, modifier, onSection = { section ->
+            state.build?.let { navigator.push(teamcityapp.features.build_details.api.BuildDetailsSectionDestination(it, section, destination.configurationName, originEntryId = entryId)) }
+        }, onCountRetry = vm::retryCount, rowActionAvailable = { it.action == OverviewRowAction.Configuration || it.action == OverviewRowAction.Project })
     }
 }
 

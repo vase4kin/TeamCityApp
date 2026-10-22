@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.running_builds.impl.router.RunningBuildsRouter
 
 @Composable
-internal fun RunningBuildsRoute(router: RunningBuildsRouter, viewModel: RunningBuildsViewModel = hiltViewModel(), visible: Boolean = true) {
+internal fun RunningBuildsRoute(router: RunningBuildsRouter, viewModel: RunningBuildsViewModel = hiltViewModel<AndroidRunningBuildsViewModel>(), visible: Boolean = true) {
     val state = if (visible) {
         val collected by viewModel.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
         collected

@@ -72,6 +72,8 @@ private const val TIMEOUT = 5000
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class PropertiesFragmentTest {
+    @get:org.junit.Rule(order = 6)
+    val phaseThreeEvidence = com.github.vase4kin.teamcityapp.helper.PhaseThreeEvidenceRule()
 
     @JvmField
     @Rule(order = 0)

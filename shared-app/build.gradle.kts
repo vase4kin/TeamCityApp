@@ -34,6 +34,17 @@ kotlin {
     }
     sourceSets.named("commonMain") {
         dependencies {
+            implementation(projects.features.home.presentation)
+            implementation(projects.features.favorites.presentation)
+            implementation(projects.features.runningBuilds.presentation)
+            implementation(projects.features.buildQueue.presentation)
+            implementation(projects.features.agents.presentation)
+            implementation(projects.features.changes.presentation)
+            implementation(projects.features.tests.presentation)
+            implementation(projects.features.testDetails.presentation)
+            implementation(projects.features.changeDetails.presentation)
+            implementation(projects.features.properties.presentation)
+            implementation(projects.features.snapshotDependencies.presentation)
             implementation(projects.features.about.presentation)
             implementation(projects.features.login.presentation)
             implementation(projects.features.navigation.presentation)
@@ -41,6 +52,7 @@ kotlin {
             implementation(projects.features.buildOverview.presentation)
             implementation(projects.libraries.sharedData)
             implementation(projects.libraries.designSystem)
+            implementation(libs.multiplatform.compose.backhandler)
             implementation(libs.multiplatform.lifecycle.viewmodel)
             implementation(libs.multiplatform.lifecycle.runtime)
             implementation(libs.coroutines.core)

@@ -21,12 +21,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 import teamcityapp.features.home.api.HomeTab
 
-interface HomeTracker {
-    fun viewed()
-    fun selected(tab: HomeTab)
-    fun fab(tab: HomeTab)
-    fun addProjects()
-}
 class FirebaseHomeTracker @Inject constructor(private val analytics: FirebaseAnalytics) : HomeTracker {
     override fun viewed() = analytics.logEvent("screen_home", null)
     override fun selected(tab: HomeTab) = analytics.logEvent(

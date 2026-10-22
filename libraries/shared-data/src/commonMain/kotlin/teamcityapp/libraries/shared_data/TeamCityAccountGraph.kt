@@ -27,7 +27,8 @@ import teamcityapp.libraries.network.*
 /** One account activation owns the repository cache and engine, and cancels both on replacement. */
 class TeamCityAccountGraph(
     val account: AccountScope,
-    private val api: TeamCityApi
+    private val api: TeamCityApi,
+    val browsing: TeamCityBrowsingRepositories? = null
 ) : NavigationRepository,
     BuildOverviewRepository {
     init {
@@ -49,7 +50,7 @@ class TeamCityAccountGraph(
         suspend fun create(sessions: AccountSessionManager, account: AccountScope): TeamCityAccountGraph {
             val secret = sessions.secret(account)
             val api = TeamCityApi(TeamCityTransport(platformTeamCityClient(secret.identity.sslDisabled), secret, httpConsent = true))
-            return TeamCityAccountGraph(account, api)
+            return TeamCityAccountGraph(account, api, TeamCityBrowsingRepositories(account, api, sessions.preferences(account)) { transform -> sessions.updatePreferences(account, transform) })
         }
     }
 }

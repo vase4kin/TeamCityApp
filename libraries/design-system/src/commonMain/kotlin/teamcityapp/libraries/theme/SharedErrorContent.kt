@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -45,7 +46,7 @@ fun SharedErrorContent(
     message: String? = null,
     actionLabel: String? = null
 ) {
-    Box(modifier, contentAlignment = Alignment.Center) {
+    Box(modifier.testTag("error:content"), contentAlignment = Alignment.Center) {
         Column(
             Modifier.widthIn(max = TeamCityDimensions.messageMaxWidth).fillMaxWidth().verticalScroll(rememberScrollState()).padding(TeamCityDimensions.sectionSpacing),
             horizontalAlignment = Alignment.CenterHorizontally

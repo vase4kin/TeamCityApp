@@ -74,6 +74,9 @@ import teamcityapp.libraries.list_ui.R as ListR
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class BuildQueueFragmentTest {
+    @get:org.junit.Rule(order = 6)
+    val phaseThreeEvidence = com.github.vase4kin.teamcityapp.helper.PhaseThreeEvidenceRule()
+
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)

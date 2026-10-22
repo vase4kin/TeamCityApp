@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.agents.impl" }
 dependencies {
+    api(projects.features.agents.presentation)
     implementation(projects.features.drawer.api)
     implementation(projects.libraries.navigation)
     implementation(projects.features.agents.api)

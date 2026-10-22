@@ -69,6 +69,9 @@ import teamcityapp.features.navigation.impl.R as NavigationR
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class HomeActivityTest {
+    @get:org.junit.Rule(order = 6)
+    val phaseThreeEvidence = com.github.vase4kin.teamcityapp.helper.PhaseThreeEvidenceRule()
+
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)

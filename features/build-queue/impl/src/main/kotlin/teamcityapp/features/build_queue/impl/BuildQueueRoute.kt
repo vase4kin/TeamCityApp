@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.build_queue.impl.router.BuildQueueRouter
 
 @Composable
-internal fun BuildQueueRoute(router: BuildQueueRouter, viewModel: BuildQueueViewModel = hiltViewModel(), visible: Boolean = true) {
+internal fun BuildQueueRoute(router: BuildQueueRouter, viewModel: BuildQueueViewModel = hiltViewModel<AndroidBuildQueueViewModel>(), visible: Boolean = true) {
     val state = if (visible) {
         val collected by viewModel.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
         collected

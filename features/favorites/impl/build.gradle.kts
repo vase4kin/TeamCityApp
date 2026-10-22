@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.favorites.impl" }
 dependencies {
+    api(projects.features.favorites.presentation)
     implementation(projects.libraries.data)
     implementation(projects.libraries.coroutines)
     implementation(libs.coroutines.rx2)

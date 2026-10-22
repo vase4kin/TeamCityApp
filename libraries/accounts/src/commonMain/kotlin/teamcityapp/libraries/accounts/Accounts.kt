@@ -156,6 +156,15 @@ class AccountSessionManager(private val storage: AccountStorage, private val con
         scope.requireCurrent()
         return result
     }
+
+    suspend fun preferences(scope: AccountScope): AccountPreferences = mutex.withLock {
+        scope.requireCurrent()
+        checkNotNull(storage as? AccountPreferencesStorage) { "This host does not provide portable preferences" }.preferences(scope.identity.key).also { scope.requireCurrent() }
+    }
+    suspend fun updatePreferences(scope: AccountScope, transform: (AccountPreferences) -> AccountPreferences): AccountPreferences = mutex.withLock {
+        scope.requireCurrent()
+        checkNotNull(storage as? AccountPreferencesStorage).updatePreferences(scope.identity.key, transform).also { scope.requireCurrent() }
+    }
     fun close() {
         active?.close()
         active = null

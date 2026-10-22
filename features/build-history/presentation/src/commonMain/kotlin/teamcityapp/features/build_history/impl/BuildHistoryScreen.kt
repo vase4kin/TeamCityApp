@@ -75,7 +75,9 @@ fun SharedBuildHistoryScreen(
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     listState: LazyListState = rememberLazyListState(),
     showActions: Boolean = true,
-    coachmark: @Composable (OnboardingState.Available, Rect, () -> Unit) -> Unit = { _, _, _ -> }
+    coachmark: @Composable (OnboardingState.Available, Rect, () -> Unit) -> Unit = { _, _, _ -> },
+    showRunBuild: Boolean = true,
+    showFilters: Boolean = true
 ) {
     val retryLabel = stringResource(Res.string.history_retry)
     TeamCityRetrySnackbar(controls.favoriteFailureMessageRes?.let { stringResource(it) }, retryLabel, snackbar, onRetry = if (controls.favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite)
@@ -121,7 +123,8 @@ fun SharedBuildHistoryScreen(
                 if (showActions) {
                     BuildHistoryActions(
                         controls = controls,
-                        showRunBuild = state != ListUiState.Error,
+                        showRunBuild = showRunBuild && state != ListUiState.Error,
+                        showFilters = showFilters,
                         onRunBuild = onRunBuild,
                         onFilters = onFilters,
                         onFavorite = onFavorite,

@@ -28,12 +28,14 @@ interface SecureVault {
 }
 
 @Serializable
-private class StoredAccount(val identity: AccountIdentity, val password: String)
+private class StoredAccount(val identity: AccountIdentity, val password: String, val preferences: AccountPreferences = AccountPreferences())
 
 @Serializable
 private class StoredVault(val accounts: List<StoredAccount> = emptyList(), val activeKey: String? = null)
 
-class VaultAccountStorage(private val vault: SecureVault) : AccountStorage {
+class VaultAccountStorage(private val vault: SecureVault) :
+    AccountStorage,
+    AccountPreferencesStorage {
     private val mutex = Mutex()
     private val json = Json { ignoreUnknownKeys = true }
     private suspend fun read(): StoredVault = vault.read()?.let { json.decodeFromString<StoredVault>(it) } ?: StoredVault()
@@ -48,7 +50,7 @@ class VaultAccountStorage(private val vault: SecureVault) : AccountStorage {
     }
     override suspend fun saveAndActivate(account: AccountSecret) = mutex.withLock {
         val current = read()
-        save(StoredVault(current.accounts.filterNot { it.identity.sameAccount(account.identity) } + StoredAccount(account.identity, account.password), account.identity.key))
+        save(StoredVault(current.accounts.filterNot { it.identity.sameAccount(account.identity) } + StoredAccount(account.identity, account.password, current.accounts.firstOrNull { it.identity.sameAccount(account.identity) }?.preferences ?: AccountPreferences()), account.identity.key))
     }
     override suspend fun activate(key: String) = mutex.withLock {
         val current = read()
@@ -63,5 +65,15 @@ class VaultAccountStorage(private val vault: SecureVault) : AccountStorage {
     override suspend fun signOut() = mutex.withLock {
         val current = read()
         save(StoredVault(current.accounts))
+    }
+    override suspend fun preferences(key: String): AccountPreferences = mutex.withLock {
+        requireNotNull(read().accounts.firstOrNull { it.identity.key == key }).preferences
+    }
+    override suspend fun updatePreferences(key: String, transform: (AccountPreferences) -> AccountPreferences): AccountPreferences = mutex.withLock {
+        val current = read()
+        val account = requireNotNull(current.accounts.firstOrNull { it.identity.key == key })
+        val next = transform(account.preferences).let { it.copy(favoriteIds = it.favoriteIds.distinct()) }
+        save(StoredVault(current.accounts.map { if (it.identity.key == key) StoredAccount(it.identity, it.password, next) else it }, current.activeKey))
+        next
     }
 }

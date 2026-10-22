@@ -20,14 +20,14 @@ import android.os.Bundle
 import teamcityapp.features.change_details.api.ChangeDetails
 
 internal object ChangeDetailsArguments {
-    const val ID = "change:id"
-    const val COMMENT = "change:comment"
-    const val USER = "change:user"
-    const val DATE = "change:date"
-    const val FILE_NAMES = "change:file_names"
-    const val FILE_TYPES = "change:file_types"
-    const val REVISION = "change:revision"
-    const val WEB_URL = "change:web_url"
+    const val ID = ChangeDetailsKeys.ID
+    const val COMMENT = ChangeDetailsKeys.COMMENT
+    const val USER = ChangeDetailsKeys.USER
+    const val DATE = ChangeDetailsKeys.DATE
+    const val FILE_NAMES = ChangeDetailsKeys.FILE_NAMES
+    const val FILE_TYPES = ChangeDetailsKeys.FILE_TYPES
+    const val REVISION = ChangeDetailsKeys.REVISION
+    const val WEB_URL = ChangeDetailsKeys.WEB_URL
 
     fun bundle(details: ChangeDetails) = Bundle().apply {
         putString(ID, details.id)

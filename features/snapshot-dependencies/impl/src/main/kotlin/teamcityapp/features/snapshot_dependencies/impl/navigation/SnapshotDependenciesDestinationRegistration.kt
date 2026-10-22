@@ -54,7 +54,7 @@ class SnapshotDependenciesDestinationRegistration @Inject constructor(private va
             }
         }
         DestinationArguments(arguments) {
-            val model = hiltViewModel<SnapshotDependenciesViewModel>()
+            val model = hiltViewModel<AndroidSnapshotDependenciesViewModel>()
             ConfigurationRecreationEffect(model) { model.onConfigurationRecreation(true) }
             SnapshotDependenciesRoute(router, tracker, model)
         }

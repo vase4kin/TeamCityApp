@@ -50,6 +50,9 @@ import teamcityapp.features.agents.impl.R as AgentsR
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class AgentListFragmentTest {
+    @get:org.junit.Rule(order = 6)
+    val phaseThreeEvidence = com.github.vase4kin.teamcityapp.helper.PhaseThreeEvidenceRule()
+
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)

@@ -76,6 +76,7 @@ data class TeamCityServerInfo(val version: String, val webUrl: String)
 /** No app state or platform dependency enters the REST contract. Each activation owns its cache. */
 class TeamCityApi(private val transport: TeamCityTransport) {
     private val cacheMutex = Mutex()
+    private val documents = mutableMapOf<String, JsonObject>()
     private val nodes = mutableMapOf<String, TeamCityNodePage>()
     private val initialPages = mutableMapOf<String, TeamCityBuildPage>()
     private val builds = mutableMapOf<String, BuildLaunchData>()
@@ -112,7 +113,15 @@ class TeamCityApi(private val transport: TeamCityTransport) {
         cacheMutex.withLock { builds[href] = result }
         return result
     }
+
+    /** Paths, including opaque continuation URLs, always pass the transport origin/auth guards. */
+    suspend fun document(path: String, forceRefresh: Boolean = false): JsonObject {
+        if (!forceRefresh) cacheMutex.withLock { documents[path] }?.let { return it }
+        return transport.get(path).also { value -> cacheMutex.withLock { documents[path] = value } }
+    }
+    fun apiPath(path: String): String = transport.apiPath(path)
     fun close() {
+        documents.clear()
         nodes.clear()
         initialPages.clear()
         builds.clear()

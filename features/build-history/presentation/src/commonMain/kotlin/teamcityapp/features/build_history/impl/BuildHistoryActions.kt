@@ -50,7 +50,8 @@ fun BuildHistoryActions(
     onFavorite: () -> Unit,
     onFavoriteRetry: () -> Unit,
     onAnchor: (BuildHistoryPrompt, Rect) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showFilters: Boolean = true
 ) {
     // Wrap at narrow widths or large text sizes instead of truncating the primary action.
     FlowRow(
@@ -59,9 +60,11 @@ fun BuildHistoryActions(
         verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
     ) {
         TeamCityFloatingToolbar(modifier = Modifier.testTag("history:toolbar")) {
-            TeamCityTooltip(stringResource(Res.string.history_filter)) {
-                IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
-                    Icon(painterResource(Res.drawable.ic_history_filter), stringResource(Res.string.history_filter))
+            if (showFilters) {
+                TeamCityTooltip(stringResource(Res.string.history_filter)) {
+                    IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Filter, it.boundsInRoot()) }) {
+                        Icon(painterResource(Res.drawable.ic_history_filter), stringResource(Res.string.history_filter))
+                    }
                 }
             }
             val favorite = controls.favorite

@@ -23,6 +23,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.home.impl" }
 dependencies {
+    api(projects.features.home.presentation)
     implementation(projects.features.home.api)
     implementation(projects.features.navigation.api)
     implementation(projects.features.favorites.api)

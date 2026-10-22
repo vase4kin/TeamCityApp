@@ -29,47 +29,6 @@ import teamcityapp.features.changes.impl.router.ChangesRouter
 import teamcityapp.libraries.list_ui.PagingListSnapshot
 
 @Composable
-internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = hiltViewModel(), parentCount: ChangesCountState? = null, onParentCountRetry: (() -> Unit)? = null) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val visiblePages = remember(viewModel, lifecycle) { viewModel.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
-    val changes = visiblePages.collectAsLazyPagingItems()
-    val count = parentCount ?: run {
-        val ownCount by viewModel.count.collectAsStateWithLifecycle()
-        ownCount
-    }
-    if (parentCount == null) {
-        LaunchedEffect(count, router) {
-            when (val current = count) {
-                is ChangesCountState.Available -> router.updateTabCount(current.count)
-                ChangesCountState.Unavailable -> router.updateTabCount(0)
-                ChangesCountState.Loading -> Unit
-            }
-        }
-    }
-    var completed by rememberSaveable { mutableStateOf(false) }
-    val refresh = changes.loadState.refresh
-    if (refresh is LoadState.NotLoading) SideEffect { completed = true }
-    val rows = PagingListSnapshot(changes)
-    val state = changesListState(rows.items.map { it.change }, refresh, completed)
-    ChangesScreen(
-        state, count, rows.itemCount,
-        itemAt = rows::get,
-        itemKey = { rows.peek(it)?.change?.id ?: "changes:placeholder:$it" },
-        appendState = when (changes.loadState.append) {
-            is LoadState.Loading -> ChangesAppendState.Loading
-            is LoadState.Error -> ChangesAppendState.Error
-            is LoadState.NotLoading -> ChangesAppendState.Idle
-        },
-        onRefresh = {
-            viewModel.prepareRefresh()
-            changes.refresh()
-        },
-        onRetry = {
-            viewModel.prepareRefresh()
-            changes.refresh()
-        },
-        onCountRetry = onParentCountRetry ?: viewModel::retryCount,
-        onChange = router::openChange,
-        onAppendRetry = changes::retry
-    )
+internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = hiltViewModel<AndroidChangesViewModel>(), parentCount: ChangesCountState? = null, onParentCountRetry: (() -> Unit)? = null) {
+    SharedChangesContent(viewModel, router::openChange, router::updateTabCount, parentCount, onParentCountRetry, onUnavailableCount = { router.updateTabCount(0) })
 }

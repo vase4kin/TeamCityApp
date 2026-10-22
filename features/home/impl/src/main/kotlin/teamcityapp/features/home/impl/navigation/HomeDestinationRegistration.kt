@@ -55,7 +55,7 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
     override fun Content(destination: HomeDestination, navigator: Navigator, entryId: String) {
         val arguments = remember(destination) { Bundle().apply { putInt(HomeViewModel.SELECTED_TAB, destination.tab.ordinal) } }
         DestinationArguments(arguments) {
-            val model = hiltViewModel<HomeViewModel>()
+            val model = hiltViewModel<AndroidHomeViewModel>()
             LifecycleResumeEffect(navigator.snapshot.results, model) {
                 while (true) {
                     val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break

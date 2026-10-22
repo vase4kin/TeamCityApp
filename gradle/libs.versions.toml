@@ -42,6 +42,7 @@ robolectric = "4.17"
 paging = "3.4.2"
 
 [libraries]
+multiplatform-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

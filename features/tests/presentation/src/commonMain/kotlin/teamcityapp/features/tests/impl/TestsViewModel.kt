@@ -1,0 +1,189 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.tests.impl
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.*
+import org.jetbrains.compose.resources.StringResource
+import teamcityapp.features.tests.api.*
+import teamcityapp.features.tests.presentation.resources.*
+import teamcityapp.libraries.design_system.SharedUiText
+
+/** A filter and its generation travel together so old rows cannot acquire a new filter label. */
+data class TestsSelection(val filter: TestsFilter, val pages: Flow<PagingData<TestOccurrence>>, val counts: TestsCounts = TestsCounts(0, 0, 0)) {
+    val presentation: TestsPresentation = TestsPresentation(filter, counts)
+    val rows: Flow<PagingData<TestRowUiState>> = pages.map { page -> page.map(::TestRowUiState) }
+}
+
+data class TestsPresentation(val filter: TestsFilter, val counts: TestsCounts, val countsKnown: Boolean = true) {
+    val filterOptions: List<TestFilterUiState> = TestsFilter.entries.map { TestFilterUiState(it, testFilterLabel(it)) }
+
+    val emptyMessageRes: StringResource = when (filter) {
+        TestsFilter.Failed -> Res.string.tests_empty_failed
+        TestsFilter.Passed -> Res.string.tests_empty_passed
+        TestsFilter.Ignored -> Res.string.tests_empty_ignored
+    }
+    val sectionTitles: Map<TestsFilter, SharedUiText> = mapOf(
+        TestsFilter.Failed to if (countsKnown) SharedUiText.Resource(Res.string.tests_section_failed, listOf(counts.failed)) else SharedUiText.Resource(Res.string.tests_filter_failed),
+        TestsFilter.Passed to if (countsKnown) SharedUiText.Resource(Res.string.tests_section_passed, listOf(counts.passed)) else SharedUiText.Resource(Res.string.tests_filter_passed),
+        TestsFilter.Ignored to if (countsKnown) SharedUiText.Resource(Res.string.tests_section_ignored, listOf(counts.ignored)) else SharedUiText.Resource(Res.string.tests_filter_ignored)
+    )
+}
+
+data class TestFilterUiState(val filter: TestsFilter, val labelRes: StringResource)
+
+private fun testFilterLabel(filter: TestsFilter): StringResource = when (filter) {
+    TestsFilter.Failed -> Res.string.tests_filter_failed
+    TestsFilter.Passed -> Res.string.tests_filter_passed
+    TestsFilter.Ignored -> Res.string.tests_filter_ignored
+}
+
+data class TestRowUiState(val test: TestOccurrence) {
+    val section: TestsFilter = when (test.status) {
+        TestStatus.Failed -> TestsFilter.Failed
+        TestStatus.Passed -> TestsFilter.Passed
+        TestStatus.Ignored, TestStatus.Error -> TestsFilter.Ignored
+    }
+
+    val statusLabelRes: StringResource = when (test.status) {
+        TestStatus.Failed -> Res.string.tests_filter_failed
+        TestStatus.Passed -> Res.string.tests_filter_passed
+        TestStatus.Ignored -> Res.string.tests_filter_ignored
+        TestStatus.Error -> Res.string.tests_status_error
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+open class TestsViewModel constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: TestsRepository
+) : ViewModel() {
+    private val url: String = checkNotNull(savedStateHandle[TestsViewModel.ARG_URL])
+    private var currentCounts = TestsCounts(
+        passed = savedStateHandle[TestsViewModel.ARG_PASSED] ?: 0,
+        failed = savedStateHandle[TestsViewModel.ARG_FAILED] ?: 0,
+        ignored = savedStateHandle[TestsViewModel.ARG_IGNORED] ?: 0
+    )
+    val counts get() = currentCounts
+    private var explicitlySelected = savedStateHandle.contains(ARG_FILTER)
+    private fun defaultFilter(counts: TestsCounts): TestsFilter = when {
+        counts.failed > 0 -> TestsFilter.Failed
+        counts.passed > 0 -> TestsFilter.Passed
+        counts.ignored > 0 -> TestsFilter.Ignored
+        else -> TestsFilter.Failed
+    }
+    private var generation = newGeneration(
+        savedStateHandle.get<String>(ARG_FILTER)?.let { name -> TestsFilter.entries.find { it.name == name } } ?: defaultFilter(counts)
+    )
+    private val selected = MutableStateFlow(generation.selection)
+    val selection = selected.asStateFlow()
+
+    /** Switching a filter cancels its old page requests and starts again at the first page. */
+    fun selectFilter(filter: TestsFilter) {
+        explicitlySelected = true
+        savedStateHandle[ARG_FILTER] = filter.name
+        if (filter == selection.value.filter) return
+        generation.scope.cancel()
+        generation = newGeneration(filter)
+        selected.value = generation.selection
+    }
+
+    fun prepareRefresh() {
+        retryCount()
+    }
+
+    private fun newGeneration(filter: TestsFilter): Generation {
+        val scope = CoroutineScope(viewModelScope.coroutineContext + SupervisorJob(viewModelScope.coroutineContext[Job]))
+        val generation = Generation(scope)
+        // cachedIn retains pages and pending loads across configuration gaps. Only a filter
+        // replacement or clearing this ViewModel cancels the paging generation's scope.
+        val pages = Pager(
+            PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 2, enablePlaceholders = false),
+            pagingSourceFactory = { TestsPagingSource(repository, url, filter) }
+        ).flow.cachedIn(scope)
+        generation.selection = TestsSelection(filter, pages, counts)
+        return generation
+    }
+
+    private class Generation(val scope: CoroutineScope) {
+        lateinit var selection: TestsSelection
+    }
+
+    private var completedCount: TestsCountState? = null
+    private val countRequest = MutableStateFlow(0)
+    val count = countRequest.flatMapLatest {
+        flow {
+            completedCount?.let {
+                emit(it)
+                return@flow
+            }
+            emit(TestsCountState.Loading)
+            val result = try {
+                repository.summary(url).let { summary ->
+                    currentCoroutineContext().ensureActive()
+                    require(summary.total >= 0 && TestsFilter.entries.all { summary.counts.count(it) >= 0 })
+                    currentCounts = summary.counts
+                    val filter = if (!explicitlySelected && counts.count(selection.value.filter) == 0) defaultFilter(counts) else selection.value.filter
+                    if (filter != selection.value.filter) {
+                        generation.scope.cancel()
+                        generation = newGeneration(filter)
+                        selected.value = generation.selection
+                    } else {
+                        selected.update { it.copy(counts = counts) }
+                    }
+                    TestsCountState.Available(summary.total, summary.counts)
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                TestsCountState.Unavailable
+            }
+            currentCoroutineContext().ensureActive()
+            completedCount = result
+            emit(result)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TestsCountState.Loading)
+
+    fun retryCount() {
+        completedCount = null
+        countRequest.value++
+    }
+
+    companion object {
+        const val ARG_URL = "url"
+        const val ARG_PASSED = "passedCount"
+        const val ARG_FAILED = "failedCount"
+        const val ARG_IGNORED = "ignoredCount"
+        const val ARG_FILTER = "selectedTestsFilter"
+    }
+}
