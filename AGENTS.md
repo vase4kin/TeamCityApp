@@ -122,6 +122,47 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 ## Target architecture
 
+### Kotlin Multiplatform migration
+
+- Follow `docs/kmp-migration.md` as the migration checklist and phase contract.
+  Start only the phase the user authorizes. Each phase has its own goal, verified
+  completion gates, checkpoint commits, actual UI evidence, and a detailed private
+  Sites report linked from the checklist. Do not mark a phase complete while a
+  required check or report remains unfinished. Starting the next phase requires
+  a new user instruction.
+- Shared modules use `teamcityapp.kmp.library` or `teamcityapp.kmp.compose`, the
+  Android KMP library plugin, and `src/commonMain`, `src/commonTest`,
+  `src/androidMain`, and `src/iosMain` Kotlin roots. Keep flavors in Android hosts.
+  Phase 1 targets Android API 24+ and iOS 16+ on Apple Silicon simulators and arm64
+  devices, including compact and expanded layouts.
+- Shared UI uses Compose Multiplatform resources and typed `SharedUiText`;
+  Android resource IDs and the existing `UiText` remain in unmigrated Android
+  code. Share portable theme definitions through `libraries/design-system`.
+- Feature APIs expose portable models and repository contracts in common code;
+  Android destination registrations may remain in `androidMain` during migration.
+  About's `presentation` module owns its common UI and ViewModel. Its existing
+  `impl` module is the Android Hilt/router adapter and Roborazzi harness. This
+  split is within one feature; cross-feature implementation dependencies remain
+  prohibited. Do not duplicate shared layouts in platform adapters.
+- Shared ViewModels use plain constructor injection and lifecycle-owned factories.
+  Hilt remains the Android composition mechanism, with thin Android ViewModels
+  when Hilt ownership is required. Common code cannot depend on Hilt, Java
+  reflection, Android Context/Bundle, Retrofit/RxJava, or platform storage.
+  Shared networking may use Ktor and Kotlin serialization behind repository
+  contracts when its phase is authorized. Preserve Android account/cache formats
+  and existing authentication/cancellation semantics behind adapters.
+- Run common behavioral tests on Android and the iOS simulator, retaining Android
+  Roborazzi coverage of shared composables. Inspect actual before/after/comparison
+  images before changing goldens. iOS begins with an explicitly labeled first
+  baseline. Keep generated screenshots and build logs under `build/`; commit only
+  intentional golden fixtures and reproducible source/configuration.
+- The Phase 1 iOS application is a deterministic About preview. Account/network
+  integration starts in Phase 2 and platform actions complete in Phase 5. Never
+  present preview actions or fixture data as completed production integrations.
+
+The following Android architecture rules continue to apply to unmigrated modules;
+the scoped shared-code rules above apply to migrated KMP modules.
+
 - New features and substantive refactors must use this architecture whenever
   feasible. Existing legacy patterns are compatibility constraints, not the
   default for new code. If a concrete constraint prevents adoption, explain it
