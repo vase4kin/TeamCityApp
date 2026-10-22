@@ -22,7 +22,4 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.bottom_sheet.impl.router.BottomSheetRouter
 @Composable
-fun BottomSheetRoute(router: BottomSheetRouter, viewModel: BottomSheetViewModel = hiltViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    BottomSheetScreen(state, router::perform)
-}
+fun BottomSheetRoute(router: BottomSheetRouter, viewModel: BottomSheetViewModel = hiltViewModel<AndroidBottomSheetViewModel>()) = SharedBottomSheetRoute(router, viewModel)

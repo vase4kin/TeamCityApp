@@ -14,8 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Read-only local HTTP/TLS fixtures for opt-in KMP platform-engine verification.
+"""Local HTTP/TLS fixtures for opt-in KMP platform-engine verification.
 
+Synthetic mutations require --enable-mutations and a /context/manage URL.
 No real credentials or TeamCity writes are used. Stop with Ctrl-C.
 """
 import argparse
@@ -26,11 +27,68 @@ import ssl
 import subprocess
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from threading import Thread
+from threading import Thread, Lock
 from urllib.parse import urlsplit, parse_qs
 
 
 class Handler(BaseHTTPRequestHandler):
+    mutation_enabled = False
+    mutation_lock = Lock()
+    mutation_state = {}
+    mutation_attempts = {}
+    mutation_log = []
+
+    def do_POST(self):
+        # Synthetic writes exist only in explicitly enabled, local /manage contexts.
+        parsed = urlsplit(self.path)
+        prefix = parsed.path.split("/app/rest/", 1)[0].removesuffix("/guestAuth").removesuffix("/httpAuth")
+        if not self.mutation_enabled or not prefix.startswith("/context/manage") or "/app/rest/" not in parsed.path:
+            self.send_response(405); self.end_headers(); return
+        name = "guest"
+        if "/httpAuth/" in parsed.path:
+            known = {"Basic " + base64.b64encode((n + ":fixture-only-password").encode()).decode(): n for n in ("alice", "bob")}
+            name = known.get(self.headers.get("Authorization", ""))
+            if name is None:
+                self.send_response(401); self.send_header("WWW-Authenticate", 'Basic realm="fixture"'); self.end_headers(); return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if not 0 < length < 100000: raise ValueError("body size")
+            body = json.loads(self.rfile.read(length))
+            if not isinstance(body, dict): raise ValueError("body")
+        except (ValueError, json.JSONDecodeError):
+            self.send_response(400); self.end_headers(); return
+        rest = parsed.path.split("/app/rest/", 1)[1]
+        owner = (prefix, name)
+        with self.mutation_lock:
+            attempt_key = (owner, rest)
+            attempt = self.mutation_attempts.get(attempt_key, 0) + 1
+            self.mutation_attempts[attempt_key] = attempt
+        if "forbidden" in prefix:
+            self.send_response(403); self.end_headers(); return
+        if "retry" in prefix and attempt == 1:
+            self.send_response(503); self.end_headers(); return
+        if "slow" in prefix: time.sleep(4)
+        with self.mutation_lock:
+            state = self.mutation_state.setdefault(owner, {})
+            if rest == "buildQueue":
+                number = str(40 + sum(1 for item in self.mutation_log if item["owner"] == list(owner) and item["action"] == "run") + 1)
+                value = {"state": "queued", "branchName": body.get("branchName", "main"), "properties": body.get("properties", {"property": []}), "triggered": {"type": "user", "user": {"username": name}}}
+                action = "run"
+            elif rest.startswith(("builds/id:", "buildQueue/id:")):
+                number = rest.rsplit(":", 1)[-1]
+                value = {"state": "finished", "statusText": "Canceled by fixture user", "canceledInfo": {"user": {"username": name}, "timestamp": "20261022T100000+0000"}}
+                action = "cancel"
+                if body.get("readdIntoQueue"):
+                    state["99"] = {"state": "queued", "statusText": "Re-added by fixture"}
+            else:
+                self.send_response(404); self.end_headers(); return
+            state[number] = value
+            self.mutation_log.append({"owner": list(owner), "action": action, "id": number, "body": body})
+        data = json.dumps({"id": number, "href": prefix + "/app/rest/builds/id:" + number}).encode()
+        self.send_response(200); self.send_header("Content-Type", "application/json"); self.send_header("Content-Length", str(len(data))); self.end_headers()
+        try: self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError): pass
+
     def log_message(self, format, *args):
         pass  # Never print Authorization or request credentials.
 
@@ -57,8 +115,11 @@ class Handler(BaseHTTPRequestHandler):
         path = parsed.path
         query = parse_qs(parsed.query)
         rest = path.split("/app/rest/", 1)[-1]
+        prefix = path.split("/app/rest/", 1)[0].removesuffix("/guestAuth").removesuffix("/httpAuth")
+        with self.mutation_lock:
+            managed = dict(self.mutation_state.get((prefix, name), {}))
         def build(number="1", state="finished"):
-            return {"id": number, "href": "/context/app/rest/builds/id:" + number,
+            value = {"id": number, "href": "/context/app/rest/builds/id:" + number,
                     "buildTypeId": "Demo_Build", "number": number, "state": state,
                     "status": "FAILURE" if number == "1" else "SUCCESS", "statusText": "One failed test" if number == "1" else "Success",
                     "buildType": {"id": "Demo_Build", "name": "Verify", "projectId": "Demo", "projectName": "Demonstration"},
@@ -68,11 +129,18 @@ class Handler(BaseHTTPRequestHandler):
                     "testOccurrences": {"href": "/context/app/rest/testOccurrences?locator=build:(id:"+number+")", "passed": 1, "failed": 1, "ignored": 0, "count": 2},
                     "properties": {"property": [{"name": "env.PLATFORM", "value": "Apple Silicon"}, {"name": "build.description", "value": "A deterministic read-only build used for shared UI verification. " * 8}]},
                     "snapshot-dependencies": {"href": "/context/app/rest/builds?locator=snapshotDependency:(to:(id:"+number+"))", "count": 1}}
+            if prefix.startswith("/context/manage"):
+                if number == "3": value["state"] = "running"
+                if number == "4": value["state"] = "queued"
+                value.update(managed.get(number, {}))
+            return value
         configuration = {"id": "Demo_Build", "name": "Verify", "projectId": "Demo", "projectName": "Demonstration"}
         if rest.startswith("projects/"):
             data = {"projects": {"project": []}, "buildTypes": {"buildType": [configuration]}}
         elif rest.startswith("buildTypes/") and rest.endswith("/builds"):
             data = {"count": 2, "build": [build("1"), build("2")]}
+        elif rest.startswith("buildTypes/") and rest.endswith("/branches"):
+            data = {"branch": [{"name": "main"}, {"name": "release"}]}
         elif rest.startswith("buildTypes/"):
             data = configuration
         elif rest.startswith("builds/id:"):
@@ -81,7 +149,12 @@ class Handler(BaseHTTPRequestHandler):
             locator = query.get("locator", [""])[0]
             data = {"count": 1, "build": [build("3", "running") if "running:true" in locator else build("2")]}
         elif rest == "buildQueue":
-            data = {"count": 1, "build": [build("4", "queued")]}
+            values = [build("4", "queued")] + [build(number, value.get("state", "queued")) for number, value in managed.items() if number != "4"]
+            values = [value for value in values if value["state"] == "queued"]
+            data = {"count": len(values), "build": values}
+        elif rest == "fixtureMutations":
+            with self.mutation_lock:
+                data = {"mutations": [item for item in self.mutation_log if item["owner"] == [prefix, name]]}
         elif rest == "agents":
             data = {"count": 3, "agent": [{"id": str(i), "name": f"Build agent {i}"} for i in range(1, 4)]}
         elif rest == "changes":
@@ -104,7 +177,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(503)
             self.end_headers()
             return
-        prefix = path.split("/guestAuth/app/rest/", 1)[0].split("/httpAuth/app/rest/", 1)[0]
+        prefix = path.split("/app/rest/", 1)[0].removesuffix("/guestAuth").removesuffix("/httpAuth")
         body = json.dumps(data).replace("/context/app/rest/", prefix + "/app/rest/").encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -119,7 +192,9 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="build/kmp-phase-2/platform-fixture")
+    parser.add_argument("--enable-mutations", action="store_true", help="Enable synthetic POSTs only in local /context/manage contexts")
     args = parser.parse_args()
+    Handler.mutation_enabled = args.enable_mutations
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     cert, key = output / "certificate.pem", output / "private-key.pem"
@@ -135,7 +210,7 @@ def main():
     https.socket = context.wrap_socket(https.socket, server_side=True)
     worker = Thread(target=http.serve_forever, daemon=True)
     worker.start()
-    print("Read-only fixtures: HTTP 127.0.0.1:18081; self-signed TLS 127.0.0.1:18444", flush=True)
+    print("Local fixtures (synthetic mutations=" + str(args.enable_mutations) + "): HTTP 127.0.0.1:18081; self-signed TLS 127.0.0.1:18444", flush=True)
     try:
         https.serve_forever()
     except KeyboardInterrupt:

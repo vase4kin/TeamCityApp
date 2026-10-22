@@ -17,6 +17,8 @@
 plugins { id("teamcityapp.kmp.library") }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        api(projects.features.runBuild.api)
+        api(projects.features.filterBuilds.api)
         api(projects.libraries.network)
         implementation(projects.libraries.time)
         api(projects.features.buildDetails.api)

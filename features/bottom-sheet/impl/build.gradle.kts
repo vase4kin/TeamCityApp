@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.bottom_sheet.impl" }
 dependencies {
+    api(projects.features.bottomSheet.presentation)
     implementation(projects.libraries.navigation)
     implementation(projects.features.bottomSheet.api)
 

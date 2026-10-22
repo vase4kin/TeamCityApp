@@ -224,6 +224,19 @@ class RunBuildScreenTest {
         compose.runOnIdle { assertEquals(2, attempts) }
     }
 
+    @Test fun parameterEditingKeepsCharacterOrderAfterValidationAndCommitsExactValues() {
+        val model = setRunBuildRoute { QueueBuildResult.Error }
+        compose.onNodeWithTag("run-build:options").performClick()
+        compose.onNodeWithTag("run-build:add").performScrollTo().performClick()
+        compose.onNodeWithTag("parameter:confirm").performClick()
+        for (character in "env.PHASE") compose.onNodeWithTag("parameter:name").performTextInput(character.toString())
+        for (character in "four") compose.onNodeWithTag("parameter:value").performTextInput(character.toString())
+        compose.onNodeWithTag("parameter:name").assertTextContains("env.PHASE")
+        compose.onNodeWithTag("parameter:value").assertTextContains("four")
+        compose.onNodeWithTag("parameter:confirm").performClick()
+        compose.runOnIdle { assertEquals(listOf(BuildParameter("env.PHASE", "four")), model.state.value.request.parameters) }
+    }
+
     private fun setRunBuildRoute(result: () -> QueueBuildResult): RunBuildViewModel {
         val repository = object : RunBuildRepository {
             override suspend fun branches(buildTypeId: String) = listOf("main")

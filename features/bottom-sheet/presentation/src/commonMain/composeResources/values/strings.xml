@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 Andrey Tolpeev
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+<string name="artifact_download">Download</string>
+<string name="artifact_open">Open</string>
+<string name="artifact_open_in_browser">Open in browser</string>
+<string name="build_element_copy">Copy</string>
+<string name="build_element_show_all_builds_built_branch">Show builds built on this branch</string>
+<string name="build_element_open_build_type">Open configuration</string>
+<string name="build_element_open_project">Open project</string>
+</resources>

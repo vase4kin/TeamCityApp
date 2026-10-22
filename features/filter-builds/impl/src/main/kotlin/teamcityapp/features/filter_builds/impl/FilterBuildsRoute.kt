@@ -24,13 +24,4 @@ import androidx.lifecycle.compose.*
 import teamcityapp.features.filter_builds.impl.router.FilterBuildsRouter
 
 @Composable
-fun FilterBuildsRoute(router: FilterBuildsRouter, viewModel: FilterBuildsViewModel = hiltViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    LifecycleResumeEffect(viewModel) {
-        viewModel.viewed()
-        onPauseOrDispose {}
-    }
-
-    BackHandler { router.close() }
-    FilterBuildsScreen(state, viewModel::update, { router.apply(viewModel.apply()) }, router::close)
-}
+fun FilterBuildsRoute(router: FilterBuildsRouter, viewModel: FilterBuildsViewModel = hiltViewModel<AndroidFilterBuildsViewModel>()) = SharedFilterBuildsRoute(router, viewModel)

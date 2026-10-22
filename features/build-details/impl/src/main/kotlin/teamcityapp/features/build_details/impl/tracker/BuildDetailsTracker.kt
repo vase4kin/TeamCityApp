@@ -25,16 +25,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
-internal interface BuildDetailsTracker {
-    fun viewed()
-    fun confirmedCancel(reAdd: Boolean)
-    fun cancelSucceeded()
-    fun cancelFailed(forbidden: Boolean)
-    fun restartSucceeded()
-    fun restartFailed(forbidden: Boolean)
-    fun queuedOpened()
-    fun queuedFailed()
-}
 internal class FirebaseBuildDetailsTracker @Inject constructor(private val analytics: FirebaseAnalytics) : BuildDetailsTracker {
     override fun viewed() = analytics.logEvent("screen_build_details", null)
     override fun confirmedCancel(reAdd: Boolean) = analytics.logEvent("build_cancel_confirm", Bundle().apply { putBoolean("param_re_add_to_the_queue", reAdd) })

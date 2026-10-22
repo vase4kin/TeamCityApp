@@ -42,7 +42,7 @@ internal fun BuildDetailsSectionScreen(section: BuildDetailsSection, buildNumber
             scrollBehavior = scrollBehavior,
             title = {
                 Column {
-                    Text(stringResource(section.label()), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(org.jetbrains.compose.resources.stringResource(section.label()), maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(stringResource(R.string.section_build_subtitle, buildNumber, configurationName), style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             },

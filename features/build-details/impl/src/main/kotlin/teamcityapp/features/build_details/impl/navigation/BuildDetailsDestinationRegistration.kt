@@ -21,7 +21,6 @@ import android.os.Bundle
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.*
@@ -35,9 +34,11 @@ import javax.inject.Inject
 import javax.inject.Provider
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_details.impl.*
 import teamcityapp.features.build_details.impl.R
+import teamcityapp.features.build_details.presentation.resources.*
 import teamcityapp.features.build_history.api.BuildHistoryFilterAdapter
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_overview.api.*
@@ -66,7 +67,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             }
         }
         DestinationArguments(arguments) {
-            val model = hiltViewModel<BuildDetailsViewModel>()
+            val model = hiltViewModel<AndroidBuildDetailsViewModel>()
             val state by model.state.collectAsStateWithLifecycle()
             val metadata = hiltViewModel<BuildDetailsMetadataViewModel>()
             val metadataState by metadata.state.collectAsStateWithLifecycle()
@@ -83,8 +84,8 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             val latest by rememberUpdatedState(state)
             val snackbar = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
-            val copied = stringResource(R.string.build_element_copy_text)
-            val platformFailed = stringResource(R.string.platform_action_failed)
+            val copied = stringResource(Res.string.build_element_copy_text)
+            val platformFailed = stringResource(Res.string.platform_action_failed)
             val tabs = remember(activity, entryId) { ChromeCustomTabsImpl(activity) }
             LifecycleResumeEffect(tabs, model) {
                 tabs.initCustomsTabs()
@@ -168,10 +169,12 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                 onPauseOrDispose {}
             }
             val lifecycle = LocalLifecycleOwner.current.lifecycle
-            LaunchedEffect(state.notice, lifecycle) {
+            val noticeMessage = state.notice?.let { stringResource(it.message) }
+            val noticeAction = state.notice?.actionLabel?.let { stringResource(it) }
+            LaunchedEffect(state.notice, lifecycle, noticeMessage, noticeAction) {
                 val notice = state.notice ?: return@LaunchedEffect
                 lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    val result = snackbar.showSnackbar(activity.getString(notice.message), notice.actionLabel?.let(activity::getString))
+                    val result = snackbar.showSnackbar(checkNotNull(noticeMessage), noticeAction)
                     model.consumeNotice(notice.id)
                     if (result == SnackbarResult.ActionPerformed && notice.openQueued) model.queuedBuildReference()?.let { navigator.push(BuildDetailsReferenceDestination(it, state.subtitle, fromRestart = true)) }
                 }

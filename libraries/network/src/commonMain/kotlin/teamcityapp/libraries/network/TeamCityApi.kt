@@ -119,6 +119,18 @@ class TeamCityApi(private val transport: TeamCityTransport) {
         if (!forceRefresh) cacheMutex.withLock { documents[path] }?.let { return it }
         return transport.get(path).also { value -> cacheMutex.withLock { documents[path] = value } }
     }
+
+    /** Mutations invalidate this activation's reads even if the response is uncertain or forbidden. */
+    suspend fun mutate(path: String, payload: JsonObject): JsonObject = try {
+        transport.post(path, payload)
+    } finally {
+        cacheMutex.withLock {
+            documents.clear()
+            nodes.clear()
+            initialPages.clear()
+            builds.clear()
+        }
+    }
     fun apiPath(path: String): String = transport.apiPath(path)
     fun close() {
         documents.clear()

@@ -66,6 +66,9 @@ private const val TYPE_ID = "TypeId"
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class FilterBuildsBranchesAutoCompleteTest {
+    @get:Rule(order = 99)
+    val phaseFourEvidence = com.github.vase4kin.teamcityapp.helper.PhaseFourEvidenceRule()
+
     @JvmField
     @Rule(order = 4)
     val compose = createEmptyComposeRule()

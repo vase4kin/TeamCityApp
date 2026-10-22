@@ -99,6 +99,16 @@ class Navigator(
         )
     }
 
+    /** Update restorable arguments within a live visit while retaining its owners and results.
+     * A destination type change must use replace, which creates a new owner instead.
+     */
+    fun updateDestination(entryId: String, destination: NavKey): Boolean {
+        val entry = snapshot.entries.singleOrNull { it.id == entryId } ?: return false
+        require(entry.destination::class == destination::class) { "A retained visit cannot change destination type" }
+        state.value = snapshot.copy(entries = snapshot.entries.map { if (it.id == entryId) it.copy(destination = destination) else it })
+        return true
+    }
+
     /** A new account/session replaces every owner and discards all old-session results. */
     fun reset(destination: NavKey, sessionKey: String = snapshot.sessionKey) {
         state.value = NavigationSnapshot(listOf(NavigationEntry(nextId(), destination)), sessionKey = sessionKey)

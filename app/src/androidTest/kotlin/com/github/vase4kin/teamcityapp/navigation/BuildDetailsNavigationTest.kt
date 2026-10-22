@@ -57,6 +57,9 @@ import teamcityapp.libraries.data.builds.BuildLaunchMapper
 @UninstallModules(ComposeArtifactsPlatformModule::class)
 @RunWith(AndroidJUnit4::class)
 class BuildDetailsNavigationTest {
+    @get:Rule(order = 99)
+    val phaseFourEvidence = com.github.vase4kin.teamcityapp.helper.PhaseFourEvidenceRule()
+
     @JvmField
     @Rule(order = 0)
     val hilt = HiltAndroidRule(this)

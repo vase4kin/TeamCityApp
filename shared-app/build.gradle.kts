@@ -34,6 +34,11 @@ kotlin {
     }
     sourceSets.named("commonMain") {
         dependencies {
+            implementation(projects.features.runBuild.presentation)
+            implementation(projects.features.filterBuilds.presentation)
+            implementation(projects.features.filterBottomSheet.presentation)
+            implementation(projects.features.bottomSheet.presentation)
+            implementation(projects.features.buildDetails.presentation)
             implementation(projects.features.home.presentation)
             implementation(projects.features.favorites.presentation)
             implementation(projects.features.runningBuilds.presentation)

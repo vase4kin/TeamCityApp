@@ -29,6 +29,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
@@ -86,6 +87,35 @@ class TeamCityTransportTest {
         val transport = TeamCityTransport(client(engine), secret())
         transport.get(transport.apiPath("server"))
         assertEquals(listOf(null, "Basic YWxpY2U6cGFzc3dvcmQ="), auth)
+        transport.close()
+    }
+
+    @Test fun simultaneousInitialChallengesEachRetryOnlyTheirOwnUnauthorizedRequest() = runTest {
+        val bothStarted = CompletableDeferred<Unit>()
+        var anonymous = 0
+        var authorized = 0
+        val transport = TeamCityTransport(
+            client(
+                mockEngine { request ->
+                    if (request.headers[HttpHeaders.Authorization] == null) {
+                        anonymous++
+                        if (anonymous == 2) bothStarted.complete(Unit)
+                        bothStarted.await()
+                        respond("", HttpStatusCode.Unauthorized, headersOf(HttpHeaders.WWWAuthenticate, "Basic realm=\"TeamCity\""))
+                    } else {
+                        authorized++
+                        respond("{}")
+                    }
+                }
+            ),
+            secret()
+        )
+        val first = async { transport.get(transport.apiPath("server")) }
+        val second = async { transport.get(transport.apiPath("projects")) }
+        first.await()
+        second.await()
+        assertEquals(2, anonymous)
+        assertEquals(2, authorized)
         transport.close()
     }
 

@@ -31,6 +31,8 @@ class TeamCityAccountGraph(
     val browsing: TeamCityBrowsingRepositories? = null
 ) : NavigationRepository,
     BuildOverviewRepository {
+    val management = TeamCityManagementRepositories(account, api)
+
     init {
         account.coroutineScope.coroutineContext[Job]!!.invokeOnCompletion { api.close() }
     }

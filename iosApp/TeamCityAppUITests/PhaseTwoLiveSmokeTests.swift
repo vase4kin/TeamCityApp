@@ -161,8 +161,9 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         capture("phase2_overview_expanded",app)
         XCUIDevice.shared.orientation = .portrait
-        waitUntilSettled(app.buttons["Back"])
-        app.buttons["Back"].press(forDuration: 0.2)
+        let up = app.buttons["Navigate up"].exists ? app.buttons["Navigate up"] : app.buttons["Back"]
+        waitUntilSettled(up)
+        up.press(forDuration: 0.2)
         XCTAssertTrue(element(app,"history:back").waitForExistence(timeout: 10))
         element(app,"history:back").tap()
         XCTAssertTrue(element(app,"navigation:up").waitForExistence(timeout: 10))
@@ -231,7 +232,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         target.press(forDuration: 0.2)
     }
     private func back(_ app: XCUIApplication) {
-        let back = app.buttons["Back"].firstMatch
+        let back = app.buttons["Navigate up"].exists ? app.buttons["Navigate up"].firstMatch : app.buttons["Back"].firstMatch
         XCTAssertTrue(back.waitForExistence(timeout: 10))
         back.press(forDuration: 0.2)
     }
@@ -383,4 +384,227 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertTrue(element(app, "tests:test:passed").waitForExistence(timeout: 20))
     }
 
+}
+
+/// Mutations are limited to the explicitly enabled, local synthetic fixture.
+final class PhaseFourManagementSmokeTests: XCTestCase {
+    private func element(_ app: XCUIApplication, _ id: String) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: id).firstMatch
+    }
+    private func capture(_ name: String, _ app: XCUIApplication) {
+        let bar = element(app, "screen:app-bar")
+        let anchor = bar.exists ? bar : app
+        var lastFrame = anchor.frame
+        var unchangedSince = Date()
+        let settled = NSPredicate { _, _ in
+            let frame = anchor.frame
+            if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
+            return Date().timeIntervalSince(unchangedSince) >= 0.6
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: anchor)], timeout: 5), .completed)
+        if bar.exists && XCUIDevice.shared.orientation == .portrait {
+            XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
+        }
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        let theme = ProcessInfo.processInfo.environment["TEAMCITY_UI_EVIDENCE_THEME"] ?? "light"
+        attachment.name = "phase4_" + name + "_" + theme
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+    private func tap(_ app: XCUIApplication, _ id: String, scroll: Bool = false) {
+        let target = element(app, id)
+        if scroll {
+            for _ in 0..<12 {
+                if target.exists && target.isHittable { break }
+                app.swipeUp(velocity: .slow)
+            }
+        }
+        XCTAssertTrue(target.waitForExistence(timeout: 25), id)
+        if scroll {
+            var lastFrame = target.frame
+            var unchangedSince = Date()
+            let settled = NSPredicate { _, _ in
+                let frame = target.frame
+                if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
+                return Date().timeIntervalSince(unchangedSince) >= 0.6
+            }
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: target)], timeout: 5), .completed)
+        }
+        target.press(forDuration: 0.2)
+    }
+    private func back(_ app: XCUIApplication) {
+        let back = app.buttons["Navigate up"].exists ? app.buttons["Navigate up"].firstMatch : app.buttons["Back"].firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
+        back.press(forDuration: 0.2)
+    }
+    private var fixtureSuffix = ""
+    private func fixtureApp(_ suffix: String = "") -> XCUIApplication {
+        fixtureSuffix = suffix
+        let app = XCUIApplication()
+        app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        tap(app, "auth:guest")
+        let url = element(app, "auth:url")
+        url.tap()
+        for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
+        for character in "http://127.0.0.1:18081/context" + suffix { url.typeText(String(character)) }
+        XCTAssertEqual(url.value as? String, "http://127.0.0.1:18081/context" + suffix)
+        url.typeText("\n")
+        XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
+        app.buttons["OK"].tap()
+        XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
+        return app
+    }
+
+    private func openHistory(_ app: XCUIApplication) {
+        tap(app, "navigation:row:configuration:Demo_Build")
+        XCTAssertTrue(element(app, "history:build:1").waitForExistence(timeout: 25))
+    }
+    private func localApp(_ mode: String = "manage") throws -> XCUIApplication {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_MANAGEMENT_UI"] == "1" else { throw XCTSkip("Synthetic management fixture is opt-in") }
+        continueAfterFailure = false
+        return fixtureApp("/" + mode + "/" + UUID().uuidString)
+    }
+    private func enterText(_ app: XCUIApplication, _ id: String, _ text: String) {
+        let input = element(app, id)
+        input.tap()
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 10))
+        // Native focus/caret installation can outlive UIKit's app-idle signal.
+        var previous = keyboard.frame
+        var stableSince = Date()
+        let stable = NSPredicate { _, _ in
+            let frame = keyboard.frame
+            if frame != previous { previous = frame; stableSince = Date() }
+            return Date().timeIntervalSince(stableSince) >= 0.8
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: stable, object: keyboard)], timeout: 10), .completed)
+        var entered = ""
+        for character in text {
+            input.typeText(String(character))
+            entered += String(character)
+            XCTAssertEqual(input.value as? String, entered)
+        }
+    }
+    private func assertRunRequest() {
+        let completed = expectation(description: "Read the accepted synthetic Run request")
+        let url = URL(string: "http://127.0.0.1:18081/context" + fixtureSuffix + "/guestAuth/app/rest/fixtureMutations")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            defer { completed.fulfill() }
+            XCTAssertNil(error)
+            XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
+            guard let data = data, let document = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let rows = document["mutations"] as? [[String: Any]] else { XCTFail("Missing synthetic mutation log"); return }
+            XCTAssertEqual(rows.count, 1, "One submit must produce one accepted mutation")
+            let body = rows.first?["body"] as? [String: Any]
+            XCTAssertEqual(body?["personal"] as? Bool, true)
+            let options = body?["triggeringOptions"] as? [String: Any]
+            XCTAssertEqual(options?["queueAtTop"] as? Bool, true)
+            XCTAssertEqual(options?["cleanSources"] as? Bool, false)
+            XCTAssertEqual((body?["agent"] as? [String: Any])?["id"] as? String, "2")
+            let parameters = (body?["properties"] as? [String: Any])?["property"] as? [[String: String]]
+            XCTAssertEqual(parameters, [["name": "env.PHASE", "value": "four"]])
+        }.resume()
+        wait(for: [completed], timeout: 10)
+    }
+    func testRunOptionsParametersQueueShowAndRemove() throws {
+        let app = try localApp()
+        openHistory(app)
+        capture("history_management_controls", app)
+        tap(app, "history:run")
+        XCTAssertTrue(element(app, "run-build:agent").waitForExistence(timeout: 20))
+        capture("run_build", app)
+        tap(app, "run-build:agent")
+        capture("agent_chooser", app)
+        tap(app, "run-build:agent:2")
+        tap(app, "run-build:options", scroll: true)
+        tap(app, "run-build:personal", scroll: true)
+        tap(app, "run-build:top", scroll: true)
+        tap(app, "run-build:clean", scroll: true)
+        tap(app, "run-build:add", scroll: true)
+        capture("parameter_dialog", app)
+        tap(app, "parameter:confirm")
+        capture("parameter_validation", app)
+        enterText(app, "parameter:name", "env.PHASE")
+        enterText(app, "parameter:value", "four")
+        tap(app, "parameter:confirm")
+        capture("run_custom_options", app)
+        tap(app, "run-build:submit")
+        XCTAssertTrue(element(app, "history:list").waitForExistence(timeout: 20))
+        XCTAssertTrue(app.buttons["Show"].waitForExistence(timeout: 10))
+        assertRunRequest()
+        capture("queued_result", app)
+        app.buttons["Show"].tap()
+        XCTAssertTrue(element(app, "overview:row:WaitReason").waitForExistence(timeout: 20))
+        XCTAssertTrue(element(app, "details:action:Cancel").waitForExistence(timeout: 10))
+        capture("queued_overview", app)
+        tap(app, "details:action:Cancel")
+        capture("remove_confirmation", app)
+        tap(app, "details:confirm")
+        XCTAssertTrue(app.staticTexts["Build is removed from queue successfully"].waitForExistence(timeout: 20))
+        capture("removed_success", app)
+    }
+    func testFiltersRestoreAndBranchActionSheet() throws {
+        let app = try localApp()
+        openHistory(app)
+        tap(app, "history:filter")
+        capture("filter_builds", app)
+        tap(app, "filter-builds:status:Queued")
+        capture("queued_filter", app)
+        tap(app, "filter-builds:status:Failed")
+        tap(app, "filter-builds:apply")
+        XCTAssertTrue(element(app, "history:list").waitForExistence(timeout: 20))
+        capture("filtered_history", app)
+        app.terminate(); app.launch()
+        XCTAssertTrue(element(app, "history:list").waitForExistence(timeout: 30))
+        capture("filtered_history_relaunched", app)
+        tap(app, "history:build:1")
+        XCTAssertTrue(element(app, "details:action:Restart").waitForExistence(timeout: 20))
+        capture("finished_overview", app)
+        tap(app, "overview:row:Branch", scroll: true)
+        XCTAssertTrue(element(app, "sheet:Branch").waitForExistence(timeout: 10))
+        capture("branch_action_sheet", app)
+        tap(app, "sheet:Branch")
+        XCTAssertTrue(element(app, "history:list").waitForExistence(timeout: 20))
+        capture("branch_filtered_history", app)
+    }
+    func testStopReaddConfirmationAndRestart() throws {
+        let app = try localApp()
+        tap(app, "home:tab:Activity")
+        tap(app, "home:filter:RunningAll")
+        tap(app, "running_builds:build:3")
+        XCTAssertTrue(element(app, "details:action:Cancel").waitForExistence(timeout: 20))
+        capture("running_build", app)
+        tap(app, "details:action:Cancel")
+        XCTAssertTrue(element(app, "details:readd").waitForExistence(timeout: 10))
+        capture("stop_confirmation", app)
+        app.buttons["Cancel"].tap()
+        tap(app, "details:action:Cancel")
+        tap(app, "details:readd")
+        tap(app, "details:confirm")
+        XCTAssertTrue(app.staticTexts["Build is stopped successfully"].waitForExistence(timeout: 20))
+        capture("stopped_success", app)
+        tap(app, "details:action:Restart")
+        capture("restart_confirmation", app)
+        tap(app, "details:confirm")
+        XCTAssertTrue(app.buttons["Show"].waitForExistence(timeout: 20))
+        capture("restarted_success", app)
+        app.buttons["Show"].tap()
+        XCTAssertTrue(element(app, "overview:row:WaitReason").waitForExistence(timeout: 20))
+        capture("restarted_queued_overview", app)
+    }
+    func testForbiddenAndRetryStayOnRunForm() throws {
+        let forbidden = try localApp("manage-forbidden")
+        openHistory(forbidden); tap(forbidden, "history:run"); tap(forbidden, "run-build:submit")
+        XCTAssertTrue(forbidden.staticTexts["You don't have permission to run this build."].waitForExistence(timeout: 20))
+        capture("run_forbidden", forbidden)
+        forbidden.terminate()
+        let retry = try localApp("manage-retry")
+        openHistory(retry); tap(retry, "history:run"); tap(retry, "run-build:submit")
+        XCTAssertTrue(element(retry, "run-build:snackbar").waitForExistence(timeout: 20))
+        capture("run_error", retry)
+        tap(retry, "run-build:submit")
+        XCTAssertTrue(retry.buttons["Show"].waitForExistence(timeout: 20))
+        capture("run_retry_success", retry)
+    }
 }

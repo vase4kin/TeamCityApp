@@ -153,3 +153,13 @@ include(":features:test-details:presentation")
 include(":features:snapshot-dependencies:presentation")
 
 include(":features:change-details:presentation")
+
+include(":features:run-build:presentation")
+
+include(":features:filter-builds:presentation")
+
+include(":features:filter-bottom-sheet:presentation")
+
+include(":features:bottom-sheet:presentation")
+
+include(":features:build-details:presentation")

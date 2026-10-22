@@ -71,6 +71,9 @@ import org.mockito.Spy
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class FilterBuildsActivityTest {
+    @get:Rule(order = 99)
+    val phaseFourEvidence = com.github.vase4kin.teamcityapp.helper.PhaseFourEvidenceRule()
+
     @JvmField
     @Rule(order = 4)
     val compose = createEmptyComposeRule()

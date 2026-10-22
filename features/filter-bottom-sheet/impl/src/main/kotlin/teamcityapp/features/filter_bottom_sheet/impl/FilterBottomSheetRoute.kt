@@ -22,11 +22,4 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.filter_bottom_sheet.impl.router.FilterBottomSheetRouter
 @Composable
-fun FilterBottomSheetRoute(router: FilterBottomSheetRouter, viewModel: FilterBottomSheetViewModel = hiltViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
-    androidx.compose.runtime.LaunchedEffect(state.applied, router, lifecycle) {
-        if (state.applied) lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) { if (viewModel.consumeApplied()) router.close() }
-    }
-    FilterBottomSheetScreen(state, viewModel::apply)
-}
+fun FilterBottomSheetRoute(router: FilterBottomSheetRouter, viewModel: FilterBottomSheetViewModel = hiltViewModel<AndroidFilterBottomSheetViewModel>()) = SharedFilterBottomSheetRoute(router, viewModel)

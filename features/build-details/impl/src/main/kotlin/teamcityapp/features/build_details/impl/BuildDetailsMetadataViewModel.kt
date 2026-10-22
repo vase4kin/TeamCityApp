@@ -28,34 +28,6 @@ import kotlinx.serialization.json.Json
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
 
-internal data class BuildDetailsPromptUi(
-    val prompt: BuildDetailsPrompt,
-    val saving: Boolean = false,
-    val saveFailed: Boolean = false
-) {
-    val action: BuildDetailsAction get() = when (prompt) {
-        BuildDetailsPrompt.Stop, BuildDetailsPrompt.Remove -> BuildDetailsAction.Cancel
-        BuildDetailsPrompt.Restart -> BuildDetailsAction.Restart
-        BuildDetailsPrompt.Share -> BuildDetailsAction.Share
-        BuildDetailsPrompt.Browser -> BuildDetailsAction.Browser
-    }
-
-    @get:StringRes val title: Int get() = when (prompt) {
-        BuildDetailsPrompt.Stop -> R.string.title_onboarding_stop_build
-        BuildDetailsPrompt.Remove -> R.string.title_onboarding_remove_build
-        BuildDetailsPrompt.Restart -> R.string.title_onboarding_restart_build
-        BuildDetailsPrompt.Share -> R.string.title_onboarding_share_build
-        BuildDetailsPrompt.Browser -> R.string.title_onboarding_browser
-    }
-
-    @get:StringRes val description: Int get() = when (prompt) {
-        BuildDetailsPrompt.Stop -> R.string.text_onboarding_stop_build
-        BuildDetailsPrompt.Remove -> R.string.text_onboarding_remove_build_from_queue
-        BuildDetailsPrompt.Restart -> R.string.text_onboarding_restart_build
-        BuildDetailsPrompt.Share -> R.string.text_onboarding_share_build
-        BuildDetailsPrompt.Browser -> R.string.text_onboarding_browser
-    }
-}
 private data class PromptAcknowledgement(val prompt: BuildDetailsPrompt? = null, val saving: Boolean = false, val failed: Boolean = false)
 internal data class BuildDetailsMetadataState(val counts: Map<BuildDetailsSection, BuildDetailsCount> = emptyMap(), val prompt: BuildDetailsPromptUi? = null, val onboardingFailed: Boolean = false)
 

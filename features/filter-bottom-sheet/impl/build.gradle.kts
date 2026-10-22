@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.filter_bottom_sheet.impl" }
 dependencies {
+    api(projects.features.filterBottomSheet.presentation)
     implementation(projects.libraries.navigation)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)

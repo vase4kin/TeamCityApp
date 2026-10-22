@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.run_build.impl" }
 dependencies {
+    api(projects.features.runBuild.presentation)
     testImplementation(libs.retrofit.gsonConverter)
     testImplementation(libs.mockito.mockitoKotlin)
     implementation(projects.features.filterBuilds.api)

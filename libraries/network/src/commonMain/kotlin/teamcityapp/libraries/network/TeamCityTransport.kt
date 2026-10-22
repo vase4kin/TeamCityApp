@@ -17,12 +17,16 @@
 package teamcityapp.libraries.network
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
+import io.ktor.http.contentType
 import io.ktor.http.decodeURLPart
 import io.ktor.http.hostWithPort
 import kotlin.io.encoding.Base64
@@ -80,21 +84,37 @@ class TeamCityTransport(private val client: HttpClient, private val account: Acc
         return Url("${base.protocol.name}://${base.hostWithPort}$authenticatedPath$query")
     }
 
-    suspend fun get(path: String): JsonObject {
+    suspend fun get(path: String): JsonObject = exchange(path, HttpMethod.Get, null)
+
+    /** Only an explicit Basic challenge may replay a mutation; transport errors are never retried. */
+    suspend fun post(path: String, payload: JsonObject): JsonObject = exchange(path, HttpMethod.Post, payload)
+
+    private suspend fun exchange(path: String, verb: HttpMethod, payload: JsonObject?): JsonObject {
         val url = resolve(path)
         currentCoroutineContext().ensureActive()
-        var response = client.get(url) {
+        val initialAuthorization = challengedAuthorization
+        var response = client.request(url) {
+            method = verb
+            if (payload != null) {
+                contentType(ContentType.Application.Json)
+                setBody(payload.toString())
+            }
             header(HttpHeaders.Accept, "application/json")
-            challengedAuthorization?.let { header(HttpHeaders.Authorization, it) }
+            initialAuthorization?.let { header(HttpHeaders.Authorization, it) }
         }
-        if (response.status.value == 401 && !account.identity.guest && challengedAuthorization == null) {
+        if (response.status.value == 401 && !account.identity.guest && initialAuthorization == null) {
             val challenge = response.headers.getAll(HttpHeaders.WWWAuthenticate).orEmpty().firstOrNull { it.trimStart().startsWith("Basic", ignoreCase = true) }
             if (challenge != null) {
                 val raw = "${account.identity.userName}:${account.password}"
                 val bytes = if (challenge.contains("charset=\"UTF-8\"", true) || challenge.contains("charset=UTF-8", true)) raw.encodeToByteArray() else ByteArray(raw.length) { index -> raw[index].code.takeIf { it <= 255 }?.toByte() ?: '?'.code.toByte() }
                 challengedAuthorization = "Basic ${Base64.Default.encode(bytes)}"
                 response.bodyAsText() // Release the challenge response before retrying.
-                response = client.get(url) {
+                response = client.request(url) {
+                    method = verb
+                    if (payload != null) {
+                        contentType(ContentType.Application.Json)
+                        setBody(payload.toString())
+                    }
                     header(HttpHeaders.Accept, "application/json")
                     header(HttpHeaders.Authorization, challengedAuthorization!!)
                 }

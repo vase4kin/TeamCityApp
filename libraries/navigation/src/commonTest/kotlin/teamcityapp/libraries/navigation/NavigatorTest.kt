@@ -37,6 +37,20 @@ class NavigatorTest {
     private var sequence = 0
     private fun navigator(): Navigator = Navigator(mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("root", Root))))) { "visit-${++sequence}" }
 
+    @Test fun restorableArgumentUpdateRetainsTheLiveOwnerAndPendingResults() {
+        val nav = navigator()
+        val origin = nav.push(Detail("history"))
+        nav.push(Detail("filter"))
+        nav.finish(Selected("branch"), origin)
+        assertTrue(nav.updateDestination(origin, Detail("filtered history")))
+        assertEquals(origin, nav.current.id)
+        assertEquals(Detail("filtered history"), nav.current.destination)
+        assertEquals(Selected("branch"), nav.consumeResult(origin, Selected::class))
+        assertNull(nav.consumeResult(origin, Selected::class))
+        assertFalse(nav.updateDestination("removed", Detail("obsolete")))
+        assertFailsWith<IllegalArgumentException> { nav.updateDestination(origin, Root) }
+    }
+
     @Test fun rootBackDelegatesToHostWithoutDestroyingRoot() {
         val nav = navigator()
         assertFalse(nav.pop())

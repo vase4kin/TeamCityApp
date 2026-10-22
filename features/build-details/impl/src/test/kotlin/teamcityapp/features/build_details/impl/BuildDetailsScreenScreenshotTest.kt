@@ -22,13 +22,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
+import org.jetbrains.compose.resources.stringResource
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +42,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.build_details.api.*
+import teamcityapp.features.build_details.presentation.resources.*
 import teamcityapp.libraries.builds.*
 import teamcityapp.libraries.theme.LocalFloatingActionClearance
 import teamcityapp.libraries.theme.TeamCityDimensions
@@ -96,10 +97,10 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
 
             stateName.startsWith("notice_") -> {
                 val notice = when (stateName) {
-                    "notice_stopped" -> BuildDetailsNotice(1, R.string.text_build_is_stopped)
-                    "notice_removed" -> BuildDetailsNotice(1, R.string.text_build_is_removed_from_queue)
-                    "notice_restarted" -> BuildDetailsNotice(1, R.string.text_build_is_restarted, openQueued = true)
-                    else -> BuildDetailsNotice(1, R.string.error_opening_build, openQueued = true)
+                    "notice_stopped" -> BuildDetailsNotice(1, Res.string.text_build_is_stopped)
+                    "notice_removed" -> BuildDetailsNotice(1, Res.string.text_build_is_removed_from_queue)
+                    "notice_restarted" -> BuildDetailsNotice(1, Res.string.text_build_is_restarted, openQueued = true)
+                    else -> BuildDetailsNotice(1, Res.string.error_opening_build, openQueued = true)
                 }
                 BuildDetailsUiState(snapshot, notice = notice)
             }

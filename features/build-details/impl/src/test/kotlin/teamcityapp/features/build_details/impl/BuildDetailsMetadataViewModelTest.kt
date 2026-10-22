@@ -24,6 +24,7 @@ import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import teamcityapp.features.build_details.api.*
+import teamcityapp.features.build_details.presentation.resources.*
 import teamcityapp.libraries.builds.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -177,7 +178,7 @@ class BuildDetailsMetadataViewModelTest {
         vm.loaded(build.copy(id = "other", state = "running"))
         runCurrent()
         assertEquals(BuildDetailsPrompt.Restart, vm.state.value.prompt?.prompt)
-        assertEquals(R.string.text_onboarding_restart_build, vm.state.value.prompt?.description)
+        assertEquals(Res.string.text_onboarding_restart_build, vm.state.value.prompt?.description)
         vm.loaded(build.copy(state = "unknown server state"))
         runCurrent()
         assertNull(vm.state.value.prompt)
