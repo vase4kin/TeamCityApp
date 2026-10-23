@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import teamcityapp.buildlogic.Config
 
@@ -88,3 +89,24 @@ kotlin.sourceSets.named("commonMain") {
 }
 
 kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+
+// Capture the actual device link inputs rather than inferring native dependencies
+// from the Android catalog. Release review consumes this reproducible inventory.
+tasks.register("exportIosReleaseDependencies") {
+    val output = layout.buildDirectory.file("reports/ios-release-dependencies.tsv")
+    outputs.file(output)
+    outputs.upToDateWhen { false }
+    doLast {
+        val configuration = configurations.getByName("iosArm64CompileKlibraries")
+        val artifacts = configuration.incoming.artifacts.artifacts
+        output.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText(
+                artifacts.mapNotNull { artifact ->
+                    val id = artifact.id.componentIdentifier as? ModuleComponentIdentifier ?: return@mapNotNull null
+                    "${id.group}:${id.module}:${id.version}\t${artifact.file.absolutePath}"
+                }.distinct().sorted().joinToString("\n", postfix = "\n")
+            )
+        }
+    }
+}

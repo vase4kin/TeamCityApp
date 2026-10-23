@@ -23,6 +23,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */; };
+		D2BE410BAA7F49F8B09600B1 /* PhaseSixReleaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */; };
+		D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */; };
 		B8F1B3DA8B2B4EC6A76588BB /* PhaseTwoLiveSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */; };
 		223ABC5F1CE2F71350A0598F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94FA98DCBA29E4802B265B3A /* Foundation.framework */; };
 		9E274758FA5F20AFDCB9EA54 /* AboutSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3CC2D327487C67B9BCE3A5 /* AboutSmokeTests.swift */; };
@@ -41,6 +44,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseSixReleaseTests.swift; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhaseTwoLiveSmokeTests.swift; sourceTree = "<group>"; };
 		309D16499181FB9957B42C68 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87FEBCB56D0FAB58EEE2291B /* TeamCityApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeamCityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,6 +89,7 @@
 		9E68A2E7F9F964B570D3DD99 = {
 			isa = PBXGroup;
 			children = (
+				D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */,
 				48FB52F38B6AA46C588DC21B /* Products */,
 				D7792C23D4CB8BA2B8C06C81 /* Frameworks */,
 				EDC1D6CFD776BDC2EF55409E /* TeamCityApp */,
@@ -109,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				AD3CC2D327487C67B9BCE3A5 /* AboutSmokeTests.swift */,
+				D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */,
 				7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */,
 			);
 			name = TeamCityAppUITests;
@@ -119,6 +128,8 @@
 			isa = PBXGroup;
 			children = (
 				C7A0891E31688C2C0F105FC1 /* App.swift */,
+				D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */,
+				D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */,
 				309D16499181FB9957B42C68 /* Info.plist */,
 			);
 			name = TeamCityApp;
@@ -206,6 +217,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */,
+				D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,7 +242,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared-app:embedAndSignAppleFrameworkForXcode --max-workers=2 --console=plain";
+			shellScript = "/bin/sh \"$SRCROOT/../scripts/build-ios-framework.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -247,6 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E274758FA5F20AFDCB9EA54 /* AboutSmokeTests.swift in Sources */,
+				D2BE410BAA7F49F8B09600B1 /* PhaseSixReleaseTests.swift in Sources */,
 				B8F1B3DA8B2B4EC6A76588BB /* PhaseTwoLiveSmokeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -270,7 +284,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.vase4kin.teamcityapp.ios.uitests;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.vase4kin.teamcityapp.ios.uitests$(TEAMCITY_BUNDLE_ID_SUFFIX)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = TeamCityApp;
@@ -282,6 +296,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -336,6 +351,7 @@
 		};
 		96B654DD8D3889864D49CCAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -350,13 +366,12 @@
 				INFOPLIST_FILE = TeamCityApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
 					TeamCityShared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.vase4kin.teamcityapp.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.vase4kin.teamcityapp.ios$(TEAMCITY_BUNDLE_ID_SUFFIX)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -366,6 +381,7 @@
 		};
 		99494CD4ED12C5959641F589 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -380,13 +396,12 @@
 				INFOPLIST_FILE = TeamCityApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
 					TeamCityShared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.vase4kin.teamcityapp.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.vase4kin.teamcityapp.ios$(TEAMCITY_BUNDLE_ID_SUFFIX)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -400,7 +415,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.vase4kin.teamcityapp.ios.uitests;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.vase4kin.teamcityapp.ios.uitests$(TEAMCITY_BUNDLE_ID_SUFFIX)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = TeamCityApp;
@@ -411,6 +426,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

@@ -20,7 +20,10 @@ import android.app.Application
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,6 +52,19 @@ class AboutScreenVersionTest {
             TeamCityTheme { AboutScreen(content, {}, {}, {}, appVersion = "9.87.65") }
         }
         compose.onNodeWithText("9.87.65").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Application version 9.87.65").assertIsDisplayed()
         compose.onNodeWithText(BuildConfig.VERSION).assertDoesNotExist()
+    }
+
+    @Test fun serverLinkKeepsItsDescriptiveLabelAndAction() {
+        val url = "https://teamcity.example"
+        var opened: String? = null
+        val available = AboutUiState.Content(ServerDetailsUiState.Available(ServerDetailsUiModel("2026.1", url)))
+        compose.setContent {
+            TeamCityTheme { AboutScreen(available, { opened = it }, {}, {}) }
+        }
+        compose.onNodeWithText(url).assertIsDisplayed()
+        compose.onNodeWithContentDescription("Server url, $url").performClick()
+        assertEquals(url, opened)
     }
 }

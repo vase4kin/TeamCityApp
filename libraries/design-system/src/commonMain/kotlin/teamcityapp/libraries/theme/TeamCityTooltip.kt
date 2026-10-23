@@ -25,6 +25,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.libraries.design_system.resources.*
 
+/** Whether the pinned Material port merges parent semantics into its controls. */
+internal expect val supportsMaterialParentSemantics: Boolean
+
 /** The anchor keeps its own label, role and action; the popup only explains it. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +40,13 @@ fun TeamCityTooltip(
     // Material applies its modifier to the inner anchor. Own the outer layout so RowScope
     // weights and minimum constraints still apply to the item in its actual parent.
     Box(modifier, propagateMinConstraints = true) {
+        // The current iOS Material port exposes its long-press wrapper as an
+        // unlabeled extra VoiceOver stop. Keep the labeled control directly in
+        // the Apple tree; Android retains hover, keyboard and long-press help.
+        if (!supportsMaterialParentSemantics) {
+            content()
+            return@Box
+        }
         TooltipBox(
             positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
             tooltip = { PlainTooltip { Text(label) } },

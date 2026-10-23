@@ -39,4 +39,5 @@
     <string name="about_app_name">TeamCityApp</string>
     <string name="drawer_item_about">About</string>
     <string name="about_app_text_privacy">Privacy policy</string>
+    <string name="about_application_version_description">Application version %1$s</string>
 </resources>

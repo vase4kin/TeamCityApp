@@ -12,6 +12,10 @@
         {
           "type": "generic",
           "path": "build-logic/src/main/kotlin/Config.kt"
+        },
+        {
+          "type": "generic",
+          "path": "iosApp/Version.xcconfig"
         }
       ]
     }

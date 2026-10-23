@@ -48,6 +48,24 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-w360dp-h800dp-notnight-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class TeamCityBottomActionSurfaceTest {
+    @Test fun labeledToolbarKeepsEachActionIndependentlyUsable() {
+        var filters = 0
+        var favorites = 0
+        compose.setContent {
+            TeamCityTheme {
+                TeamCityFloatingToolbar {
+                    Button({ filters++ }) { Text("Filter") }
+                    Button({ favorites++ }) { Text("Favorite") }
+                }
+            }
+        }
+        compose.onNodeWithContentDescription("Actions").assertExists()
+        compose.onNodeWithText("Filter").performClick()
+        compose.onNodeWithText("Favorite").performClick()
+        assertEquals(1, filters)
+        assertEquals(1, favorites)
+    }
+
     @get:Rule val compose = createComposeRule()
 
     @Test fun scrollRemainderChangesToneAtBottomAndBackWithoutMovingActions() = scrollTransitions(false)

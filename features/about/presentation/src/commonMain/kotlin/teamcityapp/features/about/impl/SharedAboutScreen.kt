@@ -30,6 +30,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -55,6 +57,7 @@ fun SharedAboutScreen(
     onClose: () -> Unit,
     appVersion: String
 ) {
+    val versionDescription = stringResource(Res.string.about_application_version_description, appVersion)
     val size = LocalWindowInfo.current.containerSize
     val window = with(LocalDensity.current) { WindowSizeClass.calculateFromSize(DpSize(size.width.toDp(), size.height.toDp())) }
     SharedTeamCityScreen(stringResource(Res.string.drawer_item_about), onClose, contentMaxWidth = TeamCityDimensions.aboutContentMaxWidth) { modifier ->
@@ -73,7 +76,7 @@ fun SharedAboutScreen(
                         Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
                             Column(Modifier.padding(TeamCityDimensions.sectionSpacing)) {
                                 Text(stringResource(Res.string.about_app_name), style = MaterialTheme.typography.headlineLarge)
-                                Text(appVersion, Modifier.padding(top = TeamCityDimensions.smallSpacing), style = MaterialTheme.typography.titleMedium)
+                                Text(appVersion, Modifier.padding(top = TeamCityDimensions.smallSpacing).semantics { contentDescription = versionDescription }, style = MaterialTheme.typography.titleMedium)
                             }
                         }
                     }
@@ -148,6 +151,12 @@ private fun AboutRow(text: String, icon: DrawableResource, detail: String? = nul
         supportingContent = detail?.let { { Text(it) } },
         leadingContent = { Icon(painterResource(icon), contentDescription = null) },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-        modifier = if (onClick == null) Modifier else Modifier.clickable(role = Role.Button, onClick = onClick)
+        modifier = if (onClick == null) {
+            Modifier
+        } else {
+            Modifier.clickable(role = Role.Button, onClick = onClick).semantics {
+                contentDescription = listOfNotNull(text, detail).joinToString(", ")
+            }
+        }
     )
 }
