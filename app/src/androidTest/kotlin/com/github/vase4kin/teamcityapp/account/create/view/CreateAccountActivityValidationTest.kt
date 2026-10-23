@@ -99,6 +99,8 @@ class CreateAccountActivityValidationTest {
 
     @Before
     fun setUp() {
+        // Match installed storage: a signed-out account is an empty sentinel, never null.
+        `when`(storage.activeUser).thenReturn(teamcityapp.libraries.storage.models.UserAccount("", "", byteArrayOf(), true, true))
         `when`(storage.hasGuestAccountWithUrl(URL)).thenReturn(true)
         `when`(storage.hasAccountWithUrl(URL, "user")).thenReturn(true)
         activityRule.launchActivity(null)

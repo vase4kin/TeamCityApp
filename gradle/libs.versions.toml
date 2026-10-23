@@ -12,6 +12,8 @@ androidx-test = "1.7.0"
 espresso = "3.7.0"
 hamcrest = "2.2"
 mockito = "5.24.0"
+# Mockito Android 5.23+ requires API 28; the explicit minimum-API harness uses subclasses.
+mockitoAndroidMinimum = "5.22.0"
 okhttp = "5.4.0"
 retrofit = "3.0.0"
 dagger = "2.60.1"
@@ -135,6 +137,7 @@ rxcache-jolyglot = { module = "com.github.VictorAlbertos.Jolyglot:gson", version
 dagger-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 mockito-mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockito" }
+mockito-mockitoAndroidMinimum = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidMinimum" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-tools-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 tools-gradleAndroid = { module = "com.android.tools.build:gradle", version.ref = "android-gradle" }

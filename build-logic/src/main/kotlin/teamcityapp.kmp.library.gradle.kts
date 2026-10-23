@@ -53,3 +53,8 @@ kotlin {
         }
     }
 }
+
+// Dedicated simulators keep native account tests from controlling a UI-test device.
+tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest>().configureEach {
+    providers.gradleProperty("teamcityIosTestDevice").orNull?.let { device.set(it) }
+}

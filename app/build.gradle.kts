@@ -32,6 +32,7 @@ plugins {
 }
 
 val r8VerificationEnabled = providers.gradleProperty("r8Verification").isPresent
+val minimumAndroidInstrumentation = providers.gradleProperty("minimumAndroidInstrumentation").isPresent
 
 extensions.configure<ApplicationExtension> {
     namespace = "com.github.vase4kin.teamcityapp"
@@ -291,8 +292,17 @@ dependencies {
         // Use its shim on both classpaths so Kotlin cannot call removed 1.3 overloads.
         androidTestImplementation(libs.hamcrestLibrary)
         // Mockito
-        androidTestImplementation(libs.mockito.mockitoAndroid)
-        androidTestImplementation(libs.mockito.mockitoKotlin)
+        if (minimumAndroidInstrumentation) {
+            // The modern inline engine requires API 28. Keep minimum-API runs
+            // on the last subclass engine without changing normal CI/JVM tests.
+            androidTestImplementation(libs.mockito.mockitoAndroidMinimum)
+            androidTestImplementation(libs.mockito.mockitoKotlin) {
+                exclude(group = "org.mockito", module = "mockito-core")
+            }
+        } else {
+            androidTestImplementation(libs.mockito.mockitoAndroid)
+            androidTestImplementation(libs.mockito.mockitoKotlin)
+        }
         // Dagger mock
         androidTestImplementation(platform(libs.compose.bom))
         androidTestImplementation(libs.compose.ui.testJunit4)

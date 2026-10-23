@@ -103,6 +103,7 @@ class AboutActivityTest {
             awaitText(info.version)
             compose.onNodeWithText(info.webUrl).assertIsDisplayed()
             compose.onNodeWithText(app.getString(R.string.drawer_item_about)).assertIsDisplayed()
+            com.github.vase4kin.teamcityapp.helper.DeviceEvidence.capture("android_about_content", phase = 6)
             scenario.recreate()
             awaitText(info.version)
             compose.onNodeWithText(info.webUrl).assertIsDisplayed()

@@ -21,12 +21,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 
 /** Explicit captures run while the asserted screen is still visible, and remain disposable output. */
-object PhaseFiveEvidence {
-    fun capture(name: String) {
-        if (InstrumentationRegistry.getArguments().getString("phase5Evidence") != "true") return
+object DeviceEvidence {
+    fun capture(name: String, phase: Int = 5) {
+        if (InstrumentationRegistry.getArguments().getString("phase${phase}Evidence") != "true") return
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         instrumentation.waitForIdleSync()
-        val output = File(instrumentation.targetContext.getExternalFilesDir(null), "kmp-phase-5")
+        val output = File(instrumentation.targetContext.getExternalFilesDir(null), "kmp-phase-$phase")
         check(output.isDirectory || output.mkdirs())
         val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
         try {

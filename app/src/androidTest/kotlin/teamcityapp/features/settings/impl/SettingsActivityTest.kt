@@ -18,7 +18,9 @@ package teamcityapp.features.settings.impl
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -29,8 +31,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.helper.DeviceEvidence
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
-import com.github.vase4kin.teamcityapp.helper.PhaseFiveEvidence
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
@@ -146,8 +148,27 @@ class SettingsActivityTest {
 
     private fun assertRenderedTheme(dark: Boolean) {
         compose.waitForIdle()
-        val pixels = compose.onRoot().captureToImage().toPixelMap()
-        assertEquals(teamCityColorScheme(dark).background, pixels[1, pixels.height / 2])
+        val expected = teamCityColorScheme(dark).background
+        if (Build.VERSION.SDK_INT >= 26) {
+            val pixels = compose.onRoot().captureToImage().toPixelMap()
+            assertEquals(expected, pixels[1, pixels.height / 2])
+            return
+        }
+        // Window PixelCopy needs API 26. Older display captures may see the
+        // preceding frame, so require the exact requested color within a bound.
+        compose.waitUntil(5_000) {
+            // Material tooltips own a second, small Compose root on older Android.
+            val bounds = compose.onAllNodes(isRoot()).fetchSemanticsNodes()
+                .maxBy { it.boundsInWindow.width * it.boundsInWindow.height }.boundsInWindow
+            val bitmap = checkNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
+            try {
+                val x = (bounds.left.toInt() + 1).coerceIn(0, bitmap.width - 1)
+                val y = (bounds.top + bounds.height / 2).toInt().coerceIn(0, bitmap.height - 1)
+                Color(bitmap.getPixel(x, y)) == expected
+            } finally {
+                bitmap.recycle()
+            }
+        }
     }
 
     @Test fun repeatedThemeSelectionsRecolorImmediatelyWithoutReplacingTheScreen() {
@@ -170,7 +191,7 @@ class SettingsActivityTest {
                         assertEquals(snapshot, it.navigationSnapshot)
                         val bars = WindowCompat.getInsetsController(it.window, it.window.decorView)
                         assertEquals(!dark, bars.isAppearanceLightStatusBars)
-                        assertEquals(!dark, bars.isAppearanceLightNavigationBars)
+                        assertEquals(Build.VERSION.SDK_INT >= 26 && !dark, bars.isAppearanceLightNavigationBars)
                     }
                 }
             }
@@ -180,13 +201,13 @@ class SettingsActivityTest {
     @Test fun selectingThemePersistsAppliesAndSurvivesRecreation() {
         launch().use { scenario ->
             awaitSummary("Light theme")
-            PhaseFiveEvidence.capture("android_settings_light")
+            DeviceEvidence.capture("android_settings_light")
             compose.onNodeWithText("Dark theme").performClick()
             awaitSummary("Dark theme")
             compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES }
             scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
             assertEquals(ThemeMode.Dark, runBlocking { repo.theme.first() })
-            PhaseFiveEvidence.capture("android_settings_dark")
+            DeviceEvidence.capture("android_settings_dark")
             scenario.recreate()
             awaitSummary("Dark theme")
             scenario.moveToState(Lifecycle.State.CREATED)
