@@ -130,6 +130,11 @@ to the requested behavior and the coherent migration slice needed to support it.
   Sites report linked from the checklist. Do not mark a phase complete while a
   required check or report remains unfinished. Starting the next phase requires
   a new user instruction.
+- See `docs/ios-release.md` for candidate archive, native notice inventory,
+  privacy/icon/version audits and signing/TestFlight preparation. Optimized Xcode
+  framework builds use the release-scoped heap in `scripts/build-ios-framework.sh`.
+  Keep physical-device/manual VoiceOver qualification distinct from simulator
+  results; an unsigned archive does not authorize upload or distribution.
 - Shared modules use `teamcityapp.kmp.library` or `teamcityapp.kmp.compose`, the
   Android KMP library plugin, and `src/commonMain`, `src/commonTest`,
   `src/androidMain`, and `src/iosMain` Kotlin roots. Keep flavors in Android hosts.
@@ -397,6 +402,11 @@ the scoped shared-code rules above apply to migrated KMP modules.
 - Retain Espresso coverage for platform views/WebViews and the existing app-level
   Compose/instrumentation suite for end-to-end behavior. Verify lifecycle cancellation,
   state retention, and old/new integration boundaries when those behaviors change.
+- Android API 24 instrumentation uses `-PminimumAndroidInstrumentation` for its
+  compatible subclass mock engine; default CI/JVM Mockito remains unchanged.
+  See `docs/kmp-phase-6.md` for verified scope and commands. Older display captures
+  must wait for exact rendered theme colors and distinguish tooltip/window roots;
+  navigation-bar light appearance is only supported from API 26.
 - Run the narrowest relevant test first, then broader checks for changes that
   cross module boundaries. Report checks that cannot run and why.
 - Prepare debug Google Services files as CI does before local app builds if they

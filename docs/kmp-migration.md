@@ -53,7 +53,7 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 - [x] Phase 3 — Home and build browsing (P1; completed 2026-10-22)
 - [x] Phase 4 — Build management (P1; completed 2026-10-22)
 - [x] Phase 5 — Downloads and platform integrations (P1; completed 2026-10-23)
-- [ ] Phase 6 — Release validation and cleanup (P1)
+- [ ] Phase 6 — Release validation and cleanup (P1; in progress)
 - [ ] Phase 7 — Platform review and refinements (P2)
 
 ## Phase 1 — Toolchain and shared foundation
@@ -246,20 +246,33 @@ Application commits remain local. Phase 6 requires a new user instruction.
 
 **Depends on:** Phase 5. **Outcome:** a verified Android/iOS release candidate.
 
-- [ ] Run the complete feature-parity and regression checklist.
+- [x] Run the complete feature-parity and regression checklist.
 - [ ] Verify accessibility, large text, themes, safe areas, keyboard, gestures,
   supported sizes/orientations, and iPad layouts.
-- [ ] Verify termination/relaunch, backgrounding, network failures, account changes,
+- [x] Verify termination/relaunch, backgrounding, network failures, account changes,
   stale restoration/results, and interrupted downloads.
-- [ ] Assess startup, scrolling, memory, and optimized release builds.
-- [ ] Prepare signing, distribution/TestFlight, privacy declarations, and store materials.
-- [ ] Remove superseded implementations/dependencies after their final callers migrate.
-- [ ] Preserve Android account/cache compatibility and installed Intent aliases.
-- [ ] Publish the detailed Sites report, save checkpoints, and record evidence.
+- [x] Assess startup, scrolling, memory, and optimized release builds.
+  Final optimized iPhone: 11/11 tests pass; device archive and Android R8 checks pass.
+- [x] Prepare signing, distribution/TestFlight, privacy declarations, and store materials.
+- [x] Audit superseded code/dependencies and remove only proven unused paths. All
+  111 application modules remain reachable; retain the Android compatibility stack.
+- [x] Preserve Android account/cache compatibility and installed Intent aliases.
+- [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
 **Gate:** Android regression checks pass and the iOS candidate passes simulator
 and physical-device validation. Distribution actions follow the user's shipping
-instructions. **Report/commits:** pending.
+instructions. **In progress:** the owner chose simulator-only work for now;
+physical-device/manual VoiceOver qualification remains open. Android API 24 now has six optimized smoke checks and 59 selected integration
+cases covered by a full run plus scoped reruns. iOS 16 execution remains unverified. Simulator automation is
+recorded separately from those limits.
+
+**Evidence:** [Phase 6 implementation and verification](kmp-phase-6.md) and
+[iOS release preparation](ios-release.md).
+**Report:** [Private Phase 6 review](https://teamcityapp-kmp-phase-six-20261023.andrey-tolpeev.chatgpt.site),
+published and verified on 2026-10-23. Final simulator/build verification is complete. Runtime `08586ec15fe1c34308627539f8fe7da4cf90eb8f`, harness
+`2e8716b2c015a084ea48a3cd618ce29fb079f3d4`, CI
+`e1b7f0b866f5f97c15a09bcbe89e9d6cfc2ffea1` are local checkpoints.
+The documentation checkpoint accompanies these commits. Phase 7 has not started.
 
 ## Phase 7 — Platform review and refinements
 
