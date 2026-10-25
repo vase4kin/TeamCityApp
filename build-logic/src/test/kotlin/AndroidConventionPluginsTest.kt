@@ -341,7 +341,7 @@ class AndroidConventionPluginsTest {
                     check(nativeMaterial.excludeRules.isEmpty())
                     check(kotlin.targets.withType<KotlinNativeTarget>().toList().all { target ->
                         target.compilations.toList().all {
-                            it.compileTaskProvider.get().compilerOptions.freeCompilerArgs.get().any { arg -> arg.endsWith("osVersionMin.ios=16.0") }
+                            it.compileTaskProvider.get().compilerOptions.freeCompilerArgs.get().any { arg -> arg.endsWith("osVersionMin.ios=17.0") }
                         }
                     })
                 }

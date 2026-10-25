@@ -45,9 +45,25 @@ class IosReleaseAuditTest(unittest.TestCase):
             app = Path(directory)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleExecutable": "app", "CFBundleShortVersionString": "1.0", "MinimumOSVersion": "15.0"}))
             (app / "app").write_bytes(b"binary")
-            result = audit.app_audit(app, "2.0.0")
+            result = audit.app_audit(app, "2.0.0", "17.0")
             self.assertEqual(len(result["errors"]), 5)
             self.assertFalse(result["embeddedProvisioning"])
+
+    def test_every_xcode_configuration_must_match_the_shared_minimum(self):
+        self.assertEqual(audit.deployment_errors("17.0", "IPHONEOS_DEPLOYMENT_TARGET = 17.0;\n" * 6), [])
+        for project in ["", "IPHONEOS_DEPLOYMENT_TARGET = 16.0;", "IPHONEOS_DEPLOYMENT_TARGET = 17.0;\nIPHONEOS_DEPLOYMENT_TARGET = 16.0;"]:
+            with self.subTest(project=project):
+                self.assertTrue(audit.deployment_errors("17.0", project))
+
+    def test_built_app_must_match_the_selected_minimum(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = Path(directory)
+            (app / "app").write_bytes(b"binary")
+            for minimum in ["16.0", "17.0", "18.0"]:
+                with self.subTest(minimum=minimum):
+                    (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleExecutable": "app", "CFBundleShortVersionString": "2.0.0", "MinimumOSVersion": minimum}))
+                    errors = audit.app_audit(app, "2.0.0", "17.0")["errors"]
+                    self.assertEqual("Unexpected iOS deployment minimum" in errors, minimum != "17.0")
 
     def test_missing_offline_license_inventory_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

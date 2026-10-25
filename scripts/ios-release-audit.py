@@ -56,8 +56,16 @@ def license_errors(folder):
     return errors
 
 
+def deployment_errors(minimum, project):
+    targets = re.findall(r"IPHONEOS_DEPLOYMENT_TARGET\s*=\s*([^;]+);", project)
+    if not targets or set(targets) != {minimum}:
+        return ["Xcode and shared iOS deployment minimums differ"]
+    return []
+
+
 def source_audit(root):
     config = (root / "build-logic/src/main/kotlin/Config.kt").read_text()
+    minimum = re.search(r'const val minIos = "([^"]+)"', config).group(1)
     version = re.search(r'const val versionName = "([^"]+)"', config).group(1)
     xcconfig = (root / "iosApp/Version.xcconfig").read_text()
     ios_version = re.search(r"MARKETING_VERSION\s*=\s*([^\s/]+)", xcconfig).group(1)
@@ -67,6 +75,7 @@ def source_audit(root):
     manifest = plistlib.loads((root / "iosApp/TeamCityApp/PrivacyInfo.xcprivacy").read_bytes())
     errors.extend(privacy_errors(manifest))
     project = (root / "iosApp/TeamCityApp.xcodeproj/project.pbxproj").read_text()
+    errors.extend(deployment_errors(minimum, project))
     for resource in ["PrivacyInfo.xcprivacy in Resources", "Assets.xcassets in Resources"]:
         if project.count(resource) < 2:
             errors.append(f"Resource missing from build phase: {resource}")
@@ -78,7 +87,7 @@ def source_audit(root):
         if image[:8] != b"\x89PNG\r\n\x1a\n" or len(image) < 26 or struct.unpack(">II", image[16:24]) != (1024, 1024) or image[25] in [4, 6]:
             errors.append("iOS icon must be an opaque 1024px PNG")
     errors.extend(license_errors(root / "shared-app/src/commonMain/composeResources/files/licenses"))
-    return {"version": version, "iosMarketingVersion": ios_version, "errors": errors}
+    return {"version": version, "iosMarketingVersion": ios_version, "minimumOS": minimum, "errors": errors}
 
 
 def dependencies(tsv, cache):
@@ -107,7 +116,7 @@ def dependencies(tsv, cache):
     return sorted(entries, key=lambda x: x["coordinate"])
 
 
-def app_audit(app, version):
+def app_audit(app, version, minimum):
     errors = []
     info = plistlib.loads((app / "Info.plist").read_bytes())
     if info.get("CFBundleShortVersionString") != version:
@@ -119,7 +128,7 @@ def app_audit(app, version):
         errors.append("Built app has no privacy manifest")
     if not info.get("CFBundleIcons"):
         errors.append("Built app has no compiled iPhone icon")
-    if info.get("MinimumOSVersion") != "16.0":
+    if info.get("MinimumOSVersion") != minimum:
         errors.append("Unexpected iOS deployment minimum")
     licenses = list(app.rglob("files/licenses/native-inventory.json"))
     if len(licenses) != 1:
@@ -151,7 +160,7 @@ def main():
         if signature(result["dependencies"]) != signature(bundled["artifacts"]):
             result["source"]["errors"].append("Resolved native dependencies differ from bundled notices; regenerate and review")
     if args.app:
-        result["app"] = app_audit(args.app, result["source"]["iosMarketingVersion"])
+        result["app"] = app_audit(args.app, result["source"]["iosMarketingVersion"], result["source"]["minimumOS"])
         inventory = args.root / "shared-app/src/commonMain/composeResources/files/licenses/native-inventory.json"
         if result["app"]["licenseInventorySha256"] != hashlib.sha256(inventory.read_bytes()).hexdigest():
             result["app"]["errors"].append("Built app license inventory differs from current source")
