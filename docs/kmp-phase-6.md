@@ -202,6 +202,111 @@ Sources: [Mockito Android API boundary](https://github.com/mockito/mockito/relea
 [Android navigation-bar capability](https://developer.android.com/reference/androidx/core/view/WindowInsetsControllerCompat#isAppearanceLightNavigationBars()),
 [Apple Xcode simulator support](https://developer.apple.com/xcode/system-requirements).
 
+## Resumed physical and minimum-runtime qualification — 2026-10-25
+
+The owner authorized a change from iOS 16 to iOS 17.0 as the supported minimum,
+and made the paired iPhone 15 Pro (iOS 27.0.1) available for testing. Shared Kotlin
+compiler settings, every Xcode configuration, convention coverage and release
+metadata checks now use the new minimum. The source audit rejects inconsistent
+Xcode/shared targets; the package audit compares the built minimum to source.
+Earlier iOS 16 archives and simulator results above remain historical evidence.
+
+The initial physical run passed all seven About state cases and the explicit
+SSL-consent/validation case. The orientation case initially failed while Portrait
+Orientation Lock was enabled; after the owner disabled it, physical landscape and
+About accessibility passed. HTTP consent/unreachable-server behavior also passed
+on the scoped rerun. The remaining keyboard assertion assumed a UIKit Keyboard
+container, but the phone's Gboard exposed actual Key elements without that
+container. The harness now accepts visible keyboard keys and verifies an actual
+edit plus retention after backgrounding; this does not suppress app audit issues.
+The first typing diagnostic was unsuccessful and is retained in the raw results.
+
+Release tooling tests pass 81 cases, including the new deployment-consistency
+and stale-package checks. Convention-plugin tests pass. The development-signed
+isolated Debug candidate passes signature, privacy/icon/notices and minimum-OS
+audits. Optimized device tests, manual VoiceOver and actual iOS 17 runtime
+qualification remain in progress; none is marked passed by these build checks.
+The new unsigned optimized archive is
+`build/kmp-phase-6/TeamCityApp-ios17-qualified.xcarchive`. Its source/dependency/
+package audits pass: version 2.0.0/build 1, minimum iOS 17.0, 39,420,328-byte
+executable with SHA-256 `fd22648c68064be1c2b9e5d91531df5bbb606b10b8553ce3e46db6264045bb0a`.
+It includes the local-network purpose text and the unchanged reviewed native
+license inventory. It supersedes the earlier iOS 16 package for current release
+preparation; it remains unsigned and is not an uploaded or distributed build.
+The interrupted first optimized command is excluded from test totals. The later optimized hardware command waited for the phone to unlock, then lost its runner connection before launch; it executed no cases and is also excluded. A fresh hardware run is required. Account
+journeys use Debug-only test namespaces; Release measurements use the separate
+validation app identity without enabling test vault behavior in production.
+
+The physical fixture adds an explicit RFC1918/loopback interface option. Its
+normal default remains loopback, and the CLI refuses mutation mode on a LAN
+interface. Read-only XCTest URLs are restricted to a canonical private IPv4
+address, fixed fixture port and context; management tests retain their original
+loopback URLs. Browser links preserve the same fixture origin and context.
+The app's native local-network purpose string explains user-selected TeamCity
+connections. The isolated Debug test bundle compiles with these adapters, and
+its package audit confirms that purpose text and the iOS 17 minimum.
+All shared simulator test executables and the simulator framework were rebuilt
+successfully for the new minimum before running runtime qualification.
+
+Apple's catalog lists the final iOS 17.0 simulator (21A328). Xcode's current
+filtered downloader did not offer it; its official DMG requires developer sign-in.
+The owner is obtaining that runtime from Apple. No unsupported runtime, beta or
+minimum-version declaration is substituted for execution evidence.
+
+### Hardware findings and focused fixes
+
+The available optimized phone run passed nine of eleven cases. Both failures
+expected a signed-out Login screen but found a legitimately restored guest Home
+session in the validation installation. The harness now prepares signed-out
+state through the normal account UI, outside the measured launch block, retaining
+saved accounts. Both scoped optimized reruns passed, including five launch
+iterations and the keyboard/rotation/background case. Release continues to ignore
+the Debug-only test-vault override.
+
+The selected seven-case Debug hardware run passed browser/sharing/clipboard,
+download cancellation on background/departure, Settings/theme/offline licenses,
+keyboard/rotation/background and the approved real public guest journey, including
+Keychain-backed relaunch and account reselection. The first artifact case failed
+around first-use Local Network consent; the permission was subsequently granted.
+Its focused rerun passed download/export, folder and archive behavior.
+
+The strict hardware Overview audit found a real clipped action: Agent was exposed
+as a 361×6-point button at the viewport edge. The iOS design-system modifier now
+excludes interactive row fragments below the existing 48dp touch minimum until
+scrolling reveals them. It runs before clickable semantics and clears the hidden
+action's descendants, without changing layout or pointer interaction. Android's
+platform flag is a no-op. Passive rows keep their semantics.
+
+The regression audits the initial viewport without ignoring any issue, reveals
+Agent through scrolling, checks its Button role, full hit area and accessibility label,
+and audits again. Both focused physical cases pass. Android list/Overview renders
+and host checks pass 289 cases; all prior PNG assets remain unchanged. Actual
+same-phone before/after Overview frames were inspected: layout is unchanged apart
+from the clock; the accessibility frame/exposure is the fix.
+
+The broad resumed simulator run executed 28 cases: 27 passed and one live guest
+pagination case failed while tracking a row by a changing accessibility-query
+index. The harness now resolves the selected build by its stable build identifier.
+Three final-source simulator reruns passed: strict Home/Overview and revealed-row
+audits, retained browsing/sections/relaunch, and the real public guest journey.
+This is a full run plus scoped reruns, not a claim of a second clean 28-case run.
+
+The final optimized archive containing the clipped-row fix is
+`build/kmp-phase-6/TeamCityApp-candidate-20261025.xcarchive`. Source, dependency
+and package audits pass for version 2.0.0/build 1 and minimum iOS 17.0. Its
+39,420,336-byte executable has SHA-256
+`29f52f202b4dd2138364a947f8d5c5443478ad748450ee8f819ffa77ced92772`;
+the bundled inventory hash is
+`c583b4acd742ae9e3911b291e0f2ab8b3f5a49235f0b6ea66ea022d32765907b`.
+This unsigned local package supersedes the pre-fix iOS 17 archive above. Nothing
+has been uploaded or distributed. The final-source optimized eleven-case phone
+pass is prepared with `test-without-building`. Its command remained at the locked
+phone and was stopped before launch; it executed no cases. It is ready to rerun
+after unlock, without another compilation.
+Manual VoiceOver and actual iOS 17.0 runtime execution remain required. Hardware
+captures and precise raw results remain under ignored build output; no device
+identifier or signing profile is copied into the report.
+
 ## Report and checkpoints
 
 Private Site published and verified on 2026-10-23 for the final simulator/build
@@ -215,6 +320,9 @@ Local checkpoints on `codex/kmp-phase-1`:
 - Runtime and behavioral tests: `08586ec15fe1c34308627539f8fe7da4cf90eb8f`.
 - Qualification harness: `2e8716b2c015a084ea48a3cd618ce29fb079f3d4`.
 - CI archive/audit gate: `e1b7f0b866f5f97c15a09bcbe89e9d6cfc2ffea1`.
+- Owner-approved iOS 17 minimum and deployment audit: `9ffb4ca54`.
+- Clipped-row accessibility behavior and regression: `2b664e589`.
+- Isolated physical qualification fixtures and harness: `8aa8c4977`.
 
 Initial Site source commit: `67d50a3342543b02a40a7795e729d6c420e74a15`.
 Initial saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_bc9a0a0a00888191ae93b735b501ca58`.
@@ -238,3 +346,19 @@ checkpoint. Phase 6 remains in progress for deferred hardware/manual and
 iOS 16 runtime qualification; Phase 7 has not started. Raw logs, captures, archives and inventories
 remain ignored under `build/kmp-phase-6`; only intentional source/resources,
 verification tooling and durable documentation belong in local checkpoints.
+
+
+### 25 October report refresh
+
+The existing owner-private report was updated and verified on 2026-10-25. It
+contains 353 actual native frames across the retained evidence collections,
+Android renders/captures and ten before/after comparisons, including equivalent
+physical Overview frames and the revealed Agent action. It retains diagnostic
+failures, focused rerun scopes, package hashes and the open manual/runtime gates.
+
+Site source: `e777d52215637913a3e6f68b4d32391e3a01afd0`.
+Saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_b93508f966048191a730d819e750b3b0`.
+Verified deployment: `appgdep_6add8d3e4250819194696b95b2a70176`, succeeded
+on 2026-10-25. Earlier receipts above remain historical. The current minimum is
+iOS 17.0; Phase 6 remains open for its final optimized phone pass, manual VoiceOver
+and actual minimum-runtime execution. Phase 7 has not started.

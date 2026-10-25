@@ -67,7 +67,7 @@ Real iOS accounts, network access, and outgoing platform actions are later phase
 - [x] Record the seven-phase checklist and phase/report workflow.
 - [x] Capture Android About test/golden baseline before edits (27 images).
 - [x] Pin and verify compatible Kotlin, Compose, Material, Gradle, AGP, and Xcode.
-- [x] Define scope: Android API 24+, iOS 16+, arm64 devices and Apple Silicon
+- [x] Define scope: Android API 24+, iOS 17+ (owner changed the original iOS 16 minimum on 2026-10-25), arm64 devices and Apple Silicon
   simulators; compact and expanded phone/tablet layouts.
 - [x] Inventory all modules and classify shared/platform/retained ownership.
 - [x] Add KMP architecture, resources, DI, source-root, and test rules to AGENTS.md.
@@ -252,7 +252,8 @@ Application commits remain local. Phase 6 requires a new user instruction.
 - [x] Verify termination/relaunch, backgrounding, network failures, account changes,
   stale restoration/results, and interrupted downloads.
 - [x] Assess startup, scrolling, memory, and optimized release builds.
-  Final optimized iPhone: 11/11 tests pass; device archive and Android R8 checks pass.
+  Earlier optimized iPhone simulator: 11/11 tests pass; the final iOS 17-minimum
+  archive and Android R8 checks pass.
 - [x] Prepare signing, distribution/TestFlight, privacy declarations, and store materials.
 - [x] Audit superseded code/dependencies and remove only proven unused paths. All
   111 application modules remain reachable; retain the Android compatibility stack.
@@ -261,18 +262,28 @@ Application commits remain local. Phase 6 requires a new user instruction.
 
 **Gate:** Android regression checks pass and the iOS candidate passes simulator
 and physical-device validation. Distribution actions follow the user's shipping
-instructions. **In progress:** the owner chose simulator-only work for now;
-physical-device/manual VoiceOver qualification remains open. Android API 24 now has six optimized smoke checks and 59 selected integration
-cases covered by a full run plus scoped reruns. iOS 16 execution remains unverified. Simulator automation is
-recorded separately from those limits.
+instructions. **Resumed on 2026-10-25:** the owner provided the paired phone and
+authorized iOS 17.0 as the supported minimum. Physical About orientation/accessibility
+and HTTP-consent checks pass. Optimized hardware coverage is a nine-pass run plus
+two corrected Login-precondition reruns. Native journeys are a five-pass run plus
+two affected-case reruns, including strict clipped-row audits and artifact export.
+The final-source optimized full pass is built and ready after phone unlock; manual
+VoiceOver and actual iOS 17 runtime execution remain open. Android API 24 retains six
+optimized smoke checks and 59 selected integration cases covered by a full run
+plus scoped reruns. Simulator automation, compilation and physical/manual results
+are recorded separately; these remaining gates are not checked off.
 
 **Evidence:** [Phase 6 implementation and verification](kmp-phase-6.md) and
 [iOS release preparation](ios-release.md).
 **Report:** [Private Phase 6 review](https://teamcityapp-kmp-phase-six-20261023.andrey-tolpeev.chatgpt.site),
-published and verified on 2026-10-23. Final simulator/build verification is complete. Runtime `08586ec15fe1c34308627539f8fe7da4cf90eb8f`, harness
+refreshed and verified on 2026-10-25 with actual hardware captures, accessibility
+findings, corrected-run scopes and the open manual/iOS 17 runtime gates. The
+earlier simulator/build slice remains recorded. Runtime `08586ec15fe1c34308627539f8fe7da4cf90eb8f`, harness
 `2e8716b2c015a084ea48a3cd618ce29fb079f3d4`, CI
 `e1b7f0b866f5f97c15a09bcbe89e9d6cfc2ffea1` are local checkpoints.
-The documentation checkpoint accompanies these commits. Phase 7 has not started.
+The 25 October follow-up checkpoints are iOS 17 minimum `9ffb4ca54`, clipped-row
+accessibility `2b664e589` and physical qualification `8aa8c4977`. The documentation
+checkpoint accompanies these commits. Phase 7 has not started.
 
 ## Phase 7 — Platform review and refinements
 

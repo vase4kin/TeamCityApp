@@ -19,13 +19,13 @@ qualification as a separate required gate.
 
 ## Versions and tools
 
-Use JDK 17 and an Apple Silicon Mac. The shared conventions target iOS 16+;
+Use JDK 17 and an Apple Silicon Mac. The shared conventions target iOS 17+ (owner decision on 2026-10-25);
 Xcode excludes Intel simulator slices to match the configured Apple Silicon target;
 CI pins Xcode 26.4, while the Phase 6 local toolchain is Xcode 27.1. Verify the
 actual Xcode installation and installed simulator runtimes before choosing a
 destination. SDK compilation does not establish minimum-runtime compatibility. Apple lists
-iOS 17+ simulator support for the installed Xcode 27.1; iOS 16 requires a compatible
-qualification environment. Android API 24 uses the explicit
+iOS 17+ simulator support for the installed Xcode 27.1. Qualification must run the
+selected iOS 17 runtime; increasing the deployment target alone does not pass that gate. Android API 24 uses the explicit
 `-PminimumAndroidInstrumentation` profile described in `docs/kmp-phase-6.md`.
 
 `iosApp/Version.xcconfig` supplies the iOS marketing version and is updated by
@@ -107,6 +107,66 @@ inspect its archive validation report and export with the appropriate App Store
 Connect distribution profile. Archive Organizer or `xcodebuild -exportArchive`
 can then prepare an upload, following a separate shipping instruction. Keep
 credentials in the approved local/CI secret mechanism, never in repository files.
+
+## Read-only physical fixture
+
+For predictable native download/export and browsing checks, bind the fixture to
+one explicit private IPv4 interface on the Mac:
+
+```sh
+python3 scripts/kmp-platform-fixture.py --bind-address <private-interface-ip> \
+  --output build/kmp-phase-6/physical-fixture
+```
+
+The default remains loopback. Public/wildcard bind addresses are rejected, and
+`--enable-mutations` is rejected on every non-loopback interface. Physical read-only
+XCTest journeys receive `TEST_RUNNER_TEAMCITY_FIXTURE_BASE_URL` as
+`http://<private-interface-ip>:18081/context`, plus their existing browsing/platform
+opt-ins. The test harness accepts only canonical private IPv4 addresses at that
+port/path. Management XCTest journeys retain their independent loopback URL.
+Stop the fixture after testing. The LAN mode does not qualify TLS: its generated
+certificate remains for localhost-only certificate-consent fixtures.
+
+The native app's local-network permission text explains connecting to the chosen
+TeamCity server. The fixture test accepts only the system's specific local-network
+Allow prompt; it does not grant unrelated permissions. Test captures and URLs must
+use synthetic fixtures or the approved public guest server. Keep raw device
+identifiers, profiles and signing details out of the report.
+
+## Manual VoiceOver walkthrough
+
+Run this only after automated phone control has ended. Use the already-opened
+validation app; keep existing personal app/accounts separate. Enable VoiceOver in
+Settings → Accessibility, then return to the validation app. Record each outcome,
+the device/OS, text size and active keyboard; an automated accessibility audit
+cannot fill in this record.
+
+- Login: swipe through URL, guest, username/password, consent and submit controls.
+  Labels, switch state and errors must be announced. Enter/edit a URL, including
+  punctuation, with the keyboard normally used on the phone. Cancel any failed
+  submission; do not provide real credentials for this walkthrough.
+- Home: use the approved public Demo or synthetic fixture. Activate Projects,
+  Favorites and Activity; verify selected states and Running/Queue/Agents choices.
+  Focus must follow content, and VoiceOver scrolling must reveal offscreen rows.
+- Build browsing: open a configuration, History and a build. Traverse the overview
+  actions and section links, visit a read-only section and return. Expect named
+  controls, meaningful focus order, no extra unlabeled stops and retained visits.
+- Native actions: open and dismiss Share without sending anything; open Browser
+  and return. From the read-only fixture, download its small report and verify the
+  native export sheet offers Save to Files, then dismiss it. Do not trigger real
+  Stop/Remove/Restart/Run, rate submission or message delivery.
+- Settings/About: change and restore theme, read the app/server version context,
+  open offline licenses and return. Toolbar and link actions must be independently
+  reachable without duplicate empty focus targets.
+- With enlarged text, rotate both ways, dismiss the keyboard, background/foreground
+  and relaunch. Important controls must remain reachable and content/safe areas
+  usable; verify account/visit restoration. Switch or sign out/reselect only the
+  isolated test accounts. For a slow fixture download, backgrounding/departure
+  must remove the in-progress transfer rather than exporting a partial file.
+
+For any failure, record the exact screen/control, spoken label and reproduction
+steps. Keep the manual gate unchecked until the owner reports the walkthrough's
+results and any blocking findings have been resolved and rechecked.
 
 ## Accessibility and preview-library risks
 

@@ -138,7 +138,7 @@ to the requested behavior and the coherent migration slice needed to support it.
 - Shared modules use `teamcityapp.kmp.library` or `teamcityapp.kmp.compose`, the
   Android KMP library plugin, and `src/commonMain`, `src/commonTest`,
   `src/androidMain`, and `src/iosMain` Kotlin roots. Keep flavors in Android hosts.
-  Phase 1 targets Android API 24+ and iOS 16+ on Apple Silicon simulators and arm64
+  The current scope targets Android API 24+ and iOS 17+ on Apple Silicon simulators and arm64
   devices, including compact and expanded layouts.
 - Shared UI uses Compose Multiplatform resources and typed `SharedUiText`;
   Android resource IDs and the existing `UiText` remain in unmigrated Android
@@ -188,6 +188,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   UserDefaults. About links native account actions, Apple rating requests and bundled
   runtime-license texts. Native diagnostics use fixed OS event labels and Apple's
   crash reports; hosted iOS analytics/crash upload is unconfigured.
+  Native interactive list rows keep clipped fragments below the standard touch
+  target out of VoiceOver until scrolling reveals them. Preserve each action and
+  label after reveal; keep Android semantics unchanged and retain strict audits.
   Capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
   section counts once to their exact live originating build visit. Android retains
   its Retrofit/RxCache/authentication compatibility adapters behind shared feature
