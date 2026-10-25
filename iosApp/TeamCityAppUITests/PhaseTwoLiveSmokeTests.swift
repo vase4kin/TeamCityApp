@@ -144,12 +144,15 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         for _ in 0..<6 { app.swipeUp(velocity: .slow) }
         capture("phase2_history_pagination_light",app)
         let listBounds = element(app,"history:list").frame
-        let build = app.buttons.matching(NSPredicate(format:"identifier BEGINSWITH %@", "history:build:")).allElementsBoundByIndex.first {
+        let buildId = app.buttons.matching(NSPredicate(format:"identifier BEGINSWITH %@", "history:build:")).allElementsBoundByIndex.first {
             $0.isHittable && $0.frame.height > 60 && $0.frame.minY >= listBounds.minY && $0.frame.maxY <= listBounds.maxY
-        }
-        XCTAssertNotNil(build)
-        waitUntilSettled(build!)
-        build!.press(forDuration: 0.2)
+        }?.identifier
+        XCTAssertNotNil(buildId)
+        // Paging and deceleration can change the accessibility query's indices.
+        // Keep the selected build identity while waiting for its frame to settle.
+        let build = app.buttons.matching(identifier: buildId!).firstMatch
+        waitUntilSettled(build)
+        build.press(forDuration: 0.2)
         XCTAssertTrue(element(app,"overview:screen").waitForExistence(timeout: 40))
         XCTAssertTrue(element(app,"overview:row:Result").waitForExistence(timeout: 20))
         capture("phase2_overview_light",app)
@@ -245,11 +248,12 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         let url = element(app, "auth:url")
         url.tap()
         for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
-        for character in "http://127.0.0.1:18081/context" + suffix { url.typeText(String(character)) }
-        XCTAssertEqual(url.value as? String, "http://127.0.0.1:18081/context" + suffix)
+        for character in teamCityReadOnlyFixtureBaseURL + suffix { url.typeText(String(character)) }
+        XCTAssertEqual(url.value as? String, teamCityReadOnlyFixtureBaseURL + suffix)
         url.typeText("\n")
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
+        approveReadOnlyFixtureNetworkIfPresented()
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
     }
@@ -673,11 +677,12 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         let url = element(app, "auth:url")
         url.tap()
         for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
-        for character in "http://127.0.0.1:18081/context" + suffix { url.typeText(String(character)) }
-        XCTAssertEqual(url.value as? String, "http://127.0.0.1:18081/context" + suffix)
+        for character in teamCityReadOnlyFixtureBaseURL + suffix { url.typeText(String(character)) }
+        XCTAssertEqual(url.value as? String, teamCityReadOnlyFixtureBaseURL + suffix)
         url.typeText("\n")
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
+        approveReadOnlyFixtureNetworkIfPresented()
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
     }

@@ -14,6 +14,7 @@
 # limitations under the License.
 
 """Verify that the platform fixture's synthetic writes stay local and opt-in."""
+import argparse
 import importlib.util
 import json
 from pathlib import Path
@@ -21,6 +22,8 @@ from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
 from threading import Thread
 import unittest
+import subprocess
+import sys
 
 spec = importlib.util.spec_from_file_location("fixture", Path(__file__).parents[1] / "kmp-platform-fixture.py")
 fixture = importlib.util.module_from_spec(spec)
@@ -60,6 +63,24 @@ class PlatformFixtureTest(unittest.TestCase):
         self.assertTrue(build["webUrl"].startswith("http://127.0.0.1:18081/context/platform/unique/"))
         _, change = self.request("GET", "/context/platform/unique/guestAuth/app/rest/changes/id:5")
         self.assertTrue(change["webUrl"].startswith("http://127.0.0.1:18081/context/platform/unique/"))
+
+    def test_read_only_device_links_use_the_configured_origin(self):
+        self.handler.http_origin = "http://192.168.1.2:18081"
+        _, build = self.request("GET", "/context/platform/device/guestAuth/app/rest/builds/id:1")
+        self.assertEqual(build["webUrl"], "http://192.168.1.2:18081/context/platform/device/viewLog.html?buildId=1")
+        self.assertTrue(build["artifacts"]["href"].startswith("/context/platform/device/app/rest/"))
+
+    def test_bind_address_must_be_an_explicit_private_ipv4_interface(self):
+        for address in ["127.0.0.1", "192.168.1.2", "10.0.0.2", "172.16.0.2"]:
+            self.assertEqual(fixture.fixture_bind_address(address), address)
+        for address in ["0.0.0.0", "8.8.8.8", "224.0.0.1", "169.254.1.2", "192.0.0.2", "example.com", "::"]:
+            with self.subTest(address=address), self.assertRaises(argparse.ArgumentTypeError):
+                fixture.fixture_bind_address(address)
+
+    def test_device_fixture_cannot_enable_mutations(self):
+        result = subprocess.run([sys.executable, str(Path(fixture.__file__)), "--bind-address", "192.168.1.2", "--enable-mutations"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Synthetic mutations require a loopback bind address", result.stderr)
 
     def test_artifacts_expose_folder_archive_and_content_links_without_mutations(self):
         prefix = "/context/platform/guestAuth/app/rest/"

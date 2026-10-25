@@ -21,6 +21,7 @@ No real credentials or TeamCity writes are used. Stop with Ctrl-C.
 """
 import argparse
 import base64
+import ipaddress
 import json
 from pathlib import Path
 import ssl
@@ -32,6 +33,7 @@ from urllib.parse import urlsplit, parse_qs
 
 
 class Handler(BaseHTTPRequestHandler):
+    http_origin = "http://127.0.0.1:18081"
     mutation_enabled = False
     mutation_lock = Lock()
     mutation_state = {}
@@ -218,7 +220,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             return
         prefix = path.split("/app/rest/", 1)[0].removesuffix("/guestAuth").removesuffix("/httpAuth")
-        body = json.dumps(data).replace("/context/app/rest/", prefix + "/app/rest/").replace("http://127.0.0.1:18081/context/", "http://127.0.0.1:18081" + prefix + "/").encode()
+        body = json.dumps(data).replace("/context/app/rest/", prefix + "/app/rest/").replace("http://127.0.0.1:18081/context/", self.http_origin + prefix + "/").encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
@@ -229,12 +231,27 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
 
+def fixture_bind_address(value):
+    try:
+        address = ipaddress.IPv4Address(value)
+    except ipaddress.AddressValueError as error:
+        raise argparse.ArgumentTypeError("Use a local/private IPv4 interface address") from error
+    allowed = address.is_loopback or any(address in ipaddress.IPv4Network(network) for network in ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+    if not allowed:
+        raise argparse.ArgumentTypeError("Use a local/private IPv4 interface address")
+    return str(address)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="build/kmp-phase-2/platform-fixture")
+    parser.add_argument("--bind-address", type=fixture_bind_address, default="127.0.0.1", help="Explicit private interface for read-only physical-device tests; default is loopback")
     parser.add_argument("--enable-mutations", action="store_true", help="Enable synthetic POSTs only in local /context/manage contexts")
     args = parser.parse_args()
+    if args.enable_mutations and not ipaddress.IPv4Address(args.bind_address).is_loopback:
+        parser.error("Synthetic mutations require a loopback bind address")
     Handler.mutation_enabled = args.enable_mutations
+    Handler.http_origin = "http://" + args.bind_address + ":18081"
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     cert, key = output / "certificate.pem", output / "private-key.pem"
@@ -243,14 +260,14 @@ def main():
                         "-subj", "/CN=localhost", "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1",
                         "-keyout", str(key), "-out", str(cert)], check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    http = ThreadingHTTPServer(("127.0.0.1", 18081), Handler)
-    https = ThreadingHTTPServer(("127.0.0.1", 18444), Handler)
+    http = ThreadingHTTPServer((args.bind_address, 18081), Handler)
+    https = ThreadingHTTPServer((args.bind_address, 18444), Handler)
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.load_cert_chain(cert, key)
     https.socket = context.wrap_socket(https.socket, server_side=True)
     worker = Thread(target=http.serve_forever, daemon=True)
     worker.start()
-    print("Local fixtures (synthetic mutations=" + str(args.enable_mutations) + "): HTTP 127.0.0.1:18081; self-signed TLS 127.0.0.1:18444", flush=True)
+    print("Local fixtures (synthetic mutations=" + str(args.enable_mutations) + "): HTTP " + args.bind_address + ":18081; self-signed TLS " + args.bind_address + ":18444", flush=True)
     try:
         https.serve_forever()
     except KeyboardInterrupt:

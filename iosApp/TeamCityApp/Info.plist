@@ -30,6 +30,7 @@
     <!-- User-selected TeamCity installations may use HTTP. The shared transport requires explicit
          per-account consent before opening HTTP; certificate overrides also require UI consent. -->
     <key>NSAppTransportSecurity</key><dict><key>NSAllowsArbitraryLoads</key><true/></dict>
+    <key>NSLocalNetworkUsageDescription</key><string>Connect to the TeamCity server you choose on your local network.</string>
     <key>UILaunchScreen</key><dict/>
     <key>UIApplicationSceneManifest</key><dict><key>UIApplicationSupportsMultipleScenes</key><false/></dict>
     <key>UISupportedInterfaceOrientations</key>

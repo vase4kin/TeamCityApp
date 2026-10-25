@@ -16,6 +16,27 @@
 
 import XCTest
 
+/// Physical tests may use an explicit private interface; management tests keep
+/// their independent loopback-only URL and opt-in mutation server.
+var teamCityReadOnlyFixtureBaseURL: String {
+    let value = ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_BASE_URL"] ?? "http://127.0.0.1:18081/context"
+    let url = URLComponents(string: value)
+    let host = url?.host ?? ""
+    let parts = host.split(separator: ".", omittingEmptySubsequences: false)
+    let octets = parts.compactMap { Int($0) }
+    let ipv4 = parts.count == 4 && octets.count == 4 && octets.allSatisfy { (0...255).contains($0) } && octets.map(String.init).joined(separator: ".") == host
+    let local = ipv4 && (octets[0] == 127 || octets[0] == 10 || (octets[0] == 192 && octets[1] == 168) || (octets[0] == 172 && (16...31).contains(octets[1])))
+    precondition(local && url?.scheme == "http" && url?.port == 18081 && url?.path == "/context" && url?.user == nil && url?.password == nil && url?.query == nil && url?.fragment == nil, "Read-only fixtures require a private IPv4 interface on port 18081 at /context")
+    return value
+}
+
+func approveReadOnlyFixtureNetworkIfPresented() {
+    let alert = XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts.firstMatch
+    if alert.waitForExistence(timeout: 3) && alert.label.localizedCaseInsensitiveContains("local network") && alert.buttons["Allow"].exists {
+        alert.buttons["Allow"].tap()
+    }
+}
+
 /// Release qualification uses an isolated app ID on physical hardware. It never rates,
 /// submits a real build, or changes a user's existing account vault.
 final class PhaseSixReleaseTests: XCTestCase {
@@ -48,9 +69,24 @@ final class PhaseSixReleaseTests: XCTestCase {
         let settled = NSPredicate { _, _ in (app.frame.width > app.frame.height) == landscape }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: app)], timeout: 10), .completed)
     }
+    private func prepareLogin(_ app: XCUIApplication) {
+        let url = app.descendants(matching: .any).matching(identifier: "auth:url").firstMatch
+        if url.waitForExistence(timeout: 2) { return }
+        // Release deliberately ignores the Debug test-vault override. A validation
+        // installation can retain a guest session; sign out through its normal UI
+        // without deleting saved accounts or changing production storage behavior.
+        let account = app.descendants(matching: .any).matching(identifier: "home:account").firstMatch
+        XCTAssertTrue(account.waitForExistence(timeout: 25))
+        account.tap()
+        let signOut = app.descendants(matching: .any).matching(identifier: "accounts:sign-out").firstMatch
+        XCTAssertTrue(signOut.waitForExistence(timeout: 10))
+        signOut.tap()
+        XCTAssertTrue(url.waitForExistence(timeout: 10))
+    }
     func testLoginKeyboardRotationAndBackground() throws {
         let app = app()
         app.launch()
+        prepareLogin(app)
         let url = app.descendants(matching: .any).matching(identifier: "auth:url").firstMatch
         XCTAssertTrue(url.waitForExistence(timeout: 25))
         capture("login_portrait", app)
@@ -58,7 +94,13 @@ final class PhaseSixReleaseTests: XCTestCase {
         // is separately exercised below; OS prediction cells are outside app ownership.
         try audit(app)
         url.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10))
+        // Third-party keyboards can expose Key elements without a Keyboard
+        // container. Require visible keys and prove the field accepts input.
+        let keyboard = NSPredicate { _, _ in app.keyboards.firstMatch.exists || app.keys.firstMatch.exists }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: keyboard, object: app)], timeout: 10), .completed)
+        url.typeText("e")
+        let entered = NSPredicate(format: "value == %@", "https://e")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: entered, object: url)], timeout: 5), .completed)
         capture("login_keyboard", app)
         orient(.landscapeLeft, app: app)
         XCTAssertTrue(url.waitForExistence(timeout: 10))
@@ -68,6 +110,7 @@ final class PhaseSixReleaseTests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(url.waitForExistence(timeout: 10))
+        XCTAssertEqual(url.value as? String, "https://e")
         capture("login_foreground", app)
     }
     func testAboutOrientationAndAccessibleActions() throws {
@@ -118,10 +161,11 @@ final class PhaseSixReleaseTests: XCTestCase {
         let url = element("auth:url")
         url.tap()
         for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
-        for character in "http://127.0.0.1:18081/context" { url.typeText(String(character)) }
+        for character in teamCityReadOnlyFixtureBaseURL { url.typeText(String(character)) }
         url.typeText("\n")
         XCTAssertTrue(app.buttons["OK"].waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
+        approveReadOnlyFixtureNetworkIfPresented()
         for tab in ["Favorites", "Activity", "Projects"] {
             tap("home:tab:" + tab)
             capture("accessible_home_" + tab.lowercased(), app)
@@ -153,6 +197,9 @@ final class PhaseSixReleaseTests: XCTestCase {
 
     func testLaunchPerformance() {
         let app = app()
+        app.launch()
+        prepareLogin(app)
+        app.terminate()
         let options = XCTMeasureOptions()
         options.iterationCount = 5
         measure(metrics: [XCTApplicationLaunchMetric(waitUntilResponsive: true)], options: options) {
