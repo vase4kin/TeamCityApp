@@ -353,7 +353,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
             { navigator.push(teamcityapp.features.run_build.api.navigation.RunBuildDestination(destination.configurationId, entryId)) },
             { navigator.push(teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination(destination.configurationId, entryId)) },
             vm::toggleFavorite, vm::retryFavorite, {}, refresh, refresh, builds::retry,
-            { navigator.push(BuildDetailsReferenceDestination(it.href, destination.configurationName)) },
+            { navigator.openHistoryBuild(entryId, it, destination.configurationName) },
             snackbar = snackbar
         )
     }
