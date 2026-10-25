@@ -35,7 +35,7 @@ internal val nativeJourneyJson = Json { ignoreUnknownKeys = true }
 internal fun decodeNativeSnapshot(encoded: String?, registry: DestinationRegistry, sessionKey: String): Pair<NavigationSnapshot, Map<String, SavedNativeHome>>? = runCatching {
     require(encoded != null && encoded.length < 1_000_000)
     val envelope = nativeJourneyJson.decodeFromString<SavedNativeJourney>(encoded)
-    val root = registry.decodeSnapshot(envelope.root)
+    val root = registry.decodeSnapshot(envelope.root.replace("\"teamcityapp.shared.NativeAboutDestination\"", "\"teamcityapp.features.about.api.navigation.AboutDestination\"").replace("\"teamcityapp.shared.AccountsDestination\"", "\"teamcityapp.features.drawer.api.navigation.DrawerDestination\""))
     require(root.sessionKey == sessionKey && root.entries.size <= 100)
     val homeIds = root.entries.filter { it.destination is teamcityapp.features.home.api.HomeDestination }.map { it.id }.toSet()
     require(envelope.homes.size <= homeIds.size && envelope.homes.keys.all { it in homeIds })

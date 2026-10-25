@@ -51,39 +51,39 @@ import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.LocalFloatingActionClearance
 
-private object NativeRunTracker : RunBuildTracker {
-    override fun trackView() {}
-    override fun trackUserRunBuildSuccess() {}
-    override fun trackUserRunBuildWithCustomParamsSuccess() {}
-    override fun trackUserRunBuildFailed() {}
-    override fun trackUserRunBuildFailedForbidden() {}
-    override fun trackUserClicksOnAddNewBuildParamButton() {}
-    override fun trackUserClicksOnClearAllBuildParamsButton() {}
-    override fun trackUserAddsBuildParam() {}
+private class NativeRunTracker(private val diagnostics: NativeDiagnostics) : RunBuildTracker {
+    override fun trackView() = diagnostics.event("run_build_view")
+    override fun trackUserRunBuildSuccess() = diagnostics.event("run_build_user_run_build_success")
+    override fun trackUserRunBuildWithCustomParamsSuccess() = diagnostics.event("run_build_user_run_build_with_custom_params_success")
+    override fun trackUserRunBuildFailed() = diagnostics.event("run_build_user_run_build_failed")
+    override fun trackUserRunBuildFailedForbidden() = diagnostics.event("run_build_user_run_build_failed_forbidden")
+    override fun trackUserClicksOnAddNewBuildParamButton() = diagnostics.event("run_build_user_clicks_on_add_new_build_param_button")
+    override fun trackUserClicksOnClearAllBuildParamsButton() = diagnostics.event("run_build_user_clicks_on_clear_all_build_params_button")
+    override fun trackUserAddsBuildParam() = diagnostics.event("run_build_user_adds_build_param")
 }
-private object NativeFilterTracker : FilterBuildsTracker {
-    override fun trackView() {}
-    override fun trackUserFilteredBuilds() {}
+private class NativeFilterTracker(private val diagnostics: NativeDiagnostics) : FilterBuildsTracker {
+    override fun trackView() = diagnostics.event("filter_builds_view")
+    override fun trackUserFilteredBuilds() = diagnostics.event("filter_builds_user_filtered_builds")
 }
-private object NativeDetailsTracker : BuildDetailsTracker {
-    override fun viewed() {}
-    override fun confirmedCancel(reAdd: Boolean) {}
-    override fun cancelSucceeded() {}
-    override fun cancelFailed(forbidden: Boolean) {}
-    override fun restartSucceeded() {}
-    override fun restartFailed(forbidden: Boolean) {}
-    override fun queuedOpened() {}
-    override fun queuedFailed() {}
+private class NativeDetailsTracker(private val diagnostics: NativeDiagnostics) : BuildDetailsTracker {
+    override fun viewed() = diagnostics.event("build_details_viewed")
+    override fun confirmedCancel(reAdd: Boolean) = diagnostics.event("build_details_confirmed_cancel")
+    override fun cancelSucceeded() = diagnostics.event("build_details_cancel_succeeded")
+    override fun cancelFailed(forbidden: Boolean) = diagnostics.event("build_details_cancel_failed")
+    override fun restartSucceeded() = diagnostics.event("build_details_restart_succeeded")
+    override fun restartFailed(forbidden: Boolean) = diagnostics.event("build_details_restart_failed")
+    override fun queuedOpened() = diagnostics.event("build_details_queued_opened")
+    override fun queuedFailed() = diagnostics.event("build_details_queued_failed")
 }
 
-internal fun nativeManagementEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> {
+internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
     val repositories = graph.management
     return setOf(
         SharedEntry(RunBuildDestination::class, RunBuildDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(QueuedBuildResult::class, QueuedBuildResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { RunBuildViewModel(repositories.run, SavedStateHandle(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeRunTracker) }
+            val vm = viewModel { RunBuildViewModel(repositories.run, SavedStateHandle(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeRunTracker(diagnostics)) }
             val router = remember(dest, nav) {
                 object : RunBuildRouter {
                     override fun close() {
@@ -99,7 +99,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?): Set<Destinat
         SharedEntry(FilterBuildsDestination::class, FilterBuildsDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(BuildFilterResult::class, BuildFilterResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { FilterBuildsViewModel(repositories.filters, SavedStateHandle(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeFilterTracker) }
+            val vm = viewModel { FilterBuildsViewModel(repositories.filters, SavedStateHandle(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeFilterTracker(diagnostics)) }
             val router = remember(dest, nav) {
                 object : FilterBuildsRouter {
                     override fun close() {
@@ -145,7 +145,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?): Set<Destinat
 private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
     val platform = LocalNativePlatform.current
     val server = graph.account.identity.serverUrl
-    val model = viewModel { BuildDetailsViewModel(SavedStateHandle(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, NativeDetailsTracker) }
+    val model = viewModel { BuildDetailsViewModel(SavedStateHandle(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, NativeDetailsTracker(platform.diagnostics)) }
     val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {
         BuildReferenceViewModel(
@@ -156,6 +156,9 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
             checkNotNull(graph.browsing).metadata
         )
     }
+    val education = viewModel { BuildDetailsMetadataViewModel(SavedStateHandle(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build))), checkNotNull(graph.browsing).metadata, includeCounts = false) }
+    val educationState by education.state.collectAsStateWithLifecycle()
+    LaunchedEffect(state.current) { education.loaded(state.current) }
     val content by overview.state.collectAsStateWithLifecycle()
     LaunchedEffect(content.build) { content.build?.let(model::loaded) }
     LaunchedEffect(state.overviewRefresh) { if (state.overviewRefresh > 0) overview.refresh() }
@@ -188,7 +191,7 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
         }
         onPauseOrDispose {}
     }
-    BuildDetailsScreen(state, { nav.pop() }, { command ->
+    BuildDetailsScreen(state.copy(prompt = educationState.prompt, onboardingFailed = educationState.onboardingFailed), { nav.pop() }, { command ->
         when (command) {
             BuildDetailsCommand.Share -> runCatching { activeServerWebUrl(server, state.current.webUrl.orEmpty()) }.onSuccess(platform::share).onFailure { platform.rejected(NativePlatformFailure.Share) }.let { }
             BuildDetailsCommand.Browser -> platform.serverBrowser(server, state.current.webUrl.orEmpty())
@@ -197,7 +200,7 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
             BuildDetailsCommand.Restart -> model.requestRestart()
             else -> Unit
         }
-    }, model::confirm, model::dismissConfirmation, snackbar) {
+    }, model::confirm, model::dismissConfirmation, snackbar, onDismissPrompt = education::dismissPrompt) {
         SharedBuildOverviewScreen(
             content,
             overview::refresh,

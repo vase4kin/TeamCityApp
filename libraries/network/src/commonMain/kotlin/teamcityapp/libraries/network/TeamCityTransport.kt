@@ -61,7 +61,7 @@ fun normalizeServerUrl(value: String): String {
 }
 
 /** Credentials may be sent only to this server/context, after a Basic challenge. */
-class TeamCityTransport(private val client: HttpClient, private val account: AccountSecret, httpConsent: Boolean = false) {
+class TeamCityTransport(private val client: HttpClient, private val account: AccountSecret, httpConsent: Boolean = false, private val cache: TeamCityResponseCache = TeamCityResponseCache(account.identity.key)) {
     private val base = Url(normalizeServerUrl(account.identity.serverUrl))
     private val context = base.encodedPath.trimEnd('/') + "/"
     private var challengedAuthorization: String? = null
@@ -90,10 +90,20 @@ class TeamCityTransport(private val client: HttpClient, private val account: Acc
         return Url("${base.protocol.name}://${base.hostWithPort}$authenticatedPath$query")
     }
 
-    suspend fun get(path: String): JsonObject = exchange(path, HttpMethod.Get, null)
+    suspend fun get(path: String, forceRefresh: Boolean = false): JsonObject {
+        val url = resolve(path).toString()
+        return cache.get(url, forceRefresh) { exchange(path, HttpMethod.Get, null) }
+    }
 
     /** Only an explicit Basic challenge may replay a mutation; transport errors are never retried. */
-    suspend fun post(path: String, payload: JsonObject): JsonObject = exchange(path, HttpMethod.Post, payload)
+    suspend fun post(path: String, payload: JsonObject): JsonObject {
+        cache.invalidate()
+        return try {
+            exchange(path, HttpMethod.Post, payload)
+        } finally {
+            cache.invalidate()
+        }
+    }
 
     private suspend fun exchange(path: String, verb: HttpMethod, payload: JsonObject?): JsonObject {
         val url = resolve(path)
@@ -186,6 +196,7 @@ class TeamCityTransport(private val client: HttpClient, private val account: Acc
         val bytes = if (challenge.contains("charset=\"UTF-8\"", true) || challenge.contains("charset=UTF-8", true)) raw.encodeToByteArray() else ByteArray(raw.length) { index -> raw[index].code.takeIf { it <= 255 }?.toByte() ?: '?'.code.toByte() }
         return "Basic ${Base64.Default.encode(bytes)}"
     }
+    suspend fun invalidateCache() = cache.invalidate()
     fun close() = client.close()
 }
 

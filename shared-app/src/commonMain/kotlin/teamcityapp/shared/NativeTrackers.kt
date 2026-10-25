@@ -20,26 +20,26 @@ import teamcityapp.features.build_history.impl.tracker.BuildHistoryTracker
 import teamcityapp.features.login.api.LoginTracker
 import teamcityapp.features.navigation.impl.tracker.NavigationTracker
 
-/** iOS analytics will be connected with the platform integrations phase. */
-internal object NativeLoginTracker : LoginTracker {
-    override fun trackView() {}
-    override fun trackUserLoginSuccess(isSslEnabled: Boolean) {}
-    override fun trackGuestUserLoginSuccess(isSslEnabled: Boolean) {}
-    override fun trackUserLoginFailed(errorMessage: String) {}
-    override fun trackGuestUserLoginFailed(errorMessage: String) {}
-    override fun trackUserDataSaveFailed() {}
-    override fun trackUserClicksOnTryItOut() {}
-    override fun trackUserTriesTryItOut() {}
-    override fun trackUserDeclinesTryingTryItOut() {}
+/** Shared event decisions; native adapters choose the OS diagnostics backend. */
+internal class NativeLoginTracker(private val diagnostics: NativeDiagnostics) : LoginTracker {
+    override fun trackView() = diagnostics.event("login_view")
+    override fun trackUserLoginSuccess(isSslEnabled: Boolean) = diagnostics.event("login_user_login_success")
+    override fun trackGuestUserLoginSuccess(isSslEnabled: Boolean) = diagnostics.event("login_guest_user_login_success")
+    override fun trackUserLoginFailed(errorMessage: String) = diagnostics.event("login_user_login_failed")
+    override fun trackGuestUserLoginFailed(errorMessage: String) = diagnostics.event("login_guest_user_login_failed")
+    override fun trackUserDataSaveFailed() = diagnostics.event("login_user_data_save_failed")
+    override fun trackUserClicksOnTryItOut() = diagnostics.event("login_user_clicks_on_try_it_out")
+    override fun trackUserTriesTryItOut() = diagnostics.event("login_user_tries_try_it_out")
+    override fun trackUserDeclinesTryingTryItOut() = diagnostics.event("login_user_declines_trying_try_it_out")
 }
-internal object NativeNavigationTracker : NavigationTracker {
-    override fun viewShown() {}
-    override fun ratingShown() {}
-    override fun ratingCancelled() {}
-    override fun ratingSelected() {}
+internal class NativeNavigationTracker(private val diagnostics: NativeDiagnostics) : NavigationTracker {
+    override fun viewShown() = diagnostics.event("projects_view_shown")
+    override fun ratingShown() = diagnostics.event("projects_rating_shown")
+    override fun ratingCancelled() = diagnostics.event("projects_rating_cancelled")
+    override fun ratingSelected() = diagnostics.event("projects_rating_selected")
 }
-internal object NativeHistoryTracker : BuildHistoryTracker {
-    override fun viewShown() {}
-    override fun runBuildPressed() {}
-    override fun queuedBuildRequested() {}
+internal class NativeHistoryTracker(private val diagnostics: NativeDiagnostics) : BuildHistoryTracker {
+    override fun viewShown() = diagnostics.event("history_view_shown")
+    override fun runBuildPressed() = diagnostics.event("history_run_build_pressed")
+    override fun queuedBuildRequested() = diagnostics.event("history_queued_build_requested")
 }

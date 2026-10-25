@@ -17,6 +17,12 @@
 package teamcityapp.shared
 
 import android.app.Application
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
@@ -32,7 +38,10 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.settings.impl.SettingsScreen
+import teamcityapp.features.settings.impl.SettingsUiState
 import teamcityapp.libraries.accounts.AccountIdentity
+import teamcityapp.libraries.app_theme.ThemeMode
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -69,6 +78,10 @@ class PlatformScreensScreenshotTest(private val scene: String, private val varia
         compose.setContent {
             TeamCityTheme(variant.dark) {
                 when (scene) {
+                    "settings_all_modes", "settings_all_modes_scrolled" -> SettingsScreen(SettingsUiState.Content(ThemeMode.System, ThemeMode.entries), {}, {}, {}, {})
+                    "settings_auto_battery" -> SettingsScreen(SettingsUiState.Content(ThemeMode.AutoBattery, ThemeMode.entries), {}, {}, {}, {})
+                    "license_content_no_source" -> NativeLicenseScreen("Android library", NativeLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nA packaged Android notice without a separate upstream URL."), {}, null, {})
+                    "navigation_save_error" -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { NavigationSaveError({}, Modifier.align(Alignment.BottomCenter)) }
                     "licenses" -> NativeLicensesList({}, {})
                     "license_loading" -> NativeLicenseScreen("Kotlin — Apache 2.0", NativeLicenseText.Loading, {}, {}, {})
                     "license_error" -> NativeLicenseScreen("Kotlin — Apache 2.0", NativeLicenseText.Error, {}, {}, {})
@@ -79,6 +92,13 @@ class PlatformScreensScreenshotTest(private val scene: String, private val varia
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (scene == "settings_all_modes_scrolled") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("settings:option:System").performScrollTo().assertIsDisplayed()
+            compose.waitForIdle()
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(100)
+        }
         compose.onRoot().captureRoboImage("platform_${scene}_${variant.name}.png")
     }
     companion object {
@@ -92,7 +112,7 @@ class PlatformScreensScreenshotTest(private val scene: String, private val varia
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            (listOf("licenses", "license_loading", "license_error", "license_content") + NativePlatformFailure.entries.map { it.name }).flatMap { scene ->
+            (listOf("navigation_save_error", "licenses", "license_loading", "license_error", "license_content", "settings_all_modes", "settings_all_modes_scrolled", "settings_auto_battery", "license_content_no_source") + NativePlatformFailure.entries.map { it.name }).flatMap { scene ->
                 variants.map { arrayOf<Any>(scene, it) }
             }
         }

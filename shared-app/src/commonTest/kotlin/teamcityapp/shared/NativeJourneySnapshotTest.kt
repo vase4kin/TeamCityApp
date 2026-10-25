@@ -37,4 +37,20 @@ class NativeJourneySnapshotTest {
         assertNull(decodeNativeSnapshot("x".repeat(1_000_001), registry, "alice"))
         assertNull(decodeNativeSnapshot(registry.encodeSnapshot(root), registry, "alice"))
     }
+
+    @Test fun previousNativeAccountAndAboutKeysMigrateToTheSharedPublicDestinations() {
+        val public = DestinationRegistry(
+            setOf(
+                SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, _, _ -> },
+                SharedEntry(NativeAboutDestination::class, NativeAboutDestination.serializer()) { _, _, _ -> }
+            )
+        )
+        val snapshot = NavigationSnapshot(listOf(NavigationEntry("account", AccountsDestination), NavigationEntry("about", NativeAboutDestination)), sessionKey = "alice")
+        val legacy = public.encodeSnapshot(snapshot)
+            .replace("teamcityapp.features.drawer.api.navigation.DrawerDestination", "teamcityapp.shared.AccountsDestination")
+            .replace("teamcityapp.features.about.api.navigation.AboutDestination", "teamcityapp.shared.NativeAboutDestination")
+        val encoded = nativeJourneyJson.encodeToString(SavedNativeJourney(legacy))
+        assertEquals(snapshot, decodeNativeSnapshot(encoded, public, "alice")?.first)
+        assertNull(decodeNativeSnapshot(encoded, public, "bob"))
+    }
 }

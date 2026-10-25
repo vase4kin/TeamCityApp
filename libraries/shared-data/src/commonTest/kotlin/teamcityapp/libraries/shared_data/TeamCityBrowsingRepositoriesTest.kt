@@ -67,6 +67,35 @@ class TeamCityBrowsingRepositoriesTest {
         }
     }
 
+    @Test fun educationAndRatingPersistWithTheAccountAndAreSharedAcrossRepositoryRecreation() = runTest {
+        val fixture = Fixture(this) { error("Education must not make a network request") }
+        fixture.start()
+        val home = teamcityapp.features.home.api.HomePrompt.Drawer
+        val history = teamcityapp.features.build_history.api.BuildHistoryPrompt.Run
+        val details = teamcityapp.features.build_details.api.BuildDetailsPrompt.Share
+        assertTrue(home in fixture.repositories.home.pendingPrompts())
+        assertTrue(fixture.repositories.rating.isEligible())
+        fixture.repositories.home.acknowledgePrompt(home)
+        fixture.repositories.historyOnboarding.markShown(history)
+        fixture.repositories.metadata.acknowledgePrompt(details)
+        fixture.repositories.rating.markHandled()
+        assertFalse(home in fixture.repositories.home.pendingPrompts())
+        assertFalse(history in fixture.repositories.historyOnboarding.pendingPrompts())
+        assertFalse(details in fixture.repositories.metadata.pendingPrompts())
+        assertFalse(fixture.repositories.rating.isEligible())
+        val saved = fixture.sessions.preferences(fixture.account)
+        assertEquals(setOf("home.Drawer", "history.Run", "details.Share"), saved.shownPrompts)
+        val recreated = TeamCityBrowsingRepositories(fixture.account, TeamCityApi(TeamCityTransport(HttpClient(fixture.engine), AccountSecret(fixture.identity), true)), saved) { fixture.sessions.updatePreferences(fixture.account, it) }
+        assertFalse(home in recreated.home.pendingPrompts())
+        assertFalse(recreated.rating.isEligible())
+        fixture.vault.fail = true
+        assertFailsWith<IllegalStateException> { recreated.historyOnboarding.markShown(teamcityapp.features.build_history.api.BuildHistoryPrompt.Filter) }
+        fixture.vault.fail = false
+        assertTrue(teamcityapp.features.build_history.api.BuildHistoryPrompt.Filter in recreated.historyOnboarding.pendingPrompts())
+        fixture.sessions.signOut()
+        assertFailsWith<CancellationException> { recreated.rating.isEligible() }
+    }
+
     @Test fun favoritesKeepSavedIdsWhenSomeOrEveryConfigurationFails() = runTest {
         val fixture = Fixture(this) { request ->
             if (request.url.encodedPath.contains("id:valid")) {

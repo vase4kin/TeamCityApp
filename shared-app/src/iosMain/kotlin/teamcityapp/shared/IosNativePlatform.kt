@@ -20,7 +20,10 @@ package teamcityapp.shared
 
 import kotlinx.cinterop.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.*
@@ -70,9 +73,8 @@ internal class IosArtifactFileStore(private val directory: String) : ArtifactFil
 
 internal class IosThemePreferences(private val key: String) : ThemePreferencesRepository {
     private val defaults = NSUserDefaults.standardUserDefaults
-    override val theme = MutableStateFlow(ThemeMode.fromStoredValue(defaults.stringForKey(key))?.takeIf { it != ThemeMode.AutoBattery } ?: ThemeMode.System)
+    override val theme = MutableStateFlow(ThemeMode.fromStoredValue(defaults.stringForKey(key)) ?: ThemeMode.System)
     override suspend fun setTheme(mode: ThemeMode) {
-        require(mode != ThemeMode.AutoBattery)
         withContext(Dispatchers.Default) { defaults.setObject(mode.storedValue, key) }
         theme.value = mode
     }
@@ -80,6 +82,14 @@ internal class IosThemePreferences(private val key: String) : ThemePreferencesRe
 
 /** UI objects belong to this controller; no retained ViewModel holds UIKit references. */
 internal class IosNativePlatform(private val host: () -> UIViewController, namespace: String?) : NativePlatform {
+    override val responseCache = IosResponseCacheStore()
+    override val powerSaving = kotlinx.coroutines.flow.callbackFlow {
+        val process = NSProcessInfo.processInfo
+        trySend(process.lowPowerModeEnabled)
+        val center = NSNotificationCenter.defaultCenter
+        val observer = center.addObserverForName(NSProcessInfoPowerStateDidChangeNotification, null, NSOperationQueue.mainQueue) { trySend(process.lowPowerModeEnabled) }
+        awaitClose { center.removeObserver(observer) }
+    }
     override val diagnostics: NativeDiagnostics = IosNativeDiagnostics
     override val files: ArtifactFileStore = IosArtifactFileStore(NSHomeDirectory() + "/Library/Caches/TeamCityArtifacts")
     override val theme = IosThemePreferences(namespace?.let { "theme.uitest.$it" } ?: "theme.mode.v1")
@@ -172,5 +182,31 @@ private object IosNativeDiagnostics : NativeDiagnostics {
         // Only enumerated screen/action labels enter OS diagnostics. Never log user/server/request data.
         require(name.length <= 80 && name.all { it.isLowerCase() || it == '_' })
         NSLog("TeamCityApp: $name")
+    }
+}
+
+/** Foundation owns atomic file bytes; account partitioning and cache lifetime are common. */
+internal class IosResponseCacheStore : teamcityapp.libraries.network.ResponseCacheStore {
+    private val path = NSHomeDirectory() + "/Library/Caches/teamcity_rest_v1.json"
+    override suspend fun read(): String? = withContext(Dispatchers.Default) {
+        lock.withLock {
+            if (!NSFileManager.defaultManager.fileExistsAtPath(path)) {
+                null
+            } else {
+                checkNotNull(NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null))
+            }
+        }
+    }
+    override suspend fun write(value: String) = withContext(Dispatchers.Default) {
+        lock.withLock {
+            val bytes = value.encodeToByteArray()
+            bytes.usePinned {
+                val data = NSData.dataWithBytes(if (bytes.isEmpty()) null else it.addressOf(0), bytes.size.toULong())
+                check(data.writeToFile(path, true)) { "Cannot persist response cache" }
+            }
+        }
+    }
+    companion object {
+        private val lock = Mutex()
     }
 }

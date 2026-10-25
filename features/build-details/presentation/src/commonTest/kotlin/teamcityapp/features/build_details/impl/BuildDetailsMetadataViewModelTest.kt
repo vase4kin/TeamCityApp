@@ -17,12 +17,11 @@
 package teamcityapp.features.build_details.impl
 
 import androidx.lifecycle.*
+import kotlin.test.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
 import kotlinx.serialization.json.Json
-import org.junit.*
-import org.junit.Assert.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_details.presentation.resources.*
 import teamcityapp.libraries.builds.*
@@ -53,11 +52,11 @@ class BuildDetailsMetadataViewModelTest {
         }
     }
 
-    @Before fun before() {
+    @BeforeTest fun before() {
         Dispatchers.setMain(dispatcher)
     }
 
-    @After fun after() {
+    @AfterTest fun after() {
         store.clear()
         Dispatchers.resetMain()
     }

@@ -27,12 +27,14 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
 import teamcityapp.features.agents.api.*
 import teamcityapp.features.build_details.api.*
+import teamcityapp.features.build_history.api.*
 import teamcityapp.features.build_queue.api.*
 import teamcityapp.features.change_details.api.*
 import teamcityapp.features.changes.api.*
 import teamcityapp.features.favorites.api.*
 import teamcityapp.features.filter_bottom_sheet.api.*
 import teamcityapp.features.home.api.*
+import teamcityapp.features.navigation.api.NavigationRatingRepository
 import teamcityapp.features.running_builds.api.*
 import teamcityapp.features.snapshot_dependencies.api.*
 import teamcityapp.features.test_details.api.*
@@ -87,10 +89,27 @@ class TeamCityBrowsingRepositories(
         }
     }
     private fun AccountPreferences.homeQuery() = HomeQuery(accountKey, favoriteIds.toList(), if (runningFavorites) QuickFilter.RunningFavorites else QuickFilter.RunningAll, if (queueFavorites) QuickFilter.QueuedFavorites else QuickFilter.QueuedAll, if (agentsConnected) QuickFilter.AgentsConnected else QuickFilter.AgentsDisconnected, HomeAccount(account.identity.userName, account.identity.serverUrl))
+    private suspend fun acknowledge(key: String) {
+        update { it.copy(shownPrompts = it.shownPrompts + key) }
+    }
+    val rating = object : NavigationRatingRepository {
+        override suspend fun isEligible() = account.run { !preferences.value.ratingHandled }
+        override suspend fun markHandled() {
+            update { it.copy(ratingHandled = true) }
+        }
+    }
+    val historyOnboarding = object : BuildHistoryOnboardingRepository {
+        override suspend fun pendingPrompts() = account.run { BuildHistoryPrompt.entries.filterNot { "history.${it.name}" in preferences.value.shownPrompts } }
+        override suspend fun markShown(prompt: BuildHistoryPrompt) {
+            acknowledge("history.${prompt.name}")
+        }
+    }
     val home = object : HomeRepository {
         override val query = preferences.map { it.homeQuery() }.distinctUntilChanged()
-        override suspend fun pendingPrompts() = emptySet<HomePrompt>()
-        override suspend fun acknowledgePrompt(prompt: HomePrompt) {}
+        override suspend fun pendingPrompts() = account.run { HomePrompt.entries.filterNot { "home.${it.name}" in preferences.value.shownPrompts }.toSet() }
+        override suspend fun acknowledgePrompt(prompt: HomePrompt) {
+            acknowledge("home.${prompt.name}")
+        }
         override suspend fun count(query: HomeQuery, tab: HomeTab): HomeCount = account.run {
             require(query.accountKey == accountKey)
             val value = when (tab) {
@@ -196,8 +215,10 @@ class TeamCityBrowsingRepositories(
             BuildDetailsSection.Tests -> tests.summary(checkNotNull(build.tests?.href)).total
             else -> 0
         }
-        override suspend fun pendingPrompts() = emptySet<BuildDetailsPrompt>()
-        override suspend fun acknowledgePrompt(prompt: BuildDetailsPrompt) {}
+        override suspend fun pendingPrompts() = account.run { BuildDetailsPrompt.entries.filterNot { "details.${it.name}" in preferences.value.shownPrompts }.toSet() }
+        override suspend fun acknowledgePrompt(prompt: BuildDetailsPrompt) {
+            acknowledge("details.${prompt.name}")
+        }
     }
     val testDetails = object : TestDetailsRepository {
         override suspend fun testDetails(url: String): String = account.run { api.document(url).text("details").orEmpty() }

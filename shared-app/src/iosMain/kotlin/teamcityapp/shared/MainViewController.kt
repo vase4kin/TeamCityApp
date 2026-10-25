@@ -44,7 +44,8 @@ fun MainViewController(): UIViewController {
             val model = viewModel {
                 SharedAppViewModel(
                     VaultAccountStorage(IosKeychainVault(Dispatchers.Default, testNamespace?.let { "app.teamcity.uitest.$it" } ?: "app.teamcity.accounts.v1")),
-                    IosSavedNavigationStore(testNamespace?.let { "navigation.uitest.$it" } ?: "navigation.phase2.snapshot.v1")
+                    IosSavedNavigationStore(testNamespace?.let { "navigation.uitest.$it" } ?: "navigation.phase2.snapshot.v1"),
+                    platform.responseCache
                 )
             }
             androidx.compose.runtime.CompositionLocalProvider(LocalNativePlatform provides platform) { PhaseTwoApp(model) }

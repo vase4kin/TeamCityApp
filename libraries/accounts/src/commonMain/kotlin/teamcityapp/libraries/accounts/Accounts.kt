@@ -108,14 +108,15 @@ sealed interface AccountSessionState {
 }
 
 /** Serializes switches and invalidates old work before publishing a new account. */
-class AccountSessionManager(private val storage: AccountStorage, private val context: CoroutineContext) {
+class AccountSessionManager(private val storage: AccountStorage, private val context: CoroutineContext, private val onAccountReplaced: suspend () -> Unit = {}) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow<AccountSessionState>(AccountSessionState.Loading)
     val state: StateFlow<AccountSessionState> = mutableState.asStateFlow()
     private var active: AccountScope? = null
 
-    suspend fun restore() = mutex.withLock {
-        replace(storage.active()?.identity)
+    suspend fun restore(forceRefresh: Boolean = false) = mutex.withLock {
+        val identity = storage.active()?.identity
+        if (forceRefresh) withContext(NonCancellable) { replaceAfterMutation(identity) } else replace(identity)
     }
     suspend fun accounts(): List<AccountIdentity> = storage.accounts()
     suspend fun saveAndActivate(account: AccountSecret, checkDuplicate: Boolean = true): Boolean = mutex.withLock {
@@ -123,7 +124,7 @@ class AccountSessionManager(private val storage: AccountStorage, private val con
         currentCoroutineContext().ensureActive()
         withContext(NonCancellable) {
             storage.saveAndActivate(account)
-            replace(account.identity)
+            replaceAfterMutation(account.identity)
         }
         true
     }
@@ -132,7 +133,7 @@ class AccountSessionManager(private val storage: AccountStorage, private val con
         currentCoroutineContext().ensureActive()
         withContext(NonCancellable) {
             storage.activate(key)
-            replace(account.identity)
+            replaceAfterMutation(account.identity)
         }
     }
     suspend fun remove(key: String) = mutex.withLock {
@@ -140,14 +141,14 @@ class AccountSessionManager(private val storage: AccountStorage, private val con
         currentCoroutineContext().ensureActive()
         withContext(NonCancellable) {
             storage.remove(key)
-            if (wasActive) replace(storage.active()?.identity)
+            if (wasActive) replaceAfterMutation(storage.active()?.identity)
         }
     }
     suspend fun signOut() = mutex.withLock {
         currentCoroutineContext().ensureActive()
         withContext(NonCancellable) {
             storage.signOut()
-            replace(null)
+            replaceAfterMutation(null)
         }
     }
     suspend fun secret(scope: AccountScope): AccountSecret {
@@ -169,6 +170,12 @@ class AccountSessionManager(private val storage: AccountStorage, private val con
         active?.close()
         active = null
         mutableState.value = AccountSessionState.SignedOut
+    }
+    private suspend fun replaceAfterMutation(identity: AccountIdentity?) {
+        // Durable storage succeeded. Stop old work and invalidate its resources before publishing.
+        active?.close()
+        onAccountReplaced()
+        replace(identity)
     }
     private fun replace(identity: AccountIdentity?) {
         active?.close()

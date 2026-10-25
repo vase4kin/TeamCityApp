@@ -40,6 +40,7 @@ import teamcityapp.libraries.theme.SharedTeamCityScreen as TeamCityScreen
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.hideClippedActionFromAccessibility
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +74,7 @@ fun SettingsScreen(
                         }
                         state.themeOptions.forEach { option ->
                             val mode = option.mode
-                            Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
+                            Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").hideClippedActionFromAccessibility(true).selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
                                 Row(Modifier.padding(TeamCityDimensions.largeContentPadding).heightIn(min = TeamCityDimensions.minimumTouchTarget), verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f)) {
                                         Text(stringResource(option.labelRes), style = MaterialTheme.typography.titleMedium)

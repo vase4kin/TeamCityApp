@@ -142,6 +142,8 @@ androidComponents {
 }
 
 dependencies {
+    implementation(projects.sharedApp)
+    implementation(projects.libraries.sharedData)
     implementation(projects.features.home.api)
     implementation(projects.features.home.impl)
     implementation(projects.features.buildDetails.api)
@@ -153,6 +155,7 @@ dependencies {
     implementation(projects.libraries.api)
     implementation(projects.libraries.data)
     implementation(projects.libraries.session)
+    implementation(libs.androidx.datastore.preferences)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.chromeTabs)
@@ -248,6 +251,7 @@ dependencies {
     ksp(libs.dagger.compiler)
 
     // Rx
+    implementation(libs.androidx.browser)
     implementation(libs.androidx.activity.compose)
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.rx2)

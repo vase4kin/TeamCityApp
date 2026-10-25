@@ -17,8 +17,6 @@
 package teamcityapp.libraries.network
 
 import io.ktor.http.encodeURLQueryComponent
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
@@ -75,71 +73,38 @@ data class TeamCityServerInfo(val version: String, val webUrl: String)
 
 /** No app state or platform dependency enters the REST contract. Each activation owns its cache. */
 class TeamCityApi(private val transport: TeamCityTransport) {
-    private val cacheMutex = Mutex()
-    private val documents = mutableMapOf<String, JsonObject>()
-    private val nodes = mutableMapOf<String, TeamCityNodePage>()
-    private val initialPages = mutableMapOf<String, TeamCityBuildPage>()
-    private val builds = mutableMapOf<String, BuildLaunchData>()
-
     suspend fun server(): TeamCityServerInfo {
         val value = transport.get(transport.apiPath("server?fields=version,webUrl"))
         return TeamCityServerInfo(value.text("version").orEmpty(), value.text("webUrl").orEmpty())
     }
     suspend fun entries(projectId: String, forceRefresh: Boolean): TeamCityNodePage {
-        if (!forceRefresh) cacheMutex.withLock { nodes[projectId] }?.let { return it }
         val fields = "projects(project(id,name,description)),buildTypes(buildType(id,name,description,projectId,projectName))"
-        val result = transport.get(transport.apiPath("projects/id:${projectId.encodeLocatorValue()}?fields=$fields"))
+        val result = transport.get(transport.apiPath("projects/id:${projectId.encodeLocatorValue()}?fields=$fields"), forceRefresh)
         val projects = result.obj("projects")?.items("project").orEmpty()
         val value = TeamCityNodePage(projects.map { it.toProjectReference() }, result.obj("buildTypes")?.items("buildType").orEmpty().map { it.toConfigurationSummary() }, projects.associate { requireNotNull(it.text("id")) to it.text("description") })
-        cacheMutex.withLock { nodes[projectId] = value }
         return value
     }
     suspend fun page(configurationId: String, locator: String, nextHref: String?, forceRefresh: Boolean): TeamCityBuildPage {
-        val key = "$configurationId:$locator"
-        if (nextHref == null && !forceRefresh) cacheMutex.withLock { initialPages[key] }?.let { return it }
         val path = nextHref ?: transport.apiPath("buildTypes/id:${configurationId.encodeLocatorValue()}/builds?locator=${locator.encodeQueryValue()}&fields=${BUILD_FIELDS.encodeQueryValue()},nextHref")
-        val result = transport.get(path)
+        val result = transport.get(path, forceRefresh || nextHref != null)
         val page = TeamCityBuildPage(result.items("build").map { it.toBuildLaunchData() }, result.text("nextHref"))
-        cacheMutex.withLock {
-            if (nextHref == null) initialPages[key] = page
-            page.builds.forEach { builds[it.href] = it }
-        }
         return page
     }
     suspend fun build(href: String, forceRefresh: Boolean): BuildLaunchData {
-        if (!forceRefresh) cacheMutex.withLock { builds[href] }?.let { return it }
         val path = href + (if ('?' in href) "&" else "?") + "fields=" + BUILD_FIELDS.substringAfter("build(").dropLast(1).encodeQueryValue()
-        val result = transport.get(path).toBuildLaunchData()
-        cacheMutex.withLock { builds[href] = result }
+        val result = transport.get(path, forceRefresh).toBuildLaunchData()
         return result
     }
 
     /** Paths, including opaque continuation URLs, always pass the transport origin/auth guards. */
-    suspend fun document(path: String, forceRefresh: Boolean = false): JsonObject {
-        if (!forceRefresh) cacheMutex.withLock { documents[path] }?.let { return it }
-        return transport.get(path).also { value -> cacheMutex.withLock { documents[path] = value } }
-    }
+    suspend fun document(path: String, forceRefresh: Boolean = false): JsonObject = transport.get(path, forceRefresh)
 
     /** Mutations invalidate this activation's reads even if the response is uncertain or forbidden. */
-    suspend fun mutate(path: String, payload: JsonObject): JsonObject = try {
-        transport.post(path, payload)
-    } finally {
-        cacheMutex.withLock {
-            documents.clear()
-            nodes.clear()
-            initialPages.clear()
-            builds.clear()
-        }
-    }
+    suspend fun mutate(path: String, payload: JsonObject): JsonObject = transport.post(path, payload)
     suspend fun stream(path: String, write: (ByteArray, Int) -> Unit, progress: (Long, Long?) -> Unit) = transport.stream(path, write, progress)
     fun apiPath(path: String): String = transport.apiPath(path)
-    fun close() {
-        documents.clear()
-        nodes.clear()
-        initialPages.clear()
-        builds.clear()
-        transport.close()
-    }
+    suspend fun invalidateCache() = transport.invalidateCache()
+    fun close() = transport.close()
 }
 
 private fun String.encodeQueryValue(): String = this.encodeURLQueryComponent(encodeFull = true)

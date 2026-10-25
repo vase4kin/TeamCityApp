@@ -24,7 +24,9 @@ data class AccountPreferences(
     val favoriteIds: List<String> = emptyList(),
     val runningFavorites: Boolean = true,
     val queueFavorites: Boolean = true,
-    val agentsConnected: Boolean = true
+    val agentsConnected: Boolean = true,
+    val shownPrompts: Set<String> = emptySet(),
+    val ratingHandled: Boolean = false
 )
 interface AccountPreferencesStorage {
     suspend fun preferences(key: String): AccountPreferences

@@ -69,7 +69,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
         DestinationArguments(arguments) {
             val model = hiltViewModel<AndroidBuildDetailsViewModel>()
             val state by model.state.collectAsStateWithLifecycle()
-            val metadata = hiltViewModel<BuildDetailsMetadataViewModel>()
+            val metadata = hiltViewModel<AndroidBuildDetailsMetadataViewModel>()
             val metadataState by metadata.state.collectAsStateWithLifecycle()
             val latestMetadata by rememberUpdatedState(metadataState)
             LaunchedEffect(state.current, metadata) { metadata.loaded(state.current) }

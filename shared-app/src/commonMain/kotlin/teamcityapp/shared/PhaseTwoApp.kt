@@ -38,6 +38,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModuleBuilder
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.build_details.api.BuildDetailsReferenceDestination
 import teamcityapp.features.build_history.api.*
@@ -61,8 +63,7 @@ import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 import teamcityapp.shared.resources.*
 
-@Serializable
-internal data object AccountsDestination : NavKey
+internal typealias AccountsDestination = teamcityapp.features.drawer.api.navigation.DrawerDestination
 
 internal class SharedEntry<T : NavKey>(
     type: KClass<T>,
@@ -80,8 +81,33 @@ internal class SharedEntry<T : NavKey>(
 }
 
 @Composable
-fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
+fun TeamCityApp(
+    model: SharedAppViewModel,
+    platform: NativePlatform,
+    launch: SharedAppLaunch? = null,
+    onNavigator: (Navigator?) -> Unit = {},
+    onExit: () -> Unit = {},
+    chrome: @Composable () -> Unit = {}
+) {
+    CompositionLocalProvider(LocalNativePlatform provides platform) {
+        PhaseTwoApp(model, launch = launch, onNavigator = onNavigator, onExit = onExit, chrome = chrome)
+    }
+}
+
+/** A platform-decoded launch carries public destination data and its exact account owner. */
+data class SharedAppLaunch(val id: String, val destination: NavKey, val accountKey: String)
+
+@Composable
+fun PhaseTwoApp(
+    model: SharedAppViewModel,
+    darkTheme: Boolean? = null,
+    launch: SharedAppLaunch? = null,
+    onNavigator: (Navigator?) -> Unit = {},
+    onExit: () -> Unit = {},
+    chrome: @Composable () -> Unit = {}
+) {
     val platform = LocalNativePlatform.current
+    val powerSaving by platform.powerSaving.collectAsStateWithLifecycle(false)
     val themeMode by platform.theme.theme.collectAsStateWithLifecycle(teamcityapp.libraries.app_theme.ThemeMode.System)
     val platformFailure by platform.failure.collectAsStateWithLifecycle()
     val session by model.sessions.state.collectAsStateWithLifecycle()
@@ -90,9 +116,11 @@ fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
         darkTheme ?: when (themeMode) {
             teamcityapp.libraries.app_theme.ThemeMode.Light -> false
             teamcityapp.libraries.app_theme.ThemeMode.Dark -> true
+            teamcityapp.libraries.app_theme.ThemeMode.AutoBattery -> powerSaving
             else -> androidx.compose.foundation.isSystemInDarkTheme()
         }
     ) {
+        chrome()
         CompositionLocalProvider(LocalNativeAppLifecycle provides androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle) {
             Surface(Modifier.fillMaxSize()) {
                 if (failed) {
@@ -100,8 +128,8 @@ fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
                 } else {
                     when (val current = session) {
                         AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
-                        AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null) }
-                        is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope) }
+                        AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null, launch, onNavigator, onExit) }
+                        is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope, launch, onNavigator, onExit) }
                     }
                 }
             }
@@ -113,14 +141,14 @@ fun PhaseTwoApp(model: SharedAppViewModel, darkTheme: Boolean? = null) {
 }
 
 @Composable
-private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
+private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, launch: SharedAppLaunch?, onNavigator: (Navigator?) -> Unit, onExit: () -> Unit) {
     val platform = LocalNativePlatform.current
     var graphFailure by remember(account) { mutableStateOf(false) }
     var graphRevision by remember(account) { mutableIntStateOf(0) }
     val graph by produceState<TeamCityAccountGraph?>(null, account, graphRevision) {
         graphFailure = false
         try {
-            if (account != null) value = TeamCityAccountGraph.create(model.sessions, account, platform.files)
+            if (account != null) value = model.graph(account, platform.files, platform.responseCache)
         } catch (c: CancellationException) {
             throw c
         } catch (_: Exception) {
@@ -139,24 +167,33 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
         lateinit var result: DestinationRegistry
         result = DestinationRegistry(
             setOf(
-                SharedEntry(teamcityapp.features.home.api.HomeDestination::class, teamcityapp.features.home.api.HomeDestination.serializer()) { destination, navigator, entryId -> NativeHomeContent(destination, checkNotNull(graph), navigator, result, entryId) },
+                SharedEntry(teamcityapp.features.home.api.HomeDestination::class, teamcityapp.features.home.api.HomeDestination.serializer(), { builder ->
+                    builder.polymorphic(NavigationResult::class) { subclass(teamcityapp.features.home.api.HomeTabSelection::class, teamcityapp.features.home.api.HomeTabSelection.serializer()) }
+                }) { destination, navigator, entryId -> NativeHomeContent(destination, checkNotNull(graph), navigator, result, entryId) },
                 SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, navigator, _ -> LoginContent(model, navigator) },
                 SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, navigator, _ -> NativeAccountContent(model, navigator) },
                 SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator, _ -> ProjectsContent(destination, checkNotNull(graph), navigator) },
                 SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator, entryId -> HistoryContent(destination, checkNotNull(graph), navigator, entryId) },
                 SharedEntry(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()) { destination, navigator, entryId -> OverviewContent(destination, checkNotNull(graph), navigator, entryId) }
-            ) + nativeAccountEntries(model) + nativeBrowsingEntries(graph) + nativeManagementEntries(graph) + nativeArtifactEntries(graph) + nativeSettingsEntries(graph)
+            ) + nativeAccountEntries(model) + nativeBrowsingEntries(graph, platform.diagnostics) + nativeManagementEntries(graph, platform.diagnostics) + nativeArtifactEntries(graph) + nativeSettingsEntries(graph)
         )
         result
     }
     val sessionKey = account?.identity?.key ?: "signed-out"
     val journeyMemory = remember { NativeJourneyMemory() }
     var restorationReady by remember { mutableStateOf(false) }
+    var restorationFailed by remember { mutableStateOf(false) }
+    var restorationRevision by remember { mutableIntStateOf(0) }
     var restored by remember { mutableStateOf<NavigationSnapshot?>(null) }
-    LaunchedEffect(sessionKey, registry) {
-        if (model.claimRestoration()) {
-            val encoded = model.navigationStore.read()
-            val decoded = decodeNativeSnapshot(encoded, registry, sessionKey)
+    LaunchedEffect(sessionKey, registry, restorationRevision) {
+        restorationFailed = false
+        val restoration = model.readInitialNavigation()
+        if (restoration == NavigationRestoration.Failed) {
+            restorationFailed = true
+            return@LaunchedEffect
+        }
+        if (restoration is NavigationRestoration.Snapshot) {
+            val decoded = decodeNativeSnapshot(restoration.encoded, registry, sessionKey)
             restored = decoded?.first?.takeIf {
                 if (account == null) {
                     it.entries.all { visit -> visit.destination is LoginDestination || visit.destination == AccountsDestination || visit.destination == teamcityapp.features.create_account.api.navigation.CreateAccountDestination || visit.destination == teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination }
@@ -168,22 +205,45 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
         }
         restorationReady = true
     }
+    if (restorationFailed) {
+        SharedErrorContent(Modifier.fillMaxSize(), { restorationRevision++ })
+        return
+    }
     if (!restorationReady) {
         LoadingContent(Modifier.fillMaxSize())
         return
     }
     val navigator = rememberNavigator(if (account == null) LoginDestination else teamcityapp.features.home.api.HomeDestination(), registry, sessionKey, restoredSnapshot = restored)
+    DisposableEffect(navigator) {
+        onNavigator(navigator)
+        onDispose { onNavigator(null) }
+    }
+    var handledLaunch by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(launch?.id, sessionKey) {
+        if (launch != null && handledLaunch != launch.id) {
+            handledLaunch = launch.id
+            navigator.acceptLaunch(launch, sessionKey, account != null)
+        }
+    }
     val snapshot = navigator.snapshot
     val homes = journeyMemory.homes.filterKeys { id -> snapshot.entries.any { it.id == id } }
-    LaunchedEffect(snapshot, homes) { model.navigationStore.write(nativeJourneyJson.encodeToString(SavedNativeJourney(registry.encodeSnapshot(snapshot), homes))) }
+    var saveFailed by remember { mutableStateOf(false) }
+    var saveRevision by remember { mutableIntStateOf(0) }
+    LaunchedEffect(snapshot, homes, saveRevision) {
+        saveFailed = !model.saveNavigation(nativeJourneyJson.encodeToString(SavedNativeJourney(registry.encodeSnapshot(snapshot), homes)))
+    }
     CompositionLocalProvider(LocalNativeJourneyMemory provides journeyMemory) {
         val safeArea = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal).asPaddingValues()
-        NavigationHost(navigator, registry, onExit = {}, modifier = Modifier.padding(safeArea).consumeWindowInsets(safeArea))
+        Column(Modifier.fillMaxSize().padding(safeArea).consumeWindowInsets(safeArea)) {
+            NavigationHost(navigator, registry, onExit = onExit, modifier = Modifier.weight(1f))
+            if (saveFailed) NavigationSaveError({ saveRevision++ })
+        }
     }
 }
 
 @Composable
 private fun LoginContent(model: SharedAppViewModel, navigator: Navigator) {
+    val diagnostics = LocalNativePlatform.current.diagnostics
     val authentication = remember(model) {
         object : AuthenticationRepository {
             override suspend fun signIn(credentials: teamcityapp.libraries.authentication.AccountCredentials, checkSecureConnection: Boolean, checkDuplicate: Boolean) = model.authentication.signIn(credentials, checkSecureConnection, checkDuplicate)
@@ -195,7 +255,7 @@ private fun LoginContent(model: SharedAppViewModel, navigator: Navigator) {
             object : LoginRepository {
                 override suspend fun demoServer() = DemoServer(true, "https://teamcity.jetbrains.com")
             },
-            NativeLoginTracker
+            NativeLoginTracker(diagnostics)
         )
     }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -233,6 +293,7 @@ private fun LoginContent(model: SharedAppViewModel, navigator: Navigator) {
 
 @Composable
 private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAccountGraph, navigator: Navigator) {
+    val diagnostics = LocalNativePlatform.current.diagnostics
     val vm = viewModel {
         NavigationViewModel(
             SavedStateHandle(
@@ -243,14 +304,17 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
                 )
             ),
             graph,
-            object : NavigationRatingRepository {
-                override suspend fun isEligible() = false
-                override suspend fun markHandled() {}
-            },
-            NativeNavigationTracker
+            checkNotNull(graph.browsing).rating,
+            NativeNavigationTracker(diagnostics)
         )
     }
     val state by vm.state.collectAsStateWithLifecycle()
+    val platform = LocalNativePlatform.current
+    androidx.lifecycle.compose.LifecycleResumeEffect(vm, state.openRating) {
+        vm.onResumed()
+        if (state.openRating && vm.consumeRatingRequest()) platform.rate()
+        onPauseOrDispose { vm.onPaused() }
+    }
     SharedNavigationScreen(
         state,
         vm::refresh,
@@ -262,14 +326,15 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
                 is ProjectEntry.Configuration -> navigator.push(BuildHistoryDestination(entry.configuration.id, entry.configuration.name))
             }
         },
-        {},
-        {},
+        vm::onRateCancel,
+        vm::onRateNow,
         onRatingRetry = vm::retryRating
     )
 }
 
 @Composable
 private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
+    val diagnostics = LocalNativePlatform.current.diagnostics
     // Optional controls remain with their owning later phase; the real paging journey is shared now.
     val vm = viewModel {
         BuildHistoryViewModel(
@@ -285,11 +350,8 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
                 override suspend fun isFavorite(configurationId: String): Boolean = checkNotNull(graph.browsing).isFavorite(configurationId)
                 override suspend fun setFavorite(configurationId: String, favorite: Boolean): Unit = checkNotNull(graph.browsing).setFavorite(configurationId, favorite)
             },
-            object : BuildHistoryOnboardingRepository {
-                override suspend fun pendingPrompts() = emptyList<BuildHistoryPrompt>()
-                override suspend fun markShown(prompt: BuildHistoryPrompt) {}
-            },
-            NativeHistoryTracker
+            checkNotNull(graph.browsing).historyOnboarding,
+            NativeHistoryTracker(diagnostics)
         )
     }
     androidx.lifecycle.compose.LifecycleResumeEffect(navigator.snapshot.results, vm) {
@@ -352,7 +414,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
             { navigator.pop() },
             { navigator.push(teamcityapp.features.run_build.api.navigation.RunBuildDestination(destination.configurationId, entryId)) },
             { navigator.push(teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination(destination.configurationId, entryId)) },
-            vm::toggleFavorite, vm::retryFavorite, {}, refresh, refresh, builds::retry,
+            vm::toggleFavorite, vm::retryFavorite, vm::dismissPrompt, refresh, refresh, builds::retry,
             { navigator.openHistoryBuild(entryId, it, destination.configurationName) },
             snackbar = snackbar
         )
@@ -388,4 +450,9 @@ private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph
     SharedTeamCityScreen(destination.configurationName.orEmpty(), { navigator.pop() }) { modifier ->
         SharedBuildOverviewScreen(state.copy(actions = emptyList()), vm::refresh, vm::retry, {}, modifier, rowActionAvailable = { false })
     }
+}
+
+@Composable
+internal fun NavigationSaveError(onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    SharedErrorNotice(stringResource(Res.string.navigation_save_failed), onRetry, modifier.fillMaxWidth().navigationBarsPadding().testTag("navigation:save-error"))
 }

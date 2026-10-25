@@ -30,6 +30,7 @@ enum class ThemeMode(val storedValue: String) {
 
 data class ThemeOptions(val modes: List<ThemeMode>, val default: ThemeMode) {
     companion object {
+        val Shared = ThemeOptions(ThemeMode.entries, ThemeMode.System)
         fun forSdk(sdk: Int): ThemeOptions = when {
             sdk >= 29 -> ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.System), ThemeMode.System)
             sdk == 28 -> ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.AutoBattery), ThemeMode.AutoBattery)

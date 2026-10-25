@@ -20,212 +20,80 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import teamcityapp.features.home.api.HomeDestination
-import teamcityapp.features.home.api.HomeTabSelection
 import teamcityapp.features.splash.api.navigation.AccountActivationDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
-import teamcityapp.libraries.navigation.DestinationRegistry
-import teamcityapp.libraries.navigation.LocalNavigationContentLifecycle
-import teamcityapp.libraries.navigation.LocalNavigationDrawReady
-import teamcityapp.libraries.navigation.NavigationHost
-import teamcityapp.libraries.navigation.rememberNavigator
+import teamcityapp.libraries.accounts.AccountSessionState
+import teamcityapp.libraries.app_rating.AppRating
+import teamcityapp.libraries.app_theme.ThemePreferencesRepository
+import teamcityapp.libraries.navigation.Navigator
 import teamcityapp.libraries.theme.TeamCitySystemBars
-import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.shared.*
 
-/** Application-owned Compose host and dispatcher for installed entry points. */
+/** Android decodes installed Intents; the common root owns all app routes and repositories. */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    @Inject lateinit var registry: DestinationRegistry
-
     @Inject lateinit var incoming: IncomingDestinationResolver
 
-    @Inject lateinit var accounts: AppAccountFlowNavigation
-    private val incomingRequest = mutableStateOf<DestinationRequest?>(null)
+    @Inject lateinit var theme: ThemePreferencesRepository
 
-    private var launchAccountKey = "signed-out"
-    private var activeNavigator: teamcityapp.libraries.navigation.Navigator? = null
-    private lateinit var navigationLifecycle: RootNavigationLifecycle
-    private lateinit var launchSplash: LaunchSplashState
+    @Inject lateinit var rating: AppRating
+    private val model: AndroidSharedAppViewModel by viewModels()
+    private val launch = mutableStateOf<SharedAppLaunch?>(null)
+    private var activeNavigator: Navigator? = null
     internal val navigationSnapshot get() = activeNavigator?.visibleSnapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        launchSplash = LaunchSplashState()
-        val splashScreen = installSplashScreen()
-        super.onCreate(RootActivitySavedState.forRoot(savedInstanceState))
-        splashScreen.setKeepOnScreenCondition(launchSplash::keepOnScreen)
-        navigationLifecycle = RootNavigationLifecycle(lifecycle)
-        accounts.synchronize()
-        val initialSessionKey = accounts.session.value.key
-        val restoredLaunch = RootActivitySavedState.restoredLaunch(savedInstanceState, initialSessionKey)
-        if (restoredLaunch != null) {
-            // Saved payload and owner form one record; discard stale platform arguments/flags.
-            setIntent(Intent(intent).replaceExtras(Bundle()))
-        }
-        var requestedInitial = if (RootActivitySavedState.canRestoreLaunch(savedInstanceState, initialSessionKey)) {
-            if (restoredLaunch != null) restoredLaunch.payload?.let(registry::decodeDestination) else incoming.destination(intent)
-        } else {
-            // Reject old arguments before decoding them, including old build snapshots.
-            // Replace them so another recreation cannot replay the rejected alias request.
-            if (RootActivitySavedState.accountChanged(savedInstanceState, initialSessionKey)) {
-                if (initialSessionKey == "signed-out") accounts.login() else accounts.home(resetSession = true)
-            }
-            setIntent(incoming.normalizedIntent(Intent(intent).replaceExtras(Bundle()), accounts.session.value.initial))
-            null
-        }
-        if (requestedInitial is AccountActivationDestination && accounts.session.value.requestId != null) {
-            // A retained coordinator may already have completed the saved preparation.
-            requestedInitial = accounts.session.value.initial
-        }
-        val home = requestedInitial as? HomeDestination
-        if (home != null && (incoming.requiresHomeReset(intent) || initialSessionKey == "signed-out")) {
-            if (initialSessionKey == "signed-out") accounts.login() else accounts.activate(home, resetSession = true)
-            setIntent(incoming.normalizedIntent(intent, accounts.session.value.initial))
-            requestedInitial = null
-        }
-        requestedInitial?.let { setIntent(incoming.normalizedIntent(intent, it)) }
-        if (restoredLaunch != null && requestedInitial == null) setIntent(incoming.normalizedIntent(intent, accounts.session.value.initial))
-        launchAccountKey = accounts.session.value.key
-        savedInstanceState?.getString(PENDING_ACCOUNT)?.takeIf { it == launchAccountKey }?.let { owner ->
-            savedInstanceState.getString(PENDING_DESTINATION)?.let { payload ->
-                incomingRequest.value = DestinationRequest(registry.decodeDestination(payload), owner)
-                navigationLifecycle.hold()
-            }
-        }
+        val splash = installSplashScreen()
+        super.onCreate(savedInstanceState)
+        val launchSplash = LaunchSplashState()
+        splash.setKeepOnScreenCondition(launchSplash::keepOnScreen)
         enableEdgeToEdge()
+        val platform = AndroidAppPlatform(this, lifecycle, theme, rating)
+        if (savedInstanceState == null) receive(intent)
         setContent {
-            TeamCityTheme {
+            TeamCityApp(model, platform, launch.value, {
+                activeNavigator = it
+                if (it != null) launchSplash.release()
+            }, ::finish) {
                 TeamCitySystemBars(window)
-                val session by accounts.session.collectAsStateWithLifecycle()
-                val initial = if (session.key == initialSessionKey) requestedInitial ?: session.initial else session.initial
-                val navigator = rememberNavigator(initial, registry, session.key)
-                DisposableEffect(navigator) {
-                    activeNavigator = navigator
-                    onDispose { if (activeNavigator === navigator) activeNavigator = null }
-                }
-                val handledRequest = rememberSaveable(
-                    stateSaver = Saver<AccountRequestOwner, Any>(
-                        save = { arrayListOf(it.accountKey, it.requestId) },
-                        restore = { saved ->
-                            when {
-                                saved is List<*> && saved.size == 2 && saved[0] is String && (saved[1] == null || saved[1] is String) -> AccountRequestOwner(saved[0] as String, saved[1] as String?)
-
-                                // Earlier root versions saved only the request ID.
-                                saved is String -> AccountRequestOwner(savedInstanceState?.getString(RootActivitySavedState.ACCOUNT_KEY) ?: session.key, saved)
-
-                                else -> null
-                            }
-                        }
-                    )
-                ) { mutableStateOf(AccountRequestOwner(session.key, session.requestId)) }
-                if (handledRequest.value.accountKey != session.key) {
-                    // rememberNavigator already replaces owners when the account changes.
-                    handledRequest.value = AccountRequestOwner(session.key, session.requestId)
-                }
-                LaunchedEffect(session.key, session.requestId) {
-                    if (session.requestId != null && handledRequest.value.requestId != session.requestId) {
-                        navigator.reset(session.initial, session.key)
-                        handledRequest.value = AccountRequestOwner(session.key, session.requestId)
-                    } else if (session.requestId == null && navigator.current.destination is AccountActivationDestination) {
-                        // A dead process cannot retain its preparation job. Resume the saved policy
-                        // so an interrupted account switch still clears the previous session.
-                        val activation = navigator.current.destination as AccountActivationDestination
-                        if (!activation.failed) activation.destination?.let { accounts.activate(it, activation.resetSession) } ?: accounts.home(activation.resetSession)
-                    }
-                    if (session.requestId != null && session.initial !is AccountActivationDestination && launchAccountKey == session.key && incoming.destination(intent) is AccountActivationDestination) {
-                        setIntent(incoming.normalizedIntent(intent, session.initial))
-                    }
-                }
-                val request = incomingRequest.value
-                LaunchedEffect(request, session.key) {
-                    request?.takeIf { it.accountKey == session.key }?.let {
-                        val home = it.destination as? HomeDestination
-                        if (home == null) {
-                            navigator.push(it.destination)
-                        } else {
-                            val existing = navigator.snapshot.entries.firstOrNull { entry -> entry.destination is HomeDestination }
-                            if (existing == null) navigator.reset(home, session.key) else navigator.popTo(existing.id, HomeTabSelection(home.tab))
-                        }
-                    }
-                    if (incomingRequest.value === request) incomingRequest.value = null
-                }
-                SideEffect {
-                    if (incomingRequest.value == null && (session.requestId == null || handledRequest.value.requestId == session.requestId) && navigator.snapshot.sessionKey == session.key) {
-                        navigationLifecycle.applied()
-                        val destination = navigator.current.destination
-                        if (destination !is SplashNavigationDestination && destination !is AccountActivationDestination) launchSplash.release()
-                    }
-                }
-                CompositionLocalProvider(
-                    LocalNavigationContentLifecycle provides navigationLifecycle.lifecycle,
-                    LocalNavigationDrawReady provides launchSplash::release
-                ) {
-                    NavigationHost(navigator, registry, ::finish)
-                }
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        // Record the account of the actual saved UI, including a not-yet-applied reset.
-        outState.putString(RootActivitySavedState.ACCOUNT_KEY, navigationSnapshot?.sessionKey ?: accounts.session.value.key)
-        outState.putString(RootActivitySavedState.LAUNCH_ACCOUNT_KEY, launchAccountKey)
-        outState.putString(RootActivitySavedState.LAUNCH_DESTINATION, intent.getStringExtra(EXTRA_DESTINATION))
-        incomingRequest.value?.takeIf { it.accountKey == accounts.session.value.key }?.let { request ->
-            outState.putString(PENDING_ACCOUNT, request.accountKey)
-            outState.putString(PENDING_DESTINATION, registry.encodeDestination(request.destination))
-        }
+        outState.putString(RootActivitySavedState.ACCOUNT_KEY, navigationSnapshot?.sessionKey)
         super.onSaveInstanceState(outState)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        // A launcher/bring-to-front Intent has no destination. Keep the normalized
-        // arguments of this activity's installed alias for later recreation.
-        var destination = incoming.destination(intent) ?: return
-        navigationLifecycle.hold()
-        val home = destination as? HomeDestination
-        if (home != null) {
-            val previousKey = accounts.session.value.key
-            accounts.synchronize()
-            if (incoming.requiresHomeReset(intent) || previousKey != accounts.session.value.key || accounts.session.value.key == "signed-out") {
-                incomingRequest.value = null
-                if (accounts.session.value.key == "signed-out") accounts.login() else accounts.activate(home, resetSession = true)
-                destination = accounts.session.value.initial
-                launchAccountKey = accounts.session.value.key
-                // Account preparation publishes the replacement stack; do not also push it.
-                setIntent(incoming.normalizedIntent(Intent(intent).apply { component = this@MainActivity.intent.component }, destination))
-                return
-            }
-        }
-        launchAccountKey = accounts.session.value.key
-        // Alias names have different Android component identities. Keep this host's launch
-        // component stable while saving the normalized request for recreation.
-        setIntent(
-            incoming.normalizedIntent(intent, destination).apply {
-                component = this@MainActivity.intent.component
-            }
-        )
-        incomingRequest.value = DestinationRequest(destination, launchAccountKey)
+        receive(intent)
     }
 
-    private class DestinationRequest(val destination: androidx.navigation3.runtime.NavKey, val accountKey: String)
-    private data class AccountRequestOwner(val accountKey: String, val requestId: String?)
+    private fun receive(intent: Intent) {
+        val decoded = incoming.destination(intent) ?: return
+        lifecycleScope.launch {
+            model.sessions.state.first { it != AccountSessionState.Loading }
+            if (decoded is HomeDestination) model.synchronizeSession(incoming.requiresHomeReset(intent))
+            val state = model.sessions.state.value
+            val owner = (state as? AccountSessionState.Active)?.scope?.identity?.key ?: "signed-out"
+            // Launcher/splash entry resumes the common saved journey, rather than pushing a host.
+            if (decoded is SplashNavigationDestination || decoded is AccountActivationDestination) return@launch
+            launch.value = SharedAppLaunch(kotlin.uuid.Uuid.random().toString(), decoded, owner)
+        }
+    }
+
     companion object {
         const val EXTRA_DESTINATION = "navigation.destination"
-        private const val PENDING_ACCOUNT = "navigation.pending-account"
-        private const val PENDING_DESTINATION = "navigation.pending-destination"
     }
 }

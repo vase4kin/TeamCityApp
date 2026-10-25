@@ -30,6 +30,8 @@ dependencies {
     implementation(libs.androidx.annotationn)
     implementation(libs.rxcache.jolyglot)
     implementation(libs.coroutines.android)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.robolectric)

@@ -16,7 +16,6 @@
 
 package teamcityapp.libraries.app_theme
 
-import android.os.Build
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +24,7 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object ThemePreferencesModule {
-    @Provides fun options(): ThemeOptions = ThemeOptions.forSdk(Build.VERSION.SDK_INT)
+    @Provides fun options(): ThemeOptions = ThemeOptions.Shared
 
     @Provides fun repository(store: ThemePreferencesStore): ThemePreferencesRepository = store.repository
 

@@ -20,6 +20,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("commonMain") {
     dependencies { api(projects.libraries.navigation) }
 }

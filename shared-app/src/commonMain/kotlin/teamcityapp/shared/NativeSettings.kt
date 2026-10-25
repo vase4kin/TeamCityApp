@@ -38,7 +38,7 @@ import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 import teamcityapp.shared.resources.*
 
-@Serializable internal data object NativeAboutDestination : NavKey
+internal typealias NativeAboutDestination = teamcityapp.features.about.api.navigation.AboutDestination
 
 @Serializable internal data object NativeLicensesDestination : NavKey
 internal fun nativeSettingsEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> = setOf(
@@ -50,11 +50,11 @@ internal fun nativeSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                 override fun trackView() = diagnostics.event("screen_settings")
                 override fun trackLightThemeSet() = diagnostics.event("theme_set_light")
                 override fun trackDarkThemeSet() = diagnostics.event("theme_set_dark")
-                override fun trackAutoBatteryThemeSet() = Unit
+                override fun trackAutoBatteryThemeSet() = diagnostics.event("theme_set_auto_battery")
                 override fun trackSystemThemeSet() = diagnostics.event("theme_set_system")
             }
         }
-        val vm = viewModel { SettingsViewModel(platform.theme, ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.System), ThemeMode.System), tracker) }
+        val vm = viewModel { SettingsViewModel(platform.theme, ThemeOptions.Shared, tracker) }
         val state by vm.state.collectAsStateWithLifecycle()
         androidx.lifecycle.compose.LifecycleResumeEffect(vm) {
             vm.onScreenViewed()
@@ -82,26 +82,39 @@ internal fun nativeSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         }, { nav.pop() })
     },
     SharedEntry(NativeLicensesDestination::class, NativeLicensesDestination.serializer()) { _, nav, _ ->
-        NativeLicensesList({ nav.push(NativeLicenseDestination(it)) }, { nav.pop() })
+        val platform = LocalNativePlatform.current
+        var revision by remember { mutableIntStateOf(0) }
+        val catalog by produceState<LicenseCatalogState>(LicenseCatalogState.Loading, revision) {
+            value = try {
+                LicenseCatalogState.Content(platform.licenses.entries())
+            } catch (c: kotlinx.coroutines.CancellationException) {
+                throw c
+            } catch (_: Exception) {
+                LicenseCatalogState.Error
+            }
+        }
+        when (val state = catalog) {
+            LicenseCatalogState.Loading -> SharedTeamCityScreen(stringResource(Res.string.platform_licenses), { nav.pop() }) { LoadingContent(it) }
+            LicenseCatalogState.Error -> SharedTeamCityScreen(stringResource(Res.string.platform_licenses), { nav.pop() }) { SharedErrorContent(it, { revision++ }) }
+            is LicenseCatalogState.Content -> NativeLicensesList({ nav.push(NativeLicenseDestination(it)) }, { nav.pop() }, state.entries)
+        }
     },
     SharedEntry(NativeLicenseDestination::class, NativeLicenseDestination.serializer()) { destination, nav, _ ->
-        val entry = nativeLicenses.firstOrNull { it.id == destination.id }
-        if (entry == null) {
-            LaunchedEffect(destination) { nav.pop() }
-        } else {
-            val platform = LocalNativePlatform.current
-            var revision by remember { mutableIntStateOf(0) }
-            val state by produceState<NativeLicenseText>(NativeLicenseText.Loading, entry, revision) {
-                value = NativeLicenseText.Loading
-                value = try {
-                    NativeLicenseText.Content(Res.readBytes("files/licenses/${entry.id}.txt").decodeToString())
-                } catch (c: kotlinx.coroutines.CancellationException) {
-                    throw c
-                } catch (_: Exception) {
-                    NativeLicenseText.Error
-                }
+        val platform = LocalNativePlatform.current
+        var revision by remember { mutableIntStateOf(0) }
+        var entry by remember { mutableStateOf<AppLicense?>(null) }
+        val state by produceState<NativeLicenseText>(NativeLicenseText.Loading, destination.id, revision) {
+            value = NativeLicenseText.Loading
+            value = try {
+                val found = platform.licenses.entries().single { it.id == destination.id }
+                entry = found
+                NativeLicenseText.Content(platform.licenses.text(found.id))
+            } catch (c: kotlinx.coroutines.CancellationException) {
+                throw c
+            } catch (_: Exception) {
+                NativeLicenseText.Error
             }
-            NativeLicenseScreen(entry.name, state, { revision++ }, { platform.browser(entry.source) }, { nav.pop() })
         }
+        NativeLicenseScreen(entry?.name ?: stringResource(Res.string.platform_licenses), state, { revision++ }, entry?.source?.let { source -> { platform.browser(source) } }, { nav.pop() })
     }
 )

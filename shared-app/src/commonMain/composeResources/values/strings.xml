@@ -41,4 +41,5 @@
 <string name="platform_licenses_description">Open source software used by TeamCityApp. Select a project to read its bundled license. Upstream links provide project notices and additional information.</string>
 <string name="platform_license_source">Upstream license and notices</string>
 <string name="platform_license_read_error">Couldn’t read this bundled license. Please try again.</string>
+    <string name="navigation_save_failed">Unable to save your place in the app. Try again.</string>
 </resources>

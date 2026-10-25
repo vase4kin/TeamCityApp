@@ -59,27 +59,35 @@ import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 
-private object NativeHomeTracker : HomeTracker {
-    override fun viewed() {}
-    override fun selected(tab: HomeTab) {}
-    override fun fab(tab: HomeTab) {}
-    override fun addProjects() {}
+private class NativeHomeTracker(private val diagnostics: NativeDiagnostics) : HomeTracker {
+    override fun viewed() = diagnostics.event("home_viewed")
+    override fun selected(tab: HomeTab) = diagnostics.event("home_selected")
+    override fun fab(tab: HomeTab) = diagnostics.event("home_fab")
+    override fun addProjects() = diagnostics.event("home_add_projects")
 }
-private object NativeChangeDetailsTracker : teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker {
-    override fun trackView() {}
-    override fun trackMoreDetails() {}
-    override fun trackFileDiff() {}
+private class NativeChangeDetailsTracker(private val diagnostics: NativeDiagnostics) : teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker {
+    override fun trackView() = diagnostics.event("change_details_view")
+    override fun trackMoreDetails() = diagnostics.event("change_details_more_details")
+    override fun trackFileDiff() = diagnostics.event("change_details_file_diff")
 }
-private object NativeTestDetailsTracker : TestDetailsTracker {
-    override fun trackView() {}
+private class NativeTestDetailsTracker(private val diagnostics: NativeDiagnostics) : TestDetailsTracker {
+    override fun trackView() = diagnostics.event("test_details_view")
 }
 
 @Composable
 internal fun NativeHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
     val repositories = checkNotNull(graph.browsing)
+    val diagnostics = LocalNativePlatform.current.diagnostics
     val journey = LocalNativeJourneyMemory.current
     val restored = remember(entryId) { journey.homes[entryId] }
-    val model = viewModel { HomeViewModel(SavedStateHandle(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, NativeHomeTracker, repositories.filters) }
+    val model = viewModel { HomeViewModel(SavedStateHandle(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, NativeHomeTracker(diagnostics), repositories.filters) }
+    LifecycleResumeEffect(navigator.snapshot.results, model) {
+        while (true) {
+            val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break
+            model.select(selection.tab)
+        }
+        onPauseOrDispose {}
+    }
     val state by model.state.collectAsStateWithLifecycle()
     LifecycleResumeEffect(model) {
         model.viewed()
@@ -132,7 +140,7 @@ internal fun NativeHomeContent(destination: HomeDestination, graph: TeamCityAcco
     }
 }
 
-internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> {
+internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
     val repositories = checkNotNull(graph.browsing)
     return setOf(
@@ -217,7 +225,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?): Set<Destinatio
             }
         },
         SharedEntry(ChangeDetailsDestination::class, ChangeDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { ChangeDetailsViewModel(SavedStateHandle(dest.details?.savedArguments().orEmpty()), NativeChangeDetailsTracker) }
+            val vm = viewModel { ChangeDetailsViewModel(SavedStateHandle(dest.details?.savedArguments().orEmpty()), NativeChangeDetailsTracker(diagnostics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             LifecycleResumeEffect(vm) {
                 vm.onScreenViewed()
@@ -229,7 +237,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?): Set<Destinatio
             LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { TestDetailsViewModel(SavedStateHandle(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, NativeTestDetailsTracker) }
+            val vm = viewModel { TestDetailsViewModel(SavedStateHandle(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, NativeTestDetailsTracker(diagnostics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             var query by rememberSaveable { mutableStateOf("") }
             var wrap by rememberSaveable { mutableStateOf(true) }

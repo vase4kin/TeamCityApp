@@ -16,12 +16,9 @@
 
 package teamcityapp.features.build_details.impl
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
@@ -29,18 +26,18 @@ import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
 
 private data class PromptAcknowledgement(val prompt: BuildDetailsPrompt? = null, val saving: Boolean = false, val failed: Boolean = false)
-internal data class BuildDetailsMetadataState(val counts: Map<BuildDetailsSection, BuildDetailsCount> = emptyMap(), val prompt: BuildDetailsPromptUi? = null, val onboardingFailed: Boolean = false)
+data class BuildDetailsMetadataState(val counts: Map<BuildDetailsSection, BuildDetailsCount> = emptyMap(), val prompt: BuildDetailsPromptUi? = null, val onboardingFailed: Boolean = false)
 
 /** Only collection starts reads. Completed results belong to this particular build visit. */
 @OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel
-internal class BuildDetailsMetadataViewModel @Inject constructor(
+open class BuildDetailsMetadataViewModel constructor(
     private val savedState: SavedStateHandle,
-    private val repository: BuildDetailsMetadataRepository
+    private val repository: BuildDetailsMetadataRepository,
+    private val includeCounts: Boolean = true
 ) : ViewModel() {
     private val incoming = Json.decodeFromString<BuildLaunchData>(checkNotNull(savedState[BuildDetailsViewModel.BUILD]))
     private val current = MutableStateFlow(incoming)
-    private val tabs = listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests).filter { it in incoming.detailsSections() }
+    private val tabs = listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests).filter { includeCounts && it in incoming.detailsSections() }
     private val requests = tabs.associateWith { MutableStateFlow(0L) }
     private val initialCounts = tabs.associateWith { tab -> savedState.get<String>(countKey(tab))?.let { Json.decodeFromString<BuildDetailsCount>(it) } ?: BuildDetailsCount.Loading }
     private fun countKey(tab: BuildDetailsSection) = "details.metadata.count:${tab.name}"

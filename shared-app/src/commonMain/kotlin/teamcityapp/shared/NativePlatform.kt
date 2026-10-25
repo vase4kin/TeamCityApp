@@ -29,6 +29,9 @@ interface NativeDiagnostics {
 }
 
 interface NativePlatform {
+    val responseCache: teamcityapp.libraries.network.ResponseCacheStore? get() = null
+    val powerSaving: kotlinx.coroutines.flow.Flow<Boolean> get() = kotlinx.coroutines.flow.flowOf(false)
+    val licenses: AppLicenseRepository get() = BundledLicenseRepository
     val diagnostics: NativeDiagnostics
     val files: ArtifactFileStore
     val theme: ThemePreferencesRepository
