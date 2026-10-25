@@ -36,12 +36,12 @@ import teamcityapp.libraries.shared_data.*
 
 /** Files are app-private; iOS grants per-file access through its system export sheet. */
 internal class IosArtifactFileStore(private val directory: String) : ArtifactFileStore {
-    override fun create(name: String): PendingArtifact {
-        require(name.isNotBlank() && name.none { it == '/' || it == '\\' || it.code < 32 } && name !in setOf(".", ".."))
-        val folder = "$directory/${NSUUID().UUIDString}"
+    override fun create(target: ArtifactTarget): PendingArtifact {
+        val folder = "$directory/${target.transferId}"
+        check(!NSFileManager.defaultManager.fileExistsAtPath(folder))
         check(NSFileManager.defaultManager.createDirectoryAtPath(folder, true, null, null)) { "Cannot create download directory" }
-        val pending = "$folder/.download.part"
-        val output = "$folder/$name"
+        val pending = "$folder/${target.pendingName}"
+        val output = "$folder/${target.name}"
         val stream = checkNotNull(fopen(pending, "wb")) { "Cannot create download" }
         return object : PendingArtifact {
             var open = true

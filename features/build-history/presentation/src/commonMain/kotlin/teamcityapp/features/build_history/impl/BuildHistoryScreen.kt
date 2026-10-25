@@ -75,7 +75,7 @@ fun SharedBuildHistoryScreen(
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     listState: LazyListState = rememberLazyListState(),
     showActions: Boolean = true,
-    coachmark: @Composable (OnboardingState.Available, Rect, () -> Unit) -> Unit = { _, _, _ -> },
+    coachmark: @Composable (OnboardingState.Available, Rect, () -> Unit) -> Unit = { prompt, bounds, dismiss -> HistoryCoachmark(prompt, bounds, dismiss) },
     showRunBuild: Boolean = true,
     showFilters: Boolean = true
 ) {

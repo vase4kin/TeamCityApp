@@ -36,6 +36,19 @@ class SharedAppLaunchTest {
         assertEquals(CreateAccountDestination, nav.current.destination)
     }
 
+    @Test fun aChildPaneSelectsFavoritesWithoutLosingItsHistoryOwner() {
+        val home = NavigationEntry("home", HomeDestination())
+        val root = Navigator(mutableStateOf(NavigationSnapshot(listOf(home), sessionKey = "alice")))
+        val history = NavigationEntry("history", BuildHistoryDestination("build", "Build"))
+        val childState = mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("project", teamcityapp.features.navigation.api.navigation.ProjectDestination()), history), sessionKey = "alice/project"))
+        val child = Navigator(childState, parent = root)
+        child.selectHome(HomeTab.Favorites)
+        assertEquals(listOf(home), root.snapshot.entries)
+        assertEquals(history, child.current)
+        assertEquals(HomeTabSelection(HomeTab.Favorites), root.consumeResult(home.id, HomeTabSelection::class))
+        assertNull(root.consumeResult(home.id, HomeTabSelection::class))
+    }
+
     @Test fun homeLaunchRetainsItsLiveOwnerAndReturnsTypedTabSelectionOnce() {
         val home = NavigationEntry("home", HomeDestination())
         val history = NavigationEntry("history", BuildHistoryDestination("build", "Build"))

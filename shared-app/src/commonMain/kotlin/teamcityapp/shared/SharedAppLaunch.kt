@@ -36,3 +36,9 @@ internal fun Navigator.acceptLaunch(launch: SharedAppLaunch, accountKey: String,
     }
     return true
 }
+
+/** A child pane selects the live Home owner without discarding its own retained history. */
+internal fun Navigator.selectHome(tab: teamcityapp.features.home.api.HomeTab) {
+    val home = findEntry { it.destination is HomeDestination }
+    if (home == null) reset(HomeDestination(tab)) else popTo(home.id, HomeTabSelection(tab))
+}

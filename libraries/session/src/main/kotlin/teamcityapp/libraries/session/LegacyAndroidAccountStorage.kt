@@ -52,27 +52,24 @@ class LegacyAndroidAccountStorage(
             isSslDisabled = account.identity.sslDisabled
             buildTypeIds = ArrayList(existing?.buildTypeIds.orEmpty())
         }
-        val result = current.filterNot { it.sharedAccountIdentity().sameAccount(account.identity) }
-        result.forEach { it.setIsActive(false) }
-        storage.replaceAccountSnapshot(result + replacement)
+        persist(current.records().saveAndActivate(replacement))
     }
     override suspend fun activate(key: String) = withContext(dispatcher) {
         val accounts = snapshot()
-        require(accounts.any { it.sharedAccountIdentity().key == key }) { "Account no longer exists" }
-        accounts.forEach { it.setIsActive(it.sharedAccountIdentity().key == key) }
-        storage.replaceAccountSnapshot(accounts)
+        persist(accounts.records().activate(key))
     }
     override suspend fun remove(key: String) = withContext(dispatcher) {
         val accounts = snapshot()
-        val activeRemoved = accounts.any { it.sharedAccountIdentity().key == key && it.isActive }
-        val remaining = accounts.filterNot { it.sharedAccountIdentity().key == key }
-        if (activeRemoved) remaining.firstOrNull()?.setIsActive(true)
-        storage.replaceAccountSnapshot(remaining)
+        persist(accounts.records().remove(key))
     }
     override suspend fun signOut() = withContext(dispatcher) {
         val accounts = snapshot()
-        accounts.forEach { it.setIsActive(false) }
-        storage.replaceAccountSnapshot(accounts)
+        persist(accounts.records().signOut())
+    }
+    private fun List<UserAccount>.records() = AccountRecords(this, firstOrNull { it.isActive }?.sharedAccountIdentity()?.key) { it.sharedAccountIdentity() }
+    private fun persist(records: AccountRecords<UserAccount>) {
+        records.accounts.forEach { it.setIsActive(it.sharedAccountIdentity().key == records.activeKey) }
+        storage.replaceAccountSnapshot(records.accounts)
     }
     private fun decrypt(account: UserAccount): AccountSecret {
         val identity = account.sharedAccountIdentity()

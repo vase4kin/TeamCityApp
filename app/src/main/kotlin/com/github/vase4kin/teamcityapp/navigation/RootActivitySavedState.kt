@@ -20,6 +20,7 @@ import android.os.Bundle
 
 /** The root owns Compose state; retired native hosts must never reconstruct their fragments. */
 internal object RootActivitySavedState {
+    const val SHARED_ROOT = "navigation.shared-root-v1"
     const val ACCOUNT_KEY = "navigation.launch-account"
     const val LAUNCH_ACCOUNT_KEY = "navigation.intent-account"
     const val LAUNCH_DESTINATION = "navigation.saved-launch-destination"
@@ -35,6 +36,10 @@ internal object RootActivitySavedState {
     }
 
     fun accountChanged(savedState: Bundle?, accountKey: String): Boolean = savedState?.getString(ACCOUNT_KEY)?.let { it != accountKey } ?: false
+
+    // The old Android root has a different serializer registry. Restore only common-root
+    // Compose state; account data and the validated public journey use their own stores.
+    fun forSharedRoot(savedState: Bundle?): Bundle? = savedState?.takeIf { it.getBoolean(SHARED_ROOT) }?.let(::forRoot)
 
     fun forRoot(savedState: Bundle?): Bundle? = savedState?.let { original ->
         Bundle(original).apply {

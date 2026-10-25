@@ -18,6 +18,13 @@ class HiltApiTestRule(
     override fun before() {
         hilt.inject()
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        // Each fixture case seeds installed account/preferences state independently. Clear
+        // only the mock app's public sidecars so a previous case cannot override those seeds.
+        kotlinx.coroutines.runBlocking {
+            val state = dagger.hilt.EntryPoints.get(app, SharedRootTestState::class.java)
+            state.navigation().write("")
+            (state.accounts() as? teamcityapp.libraries.session.AndroidAccountPreferencesStorage)?.resetPreferencesForTesting()
+        }
         app.appInjector.themeController().start()
         app.setApiGraphFactoryForTesting { baseUrl ->
             DaggerRestApiComponent.builder()
@@ -33,4 +40,11 @@ class HiltApiTestRule(
         app.appInjector.themeController().stop()
         kotlinx.coroutines.runBlocking { app.appInjector.themePreferencesStore().close() }
     }
+}
+
+@dagger.hilt.EntryPoint
+@dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
+interface SharedRootTestState {
+    fun accounts(): teamcityapp.libraries.accounts.AccountStorage
+    fun navigation(): com.github.vase4kin.teamcityapp.navigation.AndroidSavedNavigationStore
 }

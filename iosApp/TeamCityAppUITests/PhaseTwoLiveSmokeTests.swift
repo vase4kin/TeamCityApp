@@ -16,6 +16,26 @@
 
 import XCTest
 
+/// Walk shared first-run education through its normal public controls.
+private func dismissSharedEducation(_ app: XCUIApplication) {
+    for _ in 0..<8 {
+        let ids = ["home:dismiss-prompt", "history:prompt-dismiss", "details:dismiss-prompt", "navigation:rate-cancel"]
+        guard let target = ids.map({ app.descendants(matching: .any).matching(identifier: $0).firstMatch }).first(where: { $0.exists && $0.isHittable }) else { return }
+        target.press(forDuration: 0.2)
+        _ = target.waitForNonExistence(timeout: 5)
+    }
+}
+
+private func waitForSharedContent(_ app: XCUIApplication, _ identifier: String, timeout: TimeInterval = 25) -> Bool {
+    let target = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+    let deadline = Date().addingTimeInterval(timeout)
+    repeat {
+        dismissSharedEducation(app)
+        if target.waitForExistence(timeout: 0.5) { return true }
+    } while Date() < deadline
+    return false
+}
+
 /// This opt-in test makes read-only requests to the approved public guest server.
 final class PhaseTwoLiveSmokeTests: XCTestCase {
     private func element(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
@@ -217,7 +237,13 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         add(attachment)
     }
     private func tap(_ app: XCUIApplication, _ id: String, scroll: Bool = false) {
+        dismissSharedEducation(app)
         let target = element(app, id)
+        for _ in 0..<20 {
+            if target.exists { break }
+            dismissSharedEducation(app)
+            if target.waitForExistence(timeout: 0.5) { break }
+        }
         if scroll {
             for _ in 0..<12 {
                 if target.exists && target.isHittable { break }
@@ -258,6 +284,9 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
         approveReadOnlyFixtureNetworkIfPresented()
+        let homePrompt = element(app, "home:dismiss-prompt")
+        _ = homePrompt.waitForExistence(timeout: 10)
+        dismissSharedEducation(app)
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
     }
@@ -366,11 +395,11 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         back(app)
         tap(app, "navigation:row:configuration:Demo_Build")
         tap(app, "history:build:1")
-        XCTAssertTrue(element(app, "details:actions").waitForExistence(timeout: 20))
+        XCTAssertTrue(waitForSharedContent(app, "details:actions", timeout: 20))
         XCTAssertTrue(element(app, "overview:row:Result").waitForExistence(timeout: 20))
         capture("history_single_details_visit", app)
         back(app)
-        XCTAssertTrue(element(app, "history:build:1").waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForSharedContent(app, "history:build:1", timeout: 10))
         XCTAssertFalse(element(app, "overview:screen").exists)
         capture("history_one_back", app)
     }
@@ -534,7 +563,13 @@ final class PhaseFourManagementSmokeTests: XCTestCase {
         add(attachment)
     }
     private func tap(_ app: XCUIApplication, _ id: String, scroll: Bool = false) {
+        dismissSharedEducation(app)
         let target = element(app, id)
+        for _ in 0..<20 {
+            if target.exists { break }
+            dismissSharedEducation(app)
+            if target.waitForExistence(timeout: 0.5) { break }
+        }
         if scroll {
             for _ in 0..<12 {
                 if target.exists && target.isHittable { break }
@@ -576,13 +611,16 @@ final class PhaseFourManagementSmokeTests: XCTestCase {
         url.typeText("\n")
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
+        let homePrompt = element(app, "home:dismiss-prompt")
+        _ = homePrompt.waitForExistence(timeout: 10)
+        dismissSharedEducation(app)
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
     }
 
     private func openHistory(_ app: XCUIApplication) {
         tap(app, "navigation:row:configuration:Demo_Build")
-        XCTAssertTrue(element(app, "history:build:1").waitForExistence(timeout: 25))
+        XCTAssertTrue(waitForSharedContent(app, "history:build:1", timeout: 25))
     }
     private func localApp(_ mode: String = "manage") throws -> XCUIApplication {
         guard ProcessInfo.processInfo.environment["TEAMCITY_MANAGEMENT_UI"] == "1" else { throw XCTSkip("Synthetic management fixture is opt-in") }
@@ -760,7 +798,13 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         add(attachment)
     }
     private func tap(_ app: XCUIApplication, _ id: String, scroll: Bool = false) {
+        dismissSharedEducation(app)
         let target = element(app, id)
+        for _ in 0..<20 {
+            if target.exists { break }
+            dismissSharedEducation(app)
+            if target.waitForExistence(timeout: 0.5) { break }
+        }
         if scroll {
             for _ in 0..<12 {
                 if target.exists && target.isHittable { break }
@@ -803,13 +847,16 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
         approveReadOnlyFixtureNetworkIfPresented()
+        let homePrompt = element(app, "home:dismiss-prompt")
+        _ = homePrompt.waitForExistence(timeout: 10)
+        dismissSharedEducation(app)
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
     }
 
     private func openHistory(_ app: XCUIApplication) {
         tap(app, "navigation:row:configuration:Demo_Build")
-        XCTAssertTrue(element(app, "history:build:1").waitForExistence(timeout: 25))
+        XCTAssertTrue(waitForSharedContent(app, "history:build:1", timeout: 25))
     }
 
     private func platformApp(_ mode: String = "platform") throws -> XCUIApplication {

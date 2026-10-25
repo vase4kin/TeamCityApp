@@ -43,4 +43,4 @@ class AndroidSavedNavigationStore @Inject constructor(@ApplicationContext contex
 }
 
 @HiltViewModel
-class AndroidSharedAppViewModel @Inject constructor(storage: AccountStorage, navigation: AndroidSavedNavigationStore, cache: ResponseCacheStore) : SharedAppViewModel(storage, navigation, cache)
+class AndroidSharedAppViewModel @Inject constructor(storage: AccountStorage, navigation: AndroidSavedNavigationStore, cache: ResponseCacheStore, clients: teamcityapp.libraries.network.TeamCityClientFactory) : SharedAppViewModel(storage, navigation, cache, clients)

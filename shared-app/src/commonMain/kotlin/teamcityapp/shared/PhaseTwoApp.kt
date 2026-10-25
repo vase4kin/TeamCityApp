@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -87,10 +86,12 @@ fun TeamCityApp(
     launch: SharedAppLaunch? = null,
     onNavigator: (Navigator?) -> Unit = {},
     onExit: () -> Unit = {},
+    onLaunchHandled: (String) -> Unit = {},
+    ready: Boolean = true,
     chrome: @Composable () -> Unit = {}
 ) {
     CompositionLocalProvider(LocalNativePlatform provides platform) {
-        PhaseTwoApp(model, launch = launch, onNavigator = onNavigator, onExit = onExit, chrome = chrome)
+        PhaseTwoApp(model, launch = launch, onNavigator = onNavigator, onExit = onExit, onLaunchHandled = onLaunchHandled, ready = ready, chrome = chrome)
     }
 }
 
@@ -104,6 +105,8 @@ fun PhaseTwoApp(
     launch: SharedAppLaunch? = null,
     onNavigator: (Navigator?) -> Unit = {},
     onExit: () -> Unit = {},
+    onLaunchHandled: (String) -> Unit = {},
+    ready: Boolean = true,
     chrome: @Composable () -> Unit = {}
 ) {
     val platform = LocalNativePlatform.current
@@ -126,10 +129,14 @@ fun PhaseTwoApp(
                 if (failed) {
                     SharedErrorContent(Modifier.fillMaxSize(), onRetry = model::restore)
                 } else {
-                    when (val current = session) {
-                        AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
-                        AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null, launch, onNavigator, onExit) }
-                        is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope, launch, onNavigator, onExit) }
+                    if (!ready) {
+                        LoadingContent(Modifier.fillMaxSize())
+                    } else {
+                        when (val current = session) {
+                            AccountSessionState.Loading -> LoadingContent(Modifier.fillMaxSize())
+                            AccountSessionState.SignedOut -> key("signed-out") { SharedJourney(model, null, launch, onNavigator, onExit, onLaunchHandled) }
+                            is AccountSessionState.Active -> key(current.scope.generation) { SharedJourney(model, current.scope, launch, onNavigator, onExit, onLaunchHandled) }
+                        }
                     }
                 }
             }
@@ -141,7 +148,7 @@ fun PhaseTwoApp(
 }
 
 @Composable
-private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, launch: SharedAppLaunch?, onNavigator: (Navigator?) -> Unit, onExit: () -> Unit) {
+private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, launch: SharedAppLaunch?, onNavigator: (Navigator?) -> Unit, onExit: () -> Unit, onLaunchHandled: (String) -> Unit) {
     val platform = LocalNativePlatform.current
     var graphFailure by remember(account) { mutableStateOf(false) }
     var graphRevision by remember(account) { mutableIntStateOf(0) }
@@ -224,6 +231,7 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
             handledLaunch = launch.id
             navigator.acceptLaunch(launch, sessionKey, account != null)
         }
+        launch?.let { onLaunchHandled(it.id) }
     }
     val snapshot = navigator.snapshot
     val homes = journeyMemory.homes.filterKeys { id -> snapshot.entries.any { it.id == id } }
@@ -296,7 +304,7 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
     val diagnostics = LocalNativePlatform.current.diagnostics
     val vm = viewModel {
         NavigationViewModel(
-            SavedStateHandle(
+            destinationState(
                 mapOf(
                     NavigationViewModel.PROJECT_ID to destination.projectId,
                     NavigationViewModel.PROJECT_NAME to destination.projectName,
@@ -338,7 +346,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
     // Optional controls remain with their owning later phase; the real paging journey is shared now.
     val vm = viewModel {
         BuildHistoryViewModel(
-            SavedStateHandle(
+            destinationState(
                 mapOf(
                     BuildHistoryViewModel.EXTRA_ID to destination.configurationId,
                     BuildHistoryViewModel.EXTRA_NAME to destination.configurationName,
@@ -396,6 +404,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
                         when (notice.kind) {
                             BuildHistoryNoticeKind.Queued -> vm.queuedBuildReference()?.let { navigator.push(BuildDetailsReferenceDestination(it, destination.configurationName)) }
                             BuildHistoryNoticeKind.FiltersApplied -> vm.resetFilters()
+                            BuildHistoryNoticeKind.FavoriteAdded -> navigator.selectHome(teamcityapp.features.home.api.HomeTab.Favorites)
                             else -> Unit
                         }
                     }

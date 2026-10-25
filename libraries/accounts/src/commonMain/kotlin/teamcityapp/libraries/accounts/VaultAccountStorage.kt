@@ -48,23 +48,23 @@ class VaultAccountStorage(private val vault: SecureVault) :
     override suspend fun secret(key: String): AccountSecret? = mutex.withLock {
         read().accounts.firstOrNull { it.identity.key == key }?.let { AccountSecret(it.identity, it.password) }
     }
+    private fun StoredVault.records() = AccountRecords(accounts, activeKey) { it.identity }
+    private suspend fun save(records: AccountRecords<StoredAccount>) = save(StoredVault(records.accounts, records.activeKey))
     override suspend fun saveAndActivate(account: AccountSecret) = mutex.withLock {
         val current = read()
-        save(StoredVault(current.accounts.filterNot { it.identity.sameAccount(account.identity) } + StoredAccount(account.identity, account.password, current.accounts.firstOrNull { it.identity.sameAccount(account.identity) }?.preferences ?: AccountPreferences()), account.identity.key))
+        save(current.records().saveAndActivate(StoredAccount(account.identity, account.password, current.accounts.firstOrNull { it.identity.sameAccount(account.identity) }?.preferences ?: AccountPreferences())))
     }
     override suspend fun activate(key: String) = mutex.withLock {
         val current = read()
-        require(current.accounts.any { it.identity.key == key })
-        save(StoredVault(current.accounts, key))
+        save(current.records().activate(key))
     }
     override suspend fun remove(key: String) = mutex.withLock {
         val current = read()
-        val remaining = current.accounts.filterNot { it.identity.key == key }
-        save(StoredVault(remaining, if (current.activeKey == key) remaining.firstOrNull()?.identity?.key else current.activeKey))
+        save(current.records().remove(key))
     }
     override suspend fun signOut() = mutex.withLock {
         val current = read()
-        save(StoredVault(current.accounts))
+        save(current.records().signOut())
     }
     override suspend fun preferences(key: String): AccountPreferences = mutex.withLock {
         requireNotNull(read().accounts.firstOrNull { it.identity.key == key }).preferences

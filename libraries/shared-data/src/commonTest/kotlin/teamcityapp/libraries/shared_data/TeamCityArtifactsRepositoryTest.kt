@@ -38,7 +38,7 @@ class TeamCityArtifactsRepositoryTest {
         var bytes = 0
         var largestChunk = 0
         var failWrite = false
-        override fun create(name: String): PendingArtifact {
+        override fun create(target: teamcityapp.libraries.shared_data.ArtifactTarget): PendingArtifact {
             opened++
             return object : PendingArtifact {
                 override fun write(bytes: ByteArray, count: Int) {
@@ -48,7 +48,7 @@ class TeamCityArtifactsRepositoryTest {
                 }
                 override fun finish(): DownloadedArtifact {
                     finished++
-                    return DownloadedArtifact("/private/$name")
+                    return DownloadedArtifact("/private/${target.name}")
                 }
                 override fun close() {
                     closed++

@@ -428,9 +428,9 @@ class OverviewFragmentTest {
                 activity.javaClass.getDeclaredMethod("onNewIntent", Intent::class.java).apply {
                     isAccessible = true
                 }.invoke(activity, replacement)
-                assertEquals(teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name"), activity.registry.decodeDestination(checkNotNull(activity.intent.getStringExtra(MainActivity.EXTRA_DESTINATION))))
-                assertFalse(activity.intent.hasExtra(BundleExtractorValues.BUILD))
             }
+            compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name") }
+            scenario.onActivity { assertFalse(it.intent.hasExtra(BundleExtractorValues.BUILD)) }
             compose.waitUntil(10_000) { oldCancellations.get() == 1 }
             assertFalse(oldRefresh.hasObservers())
             oldRefresh.onSuccess(BuildComposeFixtures.legacy(queued.copy(waitReason = "Stale queued response")))

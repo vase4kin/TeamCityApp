@@ -21,4 +21,7 @@
     <files-path
         name="downloaded_artifacts_internal"
         path="." />
+    <cache-path
+        name="shared_downloaded_artifacts"
+        path="TeamCityArtifacts/" />
 </paths>

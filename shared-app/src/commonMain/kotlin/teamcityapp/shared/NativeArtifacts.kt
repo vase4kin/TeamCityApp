@@ -17,7 +17,6 @@
 package teamcityapp.shared
 
 import androidx.compose.runtime.*
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.json.Json
@@ -41,7 +40,7 @@ internal fun nativeArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
             val title = destination.name.ifEmpty { org.jetbrains.compose.resources.stringResource(teamcityapp.features.artifacts.presentation.resources.Res.string.artifacts_title) }
             val vm = viewModel {
                 ArtifactsViewModel(
-                    SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(destination.build), ArtifactsViewModel.URL to destination.href, ArtifactsViewModel.NAME to title)),
+                    destinationState(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(destination.build), ArtifactsViewModel.URL to destination.href, ArtifactsViewModel.NAME to title)),
                     repository,
                     object : ArtifactsTracker {
                         override fun viewShown() {

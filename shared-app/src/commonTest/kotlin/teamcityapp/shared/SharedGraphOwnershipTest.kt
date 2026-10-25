@@ -17,15 +17,69 @@
 package teamcityapp.shared
 
 import androidx.lifecycle.ViewModelStore
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.*
+import io.ktor.client.plugins.HttpTimeout
 import kotlin.test.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import teamcityapp.libraries.accounts.*
+import teamcityapp.libraries.authentication.AccountCredentials
+import teamcityapp.libraries.authentication.AuthenticationResult
+import teamcityapp.libraries.network.TeamCityClientFactory
 import teamcityapp.libraries.shared_data.ArtifactFileStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SharedGraphOwnershipTest {
+    @Test fun authenticationAndActivatedRepositoriesUseTheSameInjectedWireBoundary() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val models = ViewModelStore()
+        val created = mutableListOf<AccountIdentity>()
+        val requested = mutableListOf<String>()
+        val storage = VaultAccountStorage(object : SecureVault {
+            var value: String? = null
+            override suspend fun read() = value
+            override suspend fun write(value: String) {
+                this.value = value
+            }
+        })
+        try {
+            val root = SharedAppViewModel(
+                storage,
+                object : SavedNavigationStore {
+                    override suspend fun read(): String? = null
+                    override suspend fun write(snapshot: String) {}
+                },
+                clients = TeamCityClientFactory { identity ->
+                    created += identity
+                    HttpClient(
+                        MockEngine { request ->
+                            requested += request.url.encodedPath
+                            respond("""{"version":"shared-fixture","webUrl":"https://example.test/context"}""")
+                        }
+                    ) {
+                        followRedirects = false
+                        install(HttpTimeout)
+                    }
+                }
+            ).also { models.put("root", it) }
+            runCurrent()
+            assertEquals(AuthenticationResult.Success, root.authentication.signIn(AccountCredentials("https://example.test/context", "", "", true), true, false))
+            val account = (root.sessions.state.value as AccountSessionState.Active).scope
+            val files = object : ArtifactFileStore {
+                override fun create(target: teamcityapp.libraries.shared_data.ArtifactTarget) = error("No transfer")
+            }
+            assertEquals("shared-fixture", root.graph(account, files).serverInfo().version)
+            assertEquals(2, created.size)
+            assertEquals(created.first(), created.last())
+            assertEquals(listOf("/context/guestAuth/app/rest/server", "/context/guestAuth/app/rest/server"), requested)
+        } finally {
+            models.clear()
+            Dispatchers.resetMain()
+        }
+    }
+
     @Test fun hostRecreationReusesTheGraphButAccountReplacementDoesNot() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         val models = ViewModelStore()
@@ -56,7 +110,7 @@ class SharedGraphOwnershipTest {
             vm.sessions.saveAndActivate(AccountSecret(AccountIdentity("https://example.test", "Guest user", true)))
             val original = (vm.sessions.state.value as AccountSessionState.Active).scope
             val files = object : ArtifactFileStore {
-                override fun create(name: String) = error("No transfer expected")
+                override fun create(target: teamcityapp.libraries.shared_data.ArtifactTarget) = error("No transfer expected")
             }
             val graph = vm.graph(original, files)
             assertSame(graph, vm.graph(original, files))

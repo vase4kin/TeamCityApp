@@ -16,7 +16,6 @@
 
 package teamcityapp.libraries.shared_data
 
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -27,7 +26,7 @@ import teamcityapp.libraries.network.*
 /** Validate against the server before an atomic secure-storage/session change. No secret enters UI state. */
 class TeamCityAuthentication(
     private val sessions: AccountSessionManager,
-    private val client: (Boolean) -> HttpClient = ::platformTeamCityClient
+    private val client: TeamCityClientFactory = PlatformTeamCityClientFactory
 ) : AuthenticationRepository {
     override suspend fun signIn(credentials: AccountCredentials, checkSecureConnection: Boolean, checkDuplicate: Boolean): AuthenticationResult {
         val url = try {
@@ -39,7 +38,7 @@ class TeamCityAuthentication(
         if (checkDuplicate && sessions.accounts().any { it.sameAccount(identity) }) return AuthenticationResult.DuplicateAccount
         if (checkSecureConnection && url.startsWith("http://")) return AuthenticationResult.Failure(-1, "")
         val secret = AccountSecret(identity, if (credentials.guest) "" else credentials.password)
-        val api = TeamCityApi(TeamCityTransport(client(identity.sslDisabled), secret, httpConsent = !checkSecureConnection))
+        val api = TeamCityApi(TeamCityTransport(client.create(identity), secret, httpConsent = !checkSecureConnection))
         try {
             api.server()
         } catch (cancelled: CancellationException) {

@@ -22,7 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -80,7 +79,7 @@ internal fun NativeHomeContent(destination: HomeDestination, graph: TeamCityAcco
     val diagnostics = LocalNativePlatform.current.diagnostics
     val journey = LocalNativeJourneyMemory.current
     val restored = remember(entryId) { journey.homes[entryId] }
-    val model = viewModel { HomeViewModel(SavedStateHandle(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, NativeHomeTracker(diagnostics), repositories.filters) }
+    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, NativeHomeTracker(diagnostics), repositories.filters) }
     LifecycleResumeEffect(navigator.snapshot.results, model) {
         while (true) {
             val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break
@@ -192,25 +191,25 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                 Box(modifier) {
                     when (dest.section) {
                         BuildDetailsSection.Changes -> {
-                            val vm = viewModel { ChangesViewModel(SavedStateHandle(mapOf(ChangesViewModel.ARG_URL to checkNotNull(dest.build.changes?.href))), repositories.changes) }
+                            val vm = viewModel { ChangesViewModel(destinationState(mapOf(ChangesViewModel.ARG_URL to checkNotNull(dest.build.changes?.href))), repositories.changes) }
                             SharedChangesContent(vm, { nav.push(ChangeDetailsDestination(it)) }, onCount = { count = it })
                         }
 
                         BuildDetailsSection.Tests -> {
                             val tests = checkNotNull(dest.build.tests)
-                            val vm = viewModel { TestsViewModel(SavedStateHandle(mapOf(TestsViewModel.ARG_URL to checkNotNull(tests.href), TestsViewModel.ARG_PASSED to tests.passed, TestsViewModel.ARG_FAILED to tests.failed, TestsViewModel.ARG_IGNORED to tests.ignored)), repositories.tests) }
+                            val vm = viewModel { TestsViewModel(destinationState(mapOf(TestsViewModel.ARG_URL to checkNotNull(tests.href), TestsViewModel.ARG_PASSED to tests.passed, TestsViewModel.ARG_FAILED to tests.failed, TestsViewModel.ARG_IGNORED to tests.ignored)), repositories.tests) }
                             SharedTestsContent(vm, { nav.push(TestDetailsDestination(it)) }, onCount = { count = it })
                         }
 
                         BuildDetailsSection.Parameters -> {
-                            val vm = viewModel { PropertiesViewModel(SavedStateHandle(mapOf(PropertiesViewModel.ARG_NAMES to ArrayList(dest.build.properties?.items.orEmpty().map { it.name.orEmpty() }), PropertiesViewModel.ARG_VALUES to ArrayList(dest.build.properties?.items.orEmpty().map { it.value.orEmpty() })))) }
+                            val vm = viewModel { PropertiesViewModel(destinationState(mapOf(PropertiesViewModel.ARG_NAMES to ArrayList(dest.build.properties?.items.orEmpty().map { it.name.orEmpty() }), PropertiesViewModel.ARG_VALUES to ArrayList(dest.build.properties?.items.orEmpty().map { it.value.orEmpty() })))) }
                             val state by vm.state.collectAsStateWithLifecycle()
                             val platform = LocalNativePlatform.current
                             PropertiesScreen(state, { platform.copy(it.value) })
                         }
 
                         BuildDetailsSection.Snapshots -> {
-                            val vm = viewModel { SnapshotDependenciesViewModel(repositories.snapshots, SavedStateHandle(mapOf(SnapshotDependenciesViewModel.BUILD_ID to dest.build.id, SnapshotDependenciesViewModel.BUILD_TYPE_NAME to dest.configurationName.orEmpty()))) }
+                            val vm = viewModel { SnapshotDependenciesViewModel(repositories.snapshots, destinationState(mapOf(SnapshotDependenciesViewModel.BUILD_ID to dest.build.id, SnapshotDependenciesViewModel.BUILD_TYPE_NAME to dest.configurationName.orEmpty()))) }
                             LifecycleResumeEffect(vm) {
                                 vm.onResumed()
                                 onPauseOrDispose { vm.onPaused() }
@@ -225,7 +224,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             }
         },
         SharedEntry(ChangeDetailsDestination::class, ChangeDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { ChangeDetailsViewModel(SavedStateHandle(dest.details?.savedArguments().orEmpty()), NativeChangeDetailsTracker(diagnostics)) }
+            val vm = viewModel { ChangeDetailsViewModel(destinationState(dest.details?.savedArguments().orEmpty()), NativeChangeDetailsTracker(diagnostics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             LifecycleResumeEffect(vm) {
                 vm.onScreenViewed()
@@ -237,7 +236,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { TestDetailsViewModel(SavedStateHandle(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, NativeTestDetailsTracker(diagnostics)) }
+            val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, NativeTestDetailsTracker(diagnostics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             var query by rememberSaveable { mutableStateOf("") }
             var wrap by rememberSaveable { mutableStateOf(true) }

@@ -42,9 +42,9 @@ internal sealed interface NavigationRestoration {
     data class Snapshot(val encoded: String?) : NavigationRestoration
 }
 
-open class SharedAppViewModel(private val storage: AccountStorage, val navigationStore: SavedNavigationStore, private val responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null) : ViewModel() {
+open class SharedAppViewModel(private val storage: AccountStorage, val navigationStore: SavedNavigationStore, private val responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null, private val clients: teamcityapp.libraries.network.TeamCityClientFactory = teamcityapp.libraries.network.PlatformTeamCityClientFactory) : ViewModel() {
     val sessions = AccountSessionManager(storage, viewModelScope.coroutineContext) { clearResponseCache() }
-    val authentication: AuthenticationRepository = TeamCityAuthentication(sessions)
+    val authentication: AuthenticationRepository = TeamCityAuthentication(sessions, clients)
     private val failure = MutableStateFlow(false)
     val restoreFailed = failure.asStateFlow()
     private var firstNavigation = true
@@ -64,7 +64,7 @@ open class SharedAppViewModel(private val storage: AccountStorage, val navigatio
     suspend fun graph(account: AccountScope, files: ArtifactFileStore, responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null): TeamCityAccountGraph = graphLock.withLock {
         account.requireCurrent()
         currentGraph?.takeIf { it.account.generation == account.generation }?.let { return@withLock it }
-        TeamCityAccountGraph.create(sessions, account, files, responseCache).also {
+        TeamCityAccountGraph.create(sessions, account, files, responseCache, clients).also {
             account.requireCurrent()
             currentGraph = it
         }

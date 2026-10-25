@@ -19,7 +19,6 @@ package teamcityapp.shared
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.*
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -83,7 +82,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
         SharedEntry(RunBuildDestination::class, RunBuildDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(QueuedBuildResult::class, QueuedBuildResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { RunBuildViewModel(repositories.run, SavedStateHandle(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeRunTracker(diagnostics)) }
+            val vm = viewModel { RunBuildViewModel(repositories.run, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeRunTracker(diagnostics)) }
             val router = remember(dest, nav) {
                 object : RunBuildRouter {
                     override fun close() {
@@ -99,7 +98,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
         SharedEntry(FilterBuildsDestination::class, FilterBuildsDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(BuildFilterResult::class, BuildFilterResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { FilterBuildsViewModel(repositories.filters, SavedStateHandle(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeFilterTracker(diagnostics)) }
+            val vm = viewModel { FilterBuildsViewModel(repositories.filters, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeFilterTracker(diagnostics)) }
             val router = remember(dest, nav) {
                 object : FilterBuildsRouter {
                     override fun close() {
@@ -113,7 +112,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
             SharedFilterBuildsRoute(router, vm)
         },
         SharedEntry(QuickFilterDestination::class, QuickFilterDestination.serializer(), presentation = DestinationPresentation.BottomSheet) { dest, nav, _ ->
-            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, SavedStateHandle(mapOf("arg_code" to dest.code))) }
+            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, destinationState(mapOf("arg_code" to dest.code))) }
             val router = remember(nav) {
                 object : FilterBottomSheetRouter {
                     override fun close() {
@@ -145,7 +144,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
 private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
     val platform = LocalNativePlatform.current
     val server = graph.account.identity.serverUrl
-    val model = viewModel { BuildDetailsViewModel(SavedStateHandle(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, NativeDetailsTracker(platform.diagnostics)) }
+    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, NativeDetailsTracker(platform.diagnostics)) }
     val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {
         BuildReferenceViewModel(
@@ -156,7 +155,7 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
             checkNotNull(graph.browsing).metadata
         )
     }
-    val education = viewModel { BuildDetailsMetadataViewModel(SavedStateHandle(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build))), checkNotNull(graph.browsing).metadata, includeCounts = false) }
+    val education = viewModel { BuildDetailsMetadataViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build))), checkNotNull(graph.browsing).metadata, includeCounts = false) }
     val educationState by education.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.current) { education.loaded(state.current) }
     val content by overview.state.collectAsStateWithLifecycle()

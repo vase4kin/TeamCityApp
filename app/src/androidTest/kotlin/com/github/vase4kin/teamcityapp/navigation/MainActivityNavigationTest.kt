@@ -76,6 +76,8 @@ class MainActivityNavigationTest {
     private val info = ServerInfo("navigation-server", "https://navigation.example")
 
     @Before fun before() {
+        com.github.vase4kin.teamcityapp.helper.TestUtils.disableOnboarding()
+        app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
         app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
@@ -159,11 +161,68 @@ class MainActivityNavigationTest {
         }
     }
 
-    @Test fun toolbarBackAtRootClosesTheHost() {
+    @Test fun toolbarBackReturnsToSharedHomeBeforeRootExit() {
         launchAbout().use { scenario ->
             await(info.version)
             compose.onNodeWithContentDescription("Back").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            androidx.test.espresso.Espresso.pressBackUnconditionally()
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+        }
+    }
+
+    private fun captureDisplay(scenario: ActivityScenario<MainActivity>, name: String) {
+        compose.mainClock.advanceTimeBy(1000)
+        compose.waitForIdle()
+        val frame = java.util.concurrent.CountDownLatch(1)
+        scenario.onActivity { activity -> activity.window.decorView.postOnAnimation { activity.window.decorView.postOnAnimation { frame.countDown() } } }
+        check(frame.await(5, java.util.concurrent.TimeUnit.SECONDS)) { "Display did not render the settled route" }
+        val bitmap = androidx.test.runner.screenshot.Screenshot.capture().bitmap
+        val file = java.io.File(app.getExternalFilesDir(null), "shared-production-$name.png")
+        file.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    @Test fun packagedAndroidNoticesUseTheSharedReaderAndAllThemeChoices() {
+        launchAbout().use { scenario ->
+            await(info.version)
+            compose.onNodeWithText("Open sources libraries").performScrollTo().performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("licenses:android_0").fetchSemanticsNodes().isNotEmpty() }
+            captureDisplay(scenario, "licenses")
+            compose.onNodeWithTag("licenses:android_0").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("license:text").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("license:text").assertIsDisplayed()
+            captureDisplay(scenario, "license-text")
+            scenario.onActivity { launcher.open(it, SettingsDestination) }
+            await("Light theme")
+            listOf("Light", "Dark", "AutoBattery", "System").forEach { compose.onNodeWithTag("settings:option:$it").assertExists() }
+            captureDisplay(scenario, "settings")
+        }
+    }
+
+    @Test fun sharedAccountManageAddAndSignOutUseOneRoot() {
+        ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java)).use { scenario ->
+            fun click(tag: String) {
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
+                if (tag == "drawer:manage" || tag == "accounts:sign-out") compose.onNodeWithTag(tag).performScrollTo().performClick() else compose.onNodeWithTag(tag).performClick()
+            }
+            click("home:account")
+            compose.onNodeWithTag("drawer:manage").assertExists()
+            captureDisplay(scenario, "account")
+            click("drawer:manage")
+            compose.onNodeWithTag("accounts:list").assertExists()
+            captureDisplay(scenario, "manage")
+            click("accounts:add")
+            compose.onNodeWithTag("create-account:form").assertExists()
+            captureDisplay(scenario, "add")
+            androidx.test.espresso.Espresso.pressBack()
+            compose.onNodeWithText("Discard").performClick()
+            androidx.test.espresso.Espresso.pressBack()
+            click("accounts:sign-out")
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("login:submit").fetchSemanticsNodes().isNotEmpty() }
+            captureDisplay(scenario, "signed-out")
+            scenario.recreate()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("login:submit").fetchSemanticsNodes().isNotEmpty() }
         }
     }
 }

@@ -16,6 +16,7 @@
 
 package teamcityapp.libraries.shared_data
 
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.*
@@ -37,8 +38,7 @@ class TeamCityArtifactsRepository(private val account: AccountScope, private val
     }
     override suspend fun download(file: ArtifactDownload): DownloadedArtifact = download(file) { _, _ -> }
     override suspend fun download(file: ArtifactDownload, onProgress: (Long, Long?) -> Unit): DownloadedArtifact = account.run {
-        require(file.name.isNotBlank() && file.name !in setOf(".", "..") && file.name.none { it == '/' || it == '\\' || it.code < 32 }) { "Invalid artifact filename" }
-        val pending = store.create(file.name)
+        val pending = store.create(ArtifactTarget(file.name))
         try {
             api.stream(file.href, pending::write, onProgress)
             currentCoroutineContext().ensureActive()
@@ -48,8 +48,18 @@ class TeamCityArtifactsRepository(private val account: AccountScope, private val
         }
     }
 }
+
+/** Common naming and no-clobber policy: every transfer owns a unique directory. */
+class ArtifactTarget(val name: String) {
+    val transferId: String = Uuid.random().toString()
+    val pendingName: String = ".download.part"
+    init {
+        require(name.isNotBlank() && name !in setOf(".", "..", pendingName) && name.none { it == '/' || it == '\\' || it.code < 32 }) { "Invalid artifact filename" }
+    }
+}
 interface ArtifactFileStore {
-    fun create(name: String): PendingArtifact
+    fun create(target: ArtifactTarget): PendingArtifact
+    fun create(name: String): PendingArtifact = create(ArtifactTarget(name))
 }
 interface PendingArtifact {
     fun write(bytes: ByteArray, count: Int)

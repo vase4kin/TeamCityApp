@@ -124,7 +124,7 @@ class TeamCityAuthenticationTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         val flags = mutableListOf<Boolean>()
         val auth = TeamCityAuthentication(sessions) { disabled ->
-            flags += disabled
+            flags += disabled.sslDisabled
             client { respond("""{"version":"test"}""", HttpStatusCode.OK) }
         }
         auth.signIn(credentials, true, false)

@@ -142,6 +142,7 @@ androidComponents {
 }
 
 dependencies {
+    "mockImplementation"(libs.ktor.client.mock)
     implementation(projects.sharedApp)
     implementation(projects.libraries.sharedData)
     implementation(projects.features.home.api)

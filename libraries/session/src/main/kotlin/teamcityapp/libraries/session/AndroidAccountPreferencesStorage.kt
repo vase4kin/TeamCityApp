@@ -94,6 +94,12 @@ class AndroidAccountPreferencesStorage(
         accounts.saveAndActivate(account)
     }
 
+    /** Integration fixtures seed installed preferences afresh before the first common read. */
+    @androidx.annotation.VisibleForTesting(otherwise = androidx.annotation.VisibleForTesting.PRIVATE)
+    suspend fun resetPreferencesForTesting() = mutex.withLock {
+        preferences.edit { it.clear() }
+    }
+
     private suspend fun preferenceKey(key: String): Preferences.Key<String> {
         val identity = requireNotNull(accounts.accounts().singleOrNull { it.key == key })
         // TLS consent may change without changing account ownership or losing saved preferences.

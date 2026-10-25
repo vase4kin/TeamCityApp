@@ -27,6 +27,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import teamcityapp.features.home.api.HomeDestination
@@ -48,30 +49,51 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var rating: AppRating
     private val model: AndroidSharedAppViewModel by viewModels()
+    private val ready = mutableStateOf(false)
     private val launch = mutableStateOf<SharedAppLaunch?>(null)
     private var activeNavigator: Navigator? = null
     internal val navigationSnapshot get() = activeNavigator?.visibleSnapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
-        super.onCreate(savedInstanceState)
+        super.onCreate(RootActivitySavedState.forSharedRoot(savedInstanceState))
         val launchSplash = LaunchSplashState()
         splash.setKeepOnScreenCondition(launchSplash::keepOnScreen)
         enableEdgeToEdge()
         val platform = AndroidAppPlatform(this, lifecycle, theme, rating)
-        if (savedInstanceState == null) receive(intent)
+        lifecycleScope.launch {
+            combine(model.sessions.state, model.restoreFailed) { state, failed -> state != AccountSessionState.Loading || failed }.first { it }
+            model.synchronizeSession()
+            val owner = accountKey()
+            if (savedInstanceState == null) {
+                receive(intent)
+            } else {
+                // Validate ownership before decoding any persisted launch arguments.
+                RootActivitySavedState.restoredLaunch(savedInstanceState, owner)?.payload?.let { encoded ->
+                    launch.value = SharedAppLaunch(savedInstanceState.getString(PENDING_ID) ?: kotlin.uuid.Uuid.random().toString(), incoming.destination(Intent().putExtra(EXTRA_DESTINATION, encoded)) ?: return@let, owner)
+                }
+                setIntent(Intent(intent).replaceExtras(Bundle()))
+            }
+            ready.value = true
+        }
         setContent {
-            TeamCityApp(model, platform, launch.value, {
+            TeamCityApp(model, platform, launch.value, onNavigator = {
                 activeNavigator = it
                 if (it != null) launchSplash.release()
-            }, ::finish) {
+            }, onExit = ::finish, ready = ready.value, onLaunchHandled = { id ->
+                if (launch.value?.id == id) launch.value = null
+            }) {
                 TeamCitySystemBars(window)
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(RootActivitySavedState.ACCOUNT_KEY, navigationSnapshot?.sessionKey)
+        outState.putString(RootActivitySavedState.ACCOUNT_KEY, navigationSnapshot?.sessionKey ?: accountKey())
+        outState.putBoolean(RootActivitySavedState.SHARED_ROOT, true)
+        outState.putString(RootActivitySavedState.LAUNCH_ACCOUNT_KEY, launch.value?.accountKey ?: accountKey())
+        outState.putString(RootActivitySavedState.LAUNCH_DESTINATION, launch.value?.let { incoming.normalizedIntent(Intent(), it.destination).getStringExtra(EXTRA_DESTINATION) })
+        outState.putString(PENDING_ID, launch.value?.id)
         super.onSaveInstanceState(outState)
     }
 
@@ -80,20 +102,23 @@ class MainActivity : AppCompatActivity() {
         receive(intent)
     }
 
+    private fun accountKey() = (model.sessions.state.value as? AccountSessionState.Active)?.scope?.identity?.key ?: "signed-out"
+
     private fun receive(intent: Intent) {
-        val decoded = incoming.destination(intent) ?: return
         lifecycleScope.launch {
             model.sessions.state.first { it != AccountSessionState.Loading }
+            val decoded = incoming.destination(intent) ?: return@launch
             if (decoded is HomeDestination) model.synchronizeSession(incoming.requiresHomeReset(intent))
-            val state = model.sessions.state.value
-            val owner = (state as? AccountSessionState.Active)?.scope?.identity?.key ?: "signed-out"
+            val owner = accountKey()
             // Launcher/splash entry resumes the common saved journey, rather than pushing a host.
             if (decoded is SplashNavigationDestination || decoded is AccountActivationDestination) return@launch
+            setIntent(incoming.normalizedIntent(Intent(intent).apply { component = this@MainActivity.intent.component }, decoded))
             launch.value = SharedAppLaunch(kotlin.uuid.Uuid.random().toString(), decoded, owner)
         }
     }
 
     companion object {
+        private const val PENDING_ID = "navigation.pending-id"
         const val EXTRA_DESTINATION = "navigation.destination"
     }
 }

@@ -47,6 +47,5 @@ internal fun BuildHistoryScreen(
 ) = SharedBuildHistoryScreen(
     title, state, controls, itemCount, itemAt, itemPeek, appendState,
     onBack, onRunBuild, onFilters, onFavorite, onFavoriteRetry, onPromptDismiss, onRefresh, onRetry,
-    onAppendRetry, onBuild, modifier, snackbar, listState,
-    coachmark = { prompt, bounds, dismiss -> HistoryCoachmark(prompt, bounds, dismiss) }
+    onAppendRetry, onBuild, modifier, snackbar, listState
 )

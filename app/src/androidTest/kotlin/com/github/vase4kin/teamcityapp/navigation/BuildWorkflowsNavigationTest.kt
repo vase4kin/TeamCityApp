@@ -72,7 +72,6 @@ class BuildWorkflowsNavigationTest {
 
     @Inject lateinit var launcher: RootDestinationLauncher
 
-    @Inject lateinit var accounts: AppAccountFlowNavigation
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
 
@@ -181,7 +180,9 @@ class BuildWorkflowsNavigationTest {
             awaitTag("run-build:submit")
             compose.onNodeWithTag("run-build:submit").performClick()
             compose.waitUntil(10_000) { pending.hasObservers() }
-            scenario.onActivity { accounts.home(false) }
+            scenario.onActivity { activity ->
+                activity.startActivity(android.content.Intent().setClassName(activity, IncomingDestinationResolver.HOME_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true).addFlags(android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            }
             awaitRoot()
             compose.waitUntil(10_000) { !pending.hasObservers() }
             pending.onSuccess(Mocks.queuedBuild1())

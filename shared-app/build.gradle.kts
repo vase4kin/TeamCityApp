@@ -91,7 +91,12 @@ kotlin.sourceSets.named("commonMain") {
     kotlin.srcDir(generateAppMetadata.map { generatedMetadata.get() })
 }
 
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+kotlin.sourceSets.named("commonTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.ktor.client.mock)
+    }
+}
 
 // Capture the actual device link inputs rather than inferring native dependencies
 // from the Android catalog. Release review consumes this reproducible inventory.

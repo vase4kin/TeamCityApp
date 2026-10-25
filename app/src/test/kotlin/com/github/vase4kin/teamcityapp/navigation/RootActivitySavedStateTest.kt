@@ -34,6 +34,14 @@ class RootActivitySavedStateTest {
     private val fragmentsKey = "android:support:fragments"
     private val registryKey = "androidx.lifecycle.BundlableSavedStateRegistry.key"
 
+    @Test fun commonRootRejectsRetiredSerializerStateAndKeepsCurrentOwnerState() {
+        val old = Bundle().apply { putString("compose", "retired") }
+        assertNull(RootActivitySavedState.forSharedRoot(old))
+        old.putBoolean(RootActivitySavedState.SHARED_ROOT, true)
+        assertEquals("retired", RootActivitySavedState.forSharedRoot(old)!!.getString("compose"))
+        assertNull(RootActivitySavedState.forSharedRoot(null))
+    }
+
     @Test fun freshLaunchesAndSameAccountRestorationAcceptTheirInput() {
         assertTrue(RootActivitySavedState.canRestoreLaunch(null, "server|alice"))
         assertFalse(RootActivitySavedState.accountChanged(null, "server|alice"))

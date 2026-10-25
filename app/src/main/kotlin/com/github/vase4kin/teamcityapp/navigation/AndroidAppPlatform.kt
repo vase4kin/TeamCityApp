@@ -37,6 +37,7 @@ import teamcityapp.features.artifacts.api.DownloadedArtifact
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.app_theme.ThemePreferencesRepository
 import teamcityapp.libraries.shared_data.ArtifactFileStore
+import teamcityapp.libraries.shared_data.ArtifactTarget
 import teamcityapp.libraries.shared_data.PendingArtifact
 import teamcityapp.shared.*
 
@@ -99,7 +100,7 @@ class AndroidAppPlatform(
     }
     override fun openFile(path: String) = perform(NativePlatformFailure.File) {
         val file = File(path).canonicalFile
-        val roots = listOfNotNull(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), activity.filesDir)
+        val roots = listOfNotNull(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), activity.filesDir, File(activity.cacheDir, "TeamCityArtifacts"))
         require(file.isFile && roots.any { file.path.startsWith(it.canonicalPath + File.separator) })
         val uri = FileProvider.getUriForFile(activity, activity.packageName + ".provider", file)
         val mime = activity.contentResolver.getType(uri) ?: "application/octet-stream"
@@ -108,15 +109,14 @@ class AndroidAppPlatform(
     override fun rate() = perform(NativePlatformFailure.Rating) { rating.open(activity) }
 }
 
-/** Retains Android's successful same-directory replacement policy and prior completed files. */
+/** The common transfer target owns naming; this adapter only writes and atomically moves bytes. */
 internal class AndroidArtifactFileStore(context: Context) : ArtifactFileStore {
     private val context = context.applicationContext
-    private fun directory() = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: context.filesDir
-    override fun create(name: String): PendingArtifact {
-        require(name.isNotBlank() && name !in setOf(".", "..") && name.none { it == '/' || it == '\\' || it.code < 32 })
-        val folder = directory().apply { check(isDirectory || mkdirs()) }
-        val pending = File.createTempFile("artifact-", ".part", folder)
-        val output = File(folder, name)
+    override fun create(target: ArtifactTarget): PendingArtifact {
+        val folder = File(context.cacheDir, "TeamCityArtifacts/${target.transferId}")
+        check(!folder.exists() && folder.mkdirs()) { "Cannot create download directory" }
+        val pending = File(folder, target.pendingName)
+        val output = File(folder, target.name)
         val stream = FileOutputStream(pending)
         return object : PendingArtifact {
             private var open = true
@@ -139,7 +139,7 @@ internal class AndroidArtifactFileStore(context: Context) : ArtifactFileStore {
                     stream.close()
                     open = false
                 }
-                if (!complete) pending.delete()
+                if (!complete) folder.deleteRecursively()
             }
         }
     }
