@@ -208,7 +208,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: anchor)], timeout: 5), .completed)
         if bar.exists && XCUIDevice.shared.orientation == .portrait {
-            XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
+            assertNativeHeaderSafeArea(bar, app: app)
         }
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         let theme = ProcessInfo.processInfo.environment["TEAMCITY_UI_EVIDENCE_THEME"] ?? "light"
@@ -247,6 +247,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
+        prepareValidationLogin(app)
         tap(app, "auth:guest")
         let url = element(app, "auth:url")
         url.tap()
@@ -524,7 +525,7 @@ final class PhaseFourManagementSmokeTests: XCTestCase {
         }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: anchor)], timeout: 5), .completed)
         if bar.exists && XCUIDevice.shared.orientation == .portrait {
-            XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
+            assertNativeHeaderSafeArea(bar, app: app)
         }
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         let theme = ProcessInfo.processInfo.environment["TEAMCITY_UI_EVIDENCE_THEME"] ?? "light"
@@ -565,6 +566,7 @@ final class PhaseFourManagementSmokeTests: XCTestCase {
         app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
+        prepareValidationLogin(app)
         tap(app, "auth:guest")
         let url = element(app, "auth:url")
         url.tap()
@@ -749,7 +751,7 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: anchor)], timeout: 10), .completed)
         if !systemSheet.exists && bar.exists && XCUIDevice.shared.orientation == .portrait {
-            XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
+            assertNativeHeaderSafeArea(bar, app: app)
         }
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         let theme = ProcessInfo.processInfo.environment["TEAMCITY_UI_EVIDENCE_THEME"] ?? "light"
@@ -790,6 +792,7 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
+        prepareValidationLogin(app)
         tap(app, "auth:guest")
         let url = element(app, "auth:url")
         url.tap()

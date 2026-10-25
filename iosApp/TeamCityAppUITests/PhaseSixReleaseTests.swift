@@ -37,6 +37,61 @@ func approveReadOnlyFixtureNetworkIfPresented() {
     }
 }
 
+/// Expected UIKit insets belong to the selected device fixture, not the app's
+/// own rendering. Default retains the established 20-point portrait minimum.
+/// Multi-display runs supply all four independently measured UIKit insets.
+func assertNativeHeaderSafeArea(_ header: XCUIElement, app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+    let raw = ProcessInfo.processInfo.environment["TEAMCITY_UI_EXPECTED_SAFE_AREA"] ?? "20,0,0,0"
+    let fields = raw.split(separator: ",", omittingEmptySubsequences: false)
+    let values = fields.compactMap { Double($0) }
+    guard fields.count == 4, values.count == 4, values.allSatisfy({ $0.isFinite && $0 >= 0 }) else {
+        XCTFail("Expected top,left,bottom,right UIKit fixture insets; malformed values must fail", file: file, line: line)
+        return
+    }
+    let window = app.windows.firstMatch
+    XCTAssertTrue(window.exists, "The header must belong to a live window", file: file, line: line)
+    let frame = window.frame
+    let safe = frame.inset(by: UIEdgeInsets(top: values[0], left: values[1], bottom: values[2], right: values[3]))
+    XCTAssertGreaterThan(safe.width, 0, file: file, line: line)
+    XCTAssertGreaterThan(safe.height, 0, file: file, line: line)
+    let actual = header.frame
+    XCTAssertGreaterThanOrEqual(actual.minX, safe.minX - 0.5, file: file, line: line)
+    XCTAssertGreaterThanOrEqual(actual.minY, safe.minY - 0.5, file: file, line: line)
+    XCTAssertLessThanOrEqual(actual.maxX, safe.maxX + 0.5, "Header must avoid the fixture's side status area", file: file, line: line)
+    XCTAssertLessThanOrEqual(actual.maxY, safe.maxY + 0.5, file: file, line: line)
+}
+
+/// Release retains its isolated validation vault. Reach Login through normal
+/// navigation/sign-out instead of clearing accounts or relying on test order.
+func prepareValidationLogin(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+    func element(_ id: String) -> XCUIElement { app.descendants(matching: .any).matching(identifier: id).firstMatch }
+    for _ in 0..<8 {
+        if element("auth:url").waitForExistence(timeout: 1) && !element("create-account:form").exists { return }
+        if element("drawer:list").exists {
+            let signOut = element("accounts:sign-out")
+            for _ in 0..<8 {
+                if signOut.exists && signOut.isHittable { break }
+                app.swipeUp()
+            }
+            if signOut.exists && signOut.isHittable {
+                signOut.tap()
+                XCTAssertTrue(element("auth:url").waitForExistence(timeout: 10), file: file, line: line)
+                return
+            }
+        }
+        if element("home:account").exists { element("home:account").tap(); continue }
+        let back = app.buttons["Navigate up"].exists ? app.buttons["Navigate up"].firstMatch : app.buttons["Back"].firstMatch
+        if back.waitForExistence(timeout: 3) {
+            back.tap()
+            if element("create-account:discard").exists { app.buttons["Discard"].tap() }
+            continue
+        }
+        XCTFail("Cannot reach validation Login through the known account/navigation controls", file: file, line: line)
+        return
+    }
+    XCTFail("Validation navigation did not settle at Login", file: file, line: line)
+}
+
 /// Release qualification uses an isolated app ID on physical hardware. It never rates,
 /// submits a real build, or changes a user's existing account vault.
 final class PhaseSixReleaseTests: XCTestCase {
@@ -70,22 +125,7 @@ final class PhaseSixReleaseTests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: app)], timeout: 10), .completed)
     }
     private func prepareLogin(_ app: XCUIApplication) {
-        let url = app.descendants(matching: .any).matching(identifier: "auth:url").firstMatch
-        if url.waitForExistence(timeout: 2) { return }
-        // Release deliberately ignores the Debug test-vault override. A validation
-        // installation can retain a guest session; sign out through its normal UI
-        // without deleting saved accounts or changing production storage behavior.
-        let account = app.descendants(matching: .any).matching(identifier: "home:account").firstMatch
-        XCTAssertTrue(account.waitForExistence(timeout: 25))
-        account.tap()
-        let signOut = app.descendants(matching: .any).matching(identifier: "accounts:sign-out").firstMatch
-        for _ in 0..<8 {
-            if signOut.exists && signOut.isHittable { break }
-            app.swipeUp()
-        }
-        XCTAssertTrue(signOut.waitForExistence(timeout: 10))
-        signOut.tap()
-        XCTAssertTrue(url.waitForExistence(timeout: 10))
+        prepareValidationLogin(app)
     }
     func testLoginKeyboardRotationAndBackground() throws {
         let app = app()
@@ -222,5 +262,55 @@ final class PhaseSixReleaseTests: XCTestCase {
             app.swipeUp()
             app.swipeDown()
         }
+    }
+}
+
+
+extension PhaseSixReleaseTests {
+    /// Opt-in diagnostic, not a substitute for the normal orientation checks.
+    /// Compare public UIKit/SwiftUI controls with Compose on the same simulator.
+    func testSimulatorRotationControl() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Geometry controls are simulator-only")
+        #else
+        guard ProcessInfo.processInfo.environment["TEAMCITY_GEOMETRY_CONTROL"] == "1" else {
+            throw XCTSkip("Build/install scripts/build-ios-geometry-control.py on the owned simulator first")
+        }
+        continueAfterFailure = true
+        for host in ["uikit", "swiftui", "compose"] {
+            let target = host == "compose" ? app(preview: true) : XCUIApplication(bundleIdentifier: "app.teamcity.geometry-control")
+            target.launchEnvironment["GEOMETRY_HOST"] = host
+            XCUIDevice.shared.orientation = .portrait
+            target.launch()
+            if host != "compose" {
+                guard target.staticTexts["geometry:metrics"].waitForExistence(timeout: 10) else {
+                    XCTFail("The independent control must render its metrics before it is valid baseline evidence")
+                    target.terminate()
+                    continue
+                }
+            }
+            for (label, orientation) in [("portrait", UIDeviceOrientation.portrait), ("landscape", UIDeviceOrientation.landscapeLeft)] {
+                XCUIDevice.shared.orientation = orientation
+                let expectedLandscape = orientation == .landscapeLeft
+                let predicate = NSPredicate { _, _ in
+                    let window = target.windows.firstMatch
+                    return window.exists && ((window.frame.width > window.frame.height) == expectedLandscape)
+                }
+                let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: target)], timeout: 10)
+                let details = XCTAttachment(string: "host=\(host), requested=\(label), deviceOrientation=\(XCUIDevice.shared.orientation.rawValue), state=\(target.state.rawValue)\n\(target.debugDescription)")
+                details.name = "phase6_geometry_" + host + "_" + label + "_tree"
+                details.lifetime = .keepAlways
+                add(details)
+                for (index, screen) in XCUIScreen.screens.enumerated() {
+                    let frame = XCTAttachment(screenshot: screen.screenshot())
+                    frame.name = "phase6_geometry_" + host + "_" + label + "_screen_" + String(index)
+                    frame.lifetime = .keepAlways
+                    add(frame)
+                }
+                XCTAssertEqual(result, .completed, "The \(host) window must establish \(label) geometry; captures retain every active screen")
+            }
+            target.terminate()
+        }
+        #endif
     }
 }
