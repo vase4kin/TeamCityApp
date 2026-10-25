@@ -145,11 +145,16 @@ cannot fill in this record.
   Labels, switch state and errors must be announced. Enter/edit a URL, including
   punctuation, with the keyboard normally used on the phone. Cancel any failed
   submission; do not provide real credentials for this walkthrough.
-- Home: use the approved public Demo or synthetic fixture. Activate Projects,
-  Favorites and Activity; verify selected states and Running/Queue/Agents choices.
-  Focus must follow content, and VoiceOver scrolling must reveal offscreen rows.
+- Home and Account: use the approved public Demo or synthetic fixture. Activate
+  Projects, Favorites and Activity; verify selected states and Running/Queue/Agents
+  choices. Focus must follow content; VoiceOver scrolling must reveal offscreen rows.
+  From the avatar, verify Account → Manage Accounts and the distinct Add user
+  account form. Hear current-account state, server context, Add and removal labels;
+  cancel Add through its discard confirmation. Sign out or remove only isolated
+  synthetic test accounts, never personal accounts.
 - Build browsing: open a configuration, History and a build. Traverse the overview
-  actions and section links, visit a read-only section and return. Expect named
+  actions and section links, visit a read-only section and return. One Back from
+  the build must return to History without a second Overview. Expect named
   controls, meaningful focus order, no extra unlabeled stops and retained visits.
 - Native actions: open and dismiss Share without sending anything; open Browser
   and return. From the read-only fixture, download its small report and verify the

@@ -145,7 +145,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   code. Share portable theme definitions through `libraries/design-system`.
 - Feature APIs expose portable models and repository contracts in common code;
   Android destination registrations may remain in `androidMain` during migration.
-  About, Login, Navigation, Build History, Build Overview, Home, Favorites,
+  About, Login, Add Account, Account (drawer), Manage Accounts, Navigation, Build History, Build Overview, Home, Favorites,
   Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
   Parameters, Snapshot Dependencies, Run Build, Filter Builds, Quick Filter,
   Action Bottom Sheet, Build Details, Artifacts and Settings `presentation` modules own their common UI

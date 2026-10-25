@@ -246,7 +246,11 @@ Application commits remain local. Phase 6 requires a new user instruction.
 
 **Depends on:** Phase 5. **Outcome:** a verified Android/iOS release candidate.
 
-- [x] Run the complete feature-parity and regression checklist.
+- [ ] Run the complete feature-parity and regression checklist. The owner’s
+  walkthrough identified native account-flow and repeated build-transition gaps;
+  their shared-screen/navigation fixes pass Android/common tests and compact,
+  expanded dark and maximum-text simulator checks. The owner deferred the new
+  physical-device pass; the complete manual and iOS 17 runtime gates remain open.
 - [ ] Verify accessibility, large text, themes, safe areas, keyboard, gestures,
   supported sizes/orientations, and iPad layouts.
 - [x] Verify termination/relaunch, backgrounding, network failures, account changes,
@@ -256,7 +260,9 @@ Application commits remain local. Phase 6 requires a new user instruction.
   archive and Android R8 checks pass.
 - [x] Prepare signing, distribution/TestFlight, privacy declarations, and store materials.
 - [x] Audit superseded code/dependencies and remove only proven unused paths. All
-  111 application modules remain reachable; retain the Android compatibility stack.
+  original 111-module reachability audit is retained. Three newly wired shared
+  account presentation modules bring the current inventory to 114; the retired
+  native-only account prototype is removed. Retain the Android compatibility stack.
 - [x] Preserve Android account/cache compatibility and installed Intent aliases.
 - [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
@@ -267,8 +273,13 @@ authorized iOS 17.0 as the supported minimum. Physical About orientation/accessi
 and HTTP-consent checks pass. Optimized hardware coverage is a nine-pass run plus
 two corrected Login-precondition reruns. Native journeys are a five-pass run plus
 two affected-case reruns, including strict clipped-row audits and artifact export.
-The final-source optimized full pass is built and ready after phone unlock; manual
-VoiceOver and actual iOS 17 runtime execution remain open. Android API 24 retains six
+The earlier optimized physical pass passed 11/11, with zero skips. The owner
+then reported duplicate build transitions and account UI differences during a
+partial walkthrough. Those fixes are saved locally and pass simulator/regression
+checks; the updated optimized validation build and audited archive are ready.
+The owner chose simulator-only follow-up for now, so the updated app has not
+been installed on the phone. A new physical pass, complete manual VoiceOver
+results and actual iOS 17 runtime execution remain open. Android API 24 retains six
 optimized smoke checks and 59 selected integration cases covered by a full run
 plus scoped reruns. Simulator automation, compilation and physical/manual results
 are recorded separately; these remaining gates are not checked off.
@@ -278,12 +289,16 @@ are recorded separately; these remaining gates are not checked off.
 **Report:** [Private Phase 6 review](https://teamcityapp-kmp-phase-six-20261023.andrey-tolpeev.chatgpt.site),
 refreshed and verified on 2026-10-25 with actual hardware captures, accessibility
 findings, corrected-run scopes and the open manual/iOS 17 runtime gates. The
+latest owner-private account-flow report update is verified succeeded, with
+actual compact/expanded/enlarged-text screens and a deferred new phone pass. The
 earlier simulator/build slice remains recorded. Runtime `08586ec15fe1c34308627539f8fe7da4cf90eb8f`, harness
 `2e8716b2c015a084ea48a3cd618ce29fb079f3d4`, CI
 `e1b7f0b866f5f97c15a09bcbe89e9d6cfc2ffea1` are local checkpoints.
 The 25 October follow-up checkpoints are iOS 17 minimum `9ffb4ca54`, clipped-row
 accessibility `2b664e589` and physical qualification `8aa8c4977`. The documentation
-checkpoint accompanies these commits. Phase 7 has not started.
+checkpoint accompanies these commits. Owner-review fixes are saved at
+`3153fb505` (one live History visit) and `44835c390` (shared account flows).
+Phase 7 has not started.
 
 ## Phase 7 — Platform review and refinements
 

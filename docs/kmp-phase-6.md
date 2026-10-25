@@ -307,6 +307,127 @@ Manual VoiceOver and actual iOS 17.0 runtime execution remain required. Hardware
 captures and precise raw results remain under ignored build output; no device
 identifier or signing profile is copied into the report.
 
+### Final optimized phone pass and manual handoff
+
+After the owner unlocked the phone, the final-source optimized validation run
+passed all 11 selected tests, with zero failures and skips. Its result is
+`build/kmp-phase-6/physical-final-unlocked.xcresult`: seven About states plus
+About orientation/actions/audit, Login editing/rotation/background retention,
+responsive launch and About scrolling/memory. The fixture-backed Home/Overview
+check is excluded from this run and remains covered by the earlier final-source
+two-case physical rerun, including artifact export and strict clipped-row audits.
+
+The current device metadata reports iPhone 15 Pro, iOS 27.0.1 (24A446); the test
+SDK is 27.1. The owner's mention of 27.1 does not substitute for either this
+recorded OS version or the still-required iOS 17 minimum-runtime check.
+Five optimized iterations averaged 0.572 seconds responsive launch, 1.037 seconds
+for the About swipe pair, 144,492 kB peak physical memory and 127,912 kB absolute
+physical memory. These are local measurements without a historical threshold;
+they do not establish FPS, battery behavior or absence of leaks.
+
+Actual final About portrait/landscape and keyboard captures were inspected. The
+landscape keyboard frame shows Gboard and the retained edited URL; the harness
+verifies actual entry rather than assuming a UIKit Keyboard container. No layout
+or golden changes were made for this verification.
+
+All automated phone control ended after the successful run. The normal Release
+validation app was opened without preview or test-vault overrides, and a
+read-only private-interface fixture was started for the owner's manual VoiceOver
+walkthrough. The six walkthrough criteria are in `docs/ios-release.md`; the manual
+gate remains unchecked until the owner reports results. Do not control the phone
+while that walkthrough is in progress. The fixture has mutations disabled.
+
+### Owner walkthrough findings and account parity follow-up
+
+The owner did not claim completion of the six-part VoiceOver walkthrough. They
+reported a build appearing to open twice and a mismatch between the expected
+Android account flow and the simplified native Accounts/Login flow. Investigation
+confirmed that History routed complete row snapshots through a reference-loading
+visit before replacing it with managed Build Details. History now opens its
+complete snapshot directly and rejects another callback from the outgoing visit;
+queued-result Show actions keep reference resolution. A local navigation
+checkpoint records the initial correction, with focused ownership/payload tests.
+
+The owner explicitly selected the existing Android Account → Manage Accounts
+flow with a separate Add user account screen. The former combined native Accounts
+screen is replaced by shared `drawer`, `manage-accounts` and `create-account`
+presentation modules, retaining Android Hilt/storage adapters and native
+Keychain/session adapters. Initial Login remains separate. The native sign-out
+action is capability-gated; Android's current menu is unchanged. Native account
+IDs retain their full opaque public identity to distinguish guest and named users
+on the same server. No credential or persisted account format is changed.
+
+The port uses three KMP API modules and three new presentation modules; the
+current inventory is 114 application modules, 66 KMP and 26 shared presentations.
+Common ViewModels use constructor injection. Existing Android entry points now
+wrap shared routes/screens with thin Hilt ViewModels and platform routers. Native
+repositories map public identity keys onto the existing generation-scoped session
+manager. A mismatched/missing key cannot select or remove another guest/member
+identity with the same server and username. Sign-out remains native capability;
+Android's current menu and persisted account/cache formats are unchanged.
+
+The signed simulator scenarios pass on the compact phone (two cases), expanded
+dark iPad (one), and phone at maximum accessibility text (one). Two subsequent
+normal-text phone regressions also pass: retained Home/Favorites/sections/relaunch
+and Account → Settings theme persistence/relaunch → About/offline licenses.
+All six selected current-source scenarios pass with zero skips. They verify the
+separate Add header/form/button and discard confirmation, separate Manage list,
+current-account state, duplicate rejection, explicit HTTP consent, cancel/confirm
+inactive removal, sign-out, final saved-account removal while signed out, and
+History's single Back return. Strict Account/Add/validation/Manage audits pass.
+The first Manage audit caught a bare URL label; its localized server context is
+now exposed without changing pixels. The first lifecycle attempt stopped in the
+capture helper under the HTTP modal; the final two-case run passes after using
+the visible modal frame as the settling anchor.
+
+Fresh checks: 45 common Android-host feature behavior cases; 63 Kotlin/Native
+cases across the three features and shared root; 121 shared-host checks including
+reviewed account renders; 231 app unit tests and the MockDebug application build.
+Existing Android feature suites pass (Drawer 183, Manage 122, Create 129); their
+intentional screenshot baselines are unchanged. The initial Android package
+attempt exhausted the default 2 GiB D8 heap; the scoped 8 GiB retry passed.
+Spotless apply/check passed. Native unit and signed UI tests used different
+owned simulators.
+
+The retired native-only prototype's 64 Android-host PNG fixtures are deliberately
+removed, replacing them with 32 reviewed/verified shared-account host renders
+covering light/dark, compact/expanded and enlarged text, content, busy, explicit
+sign-out retry, and scrolled states. These are intentional host fixtures, not iOS
+captures. Actual simulator screenshots are exported under
+`account-parity-complete-attachments`, `account-parity-ipad-final-attachments` and
+`account-parity-largest-text-attachments`. At maximum text, standard app bars
+visually ellipsize long titles while retaining their full accessible labels;
+controls remain reachable. New separate Manage/Add views are labeled as their
+first native baseline, not given a fabricated before screenshot.
+
+The updated optimized validation app and runner built successfully with the
+existing development signing setup. The new unsigned normal-identity archive is
+`build/kmp-phase-6/TeamCityApp-accounts-20261025.xcarchive`; its source, resolved
+dependency and package audits pass. It declares 2.0.0/build 1/minimum iOS 17.0.
+The executable is 39,961,688 bytes, SHA-256
+`f2ceaa6456f472b88dbcc94d5885599375311e49694f1846e817f62c8ba70725`.
+The 78-artifact and bundled notice inventory remain consistent with source.
+No upload/distribution occurred. When the updated phone candidate was ready,
+the owner chose to continue with simulators for now; no new phone installation
+or automated control occurred. Physical/manual qualification remains deferred.
+
+This follow-up changes the candidate after the 11-case physical run above. That
+run remains valid historical evidence, and the updated account/navigation slice
+requires its own UI evidence, regression checks and renewed physical/manual
+qualification. Phase 6 stays open; iOS 17 runtime execution is also still required.
+
+The earlier final-phone report publication initially returned an MCP timeout.
+Reconciliation found its matching source `23831ff98d22ef7a01e064d1a09bfa937cad0c71`
+as saved private version 5, deployment
+`appgdep_6add90b2f6b08191be92366f72a7b89c`, confirmed succeeded. No duplicate
+publication was created to recover that unknown outcome. The account-flow report
+refresh follows this verified existing Site and preserves the owner-only audience.
+
+The account/navigation checkpoints are `3153fb505` and `44835c390`, both local
+and unpublished. The final account checkpoint contains only source, configuration,
+behavioral tests and intentional golden fixtures. Generated diagnostics remain
+under ignored `build/`; no heap dump is reachable from that branch.
+
 ## Report and checkpoints
 
 Private Site published and verified on 2026-10-23 for the final simulator/build
@@ -335,15 +456,16 @@ Both optimized packages contain notice resources byte-identical to source; all
 76 tooling tests passed again after normalization.
 
 API 24 report update source: `4b08957f7f59b3796ecfcfc6ad13d3f1d76c7abe`.
-Latest saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_fe2f919ac5448191b9fbdbeda2479d0d`.
-Latest verified deployment: `appgdep_6adad32e11b48191b4b98567916654e7`, succeeded
+API 24 saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_fe2f919ac5448191b9fbdbeda2479d0d`.
+API 24 verified deployment: `appgdep_6adad32e11b48191b4b98567916654e7`, succeeded
 on 2026-10-23. The private report includes the actual API 24 capture, selected-run
 and scoped-rerun reconciliation, and separate physical/manual and iOS 16 gates.
 
 This record, the checklist, release runbook and agent contract form the
 accompanying `chore(docs): record KMP phase six simulator qualification`
-checkpoint. Phase 6 remains in progress for deferred hardware/manual and
-iOS 16 runtime qualification; Phase 7 has not started. Raw logs, captures, archives and inventories
+checkpoint. At that earlier checkpoint, hardware/manual and iOS 16 qualification
+remained open. The owner subsequently selected iOS 17 as recorded above; the
+current remaining gates are recorded in the latest account follow-up below. Raw logs, captures, archives and inventories
 remain ignored under `build/kmp-phase-6`; only intentional source/resources,
 verification tooling and durable documentation belong in local checkpoints.
 
@@ -359,6 +481,30 @@ failures, focused rerun scopes, package hashes and the open manual/runtime gates
 Site source: `e777d52215637913a3e6f68b4d32391e3a01afd0`.
 Saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_b93508f966048191a730d819e750b3b0`.
 Verified deployment: `appgdep_6add8d3e4250819194696b95b2a70176`, succeeded
-on 2026-10-25. Earlier receipts above remain historical. The current minimum is
-iOS 17.0; Phase 6 remains open for its final optimized phone pass, manual VoiceOver
-and actual minimum-runtime execution. Phase 7 has not started.
+on 2026-10-25. Earlier receipts above remain historical. At that publication, the final optimized phone pass, manual VoiceOver and actual
+iOS 17 minimum-runtime execution were open. The successful final phone result
+above covered the earlier candidate; the subsequent owner account/navigation
+findings reopened physical qualification. Phase 7 has not started.
+
+
+### Account-flow report refresh and current handoff
+
+The owner-private report update is verified succeeded. It includes 430 evidence
+frames: 416 actual iOS device/simulator captures, 2 Android emulator captures and
+12 deterministic Android renders, plus 17 before/after comparisons, the account flow,
+platform adapter differences and current versus historical verification scopes.
+All referenced native frame hashes were checked. The new common account host
+fixtures are labeled separately from iOS captures. Browser QA checked the
+responsive flow and current evidence/status controls.
+
+Site source: `bce188aafa9984ece98f0eacd82abb81aa829845`.
+Saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_7d1a80c942ec8191b3688b60edffabc0`.
+Verified deployment: `appgdep_6adda2214b3c81919e9c49c1fc407f45`, succeeded
+on 2026-10-25. Owner-only access was preserved.
+
+The updated app is built and simulator-verified, with an audited optimized
+archive and local source checkpoints. At the owner's request, no updated phone
+installation or automated phone pass was attempted. Its installed validation app
+remains the earlier candidate. A new physical pass, complete manual VoiceOver
+results and actual iOS 17 runtime execution remain required. Phase 6 remains
+unchecked; Phase 7 has not started. No app-code push, PR, upload or distribution.
