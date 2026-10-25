@@ -167,7 +167,12 @@ to the requested behavior and the coherent migration slice needed to support it.
   images before changing goldens. iOS begins with an explicitly labeled first
   baseline. Keep generated screenshots and build logs under `build/`; commit only
   intentional golden fixtures and reproducible source/configuration.
-- The normal iOS application runs Login → Home with Projects, Favorites and
+- Both production hosts execute `shared-app`'s `TeamCityApp`/`PhaseTwoApp` root,
+  `SharedAppViewModel`, account/session policy, Ktor repositories, destination/result
+  orchestration and shared presentation. Android `MainActivity` decodes installed
+  Intents and supplies UI-owned OS adapters; iOS supplies the UIKit/Keychain host.
+  File names prefixed `Native` inside commonMain are shared by both hosts.
+- The normal application runs Login → Home with Projects, Favorites and
   Activity (Running, Queue, Agents), plus History → Build Overview and read-only
   Changes/Change Details, Tests/Test Details, Parameters and Snapshot Dependencies.
   The deterministic About preview remains an explicit regression-test launch mode.
@@ -179,9 +184,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   Native artifacts support folders, archive actions and byte-progress downloads.
   Downloads belong to the screen, survive recreation/sheets, and cancel on departure,
   app/scene backgrounding or account replacement; close blocked reads and remove
-  partial files. Native completed files use unique cache directories and export
-  through the system activity sheet. Android keeps its installed file provider,
-  permission adapters and successful replacement policy.
+  partial files. Common `ArtifactTarget` gives every transfer a unique cache directory;
+  repeated names retain both completed files on both platforms. System export uses
+  UIKit or Android's installed FileProvider. Prior Android downloads remain intact.
   Native browser/log/diff, sharing and clipboard actions stay in UI-owned adapters;
   API credentials never enter browser links. Settings shares presentation over the
   portable theme-preference contract, retaining Android DataStore and native
@@ -192,9 +197,16 @@ to the requested behavior and the coherent migration slice needed to support it.
   target out of VoiceOver until scrolling reveals them. Preserve each action and
   label after reveal; keep Android semantics unchanged and retain strict audits.
   Capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
-  section counts once to their exact live originating build visit. Android retains
-  its Retrofit/RxCache/authentication compatibility adapters behind shared feature
-  contracts; do not claim that its complete data stack has been replaced.
+  section counts once to their exact live originating build visit. Both production
+  hosts execute the common network/authentication/response-cache stack. Android's
+  old Retrofit/RxCache/authentication modules remain for compatibility codecs and
+  legacy regression harnesses; they no longer drive the common production root.
+  Preserve their serialized DTO/account formats and old cache files. Old RxCache
+  entries are not imported into the new bounded cache; its first read refetches.
+  Shared onboarding/rating state is account scoped. Rating uses the common local
+  eligibility rule rather than the retired Android Firebase Remote Config gate.
+  Both platforms offer all four shared theme choices and common license-reader UI;
+  license inventories are platform-specific dependency data.
 - KMP UI harnesses can apply `teamcityapp.android.screenshot`; verify with
   `:shared-app:verifyRoborazziAndroidHostTest`. Shared native account tests and
   signed XCTest UI runs must not concurrently control the same simulator.

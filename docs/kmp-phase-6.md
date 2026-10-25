@@ -602,7 +602,11 @@ The two task-owned UI simulators are shut down with their data preserved.
 The phone remains untouched. Physical, full manual VoiceOver and iOS 17 gates
 remain open; Phase 7 has not started.
 
-### Sharing audit after owner review
+### Historical sharing audit after owner review
+
+This subsection records the pre-consolidation checkpoint `40040d804`. The
+owner subsequently authorized replacing the listed runtime splits; see the
+current implementation below. Its statements describe that earlier source tree.
 
 The owner clarified the intended result: common business rules and app UI
 behavior on Android and iOS, with explicit disclosure of native implementations.
@@ -678,3 +682,251 @@ Deployment: `appgdep_6addb46031708191a934a98538fbd048`.
 Browser QA checked the new sharing section; all eleven repository source links
 and HTML asset references resolve locally. Spotless passes. The 470 existing
 frames and 17 comparisons are unchanged. No app/runtime or phone action occurred.
+
+### Authorized production consolidation
+
+The owner explicitly authorized implementing the sharing target after the audit.
+This is the Phase 6 parity follow-up, not an implicit start of Phase 7. The
+remaining physical/VoiceOver/minimum-runtime qualification stays separate.
+
+- [x] Both production hosts execute the common root, route/result/restoration logic.
+- [x] Both execute the same authentication, account and feature repositories.
+- [x] One account/consent/sign-out policy; preserve installed Android encrypted accounts and favorites.
+- [x] Common cache policies with durable platform storage; preserve installed legacy cache files.
+- [x] Common prompt/rating eligibility and persisted onboarding behavior.
+- [x] Common Settings options/theme resolution and license-reader UI, with native content/storage adapters.
+- [x] Native adapters own only OS services and data-format migration boundaries.
+- [x] Exercise production networking, alias compatibility, stale-account isolation and both host journeys.
+- [x] Verify common behavior on Android/iOS, affected Android goldens and actual host UI evidence.
+- [x] Update the private report with implemented versus pending scope and save local checkpoints.
+
+The initial compile-only foundation has been superseded by the verified source
+and host journeys recorded below. Qualification for device/manual/minimum-runtime
+coverage remains separate.
+
+
+
+### Production-core implementation (owner-authorized follow-up)
+
+Both shipped source entry points now execute the same common application:
+Android `MainActivity` → `TeamCityApp` → `PhaseTwoApp`, and iOS
+`MainViewController` → `PhaseTwoApp`. `Native*` file names inside commonMain
+are historical names, not iOS-only implementations. The local foundation
+checkpoint is `304067c36` (`feat(kmp): share the production app core across platforms`).
+
+| Feature/rule | Shared implementation now used by both | Android boundary | iOS boundary |
+|---|---|---|---|
+| App root, retained Home stacks, destination visits/results, account restoration | `shared-app`, `libraries/navigation`; exact account ownership validated before content restoration | Installed alias/Intent decoding and framework Bundle bridge | UIKit scene/controller lifecycle and public snapshot byte storage |
+| Login/Add Account validation, HTTP/TLS consent, duplicates and request cancellation | Common authentication presentation and `TeamCityAuthentication` | Ktor OkHttp engine | Ktor Darwin/URLSession engine |
+| Account, Manage Accounts, Add user account, switching/removal/sign-out | Common screens/ViewModels, `AccountSessionManager`, `AccountRecords`, account repositories | Existing ciphertext/JSON mapping through `LegacyAndroidAccountStorage`; DataStore preference migration | Common vault envelope through Keychain |
+| REST queries, JSON/domain mapping, management safety, cancellation | `TeamCityTransport`, `TeamCityApi`, `TeamCityAccountGraph`, `TeamCityBrowsingRepositories`, `TeamCityManagementRepositories` | OS HTTP engine only in production | OS HTTP engine only in production |
+| Cache format, TTLs, bounds, invalidation and account guards | `TeamCityResponseCache` | AtomicFile bytes | Foundation atomic file bytes |
+| Projects/Favorites/Activity/History/Overview and sections, Run/Filter/quick actions | Existing common feature presentations and the same common route registrations | Hilt root construction only | Lifecycle-owned root construction |
+| Education and project rating eligibility | Common account-scoped prompt flags and local rating rule; migrated Details metadata VM and History coachmark | Migrates installed prompt/rated flags | Same common policy, persisted with account metadata |
+| Theme choices and theme resolution | All four choices: Light, Dark, System, Auto Battery; common root computes the effective theme | Existing DataStore preference file; PowerManager power-saving notifications | UserDefaults preference; NSProcessInfo low-power notifications |
+| About/license list/text/loading/error/retry/navigation | Common presentation and `AppLicenseRepository` contract | Reads actual packaged OSS plugin catalog and byte offsets | Reads bundled native dependency notices |
+| Artifact naming/progress/cancellation/completion rules | Common `ArtifactTarget` and repository/ViewModel; unique per-transfer target on both | FileOutputStream/atomic rename/FileProvider | POSIX bytes/rename/system activity sheet |
+| Browser/log/diff/share/copy/rating | Common decisions, safe links and error UI | Custom Tabs/Intents/clipboard/installed rating integration | UIKit browser/activity sheet/pasteboard/StoreKit |
+| Diagnostics | Shared tracker event decisions with fixed labels | Existing Firebase delivery and crash integration | Local OS labels/Apple crash reports; no hosted upload configured |
+
+Behavior changes are deliberate and visible: Android now exposes Sign out while
+signed in; both hosts have the same separate Account/Manage/Add journey. Sign out
+keeps saved accounts and removes only the active selection. Add Account requires
+explicit HTTP consent on both. Native Settings gains Auto Battery, and Android
+license navigation uses the same list/reader as iOS. Inventories differ because
+platform dependencies differ; an Android notice without an upstream URL omits
+that optional source action. Common account rules also choose the same fallback
+account after removing the active record, without decoding unrelated secrets.
+
+The previous Android Remote Config rating gate is replaced by the common local
+eligibility rule (nonempty project content plus the shared persisted handled flag).
+Acknowledging or dismissing education/rating persists per account. Migrated flags
+prevent already-dismissed Android education from reappearing. No hosted iOS
+analytics service was added.
+
+The new network layer calls the user's existing TeamCity REST server directly.
+It is not a proxy/backend. Queries, Basic challenge handling, HTTP/TLS consent,
+same-origin/context checks, byte streaming, cache policy and no automatic replay
+of uncertain writes are common code. Only the operating-system HTTP engines differ.
+The Android mock flavor uses an injectable wire factory over its existing fake
+service, so the production common parser/repositories/UI still execute. Only explicit
+loopback/emulator-host fixtures use the actual engine; external mock origins
+remain deterministic and offline.
+The mock bridge exists only in the mock source set; it is not in production iOS
+or the Android prod flavor.
+
+Preservation and migration limits:
+
+- Existing Android encrypted account JSON/ciphertext, favorite IDs and installed
+  component aliases are preserved. DataStore metadata mirrors favorite updates
+  back to the legacy snapshot; interrupted mirrors repair on read.
+- Old RxCache files remain intact, but entries are not imported into the new
+  bounded response cache. A first request after migration fetches the server.
+  The new disposable envelope is limited to one active account, 128 entries,
+  1M characters/document and 4M total; it rejects corrupt/stale/cross-account data.
+  Optional cache I/O failure cannot undo a successful server operation.
+- Previous Android downloads remain intact. New same-named downloads each get
+  their own cache directory on both platforms, instead of replacing Android's
+  previous same-name file. Unfinished directories are removed on cancellation.
+- Old Android root Bundle serializer state is incompatible with the common
+  registry and is intentionally discarded once. Persisted accounts/preferences
+  remain. New common-root state and pending launches restore with exact account
+  validation, and a consumed launch is not replayed after recreation.
+- Navigation read/write failures offer common retry UI; cancellation propagates.
+  Destination factories seed arguments into owner-provided SavedStateHandles,
+  preserving restored user selections rather than creating unattached handles.
+- Retained legacy Android feature adapters, DTOs and regression harnesses still
+  compile. Their existence is not an active second production UI/data path.
+  Removing all compatibility/test infrastructure is outside this parity slice.
+
+Verification receipts and current-candidate runtime evidence follow below.
+Physical/manual VoiceOver/iOS 17 qualification remains open. The phone is untouched;
+Phase 7 and app distribution have not started.
+
+
+### Consolidation verification receipts
+
+The final scoped JVM regression has **957 cases**, **956 passed**, **one opt-in
+live-server skip**, zero failures/errors: app 234, shared-app 169, Account 191,
+History 245, network 25, shared-data 33, accounts 14, Android session 16, Details
+metadata 30. This covers the affected common root, repositories, migration,
+metadata and existing/new screenshot fixtures; it is not a second complete
+4,435-case run or a complete 400-case device suite. Existing golden fixtures
+were not rewritten. Forty new Settings/license/navigation-save-error fixtures and
+eight new sign-out fixtures were inspected and verified, including both themes,
+compact/expanded sizes and enlarged text. The 2x Settings capture also verifies
+scrolling the final choice into view.
+
+Dedicated iOS simulator unit results total **127 passed** across accounts 14,
+network 24, shared-data 33, Details metadata 30, shared-app/native storage 26.
+The Native unit device and UI device were separate throughout.
+
+Android API 34 emulator `shared-production-android-14-isolated-final.log` passes
+**14/14** root/account/restoration/Favorites/Run/Filter scenarios. This includes
+Account → Manage → Add/discard, sign-out/recreation, aliases, retained stack,
+filter/run results, one queued result through recreation, cancellation after a
+forced shared account-generation replacement, and Open favorites returning to
+the live Home owner while retaining the Projects History visit.
+
+A separate focused Android packaged-notice/Settings integration check passes
+**1/1** (`shared-production-android-license-final.log`). It loads the actual
+packaged Android catalog, opens a nonempty common license reader, verifies all
+four theme choices and captures the rendered list/text/Settings screens.
+This is 14 cases plus one scoped check, not a claimed clean full device suite.
+
+The expanded journeys caught a real missing common snackbar action: FavoriteAdded
+now selects the live parent Home/Favorites owner, with a common parent/child
+regression test. Earlier harness attempts and their logs are retained. Tests now
+reset only the mock app's public navigation/preference sidecars between independent
+cases, so previously saved favorites cannot override each case's installed legacy
+fixture. This reset occurs before test setup and does not erase account credentials
+or affect production persistence. Screenshot captures wait for the settled route
+and two rendered display frames; the first premature Add capture was rejected.
+
+Signed iPhone 17 Pro / iOS 26.4.1 simulator checks pass in scoped runs:
+
+- `shared-production-ios-journeys.xcresult`: Account/Manage/Add validation and
+  strict accessibility audits, one build visit and one Back to History passed.
+  Two platform scenarios initially skipped because their separate opt-in flag
+  was missing; they are not counted as passes in that run.
+- `shared-production-ios-platform.xcresult`: Settings choices, Dark persistence
+  after relaunch, About, rating return and offline licenses passed. Artifact
+  navigation paused on the newly enabled History education in that harness.
+- `shared-production-ios-artifacts-final.xcresult`: folders, archive actions,
+  download completion and native export passed after the harness completed the
+  common education using its normal public dismiss control. This is a focused
+  rerun, not a second clean full platform suite.
+
+The common coachmarks are exercised rather than disabled in simulator journeys.
+No accessibility issue type was suppressed. The account audit remains strict.
+The subsequent Favorites action has common Android/iOS unit coverage and its
+actual Android retained-pane integration pass.
+
+ProdDebug and the final optimized Android R8 verification package build. The
+unsigned optimized `SharedProductionFinal.xcarchive` passes the current source
+packaging audit: version **2.0.0**, build **1**, minimum **17.0**, no embedded
+provisioning, bundled inventory hash matching source, and zero audit errors.
+The executable SHA-256 is
+`e4fe0850df6069113e07dda44b1e086ac6dcc0b27ce219f4516986ee896f98d6`.
+The exported native dependency inventory still matches the bundled notices.
+The earlier `SharedProduction.xcarchive` predates the final Favorites fix and is
+historical. No archive was uploaded or distributed.
+
+Build logs and actual captures are under `build/kmp-phase-6/shared-production-*`.
+Formatting passes. Final source/checkpoint/report receipts are recorded after
+publication. Current-candidate physical/manual VoiceOver and actual iOS 17 runtime
+execution remain open, so Phase 6 is not complete and Phase 7 has not started.
+
+
+The second local source checkpoint is `373552201`
+(`feat(kmp): unify account policy and native service boundaries`). Its exact
+native/compatibility adapters are:
+
+- `app/.../navigation/MainActivity.kt` and `RootActivitySavedState.kt`: Android
+  framework/installed Intent compatibility and host restoration only.
+- `app/.../navigation/AndroidAppPlatform.kt`: Android browser/share/clipboard/
+  rating/power/lifecycle/file I/O and FileProvider export.
+- `AndroidSharedAppViewModel.kt`: Hilt construction and DataStore snapshot bytes.
+- `AndroidResponseCacheStore.kt`: atomic file bytes; common code owns cache rules.
+- `AndroidLicenseRepository.kt`: the actual Android OSS resource catalog/offsets.
+- `libraries/session/.../LegacyAndroidAccountStorage.kt` and
+  `AndroidAccountPreferencesStorage.kt`: preserve/migrate installed encrypted
+  records, favorite mirror and public metadata. Account mutation policy is common.
+- `libraries/network/src/androidMain/.../PlatformClient.kt` versus
+  `src/iosMain/.../PlatformClient.kt`: OkHttp versus Darwin HTTP engines.
+- `shared-app/src/iosMain/.../IosNativePlatform.kt`: UIKit/StoreKit/Foundation/
+  POSIX services, UserDefaults and atomic cache/snapshot file bytes.
+- `shared-app/src/iosMain/.../MainViewController.kt` and the Xcode/Swift shell:
+  controller/scene entry, Keychain namespace, icon/privacy/signing/packaging.
+- Native secure-vault, date/locale and clipped-action accessibility actuals remain
+  OS adapters. Android tooltip semantics and iOS clipped-fragment behavior remain
+  intentionally platform-appropriate; no business/navigation policy is forked there.
+- Android legacy feature registrations/Retrofit/RxCache/Gson DTO codecs still
+  support compatibility and historical regression harnesses. Android mock-only
+  `SharedClientModule`/`SharedMockClient` adapt deterministic test wire data;
+  only explicit loopback/emulator-host fixtures can use the real mock engine path.
+
+Existing explicit themes are retained. Fresh installs use the common System
+default and all four choices on both platforms. The final normal ProdDebug APK
+was installed in place on the task emulator: the existing approved public Guest
+account restored and actual JetBrains projects loaded through the common Ktor/
+OkHttp graph. No account data was cleared and public TeamCity verification stayed
+read-only. Its local rating prompt was dismissed normally; no store review was sent.
+The production Debug startup/display capture is labeled separately from mock
+instrumentation captures. Physical-device control remains deferred.
+
+
+The final optimized Android package also passes **6/6** isolated R8 smoke checks
+(`shared-production-r8-smoke-final.log`): JSON/serialized models, encrypted-account
+compatibility, retained Retrofit/disk-cache codecs, event/date resources, common
+Login startup and packaged OSS resources/external-menu compatibility. These
+smoke tests do not imply that the retired Retrofit graph drives the common root.
+The current production Debug public-Guest startup also passed separately.
+
+
+### Shared-core private report receipt
+
+The owner-private report update succeeded on 2026-10-25 at 16:12 UTC.
+
+- URL: https://teamcityapp-kmp-phase-six-20261023.andrey-tolpeev.chatgpt.site/#consolidation
+- Site source: `e997a9d38dbc069b1493a38cd102ae1ee96539c6`.
+- Saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_72ed94654d9881919d53c29748e8780d`.
+- Deployment: `appgdep_6ade2a36c0ec8191979de2a0db0351aa`, succeeded.
+- Audience verified immediately before publication: one owner, zero editors,
+  groups or external visitors; no sharing change.
+- 548 frames and 20 comparisons: 478 actual iOS captures, 10 actual Android
+  captures and 60 deterministic renders. The new collection adds 22 iOS,
+  eight Android and 48 reviewed render fixtures. Existing historical evidence
+  remains labeled by source/candidate; three new comparisons show Android sign-out
+  and iOS theme-option changes.
+- All frame hashes and local HTML references were checked. Browser QA verified
+  the common-core/native-boundary diagram, current readiness data, actual
+  Android/iOS Account pair, iOS Settings gallery and Android sign-out comparison.
+  Versioned JSON/JS references refresh the prior audit in existing browser tabs.
+
+The report's attached implementation record is the packaging-time snapshot;
+this successful publication receipt is recorded in the repository afterward.
+Source checkpoints remain local and no application package was distributed.
+The implementation follow-up checklist is complete. The wider Phase 6 gates for
+current physical-device, complete manual VoiceOver and iOS 17 runtime execution
+remain open, and Phase 7 has not started.
