@@ -601,3 +601,80 @@ Verified deployment: `appgdep_6addb20d47bc8191bdcf08858bd52521`, succeeded.
 The two task-owned UI simulators are shut down with their data preserved.
 The phone remains untouched. Physical, full manual VoiceOver and iOS 17 gates
 remain open; Phase 7 has not started.
+
+### Sharing audit after owner review
+
+The owner clarified the intended result: common business rules and app UI
+behavior on Android and iOS, with explicit disclosure of native implementations.
+The current migration does not yet satisfy that full requirement. `commonMain`
+means portable source; it does not establish that both installed hosts execute
+that implementation. The 26 feature presentation modules are referenced by both
+Android feature adapters and the native root, but their data and route adapters
+still differ. This is a source/dependency audit, not a runtime parity pass.
+
+The shared presentations cover Login, Account, Manage Accounts, Add Account,
+Home, Projects/configurations, Favorites, Running Builds, Queue, Agents, History,
+Overview, Build Details, Changes/Change Details, Tests/Test Details, Parameters,
+Snapshot Dependencies, Artifacts, Run Build, Filter Builds, Quick Filter,
+Action Bottom Sheet, Settings and About. Their common screens/ViewModels do not
+by themselves prove equal host configuration, repository policy or navigation.
+
+| Area | Android production implementation | iOS production implementation | Unresolved sharing or behavior boundary |
+| --- | --- | --- | --- |
+| App root/navigation | `app/.../navigation/MainActivity.kt`, registrations, `AppAccountFlowNavigation`, Android saved-state/Intent adapters | `shared-app/.../PhaseTwoApp.kt`, `NativeBrowsing`, `NativeManagement`, `NativeJourneySnapshot` | Common navigation machinery, separate route coordination, restoration orchestration and callbacks. |
+| Accounts | `DefaultDrawerRepository`, `DefaultManageAccountsRepository`, installed encrypted storage/cache cleanup | `NativeAccountSwitcherRepository`, `NativeManageAccountsRepository` over portable sessions/storage | Common Account/Manage ViewModels; repository orchestration and identity lookup differ. |
+| Session lifetime | Common `AccountSessionManager` via `SessionModule`/`LegacyAndroidAccountStorage`, plus retained Android API graph | Same common manager, `SharedAppViewModel` and `TeamCityAccountGraph` | Session primitives are genuinely shared; API initialization/reset wiring is separate. |
+| Sign out | Account does not expose the optional action | `supportsSignOut = true`; shared Account supplies the action while active | Real product difference, not a KMP constraint. Sign out clears active selection while preserving saved accounts. |
+| Authentication | `AppAuthenticationRepository`, OkHttp validation, installed storage/API initialization | `TeamCityAuthentication`, Ktor validation and portable session persistence | Common form/presentation contract; separate URL/error/authentication orchestration. |
+| Add HTTP consent | `AndroidCreateAccountViewModel` keeps shared default `checkSecureConnection = false` | `NativeAccounts` explicitly supplies `true` | Same ViewModel configured for different policy. |
+| Browsing/read data | `libraries/data`, Android feature repository adapters | `TeamCityAccountGraph`, `TeamCityBrowsingRepositories` | Separate request/mapping/cache/preference implementations behind common feature contracts. |
+| Build management | `DefaultRunBuildRepository`, `DefaultBuildDetailsRepository`, existing service | `TeamCityManagementRepositories` | Shared UI/state, separate payload/repository execution logic. |
+| Favorites/filters | Installed account/preferences and filter adapters | Portable account preferences and browsing repositories | Persistence and query-building paths differ. |
+| Downloads | `DefaultArtifactsRepository`, Android file/permission adapters | `TeamCityArtifactsRepository`, `IosArtifactFileStore` | Shared presentation; separate transfer repositories and native file handling. |
+| Onboarding/rating prompts | Persisted Android prompt flags and rating eligibility | Home/History/Details prompt providers return empty; project rating eligibility is false | Behavioral parity is incomplete. Manual account/About rating action remains available through Apple. |
+| Login surrounding UI | Android feature route | Native Login adds an Accounts entry | Host-owned UI/navigation difference around the common screen. |
+| Settings | Common Settings over DataStore; Auto Battery option where supported | Same presentation over UserDefaults; Light/Dark/System | Native storage boundary plus differing available options. |
+| Licenses | Google's OSS Licenses activity | `NativeLicenses` common-source list/readers used by iOS | Separately implemented UI. |
+| Diagnostics | Existing Firebase analytics/crash integrations | Fixed OS events, Apple crash reports and some no-op trackers | Instrumentation differs; no hosted iOS upload configured. |
+
+The new network stack is a client of the same TeamCity REST server, not a new
+backend/proxy. Android production still executes its Retrofit/OkHttp/Gson/
+RxJava/RxCache adapters. iOS executes common `TeamCityTransport` (HTTP/authentication,
+origin/context guards, streaming and no automatic uncertain-write retry),
+`TeamCityApi` (REST/JSON mapping and account-activation memory caches), and
+`libraries/shared-data` feature repositories over the Darwin engine. An Android
+Ktor/OkHttp engine exists, but Android production is not wired to `shared-data`.
+Its existing RxCache disk policy and the new memory caches are not equivalent.
+
+Concrete source locations:
+
+- [Shared-root dependencies](../shared-app/build.gradle.kts).
+- [Native account routing/policy](../shared-app/src/commonMain/kotlin/teamcityapp/shared/NativeAccounts.kt) and [repositories](../shared-app/src/commonMain/kotlin/teamcityapp/shared/NativeAccountRepositories.kt).
+- [Android authentication](../app/src/main/kotlin/com/github/vase4kin/teamcityapp/integration/authentication/AppAuthenticationRepository.kt) and [portable authentication](../libraries/shared-data/src/commonMain/kotlin/teamcityapp/libraries/shared_data/TeamCityAuthentication.kt).
+- [Android common-session wiring](../app/src/main/kotlin/com/github/vase4kin/teamcityapp/di/modules/SessionModule.kt).
+- [Portable network](../libraries/network/src/commonMain/kotlin/teamcityapp/libraries/network/TeamCityTransport.kt) and [native graph](../libraries/shared-data/src/commonMain/kotlin/teamcityapp/libraries/shared_data/TeamCityAccountGraph.kt).
+- [Native root and disabled prompts](../shared-app/src/commonMain/kotlin/teamcityapp/shared/PhaseTwoApp.kt), [native browsing repositories](../libraries/shared-data/src/commonMain/kotlin/teamcityapp/libraries/shared_data/TeamCityBrowsingRepositories.kt) and [native license UI](../shared-app/src/commonMain/kotlin/teamcityapp/shared/NativeLicenses.kt).
+
+Native boundaries remain necessary for Keychain versus Android secure storage,
+Darwin versus OkHttp engines, UserDefaults versus DataStore, browser/share/export/
+clipboard APIs, application lifecycle/hosting, system date services and VoiceOver
+semantics. Those boundaries do not require separate product rules. The target
+is common decisions/contracts with small platform implementations. Remaining
+consolidation concerns production data/network wiring, account policies,
+route orchestration, prompt eligibility and the listed UI differences.
+
+This audit changes documentation only. It neither implements that consolidation
+nor starts Phase 7. The feature-parity checklist remains unchecked, alongside
+physical/manual/iOS 17 qualification. The installed runtime inventory was checked
+again after the audit: 26.4.1, 26.5, 27.0 and 27.1 are available; 17 is absent.
+The owner still defers phone control. No newer-runtime or source-audit result
+replaces the missing qualification evidence.
+
+
+The sharing-audit report refresh is verified succeeded, owner-private, on
+2026-10-25. Source: `a1aa37f5693499d0dbe6eb78b1256f306f05a10e`.
+Saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_66b2a394247c8191af125a97c1ebd3db`.
+Deployment: `appgdep_6addb46031708191a934a98538fbd048`.
+Browser QA checked the new sharing section; all eleven repository source links
+and HTML asset references resolve locally. Spotless passes. The 470 existing
+frames and 17 comparisons are unchanged. No app/runtime or phone action occurred.

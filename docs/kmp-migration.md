@@ -251,6 +251,10 @@ Application commits remain local. Phase 6 requires a new user instruction.
   their shared-screen/navigation fixes pass Android/common tests and compact,
   expanded dark and maximum-text simulator checks. The owner deferred the new
   physical-device pass; the complete manual and iOS 17 runtime gates remain open.
+  The owner’s sharing audit also identifies separate production repositories,
+  account policies, route orchestration and prompt/license UI behavior. Common
+  presentation modules are not proof of full business/UI parity; see the
+  sharing audit in the Phase 6 record.
 - [ ] Verify accessibility, large text, themes, safe areas, keyboard, gestures,
   supported sizes/orientations, and iPad layouts.
 - [x] Verify termination/relaunch, backgrounding, network failures, account changes,
