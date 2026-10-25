@@ -25,6 +25,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.drawer.impl" }
 dependencies {
+    api(projects.features.drawer.presentation)
     implementation(projects.libraries.coroutines)
     implementation(projects.libraries.session)
     implementation(projects.features.manageAccounts.api)

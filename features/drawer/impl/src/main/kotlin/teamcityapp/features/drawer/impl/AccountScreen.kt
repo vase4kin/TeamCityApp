@@ -16,70 +16,9 @@
 
 package teamcityapp.features.drawer.impl
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.drawer.api.DrawerAccountId
-import teamcityapp.libraries.theme.*
-import teamcityapp.libraries.theme.R as ThemeR
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountScreen(
-    state: DrawerUiState,
-    onSelect: (DrawerAccountId) -> Unit,
-    onAddAccount: () -> Unit,
-    onManageAccounts: () -> Unit,
-    onSettings: () -> Unit,
-    onAbout: () -> Unit,
-    onPrivacy: () -> Unit,
-    onRate: () -> Unit,
-    modifier: Modifier = Modifier,
-    onRetry: () -> Unit = {},
-    onRetrySelection: () -> Unit = {},
-    onDismissMissing: () -> Unit = {},
-    onNavigateUp: () -> Unit = {}
-) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val listState = rememberLazyListState()
-    BindTeamCityAppBarToList(listState, scrollBehavior.state)
-    BackHandler(enabled = !state.canInteract) {}
-    Scaffold(modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.account_title), style = MaterialTheme.typography.headlineMedium) },
-            navigationIcon = {
-                TeamCityTooltip(stringResource(R.string.account_back)) {
-                    IconButton(onNavigateUp, enabled = state.canInteract, modifier = Modifier.testTag("account:back")) {
-                        Icon(painterResource(ThemeR.drawable.ic_arrow_back_24dp), stringResource(R.string.account_back))
-                    }
-                }
-            },
-            colors = teamCityTopAppBarColors(),
-            scrollBehavior = scrollBehavior,
-            modifier = Modifier.testTag("screen:app-bar")
-        )
-    }) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
-            DrawerScreen(
-                state, onSelect, onAddAccount, onManageAccounts, onSettings, onAbout, onPrivacy, onRate,
-                modifier = Modifier.fillMaxHeight().testTag("account:content"), onRetry = onRetry, onRetrySelection = onRetrySelection,
-                onDismissMissing = onDismissMissing, listState = listState
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AccountPreview() {
-    TeamCityTheme { AccountScreen(DrawerUiState(DrawerAccountsUiState.Empty), {}, {}, {}, {}, {}, {}, {}) }
-}
+fun AccountScreen(state: DrawerUiState, onSelect: (DrawerAccountId) -> Unit, onAddAccount: () -> Unit, onManageAccounts: () -> Unit, onSettings: () -> Unit, onAbout: () -> Unit, onPrivacy: () -> Unit, onRate: () -> Unit, modifier: Modifier = Modifier, onRetry: () -> Unit = {}, onRetrySelection: () -> Unit = {}, onDismissMissing: () -> Unit = {}, onNavigateUp: () -> Unit = {}) = SharedAccountScreen(state, onSelect, onAddAccount, onManageAccounts, onSettings, onAbout, onPrivacy, onRate, modifier, onRetry, onRetrySelection, onDismissMissing, onNavigateUp)

@@ -16,44 +16,12 @@
 
 package teamcityapp.features.create_account.impl
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.libraries.authentication.*
-import teamcityapp.libraries.theme.*
-
-enum class CreateAccountDialog { None, Ssl, Discard }
+import teamcityapp.libraries.theme.UiText
 
 @Composable
-fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFormState) -> Unit, onSubmit: () -> Unit, onSslChange: (Boolean) -> Unit, onClose: () -> Unit, dialog: CreateAccountDialog = CreateAccountDialog.None, onConfirm: () -> Unit = {}, onDecline: () -> Unit = {}) {
-    val scrollState = rememberScrollState()
-    TeamCityScreen(stringResource(R.string.add_new_account_dialog_title), onClose, bottomBar = {
-        TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("create-account:bottom-action")) {
-            TeamCityLoadingButton(onSubmit, stringResource(R.string.add_new_account_dialog_create_account_button_text), stringResource(state.submitLabelRes), state.form.busy, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("create-account:submit"))
-        }
-    }) { modifier ->
-        Column(modifier) {
-            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("create-account:scroll").padding(TeamCityDimensions.contentPadding), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                Card(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth).fillMaxWidth().testTag("create-account:form"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(vertical = TeamCityDimensions.sectionSpacing), errorMessage = state.formErrorMessage, horizontalPadding = TeamCityDimensions.sectionSpacing)
-                }
-            }
-        }
-    }
-    when {
-        dialog == CreateAccountDialog.Ssl -> AuthenticationWarning(onAccept = onConfirm, onDecline = onDecline)
-        dialog == CreateAccountDialog.Discard -> AlertDialog(onDismissRequest = onDecline, modifier = Modifier.testTag("create-account:discard"), shape = MaterialTheme.shapes.large, text = { Text(stringResource(R.string.discard_dialog_content)) }, confirmButton = { TextButton(onConfirm) { Text(stringResource(R.string.discard_dialog_positive_button_text)) } }, dismissButton = { TextButton(onDecline) { Text(stringResource(R.string.discard_dialog_negative_button_text)) } })
-    }
-}
+fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFormState) -> Unit, onSubmit: () -> Unit, onSslChange: (Boolean) -> Unit, onClose: () -> Unit, dialog: CreateAccountDialog = CreateAccountDialog.None, onConfirm: () -> Unit = {}, onDecline: () -> Unit = {}) = SharedCreateAccountScreen(state, onChange, onSubmit, onSslChange, onClose, dialog, onConfirm, onDecline)
 
-@Preview @Composable
-private fun CreatePreview() {
-    TeamCityTheme { CreateAccountScreen(CreateAccountUiState(), {}, {}, {}, {}) }
-}
+val CreateAccountUiState.submitLabelRes: Int get() = if (form.guest) R.string.connecting else R.string.signing_in
+val CreateAccountUiState.formErrorMessage: UiText? get() = if (form.error == AuthenticationError.DuplicateAccount) UiText.Resource(R.string.add_new_account_dialog_account_exist_error_message) else form.errorMessage

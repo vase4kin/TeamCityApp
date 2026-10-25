@@ -25,6 +25,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.manage_accounts.impl" }
 dependencies {
+    api(projects.features.manageAccounts.presentation)
     implementation(projects.libraries.cacheManager)
     implementation(projects.libraries.coroutines)
     implementation(projects.libraries.session)

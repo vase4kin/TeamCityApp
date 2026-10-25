@@ -35,6 +35,9 @@ kotlin {
     }
     sourceSets.named("commonMain") {
         dependencies {
+            implementation(projects.features.drawer.presentation)
+            implementation(projects.features.manageAccounts.presentation)
+            implementation(projects.features.createAccount.presentation)
             implementation(projects.features.buildArtifacts.presentation)
             implementation(projects.features.settings.presentation)
             implementation(projects.features.runBuild.presentation)

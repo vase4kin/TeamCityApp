@@ -19,67 +19,54 @@ package teamcityapp.shared
 import android.app.Application
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.libraries.accounts.AccountIdentity
-import teamcityapp.libraries.list_state.ListUiState
+import teamcityapp.features.drawer.api.*
+import teamcityapp.features.drawer.impl.*
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class AccountsScreenTest {
     @get:Rule val compose = createComposeRule()
-    private val alice = AccountIdentity("https://teamcity.example", "alice", false)
-    private val bob = alice.copy(userName = "bob")
-    private val state = AccountsUiState(ListUiState.Content(listOf(alice, bob)), activeKey = alice.key)
+    private val alice = DrawerAccount(DrawerAccountId("https://teamcity.example", "alice", "opaque-alice"), true, false)
+    private val bob = DrawerAccount(DrawerAccountId("https://teamcity.example", "bob", "opaque-bob"), false, false)
+    private val state = DrawerUiState(DrawerAccountsUiState.Content(listOf(alice, bob)))
 
-    @Test fun accountSelectionDispatchesTheExactUserOnTheSameServer() {
-        val selected = mutableListOf<String>()
-        compose.setContent { TeamCityTheme { SharedAccountsScreen(state, selected::add, {}, {}, {}, {}, {}) } }
-        compose.onNodeWithTag("accounts:activate:${bob.key}").performScrollTo().performClick()
-        assertEquals(listOf(bob.key), selected)
+    @Test fun nativeSelectionRetainsTheExactPublicAccountKey() {
+        val selected = mutableListOf<DrawerAccountId>()
+        compose.setContent { TeamCityTheme { SharedAccountScreen(state, selected::add, {}, {}, {}, {}, {}, {}) } }
+        compose.onNodeWithTag(accountTag(bob.id)).performScrollTo().performClick()
+        assertEquals(listOf(bob.id), selected)
     }
 
-    @Test fun removalRequiresConfirmationAndCancelDoesNotDelete() {
-        val removed = mutableListOf<String>()
-        compose.setContent { TeamCityTheme { SharedAccountsScreen(state, {}, removed::add, {}, {}, {}, {}) } }
-        compose.onNodeWithTag("accounts:remove:${alice.key}").performClick()
-        compose.onNodeWithText("Remove saved account?").assertIsDisplayed()
-        assertTrue(removed.isEmpty())
-        compose.onNodeWithText("Cancel").performClick()
-        assertTrue(removed.isEmpty())
-        compose.onNodeWithTag("accounts:remove:${alice.key}").performClick()
-        compose.onNodeWithTag("accounts:confirm-remove").performClick()
-        assertEquals(listOf(alice.key), removed)
+    @Test fun nativeAccountHasDistinctAddAndManageActions() {
+        var add = 0
+        var manage = 0
+        compose.setContent { TeamCityTheme { SharedAccountScreen(state, {}, { add++ }, { manage++ }, {}, {}, {}, {}) } }
+        compose.onNodeWithTag("drawer:add").performScrollTo().performClick()
+        compose.onNodeWithTag("drawer:manage").performScrollTo().performClick()
+        assertEquals(1, add)
+        assertEquals(1, manage)
+        compose.onNodeWithTag("accounts:row:${alice.id.identityKey}:remove").assertDoesNotExist()
     }
 
-    @Test fun busyOperationsDisableAccountChanges() {
-        compose.setContent { TeamCityTheme { SharedAccountsScreen(state.copy(busy = true), {}, {}, {}, {}, {}, {}) } }
-        compose.onNodeWithTag("accounts:activate:${alice.key}").assertIsNotEnabled()
-        compose.onNodeWithTag("accounts:remove:${alice.key}").assertIsNotEnabled()
-        compose.onNodeWithTag("accounts:add").assertIsNotEnabled()
+    @Test fun nativeSignOutIsCapabilityGatedAndBusyOperationsDisableIt() {
+        compose.setContent { TeamCityTheme { SharedAccountScreen(state.copy(selection = AccountSwitchUiState.SigningOut), {}, {}, {}, {}, {}, {}, {}, onSignOut = {}) } }
+        compose.onNodeWithTag("drawer:list").performScrollToNode(hasTestTag("accounts:sign-out"))
         compose.onNodeWithTag("accounts:sign-out").assertIsNotEnabled()
+        compose.onNodeWithTag("drawer:list").performScrollToNode(hasTestTag("drawer:add"))
+        compose.onNodeWithTag("drawer:add").assertIsNotEnabled()
     }
 
-    @Test fun anOptionalWriteFailureKeepsRowsAndDispatchesRetry() {
-        var retries = 0
-        compose.setContent { TeamCityTheme { SharedAccountsScreen(state.copy(mutationFailed = true), {}, {}, {}, { retries++ }, {}, {}) } }
-        compose.onNodeWithText("alice").assertIsDisplayed()
-        compose.onNodeWithText("Retry").performClick()
-        assertEquals(1, retries)
-    }
-
-    @Test fun emptyAccountsKeepAddAvailableAndHideSignOut() {
-        var added = 0
-        compose.setContent { TeamCityTheme { SharedAccountsScreen(AccountsUiState(ListUiState.Empty()), {}, {}, {}, {}, { added++ }, {}) } }
-        compose.onNodeWithText("No saved accounts").assertIsDisplayed()
+    @Test fun emptySignedOutAccountsKeepAddAndManageWithoutSignOut() {
+        compose.setContent { TeamCityTheme { SharedAccountScreen(DrawerUiState(DrawerAccountsUiState.Empty), {}, {}, {}, {}, {}, {}, {}) } }
+        compose.onNodeWithTag("drawer:add").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("drawer:manage").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("accounts:sign-out").assertDoesNotExist()
-        compose.onNodeWithTag("accounts:add").performClick()
-        assertEquals(1, added)
     }
 }

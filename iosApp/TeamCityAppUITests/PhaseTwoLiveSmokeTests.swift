@@ -76,7 +76,7 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         XCTAssertTrue(element(app,"auth:error").waitForExistence(timeout: 35))
         capture("phase2_unreachable_server",app)
         element(app,"login:accounts").tap()
-        XCTAssertTrue(app.staticTexts["No saved accounts"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Add an account to connect to TeamCity"].waitForExistence(timeout: 10))
         capture("phase2_empty_accounts",app)
     }
     private func waitUntilSettled(_ target: XCUIElement) {
@@ -180,7 +180,7 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         XCTAssertTrue(element(app,"login:accounts").waitForExistence(timeout: 10))
         capture("phase2_signed_out",app)
         element(app,"login:accounts").tap()
-        let saved = app.buttons.matching(NSPredicate(format:"identifier BEGINSWITH %@", "accounts:activate:")).firstMatch
+        let saved = app.buttons.matching(NSPredicate(format:"identifier BEGINSWITH %@", "drawer:account:")).firstMatch
         XCTAssertTrue(saved.waitForExistence(timeout: 10))
         saved.tap()
         XCTAssertTrue(kotlin.waitForExistence(timeout: 30))
@@ -196,14 +196,17 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
     }
     private func capture(_ name: String, _ app: XCUIApplication) {
         let bar = element(app, "screen:app-bar")
-        var lastFrame = bar.frame
+        // Modal authentication warnings and initial Login hide/omit the app bar.
+        // Settle the visible app frame there; keep header checks on normal visits.
+        let anchor = bar.exists ? bar : app
+        var lastFrame = anchor.frame
         var unchangedSince = Date()
         let settled = NSPredicate { _, _ in
-            let frame = bar.frame
+            let frame = anchor.frame
             if frame != lastFrame { lastFrame = frame; unchangedSince = Date() }
             return Date().timeIntervalSince(unchangedSince) >= 0.6
         }
-        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: bar)], timeout: 5), .completed)
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: settled, object: anchor)], timeout: 5), .completed)
         if bar.exists && XCUIDevice.shared.orientation == .portrait {
             XCTAssertGreaterThanOrEqual(bar.frame.minY, 20, "The nested screen header must remain below the system status area")
         }
@@ -257,6 +260,120 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
     }
+    func testSharedAccountAddDuplicateAndConfirmedRemoval() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Read-only fixture is opt-in") }
+        continueAfterFailure = false
+        let app = fixtureApp("/manage-start")
+        func enter(_ suffix: String) {
+            tap(app, "auth:guest")
+            let url = element(app, "auth:url")
+            url.tap()
+            for _ in 0..<8 { url.typeText(XCUIKeyboardKey.delete.rawValue) }
+            for character in teamCityReadOnlyFixtureBaseURL + suffix { url.typeText(String(character)) }
+            url.typeText("\n")
+        }
+        func discard() {
+            back(app)
+            XCTAssertTrue(element(app, "create-account:discard").waitForExistence(timeout: 10))
+            app.buttons["Discard"].tap()
+        }
+        tap(app, "home:account")
+        tap(app, "drawer:add", scroll: true)
+        enter("/manage-start")
+        XCTAssertTrue(element(app, "auth:error").waitForExistence(timeout: 15))
+        XCTAssertTrue(element(app, "create-account:form").exists)
+        capture("add_account_duplicate", app)
+        discard()
+        tap(app, "drawer:add", scroll: true)
+        enter("/manage-added")
+        XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
+        capture("add_account_http_consent", app)
+        app.buttons["OK"].tap()
+        XCTAssertTrue(element(app, "home:account").waitForExistence(timeout: 30))
+        tap(app, "home:account")
+        tap(app, "drawer:manage", scroll: true)
+        XCTAssertTrue(element(app, "accounts:list").waitForExistence(timeout: 15))
+        let remove = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND identifier ENDSWITH %@", "accounts:row:", ":remove"))
+        XCTAssertEqual(remove.count, 2)
+        capture("manage_accounts_two_saved", app)
+        let inactive = remove.allElementsBoundByIndex.first { $0.label.contains("/manage-start/") }
+        XCTAssertNotNil(inactive)
+        inactive!.tap()
+        XCTAssertTrue(element(app, "accounts:dialog").waitForExistence(timeout: 10))
+        app.buttons["Cancel"].tap()
+        XCTAssertEqual(remove.count, 2)
+        inactive!.tap()
+        XCTAssertTrue(element(app, "accounts:dialog").waitForExistence(timeout: 10))
+        app.buttons["Remove"].tap()
+        let oneRemaining = NSPredicate { _, _ in remove.count == 1 }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: oneRemaining, object: app)], timeout: 15), .completed)
+        XCTAssertTrue(remove.firstMatch.label.contains("/manage-added/"))
+        capture("manage_accounts_inactive_removed", app)
+        back(app)
+        tap(app, "accounts:sign-out", scroll: true)
+        XCTAssertTrue(element(app, "auth:url").waitForExistence(timeout: 20))
+        tap(app, "login:accounts")
+        tap(app, "drawer:manage", scroll: true)
+        XCTAssertTrue(element(app, "accounts:list").waitForExistence(timeout: 10))
+        XCTAssertEqual(remove.count, 1)
+        remove.firstMatch.tap()
+        XCTAssertTrue(element(app, "accounts:dialog").waitForExistence(timeout: 10))
+        app.buttons["Remove"].tap()
+        XCTAssertTrue(element(app, "auth:url").waitForExistence(timeout: 20))
+        capture("manage_accounts_last_removed_login", app)
+    }
+
+    func testAccountFlowMatchesAndroidAndHistoryHasOneBuildVisit() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Read-only fixture is opt-in") }
+        continueAfterFailure = false
+        let app = fixtureApp("/account-review")
+        func audit() throws {
+            if #available(iOS 17.0, *) { try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .trait]) }
+        }
+        tap(app, "home:account")
+        XCTAssertTrue(element(app, "drawer:manage").waitForExistence(timeout: 15))
+        capture("account_android_parity", app)
+        try audit()
+        tap(app, "drawer:add", scroll: true)
+        XCTAssertTrue(element(app, "create-account:form").waitForExistence(timeout: 15))
+        XCTAssertFalse(element(app, "login:submit").exists)
+        XCTAssertTrue(app.staticTexts["Add user account"].exists)
+        capture("add_account_distinct", app)
+        try audit()
+        tap(app, "create-account:submit", scroll: true)
+        XCTAssertTrue(element(app, "auth:error").waitForExistence(timeout: 10))
+        capture("add_account_validation", app)
+        try audit()
+        back(app)
+        XCTAssertTrue(element(app, "create-account:discard").waitForExistence(timeout: 10))
+        app.buttons["Discard"].tap()
+        tap(app, "drawer:manage", scroll: true)
+        XCTAssertTrue(element(app, "accounts:list").waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["Manage Accounts"].exists)
+        capture("manage_accounts_distinct", app)
+        let server = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND identifier ENDSWITH %@", "accounts:row:", ":url")).firstMatch
+        XCTAssertTrue(server.label.hasPrefix("Server url,"))
+        try audit()
+        tap(app, "accounts:add", scroll: true)
+        XCTAssertTrue(element(app, "create-account:form").waitForExistence(timeout: 15))
+        back(app)
+        XCTAssertTrue(element(app, "create-account:discard").waitForExistence(timeout: 10))
+        app.buttons["Discard"].tap()
+        XCTAssertTrue(element(app, "accounts:list").waitForExistence(timeout: 10))
+        back(app)
+        XCTAssertTrue(element(app, "drawer:manage").waitForExistence(timeout: 10))
+        back(app)
+        tap(app, "navigation:row:configuration:Demo_Build")
+        tap(app, "history:build:1")
+        XCTAssertTrue(element(app, "details:actions").waitForExistence(timeout: 20))
+        XCTAssertTrue(element(app, "overview:row:Result").waitForExistence(timeout: 20))
+        capture("history_single_details_visit", app)
+        back(app)
+        XCTAssertTrue(element(app, "history:build:1").waitForExistence(timeout: 10))
+        XCTAssertFalse(element(app, "overview:screen").exists)
+        capture("history_one_back", app)
+    }
+
     func testHomeRetainedPanesFavoritesSectionsAndRelaunch() throws {
         guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else {
             throw XCTSkip("Start scripts/kmp-platform-fixture.py and opt in to fixture UI verification.")
@@ -809,7 +926,7 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         let app = try platformApp()
         tap(app, "home:account")
         capture("accounts_platform_actions", app)
-        tap(app, "accounts:settings")
+        tap(app, "drawer:settings")
         capture("settings", app)
         tap(app, "settings:option:Dark")
         capture("settings_dark", app)
@@ -818,7 +935,7 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         capture("settings_dark_relaunched", app)
         tap(app, "settings:option:System")
         back(app)
-        tap(app, "accounts:about")
+        tap(app, "drawer:about")
         XCTAssertTrue(app.staticTexts["Version"].firstMatch.waitForExistence(timeout: 20))
         capture("about", app)
         tap(app, "Rate the app", scroll: true)

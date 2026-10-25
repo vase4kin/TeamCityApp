@@ -79,6 +79,10 @@ final class PhaseSixReleaseTests: XCTestCase {
         XCTAssertTrue(account.waitForExistence(timeout: 25))
         account.tap()
         let signOut = app.descendants(matching: .any).matching(identifier: "accounts:sign-out").firstMatch
+        for _ in 0..<8 {
+            if signOut.exists && signOut.isHittable { break }
+            app.swipeUp()
+        }
         XCTAssertTrue(signOut.waitForExistence(timeout: 10))
         signOut.tap()
         XCTAssertTrue(url.waitForExistence(timeout: 10))

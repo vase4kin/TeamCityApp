@@ -32,8 +32,8 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
-import teamcityapp.libraries.accounts.AccountIdentity
-import teamcityapp.libraries.list_state.ListUiState
+import teamcityapp.features.drawer.api.*
+import teamcityapp.features.drawer.impl.*
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalRoborazziApi::class, ExperimentalTestApi::class)
@@ -65,31 +65,28 @@ class AccountsScreenScreenshotTest(private val scene: String, private val varian
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
-        val alice = AccountIdentity("https://teamcity.example", "alice", false)
-        val bob = alice.copy(userName = "bob")
-        val state = AccountsUiState(
-            list = when (scene) {
-                "loading" -> ListUiState.Loading
-                "error" -> ListUiState.Error
-                "empty" -> ListUiState.Empty()
-                else -> ListUiState.Content(listOf(alice, bob))
-            },
-            activeKey = if (scene in listOf("content", "updating", "write_error", "confirmation", "app_actions")) alice.key else null,
-            busy = scene == "updating",
-            mutationFailed = scene == "write_error"
+        val alice = DrawerAccount(DrawerAccountId("https://teamcity.example", "alice", "alice"), true, false)
+        val bob = DrawerAccount(DrawerAccountId("https://teamcity.example", "bob", "bob"), false, false)
+        val state = DrawerUiState(
+            accounts = DrawerAccountsUiState.Content(listOf(alice, bob)),
+            selection = when (scene) {
+                "signing_out" -> AccountSwitchUiState.SigningOut
+                "sign_out_error" -> AccountSwitchUiState.SignOutError
+                else -> AccountSwitchUiState.Idle
+            }
         )
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(variant.dark) { SharedAccountsScreen(state, {}, {}, {}, {}, {}, {}, onSettings = if (scene == "app_actions") ({}) else null, onAbout = if (scene == "app_actions") ({}) else null) } }
+        compose.setContent { TeamCityTheme(variant.dark) { SharedAccountScreen(state, {}, {}, {}, {}, {}, {}, {}, onSignOut = {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (scene == "confirmation") {
+        if (scene == "scrolled") {
             compose.mainClock.autoAdvance = true
-            compose.onNodeWithTag("accounts:remove:${alice.key}").performClick()
+            compose.onNodeWithTag("drawer:list").performScrollToNode(hasTestTag("drawer:rate"))
             compose.mainClock.autoAdvance = false
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
         }
-        compose.onRoot().captureRoboImage("accounts_${scene}_${variant.name}.png")
+        compose.onRoot().captureRoboImage("native_accounts_${scene}_${variant.name}.png")
     }
     companion object {
         @JvmStatic
@@ -102,7 +99,7 @@ class AccountsScreenScreenshotTest(private val scene: String, private val varian
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("loading", "error", "empty", "content", "updating", "write_error", "confirmation", "app_actions").flatMap { scene ->
+            listOf("content", "signing_out", "sign_out_error", "scrolled").flatMap { scene ->
                 variants.map { arrayOf<Any>(scene, it) }
             }
         }

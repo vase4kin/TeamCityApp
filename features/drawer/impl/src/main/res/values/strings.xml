@@ -35,4 +35,7 @@
     <string name="drawer_ssl_disabled">SSL verification disabled</string>
 <string name="drawer_accounts_title">Your accounts</string>
 <string name="drawer_empty_accounts">Add an account to connect to TeamCity</string>
+<string name="drawer_sign_out">Sign out</string>
+<string name="drawer_signing_out">Signing out</string>
+<string name="drawer_sign_out_error">Unable to sign out. Please try again.</string>
 </resources>

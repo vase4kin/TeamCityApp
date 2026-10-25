@@ -140,12 +140,12 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
         result = DestinationRegistry(
             setOf(
                 SharedEntry(teamcityapp.features.home.api.HomeDestination::class, teamcityapp.features.home.api.HomeDestination.serializer()) { destination, navigator, entryId -> NativeHomeContent(destination, checkNotNull(graph), navigator, result, entryId) },
-                SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, navigator, _ -> LoginContent(model, navigator, account != null) },
-                SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, navigator, _ -> AccountsContent(model, navigator) },
+                SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, navigator, _ -> LoginContent(model, navigator) },
+                SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, navigator, _ -> NativeAccountContent(model, navigator) },
                 SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator, _ -> ProjectsContent(destination, checkNotNull(graph), navigator) },
                 SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator, entryId -> HistoryContent(destination, checkNotNull(graph), navigator, entryId) },
                 SharedEntry(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()) { destination, navigator, entryId -> OverviewContent(destination, checkNotNull(graph), navigator, entryId) }
-            ) + nativeBrowsingEntries(graph) + nativeManagementEntries(graph) + nativeArtifactEntries(graph) + nativeSettingsEntries(graph)
+            ) + nativeAccountEntries(model) + nativeBrowsingEntries(graph) + nativeManagementEntries(graph) + nativeArtifactEntries(graph) + nativeSettingsEntries(graph)
         )
         result
     }
@@ -159,9 +159,9 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
             val decoded = decodeNativeSnapshot(encoded, registry, sessionKey)
             restored = decoded?.first?.takeIf {
                 if (account == null) {
-                    it.entries.all { visit -> visit.destination is LoginDestination || visit.destination == AccountsDestination }
+                    it.entries.all { visit -> visit.destination is LoginDestination || visit.destination == AccountsDestination || visit.destination == teamcityapp.features.create_account.api.navigation.CreateAccountDestination || visit.destination == teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination }
                 } else {
-                    it.entries.first().destination is teamcityapp.features.home.api.HomeDestination
+                    it.entries.first().destination is teamcityapp.features.home.api.HomeDestination && it.entries.none { visit -> visit.destination is LoginDestination }
                 }
             }
             if (restored != null) journeyMemory.homes = decoded?.second.orEmpty()
@@ -183,10 +183,10 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?) {
 }
 
 @Composable
-private fun LoginContent(model: SharedAppViewModel, navigator: Navigator, adding: Boolean) {
-    val authentication = remember(model, adding) {
+private fun LoginContent(model: SharedAppViewModel, navigator: Navigator) {
+    val authentication = remember(model) {
         object : AuthenticationRepository {
-            override suspend fun signIn(credentials: teamcityapp.libraries.authentication.AccountCredentials, checkSecureConnection: Boolean, checkDuplicate: Boolean) = model.authentication.signIn(credentials, checkSecureConnection, adding || checkDuplicate)
+            override suspend fun signIn(credentials: teamcityapp.libraries.authentication.AccountCredentials, checkSecureConnection: Boolean, checkDuplicate: Boolean) = model.authentication.signIn(credentials, checkSecureConnection, checkDuplicate)
         }
     }
     val vm = viewModel {
@@ -224,10 +224,10 @@ private fun LoginContent(model: SharedAppViewModel, navigator: Navigator, adding
             onConfirmHttp = vm::confirmHttp, onDeclineHttp = vm::declineHttp, onDismissUnauthorized = vm::dismissUnauthorized
         )
         TextButton(
-            { if (adding) navigator.pop() else navigator.push(AccountsDestination) },
+            { navigator.push(AccountsDestination) },
             Modifier.align(Alignment.TopEnd).safeDrawingPadding().testTag("login:accounts"),
             enabled = !state.form.busy
-        ) { Text(stringResource(if (adding) Res.string.journey_back else Res.string.journey_accounts)) }
+        ) { Text(stringResource(Res.string.journey_accounts)) }
     }
 }
 
@@ -387,78 +387,5 @@ private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph
     }
     SharedTeamCityScreen(destination.configurationName.orEmpty(), { navigator.pop() }) { modifier ->
         SharedBuildOverviewScreen(state.copy(actions = emptyList()), vm::refresh, vm::retry, {}, modifier, rowActionAvailable = { false })
-    }
-}
-
-@Composable
-private fun AccountsContent(model: SharedAppViewModel, navigator: Navigator) {
-    val vm = viewModel { AccountsViewModel(model.sessions) }
-    val state by vm.state.collectAsStateWithLifecycle()
-    SharedAccountsScreen(state, vm::select, vm::remove, vm::signOut, vm::retry, { navigator.push(LoginDestination) }, { navigator.pop() }, onSettings = { navigator.push(teamcityapp.features.settings.api.navigation.SettingsDestination) }, onAbout = { navigator.push(NativeAboutDestination) })
-}
-
-@Composable
-fun SharedAccountsScreen(state: AccountsUiState, onSelect: (String) -> Unit, onRemove: (String) -> Unit, onSignOut: () -> Unit, onRetry: () -> Unit, onAdd: () -> Unit, onBack: () -> Unit, onSettings: (() -> Unit)? = null, onAbout: (() -> Unit)? = null) {
-    val accounts = (state.list as? teamcityapp.libraries.list_state.ListUiState.Content)?.items.orEmpty()
-    val busy = state.busy
-    var removal by remember { mutableStateOf<AccountIdentity?>(null) }
-    SharedTeamCityScreen(stringResource(Res.string.journey_accounts), onBack) { modifier ->
-        Column(modifier.padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
-            state.errorMessage?.let { SharedErrorNotice(it.resolve(), onRetry = onRetry, actionLabel = stringResource(Res.string.journey_retry)) }
-            if (state.list == teamcityapp.libraries.list_state.ListUiState.Loading) {
-                LoadingContent(Modifier.weight(1f))
-            } else if (state.list == teamcityapp.libraries.list_state.ListUiState.Error) {
-                SharedErrorContent(Modifier.weight(1f), onRetry = onRetry)
-            } else {
-                LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
-                    items(accounts, key = { it.key }) { account ->
-                        Card(Modifier.fillMaxWidth()) {
-                            Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-                                Text(account.userName, style = MaterialTheme.typography.titleMedium)
-                                Text(account.serverUrl, style = MaterialTheme.typography.bodyMedium)
-                                if (state.activeKey == account.key) Text(stringResource(Res.string.journey_active))
-                                Row {
-                                    TextButton({ onSelect(account.key) }, enabled = !busy, modifier = Modifier.testTag("accounts:activate:${account.key}")) { Text(stringResource(Res.string.journey_select)) }
-                                    TextButton({ removal = account }, enabled = !busy, modifier = Modifier.testTag("accounts:remove:${account.key}")) { Text(stringResource(Res.string.journey_remove)) }
-                                }
-                            }
-                        }
-                    }
-                    if (accounts.isEmpty()) item { Text(stringResource(Res.string.journey_no_accounts)) }
-                }
-            }
-            if (onSettings != null || onAbout != null) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    if (onSettings != null) TextButton(onSettings, modifier = Modifier.testTag("accounts:settings")) { Text(stringResource(Res.string.platform_settings)) }
-                    if (onAbout != null) TextButton(onAbout, modifier = Modifier.testTag("accounts:about")) { Text(stringResource(Res.string.platform_about)) }
-                }
-            }
-            Button(onAdd, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("accounts:add")) { Text(stringResource(Res.string.journey_add_account)) }
-            if (state.activeKey != null) TextButton(onSignOut, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("accounts:sign-out")) { Text(stringResource(Res.string.journey_sign_out)) }
-        }
-    }
-    removal?.let { account ->
-        AlertDialog(
-            onDismissRequest = { removal = null },
-            title = { Text(stringResource(Res.string.journey_remove_title)) },
-            text = { Text(stringResource(Res.string.journey_remove_detail, account.userName, account.serverUrl)) },
-            confirmButton = {
-                TextButton({
-                    removal = null
-                    onRemove(account.key)
-                }, enabled = !busy, modifier = Modifier.testTag("accounts:confirm-remove")) {
-                    Text(stringResource(Res.string.journey_remove))
-                }
-            },
-            dismissButton = { TextButton({ removal = null }) { Text(stringResource(Res.string.journey_cancel)) } }
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun AccountsPreview() {
-    TeamCityTheme {
-        SharedAccountsScreen(AccountsUiState(list = teamcityapp.libraries.list_state.ListUiState.Empty()), {}, {}, {}, {}, {}, {})
     }
 }

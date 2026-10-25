@@ -15,71 +15,10 @@
  */
 
 package teamcityapp.features.drawer.impl
-import androidx.compose.runtime.*
+
+import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.drawer.impl.router.DrawerRouter
+
 @Composable
-fun DrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel = hiltViewModel(), onNavigateUp: () -> Unit = {}) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    DisposableEffect(router) {
-        router.attach()
-        onDispose { router.detach() }
-    }
-    LifecycleResumeEffect(viewModel) {
-        viewModel.onScreenViewed()
-        onPauseOrDispose {}
-    }
-    SideEffect { router.setInteractionsEnabled(state.canInteract) }
-    LaunchedEffect(state.openHome, lifecycle, router) {
-        if (state.openHome) {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                if (viewModel.consumeHome()) router.openHome()
-            }
-        }
-    }
-    AccountScreen(
-        state, viewModel::select,
-        {
-            if (state.canInteract) {
-                viewModel.onAddAccountClicked()
-                router.openAddAccount()
-            }
-        }, {
-            if (state.canInteract) {
-                viewModel.onManageAccountsClicked()
-                router.openManageAccounts()
-            }
-        },
-        {
-            if (state.canInteract) {
-                viewModel.onSettingsClicked()
-                router.openSettings()
-            }
-        }, {
-            if (state.canInteract) {
-                viewModel.onAboutClicked()
-                router.openAbout()
-            }
-        },
-        {
-            if (state.canInteract) {
-                viewModel.onPrivacyClicked()
-                router.openPrivacy()
-            }
-        }, {
-            if (state.canInteract) {
-                viewModel.onRateClicked()
-                router.openRate()
-            }
-        },
-        onRetry = viewModel::retry,
-        onRetrySelection = viewModel::retrySelection, onDismissMissing = viewModel::dismissMissing,
-        onNavigateUp = onNavigateUp
-    )
-}
+fun DrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel = hiltViewModel<AndroidDrawerViewModel>(), onNavigateUp: () -> Unit = {}) = SharedDrawerRoute(router, viewModel, onNavigateUp)
