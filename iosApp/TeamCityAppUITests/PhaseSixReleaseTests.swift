@@ -135,6 +135,20 @@ final class PhaseSixReleaseTests: XCTestCase {
         XCTAssertTrue(element("overview:screen").waitForExistence(timeout: 25))
         capture("accessible_overview", app)
         try audit(app)
+        let agent = element("overview:row:Agent")
+        // Partly clipped rows must not expose a tiny action. Once revealed by
+        // scrolling, their label and full actionable frame must be available.
+        if agent.exists && agent.elementType == .button { XCTAssertGreaterThanOrEqual(agent.frame.height, 44) }
+        for _ in 0..<8 {
+            if agent.exists && agent.elementType == .button && agent.isHittable && agent.frame.height >= 44 { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(agent.waitForExistence(timeout: 10))
+        XCTAssertEqual(agent.elementType, .button)
+        XCTAssertGreaterThanOrEqual(agent.frame.height, 44)
+        XCTAssertTrue(agent.label.contains("macOS agent"))
+        capture("accessible_overview_agent_revealed", app)
+        try audit(app)
     }
 
     func testLaunchPerformance() {

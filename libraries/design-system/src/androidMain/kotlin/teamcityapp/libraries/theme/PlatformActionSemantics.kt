@@ -17,3 +17,5 @@
 package teamcityapp.libraries.theme
 
 internal actual val supportsMaterialParentSemantics: Boolean = true
+
+internal actual val clipsAccessibleActionRows: Boolean = false

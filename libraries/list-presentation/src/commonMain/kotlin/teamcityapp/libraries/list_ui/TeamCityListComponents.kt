@@ -47,6 +47,7 @@ import teamcityapp.libraries.theme.SharedErrorNotice as ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.hideClippedActionFromAccessibility
 
 /** Only adjacent rows in the same logical section share their inside corners. */
 enum class ListRowPosition { Single, First, Middle, Last }
@@ -88,7 +89,7 @@ fun TeamCityListRow(
         )
     }
     Surface(
-        modifier = modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.listRowVerticalSpacing).clip(shape).then(interaction),
+        modifier = modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.listRowVerticalSpacing).clip(shape).hideClippedActionFromAccessibility(onClick != null || onLongClick != null).then(interaction),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         contentColor = MaterialTheme.colorScheme.onSurface
