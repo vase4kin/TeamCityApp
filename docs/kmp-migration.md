@@ -259,7 +259,7 @@ Application commits remain local. Phase 6 requires a new user instruction.
   Earlier optimized iPhone simulator: 11/11 tests pass; the final iOS 17-minimum
   archive and Android R8 checks pass.
 - [x] Prepare signing, distribution/TestFlight, privacy declarations, and store materials.
-- [x] Audit superseded code/dependencies and remove only proven unused paths. All
+- [x] Audit superseded code/dependencies and remove only proven unused paths. The
   original 111-module reachability audit is retained. Three newly wired shared
   account presentation modules bring the current inventory to 114; the retired
   native-only account prototype is removed. Retain the Android compatibility stack.
@@ -298,6 +298,12 @@ The 25 October follow-up checkpoints are iOS 17 minimum `9ffb4ca54`, clipped-row
 accessibility `2b664e589` and physical qualification `8aa8c4977`. The documentation
 checkpoint accompanies these commits. Owner-review fixes are saved at
 `3153fb505` (one live History visit) and `44835c390` (shared account flows).
+The current-OS follow-up verifies the optimized account journey on iOS 27.1,
+with an independent native-inset fixture; older-target regression passes 3/3.
+Duo landscape remains unqualified: SDK-matched UIKit, SwiftUI and Compose
+controls all retain portrait geometry there. This diagnostic does not replace
+physical/manual or iOS 17 qualification. Harness checkpoint: `cca5585cb`. The private report refresh is verified succeeded
+on 25 October; its source/version/deployment receipts are in the Phase 6 record.
 Phase 7 has not started.
 
 ## Phase 7 — Platform review and refinements

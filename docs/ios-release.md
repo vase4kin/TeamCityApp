@@ -247,3 +247,25 @@ localizations and region availability with the owner before shipping.
 - [Kotlin/Compose privacy manifest guidance](https://kotlinlang.org/docs/multiplatform/multiplatform-privacy-manifest.html).
 - [Apple accessibility audits](https://developer.apple.com/documentation/accessibility/performing-accessibility-audits-for-your-app).
 - [Android test runner/orchestrator](https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner).
+
+## Simulator geometry controls
+
+Use `python3 scripts/build-ios-geometry-control.py` to build the independent
+UIKit/SwiftUI simulator fixture under `build/kmp-phase-6/GeometryControl.app`.
+Install it only on an owned test simulator. Opt in to
+`PhaseSixReleaseTests/testSimulatorRotationControl` with
+`TEST_RUNNER_TEAMCITY_GEOMETRY_CONTROL=1`. The test captures every active screen;
+it does not turn a failed landscape request into a skipped or passing product
+check. Both the control and app must link the same SDK version, and the control
+must render its metrics label before its observations are usable.
+
+Header bounds default to the established 20-point portrait minimum. For a device
+with independently measured native insets, use
+`TEST_RUNNER_TEAMCITY_UI_EXPECTED_SAFE_AREA=<top>,<left>,<bottom>,<right>`.
+The iOS 27.1 Duo control measured `0,0,34,84`, including its right-side status
+area. The header must fit inside that window rectangle; malformed insets fail.
+Do not derive expected insets from the shared header being tested. Keep strict
+accessibility audits, original landscape assertions and actual screenshot review.
+See the Phase 6 record for the retained Duo rotation limitation and passing
+standard-iPhone control. Simulator controls have no account/network behavior and
+are separate from the validation app and physical/manual qualification.

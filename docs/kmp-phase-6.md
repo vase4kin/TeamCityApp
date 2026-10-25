@@ -508,3 +508,96 @@ installation or automated phone pass was attempted. Its installed validation app
 remains the earlier candidate. A new physical pass, complete manual VoiceOver
 results and actual iOS 17 runtime execution remain required. Phase 6 remains
 unchecked; Phase 7 has not started. No app-code push, PR, upload or distribution.
+
+### Current-OS simulator continuation
+
+The owner kept phone testing deferred. The installed iOS 27.1 runtime
+(build 24A94425) supports the iPhone Duo model in this local inventory. A new
+owned simulator runs the updated optimized validation app, version 2.0.0/build 1,
+compiled with Simulator SDK 27.1 and still declaring minimum iOS 17.0. No physical
+installation or automated phone control occurred. The physical Release test
+runner was rebuilt offline after the harness changes and is ready for a later
+owner-authorized phone pass.
+
+The initial ten-case Release run (`ios271-account-release.xcresult`) passed the
+seven deterministic About checks and failed two landscape checks plus the old
+fixed 20-point header assertion. This is a diagnostic result, not ten passing
+cases. The header actually began at 17.33 points on this model, whose status
+controls occupy a right-side region.
+
+The independent control consists of `scripts/ios-geometry-control.swift`, built
+with `python3 scripts/build-ios-geometry-control.py` into ignored build output.
+It has no account storage or network behavior. Its minimum comes from the shared
+Config, and its simulator bundle and linked SDK metadata match the app. The
+opt-in `testSimulatorRotationControl` checks plain UIKit, SwiftUI hosting a UIKit
+controller, and the shared Compose app; it captures all active screens and
+requires the control's native metrics label before interpreting its measurements.
+It is simulator-only and skipped without `TEAMCITY_GEOMETRY_CONTROL=1`.
+
+Earlier control attempts are retained: the first did not render its metrics;
+explicit scene/window setup corrected that. The next linked SDK 27.0 and entered
+legacy window compatibility. The definitive matched-SDK run is
+`ios271-rotation-control-matched.xcresult`; both binaries declare SDK 27.1 and
+minimum 17.0, and all three hosts use 466×678-point portrait windows. After the
+landscape request all three still report 466×678; UIKit/SwiftUI report interface
+orientation portrait despite the device request. All three landscape assertions
+remain failed, so the Duo environment is not accepted as rotation evidence.
+The same final control test passes on the iPhone 17 Pro / iOS 26.4.1 simulator:
+all hosts change from 402×874 to 874×402. This is evidence of a limitation in the
+new simulator/display setup, not proof of a Compose-only rotation regression or
+of universal compatibility with every Duo configuration.
+
+SDK-matched UIKit/SwiftUI report insets top 0, left 0, bottom 34, right 84 on the
+Duo fixture. Header verification now checks its full rectangle against the
+independently specified native window/insets, including the side status area.
+`TEAMCITY_UI_EXPECTED_SAFE_AREA=0,0,34,84` supplies this measured fixture. Existing
+targets retain the default 20-point top minimum; malformed/non-finite/negative
+fixture input fails. No production inset/layout or accessibility issue filtering
+changed. The normal strict accessibility audits remain enabled.
+
+The first focused rerun stopped because Release restored Account while the old
+setup assumed Home. Shared validation setup now reaches Login through normal
+Back/account/sign-out controls, including Add discard, without deleting saved
+accounts or changing production persistence. Fixture journeys call this setup
+independently rather than relying on a previous test to leave Login open.
+
+`ios271-account-ready.xcresult` passes launch and the complete account/navigation
+scenario (2/2). The final harness independently reruns the scenario from its
+retained visit in `ios271-account-final.xcresult` (1/1), including strict
+Account/Add/validation/Manage audits, distinct Add/Manage routes, discard, and a
+single build visit with one Back to History. `ios264-harness-regression.xcresult`
+passes 3/3: launch, all three independent rotation hosts, and the account journey
+using unchanged default header bounds. These are scoped reruns plus retained
+initial failures, not a second clean ten-case run on iOS 27.1.
+
+The final test bundle is produced by `xcodebuild ... build-for-testing`; its
+explicit `.xctestrun` manifest is reused with `test-without-building`. Current
+and older UI runs control separate owned simulators. Native unit tests do not
+share either device during these runs. The diagnostic builder, Python syntax,
+Simulator/physical Release runner builds and Spotless checks pass. Application
+UI/data code and Android golden fixtures are unchanged by this follow-up.
+The local harness checkpoint is `cca5585cb`.
+
+The iOS 17 runtime remains absent from the installed inventory. Its official DMG
+path has been requested; compilation and iOS 27.1 execution do not close the
+minimum-runtime gate. The updated physical pass and full owner VoiceOver
+walkthrough also remain deferred. Phase 6 remains open, with Phase 7 untouched.
+
+
+### Current-OS private report receipt
+
+The owner-private report refresh succeeded on 2026-10-25. It contains 470
+frames: 456 actual iOS device/simulator captures, 2 Android emulator captures
+and 12 deterministic Android renders, plus 17 before/after comparisons.
+The new section compares SDK-matched UIKit, SwiftUI and Compose geometry and
+separates failed diagnostics from the focused account pass. All 458 actual
+platform-capture hashes and referenced HTML files were checked; browser QA
+verified the new comparison table and iOS 27.1 screenshot selector. No audience
+change or application distribution occurred.
+
+Site source: `714e707f37a839827faf782c0a802d232566b433`.
+Saved version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_b2c80117906c8191ba7dba9bc2a402ca`.
+Verified deployment: `appgdep_6addb20d47bc8191bdcf08858bd52521`, succeeded.
+The two task-owned UI simulators are shut down with their data preserved.
+The phone remains untouched. Physical, full manual VoiceOver and iOS 17 gates
+remain open; Phase 7 has not started.
