@@ -9,6 +9,7 @@ shared Android configuration and replaces the former buildSrc and root callbacks
 | `teamcityapp.android.library` | Android library with built-in Kotlin, the same shared defaults |
 | `teamcityapp.android.library.java` | Android library defaults without Kotlin or KSP; use for Java/resource-only modules |
 | `teamcityapp.android.hilt` | Hilt and KSP plugins, Hilt runtime and KSP compiler dependencies |
+| `teamcityapp.kmp.hilt` | Android-target KSP/Hilt/Dagger processing and Java compilation for KMP feature adapters; common/iOS sources keep plain constructors |
 | `teamcityapp.android.compose` | Compose compiler, Compose BOM, Material 3, previews, and debug tooling |
 | `teamcityapp.android.screenshot` | Local Robolectric/Roborazzi Compose tests, Android resources, and baseline/report paths |
 | `teamcityapp.android.coverage` | App aggregate debug coverage and CI report locations |
@@ -332,3 +333,36 @@ its own directory (`androidHostTest` for the Android target of a KMP library) to
 reports go to `build/outputs/roborazzi` and `build/reports/roborazzi`; CI uploads
 both and verifies all participating debug modules via `verifyRoborazziDebug`.
 Dependency versions belong in the version catalog, as for runtime dependencies.
+
+
+### Shared feature implementations
+
+Features have exactly `api` and `impl` modules. Apply `teamcityapp.kmp.compose`
+to a shared `impl`; keep its screens, resources, UI state and ViewModels in
+`commonMain`, behavioral tests in `commonTest`, Android integrations in
+`androidMain` and Robolectric/Roborazzi tests in `androidHostTest`. There is no
+separate feature `presentation` module. `shared-app` consumes implementations to
+compose the app; features depend only on other features' APIs.
+
+Apply `teamcityapp.kmp.hilt` when Android adapters need injection. It enables Java
+compilation for generated factories and adds Hilt/Dagger processors only to
+`kspAndroid`, with Hilt runtime in `androidMain`. The application retains the Hilt
+Gradle plugin and component aggregation. Framework `@AndroidEntryPoint` and
+`@HiltAndroidApp` classes belong in the Android host, not a KMP feature.
+
+KMP screenshot tasks are `verifyRoborazziAndroidHostTest` and
+`recordRoborazziAndroidHostTest`. The 26 consolidated features explicitly retain
+their existing `src/test/screenshots/debug` fixture directories with
+`separateOutputDirs=false`; baseline pixels do not change when the test task name
+changes. The shared-app harness retains its existing `androidHostTest` output.
+
+Run `python3 scripts/check-feature-modules.py` before adding or restructuring a
+feature. Both CI workflows enforce the module/dependency/source boundaries.
+`scripts/unit-test-ci.py` discovers common and Android-host tests in the merged
+implementation and transports their combined coverage. `features/splash` is the
+existing Android launch-compatibility exception and already has api/impl.
+
+The target-scoped processor setup follows the official
+[KSP multiplatform configuration](https://kotlinlang.org/docs/ksp-multiplatform.html)
+and the separation between Hilt processors and the host
+[Hilt Gradle plugin](https://dagger.dev/hilt/gradle-setup).

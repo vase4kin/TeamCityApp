@@ -375,6 +375,29 @@ evidence records the exact source/version and distinguishes the six-pass iOS
 selection from the successful focused artifact/audit rerun.
 The overall phase stays unchecked until every final acceptance gate is complete.
 
+## Follow-up — simpler feature module ownership
+
+The owner authorized an About pilot followed by the same api/impl structure for
+all other features. The 26 former presentation modules are consolidated into KMP
+implementations: common UI/state/resources/tests stay portable, Android adapters
+and screenshot harnesses use Android source sets inside the same implementation.
+The feature inventory becomes 54 modules (27 api/impl pairs), including Splash's
+existing Android launch-compatibility pair. Shared list/build component libraries
+remain reusable libraries, not third modules belonging to a feature.
+
+`AGENTS.md` and the build-logic guide define the new convention;
+`python3 scripts/check-feature-modules.py` enforces it in CI. The detailed pilot,
+rollout, verification and private report receipts are in
+[kmp-phase-7.md](kmp-phase-7.md). This structural follow-up does not close the
+physical-phone, complete manual VoiceOver or actual iOS 17 final acceptance gates.
+Local implementation checkpoint: `f555e32319f426448debeadefc324b9b9b66bbf7`.
+All affected tests/builds and the scoped native UI selection pass; the phase evidence
+records full selections, focused fixture corrections and actual captures separately.
+The owner-private report was updated on 2026-10-26 at 20:39 Asia/Bangkok
+(deployment `appgdep_6adf57fe03ac8191ab294dfe65aaa92f`).
+Historical phase commands above retain the module names used when they ran;
+current feature tests run under `impl` with KMP host/native task names.
+
 ## References
 
 - [JetBrains Android Compose migration guide](https://kotlinlang.org/docs/multiplatform/migrate-from-android.html)

@@ -253,7 +253,8 @@ checkpoint. The private publication receipt follows after deployment. The initia
 its Site source `761f4886616259adb7e75ebfb5d0737ea028f38c` and deployment
 `appgdep_6adf1506d0ec8191a9c17e4f65351431` are historical review receipts.
 
-Reproduce the affected checks with JDK 17:
+Original refinement check commands with JDK 17 (historical module names;
+see the consolidation follow-up below for the current layout):
 
 ```sh
 ./gradlew :shared-app:testAndroidHostTest :shared-app:verifyRoborazziAndroidHostTest \
@@ -318,3 +319,177 @@ actual Android comparison proof is saved at
 This document, the migration checklist and the updated AGENTS contract are saved
 in a separate local `chore(docs): record verified phase seven refinements` checkpoint.
 The application branch remains local and no PR was created.
+
+
+## Follow-up — feature module consolidation
+
+The owner requested a simpler api/impl convention, with About as the pilot and
+then all other features following it. This is a structural follow-up to the
+completed six-item refinement implementation; final platform acceptance remains
+open. The implementation started from `57d5bebb3565a6abd6ffcd895d00267f42aef737`.
+An existing `gradle.properties` edit was preserved outside the change.
+
+### About pilot
+
+The previous KMP `presentation` module held the UI, ViewModel, resources and common
+tests, while Android `impl` held wrappers, Hilt/router integrations and Roborazzi
+harnesses. `impl` now applies KMP Compose itself. Shared sources move into its
+`commonMain`/`commonTest`; existing Android sources/resources/manifest move into
+`androidMain`; Android behavioral and screenshot tests move into `androidHostTest`.
+The separate `presentation` Gradle project and directory are removed.
+
+The pilot passed before rollout: **32 JVM tests**, including the unchanged visual
+baselines, **seven iOS simulator tests**, the consuming mock Android app build and
+the linked iOS simulator framework. Receipts: `about-pilot.log` and
+`about-pilot-hosts.log` under `build/kmp-module-consolidation/`.
+
+About's compatibility wrapper gets its default version from a generated common
+`ABOUT_APP_VERSION` constant using the same `Config.versionName`. This replaces
+Android BuildConfig generation, which belonged to the former Android-only module.
+The production shared root continues passing its application version explicitly.
+Both version behaviors retain their existing tests; no product version changes.
+
+### Rollout and ownership
+
+All 26 shared features follow the same consolidation:
+
+about, agents, bottom-sheet, build-artifacts, build-details, build-history, build-overview, build-queue, change-details, changes, create-account, drawer, favorites, filter-bottom-sheet, filter-builds, home, login, manage-accounts, navigation, properties, run-build, running-builds, settings, snapshot-dependencies, test-details, tests.
+
+The feature project count drops from **80 to 54**, with 27 api/impl pairs. Splash
+already had api/impl and remains an Android installed-launch compatibility feature.
+Reusable `libraries/list-presentation` and `libraries/build-presentation` stay
+independent common component libraries; they are not third feature modules.
+
+```text
+features/<feature>/
+  api/src/commonMain/          public contracts, immutable models, typed keys
+  impl/src/commonMain/         common Compose UI, state, ViewModels, resources
+  impl/src/commonTest/         portable behavioral tests
+  impl/src/androidMain/        Android integration and injection adapters
+  impl/src/androidHostTest/    Android UI/router/Roborazzi tests
+  impl/src/iosMain/            feature-specific iOS code only when needed
+
+Android + iOS hosts → shared-app → feature:impl → feature:api
+```
+
+Features continue depending on other features' APIs. The shared composition root
+consumes implementations. Saved destination class names, compatibility serializers,
+account/cache formats, native adapters and installed aliases remain unchanged.
+Resource namespaces change from `features.<name>.presentation.resources` to
+`features.<name>.impl.resources`, with all source consumers updated. These are
+internal generated resource identifiers, not persisted account or navigation data.
+
+`teamcityapp.kmp.hilt` enables Java compilation for generated factories, places
+Hilt/Dagger processors only in `kspAndroid` and Hilt runtime in `androidMain`.
+Common ViewModels retain plain constructor injection. The app retains Hilt's
+Gradle plugin, component aggregation and framework entry points. A focused
+build-convention test checks processor isolation and Java compilation support.
+
+Shared feature goldens retain their existing `src/test/screenshots/debug` paths;
+Roborazzi's output is explicitly pointed there with separate task directories
+disabled. This changes the task name to `verifyRoborazziAndroidHostTest` without
+re-recording or moving the PNGs. Baseline hashes for **3,514** existing fixtures
+were recorded before editing and verified unchanged during consolidation.
+
+### Preventing the third module from returning
+
+`python3 scripts/check-feature-modules.py` runs in both CI workflows and rejects:
+
+- Third feature modules, stale/missing includes and obsolete presentation dependencies.
+- Cross-feature implementation dependencies.
+- Android-only new shared features or legacy main/test Kotlin/Java roots in KMP implementations.
+- Android/DI/Retrofit/Rx imports in common implementation code.
+- Android framework entry points inside KMP feature implementations.
+
+The existing Splash exception is explicit. New shared features use the KMP
+api/impl structure. CI test discovery combines common/Android-host cases and
+coverage under `impl`; the iOS workflow uploads the merged implementations' reports.
+Historical phase commands earlier in this document retain their original module
+names. Current About checks are:
+
+```sh
+./gradlew :features:about:impl:verifyRoborazziAndroidHostTest
+./gradlew :features:about:impl:iosSimulatorArm64Test
+python3 scripts/check-feature-modules.py
+python3 -m unittest discover -s scripts/tests
+```
+
+### Consolidation verification and checkpoint
+
+The full feature JVM run initially reached five duplicate-fixture compilation
+failures. Eight byte-identical Android fixture copies were removed in favor of
+`commonTest`; no test methods were deleted. The five affected modules passed their
+focused rerun. Final inventory comparison retains **all 3,546 baseline feature
+cases**, with zero test failures; shared-app adds **173**, and build-logic adds
+**19** passing checks. The source/golden result is the union of the full selection
+and the focused fixture-correction rerun, not a claimed clean first attempt.
+
+All **447 native tests** passed (417 in feature implementations and 30 in
+shared-app), and both debug device/simulator frameworks linked. Android app-level
+integration passed **16/16** on the API 34 test emulator. All **3,514** original PNG
+fixture hashes remain unchanged. The initial Android build's cold dex packaging
+completed successfully; no dependency/plugin version was changed to get it through.
+
+All affected checks are complete. The app's **234 JVM tests** also pass, for
+**3,972 JVM cases** across the scoped modules and build conventions. App lint and
+all **91 Python CI/guard tests** pass. Android R8 packaging succeeds and the six
+optimized smoke cases pass. Four fresh signed iOS UI cases pass together on the
+owned iPhone 17 Pro / iOS 26.4.1 simulator: full retained Home/sections/relaunch,
+Account/Manage/Add/single-build navigation, Settings/About/licenses and artifact
+folders/archive/re-export with the strict accessibility audit. This is a new
+four-case follow-up selection; earlier phase-wide qualification remains historical.
+
+The final unsigned optimized arm64 iOS archive succeeds and the release audit
+reports zero errors. Minimum deployment target remains 17.0, version 2.0.0/build 1.
+This does not claim execution on iOS 17 or authorize signed upload/distribution.
+
+Code checkpoint: **`f555e32319f426448debeadefc324b9b9b66bbf7`**
+(`refactor: consolidate shared features into api and impl`), saved locally on
+`codex/kmp-phase-1`. A read-only diff of that commit verifies exactly 1,481 task
+paths, counting both sides of renames. No pre-existing index-only differences or
+user Gradle settings were included. Architecture/report prose is saved separately.
+
+Current receipts under `build/kmp-module-consolidation/`:
+
+| Scope | Receipt |
+| --- | --- |
+| All feature/shared JVM checks and build conventions | `all-jvm-verification.log` plus `jvm-fixture-correction.log` |
+| Original case inventory retained | `test-inventory-verification.json` (3,546/3,546 feature cases) |
+| Portable code bodies retained | `portable-source-invariance.json` (163 common source/test files; resource imports normalized) |
+| Native tests and both debug frameworks | `all-native-verification.log` |
+| Android app/test APK build | `all-host-android-build-2.log` |
+| Android integration | `android-instrumentation-verified.log` (16/16) |
+| App unit tests and lint | `android-app-unit-lint.log` (234 JVM cases; lint passes) |
+| Optimized Android build/smoke | `android-r8-build.log`, `android-r8-smoke.log` (6/6) |
+| Python scripts/architecture guard | `script-tests-final.log` (91/91) |
+| iOS validation build and four fresh UI cases | `ios-host-build.log`, `ios-ui-verification.log`, `ios-ui-verification.xcresult` |
+| Actual native screenshots | `android-captures/about.png`, `ios-attachments/manifest.json` |
+| Optimized unsigned device archive | `ios-release-archive.log`, `TeamCityApp.xcarchive` |
+| Archive audit | `ios-release-audit.json` (zero errors) |
+| Formatting | `format-apply.log`, `jvm-fixture-correction.log` (`spotlessCheck`) |
+| Consolidated receipt index | `verification-summary.json` |
+
+The private report's follow-up section includes the before/after module tree,
+complete feature inventory, Android-specific build wiring, the verification scope
+and actual post-refactor About captures on both platforms. Fixture text/URL lengths,
+viewport and OS insets differ; these are not matched before/after screen recordings.
+The unchanged controlled goldens and source-body audit establish the intended lack
+of UI/behavior changes. Publication receipts follow after private deployment.
+The existing final phone/VoiceOver/iOS 17 acceptance gates remain deferred.
+
+The owner-private consolidation report update was published on **26 October 2026,
+20:39 Asia/Bangkok**:
+
+- Site: https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/.
+- Pushed Site source: `66f4e6c91687483d2b2a96bd37b1527369c8c953`.
+- Saved version: `appgprj_6adef83dcd248191bf11c7147cdf489d~appgver_b2dd790f0a108191a15be85a65e0b2c5`.
+- Successful deployment: `appgdep_6adf57fe03ac8191ab294dfe65aaa92f`.
+- Audience remains owner-private; no sharing settings changed.
+
+The Modules section passed browser checks at the normal viewport and 390px mobile
+width, with no page overflow or console warnings/errors. All 26 feature entries
+expand correctly, and 45 image references/digests across the report manifests were
+verified. Structure proof: `build/kmp-module-consolidation/report-module-structure.png`.
+The updated AGENTS contract, build-logic guide, checklist and receipts form the
+separate local `chore(docs): record feature module consolidation` checkpoint.
+No application branch was pushed and no PR or upload was created.

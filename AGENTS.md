@@ -150,10 +150,15 @@ to the requested behavior and the coherent migration slice needed to support it.
   About, Login, Add Account, Account (drawer), Manage Accounts, Navigation, Build History, Build Overview, Home, Favorites,
   Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
   Parameters, Snapshot Dependencies, Run Build, Filter Builds, Quick Filter,
-  Action Bottom Sheet, Build Details, Artifacts and Settings `presentation` modules own their common UI
-  and ViewModels. Their existing `impl` modules are Android Hilt/router adapters
-  and Roborazzi harnesses. This split is within one feature; cross-feature implementation dependencies remain
-  prohibited. Do not duplicate shared layouts in platform adapters.
+  Action Bottom Sheet, Build Details, Artifacts and Settings `impl` modules own their common UI
+  and ViewModels, with Android Hilt/router adapters in `androidMain` and Robolectric/
+  Roborazzi tests in `androidHostTest`. Every feature has only `api` and `impl`;
+  do not create a separate feature `presentation` module. Use `commonTest` for
+  portable behavioral tests and `iosMain`/`iosTest` only for feature-specific native
+  needs. Cross-feature implementation dependencies remain prohibited. Do not
+  duplicate shared layouts in platform adapters. `shared-app` is the composition
+  root and consumes feature implementations. `features/splash` retains its Android
+  launch-compatibility api/impl pair; new shared features use KMP.
 - Shared ViewModels use plain constructor injection and lifecycle-owned factories.
   Hilt remains the Android composition mechanism, with thin Android ViewModels
   when Hilt ownership is required. Common code cannot depend on Hilt, Java
@@ -218,7 +223,14 @@ to the requested behavior and the coherent migration slice needed to support it.
   immediately available; Home coachmarks suppress the inline rating card.
   Both platforms offer all four shared theme choices and common license-reader UI;
   license inventories are platform-specific dependency data.
-- KMP UI harnesses can apply `teamcityapp.android.screenshot`; verify with
+- KMP feature `impl` modules apply `teamcityapp.kmp.compose`, optional
+  `teamcityapp.kmp.hilt` for Android-only KSP/Dagger/Hilt processing, and
+  `teamcityapp.android.screenshot`. Keep framework AndroidEntryPoints and the
+  Hilt Gradle plugin in Android hosts; shared constructors stay plain Kotlin.
+  Existing feature goldens retain their `src/test/screenshots/debug` paths and
+  unchanged bytes. Run `python3 scripts/check-feature-modules.py` to verify
+  module/source boundaries; CI runs it before planning tests. KMP UI harnesses
+  verify with
   `:shared-app:verifyRoborazziAndroidHostTest`. Shared native account tests and
   signed XCTest UI runs must not concurrently control the same simulator.
 - Management transport writes are account-generation scoped and use the same
@@ -421,8 +433,8 @@ the scoped shared-code rules above apply to migrated KMP modules.
   the original, actual, and comparison images first.
 - Normal unit tests verify goldens by default (`roborazzi.test.verify=true`). CI also
   runs `verifyRoborazziDebug` and uploads reports/comparisons. For About, use
-  `./gradlew :features:about:impl:verifyRoborazziDebug`; deliberately refresh with
-  `./gradlew :features:about:impl:recordRoborazziDebug --tests '*AboutScreenScreenshotTest'`,
+  `./gradlew :features:about:impl:verifyRoborazziAndroidHostTest`; deliberately refresh with
+  `./gradlew :features:about:impl:recordRoborazziAndroidHostTest --tests '*AboutScreenScreenshotTest'`,
   review the PNG changes, then verify again. Use the corresponding variant task
   for flavored modules. Keep comparison images and HTML reports under `build/`.
 - Retain Espresso coverage for platform views/WebViews and the existing app-level
