@@ -398,6 +398,23 @@ The owner-private report was updated on 2026-10-26 at 20:39 Asia/Bangkok
 Historical phase commands above retain the module names used when they ran;
 current feature tests run under `impl` with KMP host/native task names.
 
+## Follow-up — phone-reported onboarding and build navigation
+
+- [x] Correct History's Run/Filter/Favorite spotlights inside retained Home panes.
+- [x] Open complete build snapshots directly from Dependencies, Running and Queue,
+  with the same exact-origin repeated-tap guard used by History.
+- [x] Verify common JVM/native behavior, review 18 new nested-layout golden
+  fixtures, and exercise iOS source-list/Overview/one-Back journeys.
+- [ ] Install the fixed optimized iPhone candidate — deferred by the owner.
+
+The [Phase 7 evidence](kmp-phase-7.md) records the checks and screenshots. The
+[private report](https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/#phone-feedback)
+compares the supplied phone captures with current iOS evidence and includes
+Android controlled renders. The fix is saved locally as `fed0c68d1dd200acdeb8205194b3b57e8e7f7327`;
+the report was republished on 2026-10-26 at 22:24 Asia/Bangkok
+(deployment `appgdep_6adf7093fd80819186020979376464de`).
+Final phone/VoiceOver/iOS 17 acceptance stays open.
+
 ## References
 
 - [JetBrains Android Compose migration guide](https://kotlinlang.org/docs/multiplatform/migrate-from-android.html)

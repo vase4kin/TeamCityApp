@@ -493,3 +493,86 @@ verified. Structure proof: `build/kmp-module-consolidation/report-module-structu
 The updated AGENTS contract, build-logic guide, checklist and receipts form the
 separate local `chore(docs): record feature module consolidation` checkpoint.
 No application branch was pushed and no PR or upload was created.
+
+
+## Phone feedback: History education and direct build navigation (26 October 2026)
+
+The owner reported that History education obscured its targets behind Home's
+bottom navigation and that Dependencies opened a build twice. The owner then
+confirmed the same transition issue in Running and Queue.
+
+- History now measures its overlay origin in root coordinates and subtracts it
+  from Run/Filter/Favorite action rectangles. The explanation and spotlight share
+  the retained pane's coordinate system, including native safe-area offsets.
+- History, Snapshot Dependencies, Running and Queue use `openBuildSnapshot`.
+  They already hold full `BuildLaunchData` snapshots, so they push Build Details
+  directly. An exact-current-origin check rejects delayed or repeated taps.
+  Queued-result **Show** keeps the separate reference-resolution route.
+- Common navigation tests verify one new owner, full snapshot preservation,
+  repeated-tap rejection, exact source restoration, deliberate reopening after
+  Back and one-time section results to the parent Overview.
+- A nested History UI test checks all three target centers, complete target
+  coverage, the reserved bottom region and the explanation's clearance. It first
+  reproduced the old displacement. Eighteen reviewed golden fixtures add light/
+  dark, compact/expanded and 1.5× text coverage with explicit host offsets.
+  The existing standalone baseline bytes remain unchanged.
+
+Verification logs and disposable screenshots are under `build/kmp-phone-feedback/`:
+
+| Check | Evidence |
+| --- | --- |
+| Original displacement reproduced | `anchor-red.log` (expected failing regression) |
+| History JVM behavior + golden verification | `jvm-and-format.log`: 308 passing cases |
+| Final shared-root JVM regressions | `monitoring-regressions-final.log`: 175 passing cases |
+| Native behavior | `native-tests.log`: 44 History cases; `monitoring-regressions-final.log`: 32 shared-root cases |
+| Reviewed nested golden matrix | `nested-review.png`; 18 new baselines, 222 total History screenshot cases |
+| iOS History/Dependencies journey | `PhoneFeedback-dark.xcresult`, `PhoneFeedback-light.xcresult`: both passed |
+| Running/Queue journey | `MonitoringBuilds-light.xcresult`: final fresh-account Running/Queue journey passed |
+| Android build and formatting | `android-build-format-final.log`: `assembleMockDebug` and `spotlessCheck` passed |
+| Feature boundaries | `feature-boundaries.log`: guard passed |
+| Optimized signed iPhone build | `iphone-release-final.log`; final installation status recorded below |
+
+The first dark Filter attachment had an incomplete simulator background capture.
+The light repeat passed and supplied a complete Filter image; the private report
+labels this limitation and uses that light capture. Original phone screenshots,
+current iOS captures and Android controlled renders are labeled separately.
+No matching pre-fix Android device screenshot was taken. No native adapters or
+networking behavior changed in this fix.
+
+CoreDevice reported a disconnection during the first installation attempt. The
+owner then explicitly deferred installation ("Leave installation for later"). The
+current installed app has not received this update. The existing full phone pass, manual VoiceOver and
+actual iOS 17 runtime gates remain deferred. The private Phase 7 report is being
+updated at the existing URL; final checkpoint/deployment receipts follow below.
+
+Final local implementation checkpoint: `fed0c68d1dd200acdeb8205194b3b57e8e7f7327` (GitButler change `zpt`).
+The Running/Queue extension was amended into the same unpublished fix.
+The commit contains only the eight affected source/test files and 18 intentional
+PNG fixtures; the owner's `gradle.properties` bytes remain unchanged.
+The optimized Release build and strict code-signature verification pass.
+The normal candidate is retained at `build/kmp-phone-feedback/TeamCityApp.app`
+(version 2.0.0, build 1, minimum iOS 17.0); `iphone-candidate.json` records its
+executable digest. Installation is explicitly deferred and no current phone app
+update is claimed. All 483 JVM / 76 native cases and three focused iOS executions
+passed; `verification-summary.json` indexes the final scope.
+
+
+The owner-private report update was published on **26 October 2026,
+22:24 Asia/Bangkok**:
+
+- Site: https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/#phone-feedback.
+- Pushed Site source: `2a391423011e1cf1ee47d9c19081a1c3ded86c1c`.
+- Saved version: `appgprj_6adef83dcd248191bf11c7147cdf489d~appgver_15b06f4668848191bb34e4cd68a1503c`.
+- Successful deployment: `appgdep_6adf7093fd80819186020979376464de`.
+- Owner-private sharing is unchanged. All 39 new evidence assets have verified digests.
+- Browser QA passed at 390px, the normal viewport and 1200px: no horizontal
+  overflow or console warnings/errors. The Android and navigation galleries open
+  correctly; all seven navigation-gallery images load. Visual proof is retained
+  in `build/kmp-phone-feedback/report-comparison.png`.
+
+The first attempt at the new Running/Queue common test used singleton destination
+objects as constructors and failed compilation. The test was corrected and the
+final full shared-root JVM/native run passed. The initial missing nested golden
+fixtures were recorded only after reviewing all 18 images, then all 222 History
+screenshot cases passed. These setup failures remain in the build logs.
+No application branch was pushed, no PR was opened, and no app was uploaded.
