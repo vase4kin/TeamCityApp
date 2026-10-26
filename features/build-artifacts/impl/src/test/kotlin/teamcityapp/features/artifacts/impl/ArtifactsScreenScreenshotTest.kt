@@ -89,6 +89,8 @@ class ArtifactsScreenScreenshotTest(private val stateName: String, private val v
             "downloading_progress" -> ArtifactDownloadState.Downloading(ArtifactDownload("build.zip", "/content/build.zip"), 524288, 1048576)
             "downloading_unknown_size" -> ArtifactDownloadState.Downloading(ArtifactDownload("build.zip", "/content/build.zip"), 524288)
             "downloading" -> ArtifactDownloadState.Downloading(ArtifactDownload("build.zip", "/content/build.zip"))
+            "download_complete" -> ArtifactDownloadState.Ready(DownloadedArtifact("/cache/build.zip"), 1, "build.zip", exportRequested = false)
+            "export_failed" -> ArtifactDownloadState.Ready(DownloadedArtifact("/cache/build.zip"), 1, "build.zip", exportRequested = false, exportFailed = true)
             "download_failed" -> ArtifactDownloadState.Failed(ArtifactDownload("build.zip", "/content/build.zip"))
             else -> ArtifactDownloadState.Idle
         }
@@ -141,8 +143,9 @@ class ArtifactsScreenScreenshotTest(private val stateName: String, private val v
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "long_content", "downloading", "downloading_progress", "downloading_unknown_size", "download_failed", "permission_denied", "file_unavailable", "browser_unavailable").flatMap { state ->
-                variants.map { arrayOf<Any>(state, it) }
+            listOf("loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "long_content", "downloading", "downloading_progress", "downloading_unknown_size", "download_failed", "permission_denied", "file_unavailable", "browser_unavailable", "download_complete", "export_failed").flatMap { state ->
+                val sizes = if (state in listOf("download_complete", "export_failed")) variants + Variant("double_font_$theme", 360, 800, dark, 2f) else variants
+                sizes.map { arrayOf<Any>(state, it) }
             }
         }
     }

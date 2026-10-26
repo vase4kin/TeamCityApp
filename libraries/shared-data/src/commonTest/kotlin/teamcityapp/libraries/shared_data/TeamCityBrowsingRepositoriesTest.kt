@@ -63,7 +63,7 @@ class TeamCityBrowsingRepositoriesTest {
             sessions.saveAndActivate(AccountSecret(identity))
             account = (sessions.state.value as AccountSessionState.Active).scope
             sessions.updatePreferences(account) { initial }
-            repositories = TeamCityBrowsingRepositories(account, TeamCityApi(TeamCityTransport(HttpClient(engine), AccountSecret(identity), true)), initial) { sessions.updatePreferences(account, it) }
+            repositories = TeamCityBrowsingRepositories(account, TeamCityApi(TeamCityTransport(HttpClient(engine), AccountSecret(identity), true)), initial, "launch-one") { sessions.updatePreferences(account, it) }
         }
     }
 
@@ -74,7 +74,7 @@ class TeamCityBrowsingRepositoriesTest {
         val history = teamcityapp.features.build_history.api.BuildHistoryPrompt.Run
         val details = teamcityapp.features.build_details.api.BuildDetailsPrompt.Share
         assertTrue(home in fixture.repositories.home.pendingPrompts())
-        assertTrue(fixture.repositories.rating.isEligible())
+        assertFalse(fixture.repositories.rating.isEligible())
         fixture.repositories.home.acknowledgePrompt(home)
         fixture.repositories.historyOnboarding.markShown(history)
         fixture.repositories.metadata.acknowledgePrompt(details)
@@ -85,7 +85,7 @@ class TeamCityBrowsingRepositoriesTest {
         assertFalse(fixture.repositories.rating.isEligible())
         val saved = fixture.sessions.preferences(fixture.account)
         assertEquals(setOf("home.Drawer", "history.Run", "details.Share"), saved.shownPrompts)
-        val recreated = TeamCityBrowsingRepositories(fixture.account, TeamCityApi(TeamCityTransport(HttpClient(fixture.engine), AccountSecret(fixture.identity), true)), saved) { fixture.sessions.updatePreferences(fixture.account, it) }
+        val recreated = TeamCityBrowsingRepositories(fixture.account, TeamCityApi(TeamCityTransport(HttpClient(fixture.engine), AccountSecret(fixture.identity), true)), saved, "launch-two") { fixture.sessions.updatePreferences(fixture.account, it) }
         assertFalse(home in recreated.home.pendingPrompts())
         assertFalse(recreated.rating.isEligible())
         fixture.vault.fail = true
@@ -94,6 +94,51 @@ class TeamCityBrowsingRepositoriesTest {
         assertTrue(teamcityapp.features.build_history.api.BuildHistoryPrompt.Filter in recreated.historyOnboarding.pendingPrompts())
         fixture.sessions.signOut()
         assertFailsWith<CancellationException> { recreated.rating.isEligible() }
+    }
+
+    @Test fun ratingRequiresThreeDistinctSuccessfulViewsAndALaterAppLaunch() = runTest {
+        val fixture = Fixture(this) { error("Local rating policy must not make requests") }
+        fixture.start()
+        fun repositories(initial: AccountPreferences, launch: String) = TeamCityBrowsingRepositories(fixture.account, TeamCityApi(TeamCityTransport(HttpClient(fixture.engine), AccountSecret(fixture.identity), true)), initial, launch) { fixture.sessions.updatePreferences(fixture.account, it) }
+        for (id in listOf("1", "1", "2")) fixture.repositories.buildViewed(id)
+        assertEquals(setOf("1", "2"), fixture.sessions.preferences(fixture.account).ratingViewedBuildIds)
+        assertFalse(fixture.repositories.rating.isEligible())
+        fixture.repositories.buildViewed("3")
+        fixture.repositories.buildViewed("4")
+        val qualified = fixture.sessions.preferences(fixture.account)
+        assertEquals(setOf("1", "2", "3"), qualified.ratingViewedBuildIds)
+        assertEquals("launch-one", qualified.ratingQualifiedLaunch)
+        assertFalse(fixture.repositories.rating.isEligible())
+        assertFalse(repositories(qualified, "launch-one").rating.isEligible()) // account/host recreation is not another launch
+        val later = repositories(qualified, "launch-two")
+        assertTrue(later.rating.isEligible())
+        later.rating.markHandled()
+        assertFalse(later.rating.isEligible())
+        assertFalse(repositories(fixture.sessions.preferences(fixture.account), "launch-three").rating.isEligible())
+        assertTrue(fixture.requests.isEmpty())
+        fixture.sessions.signOut()
+        assertFailsWith<CancellationException> { fixture.repositories.buildViewed("1") }
+    }
+
+    @Test fun ratingMilestoneWritesAreRetryableAndCannotCrossAccounts() = runTest {
+        val fixture = Fixture(this) { error("No request") }
+        fixture.start()
+        fixture.repositories.buildViewed("1")
+        fixture.vault.fail = true
+        assertFails { fixture.repositories.buildViewed("2") }
+        assertEquals(setOf("1"), fixture.sessions.preferences(fixture.account).ratingViewedBuildIds)
+        fixture.vault.fail = false
+        fixture.repositories.buildViewed("2")
+        assertEquals(setOf("1", "2"), fixture.sessions.preferences(fixture.account).ratingViewedBuildIds)
+        val bob = fixture.identity.copy(userName = "bob")
+        fixture.sessions.saveAndActivate(AccountSecret(bob))
+        val active = (fixture.sessions.state.value as AccountSessionState.Active).scope
+        assertEquals(AccountPreferences(), fixture.sessions.preferences(active))
+        assertFailsWith<CancellationException> { fixture.repositories.buildViewed("3") }
+        assertEquals(AccountPreferences(), fixture.sessions.preferences(active))
+        val stored = fixture.storage.preferences(fixture.identity.key)
+        assertEquals(setOf("1", "2"), stored.ratingViewedBuildIds)
+        assertNull(stored.ratingQualifiedLaunch)
     }
 
     @Test fun favoritesKeepSavedIdsWhenSomeOrEveryConfigurationFails() = runTest {

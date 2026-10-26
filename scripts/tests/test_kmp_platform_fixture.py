@@ -48,14 +48,36 @@ class PlatformFixtureTest(unittest.TestCase):
         self.server.server_close()
         self.thread.join()
 
-    def request(self, method, path, body=None):
+    def request(self, method, path, body=None, headers=None):
         client = HTTPConnection("127.0.0.1", self.server.server_port, timeout=5)
         client.request(method, path, body=json.dumps(body) if body is not None else None,
-                       headers={"Content-Type": "application/json"})
+                       headers={"Content-Type": "application/json", **(headers or {})})
         response = client.getresponse()
         data = response.read()
         client.close()
         return response.status, json.loads(data) if data else None
+
+    def test_browser_guest_and_private_modes_do_not_share_api_credentials(self):
+        path = "/context/browser-private/repository/download/Demo_Build/1:id/archive.zip!/report.html"
+        self.assertEqual(403, self.request("GET", path + "?guest=1")[0])
+        self.assertEqual(401, self.request("GET", path)[0])
+        self.assertEqual(200, self.request("GET", path, headers={"Cookie": "fixture-browser=alice"})[0])
+        guest = path.replace("browser-private", "browser-guest")
+        self.assertEqual(200, self.request("GET", guest + "?guest=1")[0])
+        self.assertFalse(self.handler.mutation_log)
+
+    def test_incoming_running_snapshot_gains_complete_sections_on_detail_load(self):
+        path = "/context/refreshed/guestAuth/app/rest/"
+        _, history = self.request("GET", path + "buildTypes/id:Demo_Build/builds")
+        incoming = history["build"][0]
+        self.assertEqual("running", incoming["state"])
+        self.assertIsNone(incoming["artifacts"])
+        self.assertIsNone(incoming["testOccurrences"])
+        _, fresh = self.request("GET", incoming["href"])
+        self.assertEqual("finished", fresh["state"])
+        self.assertIsNotNone(fresh["artifacts"])
+        self.assertIsNotNone(fresh["testOccurrences"])
+        self.assertEqual("env.PLATFORM", fresh["properties"]["property"][0]["name"])
 
     def test_web_links_keep_the_active_fixture_context(self):
         status, build = self.request("GET", "/context/platform/unique/guestAuth/app/rest/builds/id:1")

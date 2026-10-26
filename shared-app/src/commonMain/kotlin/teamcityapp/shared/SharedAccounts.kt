@@ -18,6 +18,7 @@ package teamcityapp.shared
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.create_account.api.CreateAccountTracker
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.create_account.impl.*
@@ -33,7 +34,7 @@ import teamcityapp.features.manage_accounts.impl.tracker.ManageAccountsTracker
 import teamcityapp.libraries.accounts.AccountSessionState
 import teamcityapp.libraries.navigation.*
 
-internal fun nativeAccountEntries(model: SharedAppViewModel): Set<DestinationRegistration> = setOf(
+internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationRegistration> = setOf(
     SharedEntry(ManageAccountsDestination::class, ManageAccountsDestination.serializer()) { _, nav, _ ->
         val diagnostics = LocalNativePlatform.current.diagnostics
         val tracker = remember(diagnostics) {
@@ -43,7 +44,7 @@ internal fun nativeAccountEntries(model: SharedAppViewModel): Set<DestinationReg
                 override fun trackUserClicksOnSslDisabledWarning() = diagnostics.event("account_ssl_warning")
             }
         }
-        val vm = viewModel { ManageAccountsViewModel(NativeManageAccountsRepository(model.sessions), tracker) }
+        val vm = viewModel { ManageAccountsViewModel(SharedManageAccountsRepository(model.sessions), tracker) }
         val router = remember(nav) {
             object : ManageAccountsRouter {
                 override fun close() {
@@ -91,7 +92,7 @@ internal fun nativeAccountEntries(model: SharedAppViewModel): Set<DestinationReg
 )
 
 @Composable
-internal fun NativeAccountContent(model: SharedAppViewModel, nav: Navigator) {
+internal fun SharedAccountContent(model: SharedAppViewModel, nav: Navigator) {
     val platform = LocalNativePlatform.current
     val diagnostics = platform.diagnostics
     val tracker = remember(diagnostics) {
@@ -106,7 +107,7 @@ internal fun NativeAccountContent(model: SharedAppViewModel, nav: Navigator) {
             override fun trackView() = diagnostics.event("screen_account")
         }
     }
-    val vm = viewModel { DrawerViewModel(NativeAccountSwitcherRepository(model.sessions), tracker) }
+    val vm = viewModel { DrawerViewModel(SharedAccountSwitcherRepository(model.sessions), tracker) }
     val router = remember(platform, nav) {
         object : DrawerRouter {
             override fun attach() = Unit
@@ -114,7 +115,7 @@ internal fun NativeAccountContent(model: SharedAppViewModel, nav: Navigator) {
             override fun setInteractionsEnabled(enabled: Boolean) = Unit
             override fun openHome() = Unit
             override fun openAbout() {
-                nav.push(NativeAboutDestination)
+                nav.push(AboutDestination)
             }
             override fun openSettings() {
                 nav.push(teamcityapp.features.settings.api.navigation.SettingsDestination)

@@ -48,7 +48,7 @@ fun MainViewController(): UIViewController {
                     platform.responseCache
                 )
             }
-            androidx.compose.runtime.CompositionLocalProvider(LocalNativePlatform provides platform) { PhaseTwoApp(model) }
+            TeamCityApp(model, platform)
         }
     }
     return controller

@@ -26,7 +26,9 @@ data class AccountPreferences(
     val queueFavorites: Boolean = true,
     val agentsConnected: Boolean = true,
     val shownPrompts: Set<String> = emptySet(),
-    val ratingHandled: Boolean = false
+    val ratingHandled: Boolean = false,
+    val ratingViewedBuildIds: Set<String> = emptySet(),
+    val ratingQualifiedLaunch: String? = null
 )
 interface AccountPreferencesStorage {
     suspend fun preferences(key: String): AccountPreferences

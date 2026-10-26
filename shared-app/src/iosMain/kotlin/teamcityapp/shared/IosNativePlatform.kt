@@ -102,7 +102,7 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
         failure.value = action
         event("platform_failure_${action.name.lowercase()}")
     }
-    private fun present(controller: UIViewController, action: NativePlatformFailure) {
+    private fun present(controller: UIViewController, action: NativePlatformFailure, reportFailure: Boolean = true): Boolean {
         try {
             var owner = host()
             while (owner.presentedViewController != null) owner = checkNotNull(owner.presentedViewController)
@@ -113,8 +113,10 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
             }
             owner.presentViewController(controller, true, null)
             event("platform_${action.name.lowercase()}")
+            return true
         } catch (_: Exception) {
-            failed(action)
+            if (reportFailure) failed(action) else event("platform_failure_${action.name.lowercase()}")
+            return false
         }
     }
     override fun onBackground(cancel: () -> Unit): () -> Unit {
@@ -154,13 +156,13 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
             failed(NativePlatformFailure.Clipboard)
         }
     }
-    override fun openFile(path: String) {
+    override fun openFile(path: String): Boolean {
         val root = NSHomeDirectory() + "/Library/Caches/TeamCityArtifacts/"
         if (!path.startsWith(root) || path.split('/').any { it == ".." } || !NSFileManager.defaultManager.fileExistsAtPath(path)) {
-            failed(NativePlatformFailure.File)
-            return
+            event("platform_failure_file")
+            return false
         }
-        present(UIActivityViewController(listOf(NSURL.fileURLWithPath(path)), null), NativePlatformFailure.File)
+        return present(UIActivityViewController(listOf(NSURL.fileURLWithPath(path)), null), NativePlatformFailure.File, reportFailure = false)
     }
     override fun rate() {
         try {

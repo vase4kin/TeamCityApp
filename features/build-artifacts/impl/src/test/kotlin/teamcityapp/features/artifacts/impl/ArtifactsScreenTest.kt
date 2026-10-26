@@ -91,6 +91,15 @@ class ArtifactsScreenTest {
         assertEquals(1, retries)
     }
 
+    @Test fun completedFileHasSpokenContextAndAReachableReexportAction() {
+        var exports = 0
+        val ready = ArtifactDownloadState.Ready(DownloadedArtifact("/cache/report.txt"), 1, "report.txt", exportRequested = false)
+        compose.setContent { TeamCityTheme { ArtifactsScreen(ArtifactsUiState(list = rows, download = ready), false, null, {}, {}, {}, {}, {}, {}, {}, {}, onOpenDownloadedFile = { exports++ }) } }
+        compose.onNodeWithContentDescription("Downloaded file, report.txt").assertIsDisplayed()
+        compose.onNodeWithTag("artifacts:open-downloaded").performClick()
+        assertEquals(1, exports)
+    }
+
     @Test fun pendingDownloadHasAnExplicitCancel() {
         var cancels = 0
         compose.setContent { TeamCityTheme { ArtifactsScreen(ArtifactsUiState(list = rows, download = ArtifactDownloadState.Downloading(ArtifactDownload("archive.zip", "/content"))), false, null, {}, {}, {}, {}, {}, {}, { cancels++ }, {}) } }

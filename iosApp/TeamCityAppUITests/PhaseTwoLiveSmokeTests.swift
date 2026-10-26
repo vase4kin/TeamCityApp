@@ -268,6 +268,15 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertTrue(back.waitForExistence(timeout: 10))
         back.press(forDuration: 0.2)
     }
+    private func acknowledgeHomePrompt(_ app: XCUIApplication, _ prompt: String) {
+        let coachmark = element(app, "home:coachmark:" + prompt)
+        XCTAssertTrue(coachmark.waitForExistence(timeout: 10), "First-use prompt: " + prompt)
+        capture("first_use_" + prompt.lowercased(), app)
+        let dismiss = element(app, "home:dismiss-prompt")
+        XCTAssertTrue(dismiss.isHittable)
+        dismiss.press(forDuration: 0.2)
+        XCTAssertTrue(coachmark.waitForNonExistence(timeout: 10))
+    }
     private func fixtureApp(_ suffix: String = "") -> XCUIApplication {
         let app = XCUIApplication()
         app.launchEnvironment["TEAMCITY_UI_TEST_VAULT"] = UUID().uuidString
@@ -284,8 +293,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         app.buttons["OK"].tap()
         approveReadOnlyFixtureNetworkIfPresented()
-        let homePrompt = element(app, "home:dismiss-prompt")
-        _ = homePrompt.waitForExistence(timeout: 10)
+        acknowledgeHomePrompt(app, "Drawer")
         dismissSharedEducation(app)
         XCTAssertTrue(element(app, "home:tab:Favorites").waitForExistence(timeout: 30))
         return app
@@ -404,6 +412,35 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         capture("history_one_back", app)
     }
 
+    func testRefreshedBuildSectionsUseTheLoadedSnapshot() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Read-only fixture is opt-in") }
+        continueAfterFailure = false
+        let app = fixtureApp("/refreshed")
+        tap(app, "navigation:row:configuration:Demo_Build")
+        XCTAssertTrue(waitForSharedContent(app, "history:build:1", timeout: 20))
+        tap(app, "history:build:1")
+        XCTAssertTrue(waitForSharedContent(app, "overview:section:Artifacts", timeout: 20))
+        capture("refreshed_overview_sections", app)
+        tap(app, "overview:section:Tests", scroll: true)
+        XCTAssertTrue(element(app, "tests:test:failure").waitForExistence(timeout: 20))
+        back(app)
+        tap(app, "overview:section:Changes", scroll: true)
+        XCTAssertTrue(element(app, "changes:change:5").waitForExistence(timeout: 20))
+        back(app)
+        tap(app, "overview:section:Parameters", scroll: true)
+        XCTAssertTrue(app.staticTexts["env.PLATFORM"].waitForExistence(timeout: 20))
+        XCTAssertFalse(app.staticTexts["stale"].exists)
+        capture("refreshed_parameters", app)
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts["env.PLATFORM"].waitForExistence(timeout: 30))
+        back(app)
+        tap(app, "overview:section:Artifacts", scroll: true)
+        XCTAssertTrue(app.staticTexts["report.txt"].firstMatch.waitForExistence(timeout: 20))
+        capture("refreshed_artifacts", app)
+        back(app); back(app)
+        XCTAssertTrue(waitForSharedContent(app, "history:build:1", timeout: 15))
+    }
+
     func testHomeRetainedPanesFavoritesSectionsAndRelaunch() throws {
         guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else {
             throw XCTSkip("Start scripts/kmp-platform-fixture.py and opt in to fixture UI verification.")
@@ -412,18 +449,22 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         let app = fixtureApp()
         capture("home_projects", app)
         tap(app, "home:tab:Favorites")
-        XCTAssertTrue(element(app, "favorites:add").waitForExistence(timeout: 20))
+        acknowledgeHomePrompt(app, "Favorites")
+        XCTAssertTrue(waitForSharedContent(app, "favorites:add", timeout: 20))
         capture("favorites_empty", app)
         tap(app, "home:tab:Activity")
+        acknowledgeHomePrompt(app, "Running")
         tap(app, "home:filter:RunningAll")
         XCTAssertTrue(element(app, "running_builds:list").waitForExistence(timeout: 20))
         capture("running", app)
         tap(app, "home:tab:Queue")
+        acknowledgeHomePrompt(app, "Queue")
         tap(app, "home:filter:QueuedAll")
         XCTAssertTrue(element(app, "build_queue:list").waitForExistence(timeout: 20))
         capture("queue", app)
         tap(app, "home:tab:Agents")
-        XCTAssertTrue(element(app, "agents:list").waitForExistence(timeout: 20))
+        acknowledgeHomePrompt(app, "Agents")
+        XCTAssertTrue(waitForSharedContent(app, "agents:list", timeout: 20))
         capture("agents", app)
         tap(app, "home:filter:AgentsDisconnected")
         tap(app, "home:tab:Queue")
@@ -434,12 +475,12 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         capture("retained_activity_queue", app)
         tap(app, "home:tab:Projects")
         tap(app, "navigation:row:configuration:Demo_Build")
-        XCTAssertTrue(element(app, "history:list").waitForExistence(timeout: 20))
+        XCTAssertTrue(waitForSharedContent(app, "history:list", timeout: 20))
         tap(app, "history:favorite")
         XCTAssertTrue(app.buttons["Remove from favorites"].waitForExistence(timeout: 10))
         capture("history_favorite", app)
         tap(app, "history:build:1")
-        XCTAssertTrue(element(app, "overview:row:Result").waitForExistence(timeout: 20))
+        XCTAssertTrue(waitForSharedContent(app, "overview:row:Result", timeout: 20))
         capture("overview_sections", app)
         tap(app, "overview:section:Changes", scroll: true)
         tap(app, "changes:change:5")
@@ -910,6 +951,15 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         capture("file_export_initial", app)
         assertFileExport(app)
         capture("file_export", app)
+        // Cancelling the native sheet must leave a reusable completed file, not redownload it.
+        let sheet = element(app, "ActivityListView")
+        sheet.swipeDown(velocity: .slow)
+        XCTAssertTrue(element(app, "artifacts:open-downloaded").waitForExistence(timeout: 10))
+        capture("download_complete_reexport", app)
+        if #available(iOS 17.0, *) { try app.performAccessibilityAudit() }
+        tap(app, "artifacts:open-downloaded")
+        assertFileExport(app)
+        capture("file_reexport", app)
     }
     func testDownloadCancelBackgroundAndDeparture() throws {
         let app = try platformApp("artifact-slow")

@@ -34,7 +34,6 @@ import teamcityapp.shared.resources.*
 
 @Serializable internal data class NativeLicenseDestination(val id: String) : NavKey
 data class AppLicense(val id: String, val name: String, val source: String? = null)
-internal typealias NativeLicenseEntry = AppLicense
 interface AppLicenseRepository {
     suspend fun entries(): List<AppLicense>
     suspend fun text(id: String): String
@@ -45,31 +44,31 @@ internal sealed interface LicenseCatalogState {
     data class Content(val entries: List<AppLicense>) : LicenseCatalogState
 }
 internal object BundledLicenseRepository : AppLicenseRepository {
-    override suspend fun entries() = nativeLicenses
+    override suspend fun entries() = bundledRuntimeLicenses
     override suspend fun text(id: String): String {
-        require(nativeLicenses.any { it.id == id })
+        require(bundledRuntimeLicenses.any { it.id == id })
         return Res.readBytes("files/licenses/$id.txt").decodeToString()
     }
 }
-internal val nativeLicenses = listOf(
-    NativeLicenseEntry("teamcityapp", "TeamCityApp — Apache 2.0", "https://github.com/vase4kin/TeamCityApp/blob/dev/LICENSE.txt"),
-    NativeLicenseEntry("kotlin", "Kotlin — Apache 2.0", "https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt"),
-    NativeLicenseEntry("coroutines", "kotlinx.coroutines — Apache 2.0", "https://github.com/Kotlin/kotlinx.coroutines/blob/master/LICENSE.txt"),
-    NativeLicenseEntry("serialization", "kotlinx.serialization — Apache 2.0", "https://github.com/Kotlin/kotlinx.serialization/blob/master/LICENSE.txt"),
-    NativeLicenseEntry("compose", "Compose Multiplatform — Apache 2.0", "https://github.com/JetBrains/compose-multiplatform/blob/master/LICENSE.txt"),
-    NativeLicenseEntry("androidx", "AndroidX — Apache 2.0", "https://github.com/androidx/androidx/blob/androidx-main/LICENSE.txt"),
-    NativeLicenseEntry("ktor", "Ktor — Apache 2.0", "https://github.com/ktorio/ktor/blob/main/LICENSE"),
-    NativeLicenseEntry("skiko", "Skiko — Apache 2.0", "https://github.com/JetBrains/skiko/blob/master/LICENSE"),
-    NativeLicenseEntry("skia", "Skia — BSD", "https://skia.googlesource.com/skia/+/main/LICENSE")
+internal val bundledRuntimeLicenses = listOf(
+    AppLicense("teamcityapp", "TeamCityApp — Apache 2.0", "https://github.com/vase4kin/TeamCityApp/blob/dev/LICENSE.txt"),
+    AppLicense("kotlin", "Kotlin — Apache 2.0", "https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt"),
+    AppLicense("coroutines", "kotlinx.coroutines — Apache 2.0", "https://github.com/Kotlin/kotlinx.coroutines/blob/master/LICENSE.txt"),
+    AppLicense("serialization", "kotlinx.serialization — Apache 2.0", "https://github.com/Kotlin/kotlinx.serialization/blob/master/LICENSE.txt"),
+    AppLicense("compose", "Compose Multiplatform — Apache 2.0", "https://github.com/JetBrains/compose-multiplatform/blob/master/LICENSE.txt"),
+    AppLicense("androidx", "AndroidX — Apache 2.0", "https://github.com/androidx/androidx/blob/androidx-main/LICENSE.txt"),
+    AppLicense("ktor", "Ktor — Apache 2.0", "https://github.com/ktorio/ktor/blob/main/LICENSE"),
+    AppLicense("skiko", "Skiko — Apache 2.0", "https://github.com/JetBrains/skiko/blob/master/LICENSE"),
+    AppLicense("skia", "Skia — BSD", "https://skia.googlesource.com/skia/+/main/LICENSE")
 )
-internal sealed interface NativeLicenseText {
-    data object Loading : NativeLicenseText
-    data object Error : NativeLicenseText
-    data class Content(val value: String) : NativeLicenseText
+internal sealed interface SharedLicenseText {
+    data object Loading : SharedLicenseText
+    data object Error : SharedLicenseText
+    data class Content(val value: String) : SharedLicenseText
 }
 
 @Composable
-internal fun NativeLicensesList(onOpen: (String) -> Unit, onBack: () -> Unit, entries: List<AppLicense> = nativeLicenses) {
+internal fun SharedLicensesList(onOpen: (String) -> Unit, onBack: () -> Unit, entries: List<AppLicense> = bundledRuntimeLicenses) {
     SharedTeamCityScreen(stringResource(Res.string.platform_licenses), onBack) { modifier ->
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("licenses:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding)) {
@@ -81,14 +80,14 @@ internal fun NativeLicensesList(onOpen: (String) -> Unit, onBack: () -> Unit, en
 }
 
 @Composable
-internal fun NativeLicenseScreen(title: String, state: NativeLicenseText, onRetry: () -> Unit, onSource: (() -> Unit)?, onBack: () -> Unit) {
+internal fun SharedLicenseScreen(title: String, state: SharedLicenseText, onRetry: () -> Unit, onSource: (() -> Unit)?, onBack: () -> Unit) {
     SharedTeamCityScreen(title, onBack) { modifier ->
         when (state) {
-            NativeLicenseText.Loading -> LoadingContent(modifier)
+            SharedLicenseText.Loading -> LoadingContent(modifier)
 
-            NativeLicenseText.Error -> SharedErrorContent(modifier, onRetry, message = stringResource(Res.string.platform_license_read_error))
+            SharedLicenseText.Error -> SharedErrorContent(modifier, onRetry, message = stringResource(Res.string.platform_license_read_error))
 
-            is NativeLicenseText.Content -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            is SharedLicenseText.Content -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().padding(TeamCityDimensions.contentPadding)) {
                     SelectionContainer(Modifier.weight(1f).verticalScroll(rememberScrollState())) { Text(state.value, Modifier.testTag("license:text"), style = MaterialTheme.typography.bodyMedium) }
                     if (onSource != null) TextButton(onSource, Modifier.fillMaxWidth().testTag("license:source")) { Text(stringResource(Res.string.platform_license_source)) }

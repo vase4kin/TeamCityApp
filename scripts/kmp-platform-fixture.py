@@ -103,6 +103,18 @@ class Handler(BaseHTTPRequestHandler):
         pass  # Never print Authorization or request credentials.
 
     def do_GET(self):
+        parsed = urlsplit(self.path)
+        if "/repository/download/" in parsed.path:
+            # Browser authentication is deliberately distinct from API Basic credentials.
+            guest = parse_qs(parsed.query).get("guest") == ["1"]
+            private = parsed.path.startswith("/context/browser-private/")
+            if guest and private:
+                self.send_response(403); self.end_headers(); return
+            if not guest and self.headers.get("Cookie") != "fixture-browser=alice":
+                self.send_response(401); self.end_headers(); return
+            body = json.dumps({"artifact": "fixture report", "guest": guest}).encode()
+            self.send_response(200); self.send_header("Content-Type", "application/json"); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+            return
         if "httpAuth/" in self.path:
             raw = self.headers.get("Authorization", "")
             known = { "Basic " + base64.b64encode((name + ":fixture-only-password").encode()).decode(): name
@@ -181,6 +193,8 @@ class Handler(BaseHTTPRequestHandler):
             data = {"projects": {"project": []}, "buildTypes": {"buildType": [configuration]}}
         elif rest.startswith("buildTypes/") and rest.endswith("/builds"):
             data = {"count": 2, "build": [build("1"), build("2")]}
+            if prefix.startswith("/context/refreshed"):
+                data["build"][0].update(state="running", artifacts=None, changes=None, testOccurrences=None, properties={"property": [{"name": "stale", "value": "old snapshot"}]})
         elif rest.startswith("buildTypes/") and rest.endswith("/branches"):
             data = {"branch": [{"name": "main"}, {"name": "release"}]}
         elif rest.startswith("buildTypes/"):
@@ -246,12 +260,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="build/kmp-phase-2/platform-fixture")
     parser.add_argument("--bind-address", type=fixture_bind_address, default="127.0.0.1", help="Explicit private interface for read-only physical-device tests; default is loopback")
+    parser.add_argument("--port", type=int, default=18081, help="HTTP port for an isolated fixture instance")
+    parser.add_argument("--tls-port", type=int, default=18444, help="TLS port for an isolated fixture instance")
     parser.add_argument("--enable-mutations", action="store_true", help="Enable synthetic POSTs only in local /context/manage contexts")
     args = parser.parse_args()
     if args.enable_mutations and not ipaddress.IPv4Address(args.bind_address).is_loopback:
         parser.error("Synthetic mutations require a loopback bind address")
     Handler.mutation_enabled = args.enable_mutations
-    Handler.http_origin = "http://" + args.bind_address + ":18081"
+    Handler.http_origin = "http://" + args.bind_address + ":" + str(args.port)
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     cert, key = output / "certificate.pem", output / "private-key.pem"
@@ -260,14 +276,14 @@ def main():
                         "-subj", "/CN=localhost", "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1",
                         "-keyout", str(key), "-out", str(cert)], check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    http = ThreadingHTTPServer((args.bind_address, 18081), Handler)
-    https = ThreadingHTTPServer((args.bind_address, 18444), Handler)
+    http = ThreadingHTTPServer((args.bind_address, args.port), Handler)
+    https = ThreadingHTTPServer((args.bind_address, args.tls_port), Handler)
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.load_cert_chain(cert, key)
     https.socket = context.wrap_socket(https.socket, server_side=True)
     worker = Thread(target=http.serve_forever, daemon=True)
     worker.start()
-    print("Local fixtures (synthetic mutations=" + str(args.enable_mutations) + "): HTTP " + args.bind_address + ":18081; self-signed TLS " + args.bind_address + ":18444", flush=True)
+    print("Local fixtures (synthetic mutations=" + str(args.enable_mutations) + "): HTTP " + args.bind_address + ":" + str(args.port) + "; self-signed TLS " + args.bind_address + ":" + str(args.tls_port), flush=True)
     try:
         https.serve_forever()
     except KeyboardInterrupt:

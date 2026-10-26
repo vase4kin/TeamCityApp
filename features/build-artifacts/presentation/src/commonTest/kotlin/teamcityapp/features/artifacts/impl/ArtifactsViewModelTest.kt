@@ -217,6 +217,40 @@ class ArtifactsViewModelTest {
         observe(vm)
         runCurrent()
         assertNull(vm.claimDownloadedFile(ready.token))
+        val completed = vm.state.value.download as ArtifactDownloadState.Ready
+        assertFalse(completed.exportRequested)
+        assertEquals(downloaded, completed.file)
+    }
+
+    @Test fun exportFailureAndUserReopenReuseBytesWithoutAutomaticReplay() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        vm.download(file)
+        runCurrent()
+        val first = vm.state.value.download as ArtifactDownloadState.Ready
+        assertEquals(downloaded, vm.claimDownloadedFile(first.token))
+        vm.exportFailed(first.token)
+        runCurrent()
+        assertTrue((vm.state.value.download as ArtifactDownloadState.Ready).exportFailed)
+        assertNull(vm.claimDownloadedFile(first.token))
+        vm.openDownloadedFile()
+        vm.openDownloadedFile() // Fast double-tap is one new export request.
+        runCurrent()
+        val retry = vm.state.value.download as ArtifactDownloadState.Ready
+        assertTrue(retry.token > first.token)
+        assertFalse(retry.exportFailed)
+        assertEquals(downloaded, vm.claimDownloadedFile(retry.token))
+        assertNull(vm.claimDownloadedFile(retry.token))
+        vm.exportFailed(first.token) // An obsolete platform outcome cannot fail the new handoff.
+        runCurrent()
+        assertFalse((vm.state.value.download as ArtifactDownloadState.Ready).exportFailed)
+        assertEquals(listOf(file), repository.downloads)
+        vm.cancelDownload() // Dismiss removes the in-screen action, not the completed file bytes.
+        runCurrent()
+        assertEquals(ArtifactDownloadState.Idle, vm.state.value.download)
+        vm.openDownloadedFile()
+        runCurrent()
         assertEquals(ArtifactDownloadState.Idle, vm.state.value.download)
     }
 

@@ -32,4 +32,10 @@
  <string name="artifacts_keep_screen_open">Keep this screen open. Leaving it or putting the app in the background will cancel the download.</string>
  <string name="artifacts_dismiss">Dismiss</string>
     <string name="artifacts_bytes_received">%1$d bytes received</string>
+    <string name="artifacts_download_complete">Download complete. Open or share this file again from this screen.</string>
+    <string name="artifacts_export_failed">Couldn’t open the export sheet. Your downloaded file is ready; try again without downloading it.</string>
+    <string name="artifacts_open_downloaded">Open or share</string>
+    <string name="artifacts_retry_export">Retry export</string>
+    <string name="artifacts_downloaded_file">Downloaded file, %1$s</string>
+    <string name="artifacts_named_file">Artifact file, %1$s</string>
 </resources>

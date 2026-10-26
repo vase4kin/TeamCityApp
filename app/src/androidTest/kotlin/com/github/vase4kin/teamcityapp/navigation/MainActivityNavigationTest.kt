@@ -183,6 +183,42 @@ class MainActivityNavigationTest {
         file.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
     }
 
+    @Test fun refreshedBuildSectionsAndCompletedExportSurviveRecreation() {
+        androidx.test.espresso.intent.Intents.init()
+        try {
+            androidx.test.espresso.intent.Intents.intending(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER)).respondWith(android.app.Instrumentation.ActivityResult(android.app.Activity.RESULT_CANCELED, null))
+            val complete = teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(Mocks.successBuild())
+            val incoming = complete.copy(state = "running", properties = null, artifacts = null, changes = null, tests = null)
+            ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java)).use { scenario ->
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+                scenario.onActivity { launcher.open(it, teamcityapp.features.build_details.api.BuildDetailsDestination(incoming, "Refreshed build")) }
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:section:Artifacts").fetchSemanticsNodes().isNotEmpty() }
+                captureDisplay(scenario, "phase7-refreshed-overview")
+                compose.onNodeWithTag("overview:section:Parameters").performScrollTo().performClick()
+                await("Murdock")
+                captureDisplay(scenario, "phase7-refreshed-parameters")
+                scenario.recreate()
+                await("Murdock")
+                androidx.test.espresso.Espresso.pressBack()
+                compose.onNodeWithTag("overview:section:Artifacts").performScrollTo().performClick()
+                await("AndroidManifest.xml")
+                captureDisplay(scenario, "phase7-artifacts")
+                compose.onNodeWithText("AndroidManifest.xml").performClick()
+                compose.onNodeWithTag("sheet:ArtifactDownload").performClick()
+                await("Open or share")
+                captureDisplay(scenario, "phase7-download-complete")
+                scenario.recreate()
+                await("Open or share")
+                compose.onNodeWithTag("artifacts:open-downloaded").performClick()
+                await("Open or share")
+                verify(service, times(1)).downloadFile(org.mockito.kotlin.any())
+                androidx.test.espresso.intent.Intents.intended(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER), androidx.test.espresso.intent.VerificationModes.times(2))
+            }
+        } finally {
+            androidx.test.espresso.intent.Intents.release()
+        }
+    }
+
     @Test fun packagedAndroidNoticesUseTheSharedReaderAndAllThemeChoices() {
         launchAbout().use { scenario ->
             await(info.version)

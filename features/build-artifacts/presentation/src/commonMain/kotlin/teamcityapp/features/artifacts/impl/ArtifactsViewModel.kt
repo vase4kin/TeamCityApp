@@ -60,7 +60,7 @@ open class ArtifactsViewModel constructor(
                     download.update { current -> if (current.id == generation && current.state is ArtifactDownloadState.Downloading) current.copy(state = ArtifactDownloadState.Downloading(file, received, total)) else current }
                 }
                 currentCoroutineContext().ensureActive()
-                download.update { current -> if (current.id == generation) current.copy(state = ArtifactDownloadState.Ready(result, ++nextToken)) else current }
+                download.update { current -> if (current.id == generation) current.copy(state = ArtifactDownloadState.Ready(result, ++nextToken, file.name)) else current }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
@@ -85,11 +85,24 @@ open class ArtifactsViewModel constructor(
     /** A replayed state after recreation must not launch a file viewer twice. */
     fun claimDownloadedFile(token: Long): DownloadedArtifact? {
         val ready = download.value.state as? ArtifactDownloadState.Ready ?: return null
-        if (ready.token != token || token <= lastClaimedToken) return null
+        if (!ready.exportRequested || ready.token != token || token <= lastClaimedToken) return null
         lastClaimedToken = token
-        download.value = Transfer(transferGeneration, ArtifactDownloadState.Idle)
+        download.value = Transfer(transferGeneration, ready.copy(exportRequested = false))
         return ready.file
     }
+
+    /** A user action creates a new one-shot request over the existing completed bytes. */
+    fun openDownloadedFile() {
+        val ready = download.value.state as? ArtifactDownloadState.Ready ?: return
+        if (ready.exportRequested) return
+        download.value = Transfer(transferGeneration, ready.copy(token = ++nextToken, exportRequested = true, exportFailed = false))
+    }
+
+    fun exportFailed(token: Long) {
+        val ready = download.value.state as? ArtifactDownloadState.Ready ?: return
+        if (ready.token == token && !ready.exportRequested) download.value = Transfer(transferGeneration, ready.copy(exportFailed = true))
+    }
+
     companion object {
         const val URL = "url"
         const val NAME = "name"

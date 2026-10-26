@@ -27,13 +27,18 @@ data class ArtifactsUiState(
     val download: ArtifactDownloadState = ArtifactDownloadState.Idle
 )
 sealed interface ArtifactDownloadState {
-    val messageRes: StringResource get() = if (this is Failed) Res.string.artifacts_download_failed else Res.string.artifacts_downloading
+    val fileLabelRes: StringResource get() = if (this is Ready) Res.string.artifacts_downloaded_file else Res.string.artifacts_named_file
+    val messageRes: StringResource get() = when (this) {
+        is Failed -> Res.string.artifacts_download_failed
+        is Ready -> if (exportFailed) Res.string.artifacts_export_failed else Res.string.artifacts_download_complete
+        else -> Res.string.artifacts_downloading
+    }
 
-    val dismissLabelRes: StringResource get() = if (this is Failed) Res.string.artifacts_dismiss else Res.string.artifacts_cancel
+    val dismissLabelRes: StringResource get() = if (this is Failed || this is Ready) Res.string.artifacts_dismiss else Res.string.artifacts_cancel
     data object Idle : ArtifactDownloadState
     data class Downloading(val file: ArtifactDownload, val received: Long = 0, val total: Long? = null) : ArtifactDownloadState
     data class Failed(val file: ArtifactDownload, val token: Long = 0) : ArtifactDownloadState
-    data class Ready(val file: DownloadedArtifact, val token: Long) : ArtifactDownloadState
+    data class Ready(val file: DownloadedArtifact, val token: Long, val name: String = "", val exportRequested: Boolean = true, val exportFailed: Boolean = false) : ArtifactDownloadState
 }
 enum class ArtifactPlatformError(val titleRes: StringResource, val messageRes: StringResource) {
     PermissionDenied(Res.string.artifacts_permission_title, Res.string.artifacts_permission_denied),

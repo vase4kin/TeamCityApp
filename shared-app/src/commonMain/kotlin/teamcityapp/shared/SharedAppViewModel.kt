@@ -42,6 +42,9 @@ internal sealed interface NavigationRestoration {
     data class Snapshot(val encoded: String?) : NavigationRestoration
 }
 
+// A process restart, not host recreation or account switching, starts a later launch.
+private val currentAppLaunchId = kotlin.uuid.Uuid.random().toString()
+
 open class SharedAppViewModel(private val storage: AccountStorage, val navigationStore: SavedNavigationStore, private val responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null, private val clients: teamcityapp.libraries.network.TeamCityClientFactory = teamcityapp.libraries.network.PlatformTeamCityClientFactory) : ViewModel() {
     val sessions = AccountSessionManager(storage, viewModelScope.coroutineContext) { clearResponseCache() }
     val authentication: AuthenticationRepository = TeamCityAuthentication(sessions, clients)
@@ -64,7 +67,7 @@ open class SharedAppViewModel(private val storage: AccountStorage, val navigatio
     suspend fun graph(account: AccountScope, files: ArtifactFileStore, responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null): TeamCityAccountGraph = graphLock.withLock {
         account.requireCurrent()
         currentGraph?.takeIf { it.account.generation == account.generation }?.let { return@withLock it }
-        TeamCityAccountGraph.create(sessions, account, files, responseCache, clients).also {
+        TeamCityAccountGraph.create(sessions, account, files, responseCache, clients, currentAppLaunchId).also {
             account.requireCurrent()
             currentGraph = it
         }

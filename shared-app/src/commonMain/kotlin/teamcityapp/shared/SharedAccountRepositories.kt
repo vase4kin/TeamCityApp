@@ -21,7 +21,7 @@ import teamcityapp.features.manage_accounts.api.*
 import teamcityapp.libraries.accounts.*
 
 /** Maps public account identities only; credentials and mutations remain in the session manager. */
-internal class NativeAccountSwitcherRepository(private val sessions: AccountSessionManager) : DrawerRepository {
+internal class SharedAccountSwitcherRepository(private val sessions: AccountSessionManager) : DrawerRepository {
     override val supportsSignOut = true
     override suspend fun accounts(): List<DrawerAccount> {
         val active = (sessions.state.value as? AccountSessionState.Active)?.scope?.identity?.key
@@ -38,7 +38,7 @@ internal class NativeAccountSwitcherRepository(private val sessions: AccountSess
     override suspend fun signOut() = sessions.signOut()
 }
 
-internal class NativeManageAccountsRepository(private val sessions: AccountSessionManager) : ManageAccountsRepository {
+internal class SharedManageAccountsRepository(private val sessions: AccountSessionManager) : ManageAccountsRepository {
     override suspend fun accounts(): List<ManagedAccount> {
         val active = (sessions.state.value as? AccountSessionState.Active)?.scope?.identity?.key
         return sessions.accounts().map { ManagedAccount(ManagedAccountId(it.serverUrl, it.userName, it.key), it.key == active, it.sslDisabled) }

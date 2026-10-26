@@ -42,7 +42,9 @@ interface NativePlatform {
     fun browser(url: String)
     fun share(text: String)
     fun copy(text: String)
-    fun openFile(path: String)
+
+    /** True means the OS accepted presentation, not that the user exported the file. */
+    fun openFile(path: String): Boolean
     fun rate()
     fun event(name: String) = diagnostics.event(name)
     fun rejected(action: NativePlatformFailure)

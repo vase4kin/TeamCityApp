@@ -56,6 +56,7 @@ class TeamCityBrowsingRepositories(
     private val account: AccountScope,
     private val api: TeamCityApi,
     initial: AccountPreferences,
+    private val appLaunchId: String,
     private val persist: suspend ((AccountPreferences) -> AccountPreferences) -> AccountPreferences
 ) {
     private val preferences = MutableStateFlow(initial)
@@ -92,8 +93,26 @@ class TeamCityBrowsingRepositories(
     private suspend fun acknowledge(key: String) {
         update { it.copy(shownPrompts = it.shownPrompts + key) }
     }
+
+    /** Count successful visible Overview loads once, bounded to the three-build milestone. */
+    suspend fun buildViewed(id: String) {
+        account.requireCurrent()
+        require(id.isNotBlank())
+        if (preferences.value.ratingHandled || preferences.value.ratingQualifiedLaunch != null || id in preferences.value.ratingViewedBuildIds) return
+        update { current ->
+            if (current.ratingHandled || current.ratingQualifiedLaunch != null) {
+                current
+            } else {
+                val viewed = (current.ratingViewedBuildIds + id).take(3).toSet()
+                current.copy(ratingViewedBuildIds = viewed, ratingQualifiedLaunch = if (viewed.size == 3) appLaunchId else null)
+            }
+        }
+    }
     val rating = object : NavigationRatingRepository {
-        override suspend fun isEligible() = account.run { !preferences.value.ratingHandled }
+        override suspend fun isEligible() = account.run {
+            val saved = preferences.value
+            !saved.ratingHandled && saved.ratingViewedBuildIds.size >= 3 && saved.ratingQualifiedLaunch != null && saved.ratingQualifiedLaunch != appLaunchId
+        }
         override suspend fun markHandled() {
             update { it.copy(ratingHandled = true) }
         }

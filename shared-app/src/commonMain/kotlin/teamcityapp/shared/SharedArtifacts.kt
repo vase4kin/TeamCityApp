@@ -31,7 +31,7 @@ import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 
-internal fun nativeArtifactEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> {
+internal fun sharedArtifactEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> {
     val repository = graph?.artifacts ?: return emptySet()
     return setOf(
         SharedEntry(ArtifactsDestination::class, ArtifactsDestination.serializer()) { destination, nav, id ->
@@ -72,7 +72,7 @@ internal fun nativeArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                             nav.push(destination.copy(href = item.description, name = item.fileName))
                         }
 
-                        SheetAction.ArtifactBrowser -> runCatching { artifactBrowserUrl(graph.account.identity.serverUrl, destination.build, item.description) }.onSuccess(platform::browser).onFailure { platform.rejected(NativePlatformFailure.Browser) }.let { }
+                        SheetAction.ArtifactBrowser -> runCatching { artifactBrowserUrl(graph.account.identity.serverUrl, destination.build, item.description, graph.account.identity.guest) }.onSuccess(platform::browser).onFailure { platform.rejected(NativePlatformFailure.Browser) }.let { }
 
                         else -> Unit
                     }
@@ -80,7 +80,11 @@ internal fun nativeArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                 onPauseOrDispose {}
             }
             LifecycleResumeEffect(state.download, vm) {
-                (state.download as? ArtifactDownloadState.Ready)?.let { vm.claimDownloadedFile(it.token)?.let { platform.openFile(it.path) } }
+                (state.download as? ArtifactDownloadState.Ready)?.let { ready ->
+                    vm.claimDownloadedFile(ready.token)?.let { file ->
+                        if (!platform.openFile(file.path)) vm.exportFailed(ready.token)
+                    }
+                }
                 onPauseOrDispose {}
             }
             fun menu(file: Artifact) {
@@ -97,7 +101,7 @@ internal fun nativeArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                 } else {
                     menu(file)
                 }
-            }, ::menu, vm::retryDownload, vm::cancelDownload, {})
+            }, ::menu, vm::retryDownload, vm::cancelDownload, {}, onOpenDownloadedFile = vm::openDownloadedFile)
         }
     )
 }

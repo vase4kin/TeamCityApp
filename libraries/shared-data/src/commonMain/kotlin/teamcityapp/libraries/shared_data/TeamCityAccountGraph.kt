@@ -55,10 +55,10 @@ class TeamCityAccountGraph(
     override suspend fun build(href: String, forceRefresh: Boolean) = account.run { api.build(href, forceRefresh) }
 
     companion object {
-        suspend fun create(sessions: AccountSessionManager, account: AccountScope, artifactStore: ArtifactFileStore? = null, responseCache: ResponseCacheStore? = null, clients: TeamCityClientFactory = PlatformTeamCityClientFactory): TeamCityAccountGraph {
+        suspend fun create(sessions: AccountSessionManager, account: AccountScope, artifactStore: ArtifactFileStore? = null, responseCache: ResponseCacheStore? = null, clients: TeamCityClientFactory = PlatformTeamCityClientFactory, appLaunchId: String): TeamCityAccountGraph {
             val secret = sessions.secret(account)
             val api = TeamCityApi(TeamCityTransport(clients.create(secret.identity), secret, httpConsent = true, cache = TeamCityResponseCache(account.identity.key, responseCache)))
-            return TeamCityAccountGraph(account, api, TeamCityBrowsingRepositories(account, api, sessions.preferences(account)) { transform -> sessions.updatePreferences(account, transform) }, artifactStore)
+            return TeamCityAccountGraph(account, api, TeamCityBrowsingRepositories(account, api, sessions.preferences(account), appLaunchId) { transform -> sessions.updatePreferences(account, transform) }, artifactStore)
         }
     }
 }

@@ -23,7 +23,7 @@ import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.libraries.builds.*
 import teamcityapp.libraries.navigation.*
 
-class NativeBuildNavigationTest {
+class SharedBuildNavigationTest {
     @Test fun historyOpensOneCompleteVisitAndBackReturnsToTheSameHistoryOwner() {
         val history = NavigationEntry("history", BuildHistoryDestination("config", "Build Android", "branch:main"))
         val state = mutableStateOf(NavigationSnapshot(listOf(history), sessionKey = "alice"))
@@ -64,5 +64,44 @@ class NativeBuildNavigationTest {
         assertEquals(2, navigator.snapshot.entries.size)
         assertTrue(navigator.pop())
         assertIs<BuildHistoryDestination>(navigator.current.destination)
+    }
+
+    @Test fun refreshedSectionsUseOneCompleteSnapshotAndKeepTheExactOrigin() {
+        val incoming = BuildLaunchData("42", "/context/app/rest/builds/id:42", state = "running")
+        val fresh = incoming.copy(state = "finished", changes = BuildCollectionLink("/changes", 2), tests = BuildTests("/tests", failed = 1), artifacts = BuildCollectionLink("/artifacts"), properties = BuildProperties(listOf(BuildProperty("fresh", "value"))))
+        val origin = NavigationEntry("build-visit", BuildDetailsDestination(incoming, "Build"))
+        val navigator = Navigator(mutableStateOf(NavigationSnapshot(listOf(origin), sessionKey = "alice")))
+        for (section in listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests, BuildDetailsSection.Parameters, BuildDetailsSection.Artifacts)) {
+            val destination = assertNotNull(buildSectionDestination(incoming.id, fresh, section, "Build", origin.id))
+            navigator.openBuildSection(origin.id, incoming.id, fresh, section, "Build")
+            navigator.openBuildSection(origin.id, incoming.id, fresh, section, "Build")
+            assertEquals(2, navigator.snapshot.entries.size)
+            assertEquals(destination, navigator.current.destination)
+            when (destination) {
+                is BuildDetailsSectionDestination -> {
+                    assertEquals(fresh, destination.build)
+                    assertEquals(origin.id, destination.originEntryId)
+                    assertTrue(navigator.finish(BuildDetailsSectionCountResult(fresh.id, section, 2), origin.id))
+                    assertNotNull(navigator.consumeResult(origin.id, BuildDetailsSectionCountResult::class))
+                    assertNull(navigator.consumeResult(origin.id, BuildDetailsSectionCountResult::class))
+                }
+
+                is teamcityapp.features.artifacts.api.navigation.ArtifactsDestination -> {
+                    assertEquals(fresh, destination.build)
+                    assertEquals("/artifacts", destination.href)
+                    assertTrue(navigator.pop())
+                }
+
+                else -> fail("Unexpected section destination")
+            }
+            assertEquals(origin, navigator.current)
+        }
+    }
+
+    @Test fun absentOrWrongBuildCannotLaunchARefreshedSection() {
+        val incoming = BuildLaunchData("42", "/build/42", state = "running")
+        assertNull(buildSectionDestination(incoming.id, null, BuildDetailsSection.Tests, null, "origin"))
+        assertNull(buildSectionDestination(incoming.id, incoming, BuildDetailsSection.Tests, null, "origin"))
+        assertNull(buildSectionDestination("other", incoming, BuildDetailsSection.Parameters, null, "origin"))
     }
 }

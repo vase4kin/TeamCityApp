@@ -38,11 +38,11 @@ internal fun buildLogUrl(server: String, build: BuildLaunchData, guest: Boolean)
     require(build.id.isNotBlank())
     return activeServerWebUrl(server, "downloadBuildLog.html?buildId=${build.id.encodeURLQueryComponent()}" + if (guest) "&guest=1" else "")
 }
-internal fun artifactBrowserUrl(server: String, build: BuildLaunchData, href: String): String {
+internal fun artifactBrowserUrl(server: String, build: BuildLaunchData, href: String, guest: Boolean): String {
     // Validate the opaque source before converting metadata to TeamCity's browser download route.
     activeServerWebUrl(server, href)
     val path = href.substringAfter("/metadata/", "")
     require(path.isNotBlank())
     val configuration = requireNotNull(build.buildTypeId ?: build.configuration?.id)
-    return activeServerWebUrl(server, "repository/download/${configuration.encodeURLPathPart()}/${build.id.encodeURLPathPart()}:id/$path?guest=1")
+    return activeServerWebUrl(server, "repository/download/${configuration.encodeURLPathPart()}/${build.id.encodeURLPathPart()}:id/$path" + if (guest) "?guest=1" else "")
 }

@@ -58,7 +58,8 @@ fun ArtifactsScreen(
     onRetryDownload: () -> Unit,
     onCancelDownload: () -> Unit,
     onDismissPlatformError: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onOpenDownloadedFile: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
@@ -79,7 +80,7 @@ fun ArtifactsScreen(
         }
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
-            ArtifactDownloadCard(state.download, onCancelDownload, onRetryDownload)
+            ArtifactDownloadCard(state.download, onCancelDownload, onRetryDownload, onOpenDownloadedFile)
             TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.weight(1f), empty = { TeamCityListEmpty(stringResource(Res.string.artifacts_empty)) }) {
                 val rows = (state.list as? ListUiState.Content<Artifact>)?.items.orEmpty()
                 val occurrences = mutableMapOf<String, Int>()

@@ -90,7 +90,7 @@ internal fun ArtifactsRoute(
                     try {
                         router.openFile(file)
                     } catch (_: Exception) {
-                        platformError = ArtifactPlatformError.FileUnavailable
+                        viewModel.exportFailed(result.token)
                     }
                 }
 
@@ -119,6 +119,7 @@ internal fun ArtifactsRoute(
         router::openActions,
         { (state.download as? ArtifactDownloadState.Failed)?.let { download(it.file) } },
         viewModel::cancelDownload,
-        { platformError = null }
+        { platformError = null },
+        onOpenDownloadedFile = viewModel::openDownloadedFile
     )
 }

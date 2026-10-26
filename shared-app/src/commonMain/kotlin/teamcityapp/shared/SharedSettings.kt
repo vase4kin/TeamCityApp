@@ -28,6 +28,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.about.api.*
+import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.impl.*
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.settings.impl.*
@@ -38,10 +39,8 @@ import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 import teamcityapp.shared.resources.*
 
-internal typealias NativeAboutDestination = teamcityapp.features.about.api.navigation.AboutDestination
-
 @Serializable internal data object NativeLicensesDestination : NavKey
-internal fun nativeSettingsEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> = setOf(
+internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> = setOf(
     SharedEntry(SettingsDestination::class, SettingsDestination.serializer()) { _, nav, _ ->
         val platform = LocalNativePlatform.current
         val diagnostics = platform.diagnostics
@@ -62,7 +61,7 @@ internal fun nativeSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         }
         SettingsScreen(state, vm::select, vm::retry, vm::retrySave, { nav.pop() })
     },
-    SharedEntry(NativeAboutDestination::class, NativeAboutDestination.serializer()) { _, nav, _ ->
+    SharedEntry(AboutDestination::class, AboutDestination.serializer()) { _, nav, _ ->
         val platform = LocalNativePlatform.current
         val repository = remember(graph) {
             object : AboutRepository {
@@ -96,25 +95,25 @@ internal fun nativeSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         when (val state = catalog) {
             LicenseCatalogState.Loading -> SharedTeamCityScreen(stringResource(Res.string.platform_licenses), { nav.pop() }) { LoadingContent(it) }
             LicenseCatalogState.Error -> SharedTeamCityScreen(stringResource(Res.string.platform_licenses), { nav.pop() }) { SharedErrorContent(it, { revision++ }) }
-            is LicenseCatalogState.Content -> NativeLicensesList({ nav.push(NativeLicenseDestination(it)) }, { nav.pop() }, state.entries)
+            is LicenseCatalogState.Content -> SharedLicensesList({ nav.push(NativeLicenseDestination(it)) }, { nav.pop() }, state.entries)
         }
     },
     SharedEntry(NativeLicenseDestination::class, NativeLicenseDestination.serializer()) { destination, nav, _ ->
         val platform = LocalNativePlatform.current
         var revision by remember { mutableIntStateOf(0) }
         var entry by remember { mutableStateOf<AppLicense?>(null) }
-        val state by produceState<NativeLicenseText>(NativeLicenseText.Loading, destination.id, revision) {
-            value = NativeLicenseText.Loading
+        val state by produceState<SharedLicenseText>(SharedLicenseText.Loading, destination.id, revision) {
+            value = SharedLicenseText.Loading
             value = try {
                 val found = platform.licenses.entries().single { it.id == destination.id }
                 entry = found
-                NativeLicenseText.Content(platform.licenses.text(found.id))
+                SharedLicenseText.Content(platform.licenses.text(found.id))
             } catch (c: kotlinx.coroutines.CancellationException) {
                 throw c
             } catch (_: Exception) {
-                NativeLicenseText.Error
+                SharedLicenseText.Error
             }
         }
-        NativeLicenseScreen(entry?.name ?: stringResource(Res.string.platform_licenses), state, { revision++ }, entry?.source?.let { source -> { platform.browser(source) } }, { nav.pop() })
+        SharedLicenseScreen(entry?.name ?: stringResource(Res.string.platform_licenses), state, { revision++ }, entry?.source?.let { source -> { platform.browser(source) } }, { nav.pop() })
     }
 )

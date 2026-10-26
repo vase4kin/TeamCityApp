@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,10 +34,11 @@ import teamcityapp.libraries.theme.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ArtifactDownloadCard(state: ArtifactDownloadState, onDismiss: () -> Unit, onRetry: () -> Unit) {
-    val file = when (state) {
-        is ArtifactDownloadState.Downloading -> state.file
-        is ArtifactDownloadState.Failed -> state.file
+fun ArtifactDownloadCard(state: ArtifactDownloadState, onDismiss: () -> Unit, onRetry: () -> Unit, onOpen: () -> Unit = {}) {
+    val name = when (state) {
+        is ArtifactDownloadState.Downloading -> state.file.name
+        is ArtifactDownloadState.Failed -> state.file.name
+        is ArtifactDownloadState.Ready -> state.name
         else -> return
     }
     Box(Modifier.fillMaxWidth(), contentAlignment = androidx.compose.ui.Alignment.TopCenter) {
@@ -44,7 +47,8 @@ fun ArtifactDownloadCard(state: ArtifactDownloadState, onDismiss: () -> Unit, on
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
         ) {
             Column(Modifier.padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
-                Text(file.name, style = MaterialTheme.typography.titleMedium)
+                val fileLabel = stringResource(state.fileLabelRes, name)
+                Text(name, modifier = Modifier.clearAndSetSemantics { contentDescription = fileLabel }, style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(state.messageRes), style = MaterialTheme.typography.bodyMedium)
                 if (state is ArtifactDownloadState.Downloading) {
                     val total = state.total
@@ -58,6 +62,11 @@ fun ArtifactDownloadCard(state: ArtifactDownloadState, onDismiss: () -> Unit, on
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
                     if (state is ArtifactDownloadState.Failed) TextButton(onRetry) { Text(stringResource(Res.string.artifacts_retry_download)) }
+                    if (state is ArtifactDownloadState.Ready) {
+                        TextButton(onOpen, enabled = !state.exportRequested, modifier = Modifier.testTag("artifacts:open-downloaded")) {
+                            Text(stringResource(if (state.exportFailed) Res.string.artifacts_retry_export else Res.string.artifacts_open_downloaded))
+                        }
+                    }
                     TextButton(onDismiss) { Text(stringResource(state.dismissLabelRes)) }
                 }
             }

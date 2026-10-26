@@ -23,18 +23,18 @@ import teamcityapp.features.home.api.HomeTab
 import teamcityapp.libraries.navigation.*
 
 @Serializable
-internal data class SavedNativeHome(val selected: HomeTab = HomeTab.Projects, val activity: HomeTab = HomeTab.Running, val stacks: Map<String, String> = emptyMap())
+internal data class SavedSharedHome(val selected: HomeTab = HomeTab.Projects, val activity: HomeTab = HomeTab.Running, val stacks: Map<String, String> = emptyMap())
 
 @Serializable
-internal data class SavedNativeJourney(val root: String, val homes: Map<String, SavedNativeHome> = emptyMap())
-internal class NativeJourneyMemory {
-    var homes by mutableStateOf(emptyMap<String, SavedNativeHome>())
+internal data class SavedSharedJourney(val root: String, val homes: Map<String, SavedSharedHome> = emptyMap())
+internal class SharedJourneyMemory {
+    var homes by mutableStateOf(emptyMap<String, SavedSharedHome>())
 }
-internal val LocalNativeJourneyMemory = staticCompositionLocalOf<NativeJourneyMemory> { error("Native journey state is unavailable") }
-internal val nativeJourneyJson = Json { ignoreUnknownKeys = true }
-internal fun decodeNativeSnapshot(encoded: String?, registry: DestinationRegistry, sessionKey: String): Pair<NavigationSnapshot, Map<String, SavedNativeHome>>? = runCatching {
+internal val LocalSharedJourneyMemory = staticCompositionLocalOf<SharedJourneyMemory> { error("Native journey state is unavailable") }
+internal val sharedJourneyJson = Json { ignoreUnknownKeys = true }
+internal fun decodeSharedSnapshot(encoded: String?, registry: DestinationRegistry, sessionKey: String): Pair<NavigationSnapshot, Map<String, SavedSharedHome>>? = runCatching {
     require(encoded != null && encoded.length < 1_000_000)
-    val envelope = nativeJourneyJson.decodeFromString<SavedNativeJourney>(encoded)
+    val envelope = sharedJourneyJson.decodeFromString<SavedSharedJourney>(encoded)
     val root = registry.decodeSnapshot(envelope.root.replace("\"teamcityapp.shared.NativeAboutDestination\"", "\"teamcityapp.features.about.api.navigation.AboutDestination\"").replace("\"teamcityapp.shared.AccountsDestination\"", "\"teamcityapp.features.drawer.api.navigation.DrawerDestination\""))
     require(root.sessionKey == sessionKey && root.entries.size <= 100)
     val homeIds = root.entries.filter { it.destination is teamcityapp.features.home.api.HomeDestination }.map { it.id }.toSet()

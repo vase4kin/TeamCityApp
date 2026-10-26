@@ -23,7 +23,7 @@ import teamcityapp.features.drawer.api.*
 import teamcityapp.features.manage_accounts.api.*
 import teamcityapp.libraries.accounts.*
 
-class NativeAccountRepositoriesTest {
+class SharedAccountRepositoriesTest {
     private class Vault : SecureVault {
         var value: String? = null
         var failWrites = false
@@ -41,8 +41,8 @@ class NativeAccountRepositoriesTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
         sessions.saveAndActivate(AccountSecret(named, "password"))
-        val switcher = NativeAccountSwitcherRepository(sessions)
-        val managed = NativeManageAccountsRepository(sessions)
+        val switcher = SharedAccountSwitcherRepository(sessions)
+        val managed = SharedManageAccountsRepository(sessions)
         val rows = switcher.accounts()
         assertEquals(2, rows.size)
         assertEquals(2, rows.map { it.id.identityKey }.toSet().size)
@@ -62,9 +62,9 @@ class NativeAccountRepositoriesTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
         val scope = active(sessions)
-        val switcher = NativeAccountSwitcherRepository(sessions)
+        val switcher = SharedAccountSwitcherRepository(sessions)
         assertEquals(SelectionOutcome.Missing, switcher.select(DrawerAccountId(guest.serverUrl, guest.userName, "old-key")).outcome)
-        val removed = NativeManageAccountsRepository(sessions).remove(ManagedAccountId("https://other.example", guest.userName, guest.key))
+        val removed = SharedManageAccountsRepository(sessions).remove(ManagedAccountId("https://other.example", guest.userName, guest.key))
         assertFalse(removed.removed)
         assertSame(scope, active(sessions))
         assertEquals(listOf(guest), sessions.accounts())
@@ -74,7 +74,7 @@ class NativeAccountRepositoriesTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
         val scope = active(sessions)
-        val repo = NativeAccountSwitcherRepository(sessions)
+        val repo = SharedAccountSwitcherRepository(sessions)
         assertEquals(SelectionOutcome.Current, repo.select(repo.accounts().single().id).outcome)
         assertSame(scope, active(sessions))
     }
@@ -84,7 +84,7 @@ class NativeAccountRepositoriesTest {
         sessions.saveAndActivate(AccountSecret(guest))
         sessions.saveAndActivate(AccountSecret(named, "password"))
         val old = active(sessions)!!
-        val repo = NativeManageAccountsRepository(sessions)
+        val repo = SharedManageAccountsRepository(sessions)
         assertEquals(AccountRemovalOutcome.Home, repo.remove(repo.accounts().single { it.isActive }.id).outcome)
         assertFailsWith<CancellationException> { old.requireCurrent() }
         assertEquals(guest, active(sessions)?.identity)
@@ -99,7 +99,7 @@ class NativeAccountRepositoriesTest {
         sessions.saveAndActivate(AccountSecret(guest))
         sessions.saveAndActivate(AccountSecret(named, "password"))
         val old = active(sessions)
-        val repo = NativeAccountSwitcherRepository(sessions)
+        val repo = SharedAccountSwitcherRepository(sessions)
         val target = repo.accounts().single { !it.isActive }.id
         vault.failWrites = true
         assertFailsWith<IllegalStateException> { repo.select(target) }
@@ -111,7 +111,7 @@ class NativeAccountRepositoriesTest {
     @Test fun signOutKeepsSavedAccountsForTheSharedAccountPicker() = runTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
-        val repo = NativeAccountSwitcherRepository(sessions)
+        val repo = SharedAccountSwitcherRepository(sessions)
         repo.signOut()
         assertEquals(AccountSessionState.SignedOut, sessions.state.value)
         assertEquals(listOf(guest), sessions.accounts())
@@ -123,7 +123,7 @@ class NativeAccountRepositoriesTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
         sessions.signOut()
-        val repo = NativeManageAccountsRepository(sessions)
+        val repo = SharedManageAccountsRepository(sessions)
         assertEquals(AccountRemovalOutcome.Login, repo.remove(repo.accounts().single().id).outcome)
         assertEquals(AccountSessionState.SignedOut, sessions.state.value)
         assertTrue(sessions.accounts().isEmpty())

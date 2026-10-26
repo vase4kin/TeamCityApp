@@ -98,14 +98,15 @@ class AndroidAppPlatform(
     override fun copy(text: String) = perform(NativePlatformFailure.Clipboard) {
         (activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("TeamCityApp", text))
     }
-    override fun openFile(path: String) = perform(NativePlatformFailure.File) {
+    override fun openFile(path: String): Boolean = runCatching {
         val file = File(path).canonicalFile
         val roots = listOfNotNull(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), activity.filesDir, File(activity.cacheDir, "TeamCityArtifacts"))
         require(file.isFile && roots.any { file.path.startsWith(it.canonicalPath + File.separator) })
         val uri = FileProvider.getUriForFile(activity, activity.packageName + ".provider", file)
         val mime = activity.contentResolver.getType(uri) ?: "application/octet-stream"
         activity.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType(mime).putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null))
-    }
+        true
+    }.getOrDefault(false)
     override fun rate() = perform(NativePlatformFailure.Rating) { rating.open(activity) }
 }
 

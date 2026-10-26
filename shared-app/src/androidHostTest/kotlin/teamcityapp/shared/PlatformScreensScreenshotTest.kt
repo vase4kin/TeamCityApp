@@ -80,12 +80,12 @@ class PlatformScreensScreenshotTest(private val scene: String, private val varia
                 when (scene) {
                     "settings_all_modes", "settings_all_modes_scrolled" -> SettingsScreen(SettingsUiState.Content(ThemeMode.System, ThemeMode.entries), {}, {}, {}, {})
                     "settings_auto_battery" -> SettingsScreen(SettingsUiState.Content(ThemeMode.AutoBattery, ThemeMode.entries), {}, {}, {}, {})
-                    "license_content_no_source" -> NativeLicenseScreen("Android library", NativeLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nA packaged Android notice without a separate upstream URL."), {}, null, {})
+                    "license_content_no_source" -> SharedLicenseScreen("Android library", SharedLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nA packaged Android notice without a separate upstream URL."), {}, null, {})
                     "navigation_save_error" -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { NavigationSaveError({}, Modifier.align(Alignment.BottomCenter)) }
-                    "licenses" -> NativeLicensesList({}, {})
-                    "license_loading" -> NativeLicenseScreen("Kotlin — Apache 2.0", NativeLicenseText.Loading, {}, {}, {})
-                    "license_error" -> NativeLicenseScreen("Kotlin — Apache 2.0", NativeLicenseText.Error, {}, {}, {})
-                    "license_content" -> NativeLicenseScreen("Kotlin — Apache 2.0", NativeLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\nThis deterministic fixture verifies the bundled text reader and its upstream action."), {}, {}, {})
+                    "licenses" -> SharedLicensesList({}, {})
+                    "license_loading" -> SharedLicenseScreen("Kotlin — Apache 2.0", SharedLicenseText.Loading, {}, {}, {})
+                    "license_error" -> SharedLicenseScreen("Kotlin — Apache 2.0", SharedLicenseText.Error, {}, {}, {})
+                    "license_content" -> SharedLicenseScreen("Kotlin — Apache 2.0", SharedLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\nThis deterministic fixture verifies the bundled text reader and its upstream action."), {}, {}, {})
                     else -> NativeFailureDialog(NativePlatformFailure.valueOf(scene), {})
                 }
             }

@@ -50,7 +50,7 @@ import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.LocalFloatingActionClearance
 
-private class NativeRunTracker(private val diagnostics: NativeDiagnostics) : RunBuildTracker {
+private class SharedRunTracker(private val diagnostics: NativeDiagnostics) : RunBuildTracker {
     override fun trackView() = diagnostics.event("run_build_view")
     override fun trackUserRunBuildSuccess() = diagnostics.event("run_build_user_run_build_success")
     override fun trackUserRunBuildWithCustomParamsSuccess() = diagnostics.event("run_build_user_run_build_with_custom_params_success")
@@ -60,11 +60,11 @@ private class NativeRunTracker(private val diagnostics: NativeDiagnostics) : Run
     override fun trackUserClicksOnClearAllBuildParamsButton() = diagnostics.event("run_build_user_clicks_on_clear_all_build_params_button")
     override fun trackUserAddsBuildParam() = diagnostics.event("run_build_user_adds_build_param")
 }
-private class NativeFilterTracker(private val diagnostics: NativeDiagnostics) : FilterBuildsTracker {
+private class SharedFilterTracker(private val diagnostics: NativeDiagnostics) : FilterBuildsTracker {
     override fun trackView() = diagnostics.event("filter_builds_view")
     override fun trackUserFilteredBuilds() = diagnostics.event("filter_builds_user_filtered_builds")
 }
-private class NativeDetailsTracker(private val diagnostics: NativeDiagnostics) : BuildDetailsTracker {
+private class SharedDetailsTracker(private val diagnostics: NativeDiagnostics) : BuildDetailsTracker {
     override fun viewed() = diagnostics.event("build_details_viewed")
     override fun confirmedCancel(reAdd: Boolean) = diagnostics.event("build_details_confirmed_cancel")
     override fun cancelSucceeded() = diagnostics.event("build_details_cancel_succeeded")
@@ -75,14 +75,14 @@ private class NativeDetailsTracker(private val diagnostics: NativeDiagnostics) :
     override fun queuedFailed() = diagnostics.event("build_details_queued_failed")
 }
 
-internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
+internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
     val repositories = graph.management
     return setOf(
         SharedEntry(RunBuildDestination::class, RunBuildDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(QueuedBuildResult::class, QueuedBuildResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { RunBuildViewModel(repositories.run, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeRunTracker(diagnostics)) }
+            val vm = viewModel { RunBuildViewModel(repositories.run, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), SharedRunTracker(diagnostics)) }
             val router = remember(dest, nav) {
                 object : RunBuildRouter {
                     override fun close() {
@@ -98,7 +98,7 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
         SharedEntry(FilterBuildsDestination::class, FilterBuildsDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(BuildFilterResult::class, BuildFilterResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { FilterBuildsViewModel(repositories.filters, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), NativeFilterTracker(diagnostics)) }
+            val vm = viewModel { FilterBuildsViewModel(repositories.filters, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), SharedFilterTracker(diagnostics)) }
             val router = remember(dest, nav) {
                 object : FilterBuildsRouter {
                     override fun close() {
@@ -136,15 +136,15 @@ internal fun nativeManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
                 }
             }
         },
-        SharedEntry(BuildDetailsDestination::class, BuildDetailsDestination.serializer()) { dest, nav, id -> NativeManagedBuild(dest, graph, nav, id) }
+        SharedEntry(BuildDetailsDestination::class, BuildDetailsDestination.serializer()) { dest, nav, id -> SharedManagedBuild(dest, graph, nav, id) }
     )
 }
 
 @Composable
-private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
+private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
     val platform = LocalNativePlatform.current
     val server = graph.account.identity.serverUrl
-    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, NativeDetailsTracker(platform.diagnostics)) }
+    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, SharedDetailsTracker(platform.diagnostics)) }
     val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {
         BuildReferenceViewModel(
@@ -159,7 +159,17 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
     val educationState by education.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.current) { education.loaded(state.current) }
     val content by overview.state.collectAsStateWithLifecycle()
-    LaunchedEffect(content.build) { content.build?.let(model::loaded) }
+    LaunchedEffect(content.build) {
+        content.build?.takeIf { it.id == destination.build.id }?.let { build ->
+            model.loaded(build)
+            // Rating bookkeeping must never turn a successful build response into a UI failure.
+            try {
+                graph.browsing?.buildViewed(build.id)
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (_: Exception) { /* A later view can retry this optional preference write. */ }
+        }
+    }
     LaunchedEffect(state.overviewRefresh) { if (state.overviewRefresh > 0) overview.refresh() }
     val snackbar = remember { SnackbarHostState() }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -216,11 +226,7 @@ private fun NativeManagedBuild(destination: BuildDetailsDestination, graph: Team
             },
             onSection = { section ->
                 if (!state.busy) {
-                    if (section == BuildDetailsSection.Artifacts) {
-                        destination.build.artifacts?.href?.let { nav.push(teamcityapp.features.artifacts.api.navigation.ArtifactsDestination(destination.build, it, "")) }
-                    } else {
-                        nav.push(BuildDetailsSectionDestination(destination.build, section, state.subtitle, originEntryId = entryId))
-                    }
+                    nav.openBuildSection(entryId, destination.build.id, content.build, section, state.subtitle)
                 }
             },
             onLog = { platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest)) },

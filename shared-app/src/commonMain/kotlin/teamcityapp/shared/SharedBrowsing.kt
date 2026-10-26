@@ -58,28 +58,28 @@ import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 
-private class NativeHomeTracker(private val diagnostics: NativeDiagnostics) : HomeTracker {
+private class SharedHomeTracker(private val diagnostics: NativeDiagnostics) : HomeTracker {
     override fun viewed() = diagnostics.event("home_viewed")
     override fun selected(tab: HomeTab) = diagnostics.event("home_selected")
     override fun fab(tab: HomeTab) = diagnostics.event("home_fab")
     override fun addProjects() = diagnostics.event("home_add_projects")
 }
-private class NativeChangeDetailsTracker(private val diagnostics: NativeDiagnostics) : teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker {
+private class SharedChangeDetailsTracker(private val diagnostics: NativeDiagnostics) : teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker {
     override fun trackView() = diagnostics.event("change_details_view")
     override fun trackMoreDetails() = diagnostics.event("change_details_more_details")
     override fun trackFileDiff() = diagnostics.event("change_details_file_diff")
 }
-private class NativeTestDetailsTracker(private val diagnostics: NativeDiagnostics) : TestDetailsTracker {
+private class SharedTestDetailsTracker(private val diagnostics: NativeDiagnostics) : TestDetailsTracker {
     override fun trackView() = diagnostics.event("test_details_view")
 }
 
 @Composable
-internal fun NativeHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
+internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
     val repositories = checkNotNull(graph.browsing)
     val diagnostics = LocalNativePlatform.current.diagnostics
-    val journey = LocalNativeJourneyMemory.current
+    val journey = LocalSharedJourneyMemory.current
     val restored = remember(entryId) { journey.homes[entryId] }
-    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, NativeHomeTracker(diagnostics), repositories.filters) }
+    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, SharedHomeTracker(diagnostics), repositories.filters) }
     LifecycleResumeEffect(navigator.snapshot.results, model) {
         while (true) {
             val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break
@@ -116,11 +116,11 @@ internal fun NativeHomeContent(destination: HomeDestination, graph: TeamCityAcco
     val snapshots = stacks.mapValues { registry.encodeSnapshot(it.value.snapshot) }
     LaunchedEffect(state.selected, snapshots) {
         if (state.isActivity) activity = state.selected
-        journey.homes = journey.homes + (entryId to SavedNativeHome(state.selected, activity, snapshots))
+        journey.homes = journey.homes + (entryId to SavedSharedHome(state.selected, activity, snapshots))
     }
     val selectedStack = stacks.getValue("$entryId/${state.selected.name}")
     val snackbar = remember { SnackbarHostState() }
-    CompositionLocalProvider(LocalFavoritesProjectsAction provides model::addProjects) {
+    CompositionLocalProvider(LocalFavoritesProjectsAction provides model::addProjects, LocalSharedEducationVisible provides (state.prompt != null)) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             HomeNavigationScreen(
                 state, maxWidth >= 600.dp, stacks, registry, entryId,
@@ -139,7 +139,7 @@ internal fun NativeHomeContent(destination: HomeDestination, graph: TeamCityAcco
     }
 }
 
-internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
+internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
     val repositories = checkNotNull(graph.browsing)
     return setOf(
@@ -185,7 +185,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                 if (updated == null || origin == null || !nav.finish(BuildDetailsSectionCountResult(dest.build.id, dest.section, updated), origin)) nav.pop()
                 Unit
             }
-            NativeSectionBackHandler(count != null && dest.originEntryId != null && nav.current.id == entryId, close)
+            SharedSectionBackHandler(count != null && dest.originEntryId != null && nav.current.id == entryId, close)
             val title = stringResource(overviewSection(dest.section, null).title)
             SharedTeamCityScreen(title, close) { modifier ->
                 Box(modifier) {
@@ -224,7 +224,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             }
         },
         SharedEntry(ChangeDetailsDestination::class, ChangeDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { ChangeDetailsViewModel(destinationState(dest.details?.savedArguments().orEmpty()), NativeChangeDetailsTracker(diagnostics)) }
+            val vm = viewModel { ChangeDetailsViewModel(destinationState(dest.details?.savedArguments().orEmpty()), SharedChangeDetailsTracker(diagnostics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             LifecycleResumeEffect(vm) {
                 vm.onScreenViewed()
@@ -236,7 +236,7 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, NativeTestDetailsTracker(diagnostics)) }
+            val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, SharedTestDetailsTracker(diagnostics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             var query by rememberSaveable { mutableStateOf("") }
             var wrap by rememberSaveable { mutableStateOf(true) }
@@ -254,6 +254,6 @@ internal fun nativeBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
 @OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Suppress("DEPRECATION")
 @Composable
-private fun NativeSectionBackHandler(enabled: Boolean, onBack: () -> Unit) {
+private fun SharedSectionBackHandler(enabled: Boolean, onBack: () -> Unit) {
     androidx.compose.ui.backhandler.BackHandler(enabled, onBack)
 }

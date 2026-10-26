@@ -227,6 +227,34 @@ class ArtifactsRouteTest {
         compose.onNodeWithText(error).assertIsDisplayed()
     }
 
+    @Test fun failedExportCanRetryTheCompletedFileAndDoesNotReplayOnResume() {
+        var downloads = 0
+        router.fileFails = true
+        val vm = viewModel(downloadResult = {
+            downloads++
+            DownloadedArtifact("/downloaded")
+        })
+        val visible = mutableStateOf(true)
+        compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides resumedOwner) { TeamCityTheme { ArtifactsRoute(router, false, visible.value, vm) } } }
+        compose.waitUntil(5_000) { router.actions.subscriptionCount.value == 1 }
+        compose.runOnIdle { router.actions.tryEmit(ArtifactAction.Download(ArtifactDownload("report.txt", "/content"))) }
+        compose.onNodeWithText("Retry export").assertIsDisplayed()
+        assertEquals(1, router.files.size)
+        compose.runOnIdle { visible.value = false }
+        compose.waitForIdle()
+        compose.runOnIdle {
+            visible.value = true
+            router.fileFails = false
+        }
+        compose.waitForIdle()
+        assertEquals(1, router.files.size)
+        compose.onNodeWithTag("artifacts:open-downloaded").performClick()
+        compose.waitForIdle()
+        assertEquals(2, router.files.size)
+        assertEquals(1, downloads)
+        compose.onNodeWithText("Open or share").assertIsDisplayed()
+    }
+
     private class FakeRouter : ArtifactsRouter {
         override val actions = MutableSharedFlow<ArtifactAction>(extraBufferCapacity = 4)
         val folders = mutableListOf<Triple<String, BuildLaunchData, String>>()
@@ -234,6 +262,7 @@ class ArtifactsRouteTest {
         var failures = 0
         var disposals = 0
         var browserFails = false
+        var fileFails = false
         override fun navigateUp() {}
         override fun openFolder(name: String, build: BuildLaunchData, href: String) {
             folders.add(Triple(name, build, href))
@@ -242,6 +271,7 @@ class ArtifactsRouteTest {
         override fun permission(file: ArtifactDownload) = ArtifactPermission.Allowed
         override fun openFile(file: DownloadedArtifact) {
             files.add(file)
+            if (fileFails) error("No export handler")
         }
         override fun openBrowser(build: BuildLaunchData, href: String) {
             if (browserFails) throw IllegalStateException("No browser installed")

@@ -26,7 +26,8 @@ var teamCityReadOnlyFixtureBaseURL: String {
     let octets = parts.compactMap { Int($0) }
     let ipv4 = parts.count == 4 && octets.count == 4 && octets.allSatisfy { (0...255).contains($0) } && octets.map(String.init).joined(separator: ".") == host
     let local = ipv4 && (octets[0] == 127 || octets[0] == 10 || (octets[0] == 192 && octets[1] == 168) || (octets[0] == 172 && (16...31).contains(octets[1])))
-    precondition(local && url?.scheme == "http" && url?.port == 18081 && url?.path == "/context" && url?.user == nil && url?.password == nil && url?.query == nil && url?.fragment == nil, "Read-only fixtures require a private IPv4 interface on port 18081 at /context")
+    let isolatedLoopback = ipv4 && octets[0] == 127 && url?.port == 18082
+    precondition(local && url?.scheme == "http" && (url?.port == 18081 || isolatedLoopback) && url?.path == "/context" && url?.user == nil && url?.password == nil && url?.query == nil && url?.fragment == nil, "Read-only fixtures require a private IPv4 interface at /context on port 18081, or loopback port 18082")
     return value
 }
 

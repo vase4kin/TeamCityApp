@@ -81,8 +81,8 @@ class IosPlatformStorageTest {
 
     @Test fun missingFileAndRejectedSystemActionsExposeDismissibleFailures() {
         val platform = IosNativePlatform({ error("Missing files must not create UI") }, "test-" + NSUUID().UUIDString)
-        platform.openFile("/outside/app/report.txt")
-        assertEquals(NativePlatformFailure.File, platform.failure.value)
+        assertFalse(platform.openFile("/outside/app/report.txt"))
+        assertNull(platform.failure.value)
         platform.clearFailure()
         assertNull(platform.failure.value)
         for (action in NativePlatformFailure.entries) {
