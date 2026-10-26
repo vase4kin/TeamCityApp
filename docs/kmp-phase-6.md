@@ -930,3 +930,28 @@ Source checkpoints remain local and no application package was distributed.
 The implementation follow-up checklist is complete. The wider Phase 6 gates for
 current physical-device, complete manual VoiceOver and iOS 17 runtime execution
 remain open, and Phase 7 has not started.
+
+
+### Owner closes Phase 6 and defers final qualification — 2026-10-26
+
+The owner explicitly requested marking Phase 6 complete and proceeding to Phase 7,
+with the phone pass, full VoiceOver walkthrough and actual iOS 17 runtime check
+performed at the very end. Phase 6 is therefore complete under that revised scope:
+its implementation, recorded automated checks, local checkpoints and private report
+are complete. This decision does not convert any missing qualification into a pass.
+
+The three deferred checks, final-candidate regression/packaging and explicit
+migration acceptance are now unchecked items at the end of Phase 7 in
+`docs/kmp-migration.md`. Phase 7 starts with platform review and an agreed bounded
+refinement list. No refinement code or device testing is authorized by this
+planning/status update alone; the owner is reviewing the proposed scope first.
+Earlier statements that Phase 6 remains open describe the previous scope.
+
+
+The owner-private status/report refresh is verified succeeded on 2026-10-26.
+Source: `7c1308760838f278b00e5a7b0d4e0987c51f3570`.
+Version: `appgprj_6adaac3919c48191b8c7e45d35e27ebc~appgver_1f65e4e97a908191a88e6f0bce445356`.
+Deployment: `appgdep_6adef46aa68881919a2afa6de9e2310e`.
+The Phase 6 completion banner, Phase 7 plan and three deferred/unpassed final
+checks agree with the repository. Existing test evidence is unchanged; formatting
+and report JavaScript syntax pass. No app code or device state changed in this update.

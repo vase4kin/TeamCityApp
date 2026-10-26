@@ -28,7 +28,9 @@ The former toolchain phase and shared-foundation phase are combined into Phase 1
 - Capture the starting commit and preserve unrelated existing work. Implement
   small coherent slices, then verify and checkpoint using GitButler.
 - Update task checkboxes only when evidence supports completion. A failed or
-  unavailable required check leaves its task and phase incomplete.
+  unavailable required check leaves its task and phase incomplete. Explicit owner
+  scope changes may move checks to final acceptance; record the decision and keep
+  the moved checks unchecked rather than claiming they passed.
 - Each completed phase needs a dedicated private Sites report linked here. Show
   outcomes, actual UI evidence, code/architecture changes, compatibility effects,
   verification results, outstanding work, and starting/final commit references.
@@ -53,8 +55,8 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 - [x] Phase 3 — Home and build browsing (P1; completed 2026-10-22)
 - [x] Phase 4 — Build management (P1; completed 2026-10-22)
 - [x] Phase 5 — Downloads and platform integrations (P1; completed 2026-10-23)
-- [ ] Phase 6 — Release validation and cleanup (P1; in progress)
-- [ ] Phase 7 — Platform review and refinements (P2)
+- [x] Phase 6 — Release validation and cleanup (P1; completed 2026-10-26; final qualification deferred by owner)
+- [ ] Phase 7 — Platform review and refinements (P2; planning)
 
 ## Phase 1 — Toolchain and shared foundation
 
@@ -244,20 +246,24 @@ Application commits remain local. Phase 6 requires a new user instruction.
 
 ## Phase 6 — Release validation and cleanup
 
-**Depends on:** Phase 5. **Outcome:** a verified Android/iOS release candidate.
+**Depends on:** Phase 5. **Status:** completed 2026-10-26 under the owner's
+revised scope. Implementation, recorded automated verification, cleanup,
+checkpoints and the private report are complete. This is phase completion,
+not final release qualification.
 
-- [ ] Run the complete feature-parity and regression checklist. The owner’s
-  walkthrough identified native account-flow and repeated build-transition gaps;
-  their shared-screen/navigation fixes pass Android/common tests and compact,
-  expanded dark and maximum-text simulator checks. The owner deferred the new
-  physical-device pass; the complete manual and iOS 17 runtime gates remain open.
-  The subsequent owner-authorized consolidation wires both production hosts to
-  the common app root, network/data graph, account policies, saved navigation,
-  prompts, Settings and license-reader UI. Its current-candidate runtime checks
-  and exact native boundaries are recorded in the Phase 6 follow-up. Earlier
-  qualification results do not automatically qualify this larger candidate.
-- [ ] Verify accessibility, large text, themes, safe areas, keyboard, gestures,
-  supported sizes/orientations, and iPad layouts.
+**Owner decision (2026-10-26):** move the current-candidate phone pass, complete
+VoiceOver walkthrough and actual iOS 17 runtime verification to the very end,
+after Phase 7 refinements. Those checks remain unpassed and are tracked in
+Phase 7's final acceptance checklist below.
+
+- [x] Implement common production business/UI behavior and record the verified
+  regression scope, including the account-flow, repeated build transition,
+  shared repositories, navigation, prompts, Settings and license-reader changes.
+  Earlier full-suite results and current scoped runs remain distinct in the
+  Phase 6 record; final-candidate regression belongs to final acceptance.
+- [x] Record automated accessibility, large-text, theme, safe-area, keyboard,
+  orientation and phone/tablet evidence with its source/candidate limitations.
+  Manual VoiceOver and final device/minimum-runtime qualification are deferred.
 - [x] Verify termination/relaunch, backgrounding, network failures, account changes,
   stale restoration/results, and interrupted downloads.
 - [x] Assess startup, scrolling, memory, and optimized release builds.
@@ -271,9 +277,13 @@ Application commits remain local. Phase 6 requires a new user instruction.
 - [x] Preserve Android account/cache compatibility and installed Intent aliases.
 - [x] Publish the detailed Sites report, save checkpoints, and record evidence.
 
-**Gate:** Android regression checks pass and the iOS candidate passes simulator
-and physical-device validation. Distribution actions follow the user's shipping
-instructions. **Resumed on 2026-10-25:** the owner provided the paired phone and
+**Revised completion gate:** implementation, scoped automated verification,
+compatibility records, local checkpoints and the private Sites report are complete.
+Final physical/manual/minimum-runtime checks remain required before migration
+acceptance. Distribution still follows a separate shipping instruction.
+
+**Historical qualification record (before the 26 October rescope):**
+**Resumed on 2026-10-25:** the owner provided the paired phone and
 authorized iOS 17.0 as the supported minimum. Physical About orientation/accessibility
 and HTTP-consent checks pass. Optimized hardware coverage is a nine-pass run plus
 two corrected Login-precondition reruns. Native journeys are a five-pass run plus
@@ -309,23 +319,47 @@ Duo landscape remains unqualified: SDK-matched UIKit, SwiftUI and Compose
 controls all retain portrait geometry there. This diagnostic does not replace
 physical/manual or iOS 17 qualification. Harness checkpoint: `cca5585cb`. The private report refresh is verified succeeded
 on 25 October; its source/version/deployment receipts are in the Phase 6 record.
-Phase 7 has not started.
+Phase 6 is now closed by the owner; Phase 7 review/planning is active.
 
 ## Phase 7 — Platform review and refinements
 
-**Depends on:** Phase 6. **Outcome:** agreed refinements and final migration acceptance.
+**Depends on:** Phase 6. **Status:** review/planning authorized on 2026-10-26;
+refinement implementation awaits agreement on the bounded list below.
+**Outcome:** agreed refinements, final qualification and migration acceptance.
 
-- [ ] Review remaining Android/iOS differences with the user.
-- [ ] Agree a bounded refinement list and explicit completion criteria before implementation.
-- [ ] Implement the selected refinements; evaluate native navigation/appearance only
-  where requested. Treat background downloads as a separate product decision.
-- [ ] Repeat affected behavioral, UI, accessibility, and release checks.
-- [ ] Capture final actual screenshots and document intentional differences.
-- [ ] Audit shared/platform boundaries and complete migration documentation.
-- [ ] Publish the final detailed Sites report, save checkpoints, and record acceptance.
+- [ ] Review Android/iOS side by side: Account/Manage/Add/sign-out, Home and
+  retained tabs, History/Overview/sections, Run/Filter, artifacts and Settings/About.
+  Distinguish product defects from intentional OS integrations and visual differences.
+- [ ] Agree a bounded punch list with priority, expected behavior and testable
+  completion criteria for each item before implementing refinements.
+- [ ] Fix the selected defects and polish shared UI/behavior in common code.
+  Change native adapters only where an OS service requires it. Native navigation/
+  appearance changes require an explicit selection; background downloads remain
+  a separate product decision.
+- [ ] Audit remaining shared/platform boundaries and proven-unused migration
+  scaffolding. Preserve installed accounts, aliases, wire/cache codecs and supported
+  behavior; avoid speculative deletion or a new broad architecture migration.
+- [ ] Repeat affected behavioral, UI, accessibility and optimized-release checks;
+  capture final actual Android/iOS screenshots and document intentional differences.
+- [ ] Update migration documentation and publish the detailed private Phase 7 Sites
+  report with before/after evidence, checkpoint references and remaining findings.
 
-**Gate:** the agreed refinement list and final acceptance checklist are complete.
-**Report/commits:** pending.
+### Final acceptance — performed after the refinements
+
+These checks were moved from Phase 6 by the owner; none is marked passed by
+closing Phase 6.
+
+- [ ] Run the final candidate's automated physical-phone pass.
+- [ ] Complete the owner's full six-part manual VoiceOver walkthrough and resolve
+  or explicitly accept its findings.
+- [ ] Run the actual iOS 17 minimum runtime and resolve any compatibility findings.
+- [ ] Run the final candidate regression/packaging checks appropriate to the agreed
+  refinements, keeping full runs, scoped reruns and historical results distinct.
+- [ ] Publish final evidence/results, save local checkpoints and record explicit
+  owner acceptance of the migration. App upload/distribution needs separate authorization.
+
+**Gate:** the agreed refinement list and every final acceptance item are complete.
+**Report/commits:** Phase 7 report pending; Phase 6 report remains linked above.
 
 ## References
 
