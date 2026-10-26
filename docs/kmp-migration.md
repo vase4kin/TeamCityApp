@@ -56,7 +56,7 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 - [x] Phase 4 — Build management (P1; completed 2026-10-22)
 - [x] Phase 5 — Downloads and platform integrations (P1; completed 2026-10-23)
 - [x] Phase 6 — Release validation and cleanup (P1; completed 2026-10-26; final qualification deferred by owner)
-- [ ] Phase 7 — Platform review and refinements (P2; review recorded; refinement scope pending)
+- [ ] Phase 7 — Platform review and refinements (P2; all six refinements implemented; final acceptance open)
 
 ## Phase 1 — Toolchain and shared foundation
 
@@ -319,31 +319,33 @@ Duo landscape remains unqualified: SDK-matched UIKit, SwiftUI and Compose
 controls all retain portrait geometry there. This diagnostic does not replace
 physical/manual or iOS 17 qualification. Harness checkpoint: `cca5585cb`. The private report refresh is verified succeeded
 on 25 October; its source/version/deployment receipts are in the Phase 6 record.
-Phase 6 is now closed by the owner; Phase 7 review/planning is active.
+Phase 6 is closed by the owner; Phase 7 refinements are implemented and final acceptance remains open.
 
 ## Phase 7 — Platform review and refinements
 
-**Depends on:** Phase 6. **Status:** review/planning authorized on 2026-10-26;
-refinement implementation awaits agreement on the bounded list below.
+**Depends on:** Phase 6. **Status:** all six reviewed refinements authorized and
+implemented on 2026-10-26. Physical phone, full manual VoiceOver, actual iOS 17 and
+final owner acceptance remain open.
 **Outcome:** agreed refinements, final qualification and migration acceptance.
 
 - [x] Review Android/iOS side by side: Account/Manage/Add/sign-out, Home and
   retained tabs, History/Overview/sections, Run/Filter, artifacts and Settings/About.
   Distinguish product defects from intentional OS integrations and visual differences.
-  Review recorded in [Phase 7 evidence](kmp-phase-7.md); the new iOS Home journey
-  has an identified first-use coachmark test gap, not a claimed complete pass.
-- [ ] Agree a bounded punch list with priority, expected behavior and testable
-  completion criteria for each item before implementing refinements.
-- [ ] Fix the selected defects and polish shared UI/behavior in common code.
+  Review and implementation recorded in [Phase 7 evidence](kmp-phase-7.md);
+  the first-use Home test now explicitly verifies every Home coachmark.
+- [x] Agree a bounded punch list with priority, expected behavior and testable
+  completion criteria for each item before implementing refinements. All six
+  approved; rating selected as three distinct successful build views, later launch.
+- [x] Fix the selected defects and polish shared UI/behavior in common code.
   Change native adapters only where an OS service requires it. Native navigation/
   appearance changes require an explicit selection; background downloads remain
   a separate product decision.
-- [ ] Audit remaining shared/platform boundaries and proven-unused migration
+- [x] Audit remaining shared/platform boundaries and proven-unused migration
   scaffolding. Preserve installed accounts, aliases, wire/cache codecs and supported
   behavior; avoid speculative deletion or a new broad architecture migration.
-- [ ] Repeat affected behavioral, UI, accessibility and optimized-release checks;
+- [x] Repeat affected behavioral, UI, accessibility and optimized-release checks;
   capture final actual Android/iOS screenshots and document intentional differences.
-- [ ] Update migration documentation and publish the detailed private Phase 7 Sites
+- [x] Update migration documentation and publish the detailed private Phase 7 Sites
   report with before/after evidence, checkpoint references and remaining findings.
 
 ### Final acceptance — performed after the refinements
@@ -361,12 +363,17 @@ closing Phase 6.
   owner acceptance of the migration. App upload/distribution needs separate authorization.
 
 **Gate:** the agreed refinement list and every final acceptance item are complete.
-**Review report:** [Private Phase 7 comparison and proposed punch list](https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/).
+**Refinement report:** [Private Phase 7 changes, comparisons and evidence](https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/).
 **Evidence:** [Review findings, acceptance criteria and measured verification](kmp-phase-7.md).
-The review proposes P7-01–P7-04 first, with P7-05/P7-06 optional. No fixes are
-implemented or agreed yet; the final Phase 7 report and acceptance gates remain open.
-**Checkpoint:** this review/checklist is saved as a docs-only local GitButler
-checkpoint on `codex/kmp-phase-1`; application source and golden files are unchanged.
+All six approved items are implemented. Business/UI policy remains common; native
+changes are limited to OS export acceptance. See the phase evidence for verification
+scope, before/after provenance, checkpoints and private publication receipts.
+Application checkpoint: `76c8e10984adff19ba966f38c47f1f8963dfafd3`, saved locally
+on `codex/kmp-phase-1`. The owner-private refinement report was republished on
+2026-10-26 (deployment `appgdep_6adf30076c2c8191b032f327ca92bbd8`); the phase
+evidence records the exact source/version and distinguishes the six-pass iOS
+selection from the successful focused artifact/audit rerun.
+The overall phase stays unchecked until every final acceptance gate is complete.
 
 ## References
 

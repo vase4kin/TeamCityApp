@@ -62,7 +62,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   serialization remains behind app adapters to preserve existing request semantics.
 - Build Details is an Overview hub with a prominent status card, Results,
   Execution, Build setup, and Configuration/project groups. Available section
-  destinations use the complete incoming launch snapshot; floating Share/Browser
+  destinations in the common production root use the same complete, same-build snapshot
+  that backs the visible Overview (including refreshed sections/properties). Older Android
+  compatibility hosts keep their incoming-snapshot contract. Floating Share/Browser
   actions and Stop/Remove/Restart use loaded build data and retain confirmation,
   retry and account isolation behavior. Changes, Tests, Parameters, Artifacts and
   Snapshot Dependencies open separate saved visits with their own screen headers.
@@ -167,11 +169,13 @@ to the requested behavior and the coherent migration slice needed to support it.
   images before changing goldens. iOS begins with an explicitly labeled first
   baseline. Keep generated screenshots and build logs under `build/`; commit only
   intentional golden fixtures and reproducible source/configuration.
-- Both production hosts execute `shared-app`'s `TeamCityApp`/`PhaseTwoApp` root,
+- Both production hosts execute `shared-app`'s single `TeamCityApp` root,
   `SharedAppViewModel`, account/session policy, Ktor repositories, destination/result
   orchestration and shared presentation. Android `MainActivity` decodes installed
   Intents and supplies UI-owned OS adapters; iOS supplies the UIKit/Keychain host.
-  File names prefixed `Native` inside commonMain are shared by both hosts.
+  Common orchestration files use `Shared` names. `NativePlatform` is the shared
+  contract for OS services; persisted `NativeLicense*Destination` names remain
+  compatibility identifiers, not independent iOS implementations.
 - The normal application runs Login → Home with Projects, Favorites and
   Activity (Running, Queue, Agents), plus History → Build Overview and read-only
   Changes/Change Details, Tests/Test Details, Parameters and Snapshot Dependencies.
@@ -185,7 +189,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   Downloads belong to the screen, survive recreation/sheets, and cancel on departure,
   app/scene backgrounding or account replacement; close blocked reads and remove
   partial files. Common `ArtifactTarget` gives every transfer a unique cache directory;
-  repeated names retain both completed files on both platforms. System export uses
+  repeated names retain both completed files on both platforms. The latest completed
+  download keeps an Open or share / Retry export card without refetching. Explicit
+  requests are consumed once; native presentation acceptance is distinct from a user
+  completing export, and dismiss/recreation must not replay a sheet. System export uses
   UIKit or Android's installed FileProvider. Prior Android downloads remain intact.
   Native browser/log/diff, sharing and clipboard actions stay in UI-owned adapters;
   API credentials never enter browser links. Settings shares presentation over the
@@ -204,7 +211,11 @@ to the requested behavior and the coherent migration slice needed to support it.
   Preserve their serialized DTO/account formats and old cache files. Old RxCache
   entries are not imported into the new bounded cache; its first read refetches.
   Shared onboarding/rating state is account scoped. Rating uses the common local
-  eligibility rule rather than the retired Android Firebase Remote Config gate.
+  eligibility rule rather than the retired Android Firebase Remote Config gate:
+  three distinct successfully loaded build Overviews qualify an account, and the
+  automatic prompt becomes available only after a later process launch. Host
+  recreation/account switching do not count as another launch. Manual rating stays
+  immediately available; Home coachmarks suppress the inline rating card.
   Both platforms offer all four shared theme choices and common license-reader UI;
   license inventories are platform-specific dependency data.
 - KMP UI harnesses can apply `teamcityapp.android.screenshot`; verify with
