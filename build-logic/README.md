@@ -366,3 +366,15 @@ The target-scoped processor setup follows the official
 [KSP multiplatform configuration](https://kotlinlang.org/docs/ksp-multiplatform.html)
 and the separation between Hilt processors and the host
 [Hilt Gradle plugin](https://dagger.dev/hilt/gradle-setup).
+
+
+### Feature-owned application instrumentation suites
+
+The app applies `teamcityapp.android.app-tests` to compile
+`features/*/impl/src/androidAppTest/{kotlin,java}` and
+`libraries/*/src/androidAppTest/{kotlin,java}` into its existing instrumentation
+APK. These sources belong to their feature/library but execute with the
+application composition root. R8 verification skips this aggregation. Common,
+Android-host and independently configured device test source sets retain their
+existing execution model. See [instrumentation test ownership](../docs/android-instrumentation-tests.md)
+for the inventory, remaining app integration suites and commands.

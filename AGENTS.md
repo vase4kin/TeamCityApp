@@ -91,7 +91,12 @@ to the requested behavior and the coherent migration slice needed to support it.
   the earlier list migration.
 - Feature implementations own behavioral tests and Roborazzi PNG baselines for
   distinct states in both themes, compact/expanded layouts and enlarged text.
-  App-level Compose/Espresso integration tests remain in the Marathon APK.
+  Feature/library application-hosted device tests live in their owning module's
+  `src/androidAppTest/kotlin` (Java Hilt modules use `java`). The app's
+  `teamcityapp.android.app-tests` convention compiles them into the existing
+  Marathon APK; they are not independently runnable feature device targets.
+  Root/manifest/cross-feature integration suites and shared test infrastructure
+  remain in `app/src/androidTest`. See `docs/android-instrumentation-tests.md`.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
   an included `build-logic` build for conventions and SDK/application settings,
   and JDK 17.
