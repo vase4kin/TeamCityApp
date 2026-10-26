@@ -14,32 +14,56 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.login.impl" }
-dependencies {
-    api(projects.features.login.presentation)
-    implementation(projects.libraries.navigation)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    implementation(projects.features.login.api)
-    implementation(projects.libraries.authentication)
-    implementation(libs.androidx.activity.compose)
 
-    implementation(projects.libraries.theme)
-    implementation(projects.libraries.resources)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.turbine)
-    testImplementation(libs.mockito.mockitoCore)
-    ksp(libs.dagger.compiler)
+kotlin { android { namespace = "teamcityapp.features.login.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.login.impl.resources"
+}
+kotlin.sourceSets {
+    named("commonMain") {
+        dependencies {
+            api(projects.features.login.api)
+            api(projects.libraries.authenticationShared)
+            implementation(libs.multiplatform.lifecycle.viewmodel)
+            implementation(libs.multiplatform.lifecycle.runtime)
+            implementation(libs.coroutines.core)
+        }
+    }
+    named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+}
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+        implementation(projects.libraries.navigation)
+        implementation(project.dependencies.platform(libs.google.firebaseBom))
+        implementation(libs.google.analytics)
+        implementation(projects.features.login.api)
+        implementation(projects.libraries.authentication)
+        implementation(libs.androidx.activity.compose)
+        implementation(projects.libraries.theme)
+        implementation(projects.libraries.resources)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+        implementation(libs.mockito.mockitoCore)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

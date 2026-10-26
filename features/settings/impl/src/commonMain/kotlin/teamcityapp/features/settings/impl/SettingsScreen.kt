@@ -1,0 +1,121 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.settings.impl
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import teamcityapp.features.settings.impl.resources.*
+import teamcityapp.libraries.app_theme.ThemeMode
+import teamcityapp.libraries.theme.LoadingContent
+import teamcityapp.libraries.theme.SharedErrorContent as ErrorContent
+import teamcityapp.libraries.theme.SharedErrorNotice as ErrorNotice
+import teamcityapp.libraries.theme.SharedTeamCityScreen as TeamCityScreen
+import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
+import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.hideClippedActionFromAccessibility
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    state: SettingsUiState,
+    onSelect: (ThemeMode) -> Unit,
+    onRetry: () -> Unit,
+    onRetrySave: () -> Unit,
+    onClose: () -> Unit
+) {
+    TeamCityScreen(title = stringResource(Res.string.drawer_item_settings), onClose = onClose) { modifier ->
+        when (state) {
+            SettingsUiState.Loading -> LoadingContent(modifier)
+
+            SettingsUiState.Error -> ErrorContent(modifier, onRetry, message = stringResource(Res.string.theme_load_error))
+
+            is SettingsUiState.Content -> Box(modifier) {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    Text(
+                        stringResource(Res.string.title_general),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, top = TeamCityDimensions.sectionSpacing, bottom = TeamCityDimensions.smallSpacing)
+                    )
+                    Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).selectableGroup().testTag("settings:theme"), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
+                        Text(stringResource(Res.string.title_theme), style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(Res.string.current_theme, stringResource(state.selectedThemeLabelRes)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (state.selected !in state.options) Text(stringResource(Res.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (state.saveFailed) {
+                            ErrorNotice(stringResource(Res.string.theme_save_error), onRetrySave, Modifier.testTag("settings:save_error"))
+                        }
+                        state.themeOptions.forEach { option ->
+                            val mode = option.mode
+                            Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").hideClippedActionFromAccessibility(true).selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
+                                Row(Modifier.padding(TeamCityDimensions.largeContentPadding).heightIn(min = TeamCityDimensions.minimumTouchTarget), verticalAlignment = Alignment.CenterVertically) {
+                                    Column(Modifier.weight(1f)) {
+                                        Text(stringResource(option.labelRes), style = MaterialTheme.typography.titleMedium)
+                                        MaterialTheme(
+                                            colorScheme = teamcityapp.libraries.theme.teamCityColorScheme(
+                                                when (mode) {
+                                                    ThemeMode.Light -> false
+                                                    ThemeMode.Dark -> true
+                                                    else -> androidx.compose.foundation.isSystemInDarkTheme()
+                                                }
+                                            )
+                                        ) {
+                                            Row(Modifier.padding(top = TeamCityDimensions.mediumSpacing), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
+                                                repeat(3) { index ->
+                                                    Surface(
+                                                        Modifier.size(if (index == 0) TeamCityDimensions.largeIconSize else TeamCityDimensions.iconSize),
+                                                        shape = MaterialTheme.shapes.small,
+                                                        color = when (index) {
+                                                            0 -> MaterialTheme.colorScheme.primary
+                                                            1 -> MaterialTheme.colorScheme.secondaryContainer
+                                                            else -> MaterialTheme.colorScheme.tertiaryContainer
+                                                        }
+                                                    ) {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                    RadioButton(state.selected == mode, onClick = null, enabled = !state.saving)
+                                }
+                            }
+                        }
+                    }
+                }
+                // Saving feedback overlays the content so choices and scroll position stay put.
+                if (state.saving) TeamCityLinearLoadingIndicator(Modifier.align(Alignment.TopCenter).testTag("settings:saving"))
+            }
+        }
+    }
+}
+
+@Preview @Composable
+private fun SettingsPreview() {
+    TeamCityTheme { SettingsScreen(SettingsUiState.Content(ThemeMode.System, listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.System)), {}, {}, {}, {}) }
+}

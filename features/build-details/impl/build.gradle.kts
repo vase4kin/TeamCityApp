@@ -14,47 +14,70 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
     alias(libs.plugins.kotlin.serialization)
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_details.impl" }
-dependencies {
-    api(projects.features.buildDetails.presentation)
-    implementation(projects.libraries.onboarding)
-    implementation(projects.libraries.session)
-    implementation(libs.coroutines.rx2)
-    implementation(projects.libraries.coroutines)
-    implementation(projects.libraries.data)
-    implementation(projects.libraries.navigation)
-    implementation(projects.libraries.chromeTabs)
-    implementation(projects.features.buildOverview.api)
-    implementation(projects.features.changes.api)
-    implementation(projects.features.tests.api)
-    implementation(projects.features.properties.api)
-    implementation(projects.features.buildArtifacts.api)
-    implementation(projects.features.snapshotDependencies.api)
-    implementation(projects.features.buildHistory.api)
-    implementation(projects.features.navigation.api)
-    implementation(projects.features.filterBuilds.api)
 
-    implementation(projects.features.buildDetails.api)
-    implementation(projects.libraries.listState)
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.compose.material3.windowSizeClass)
-    implementation(libs.coroutines.android)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    testImplementation(projects.features.bottomSheet.api)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.mockito.mockitoCore)
-    ksp(libs.dagger.compiler)
+kotlin { android { namespace = "teamcityapp.features.build_details.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.build_details.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        api(projects.features.buildDetails.api)
+        api(projects.libraries.designSystem)
+        implementation(libs.multiplatform.compose.backhandler)
+        implementation(libs.multiplatform.lifecycle.runtime)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+    }
+}
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+        implementation(projects.libraries.onboarding)
+        implementation(projects.libraries.session)
+        implementation(libs.coroutines.rx2)
+        implementation(projects.libraries.coroutines)
+        implementation(projects.libraries.data)
+        implementation(projects.libraries.navigation)
+        implementation(projects.libraries.chromeTabs)
+        implementation(projects.features.buildOverview.api)
+        implementation(projects.features.changes.api)
+        implementation(projects.features.tests.api)
+        implementation(projects.features.properties.api)
+        implementation(projects.features.buildArtifacts.api)
+        implementation(projects.features.snapshotDependencies.api)
+        implementation(projects.features.buildHistory.api)
+        implementation(projects.features.navigation.api)
+        implementation(projects.features.filterBuilds.api)
+        implementation(projects.features.buildDetails.api)
+        implementation(projects.libraries.listState)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.compose.material3.windowSizeClass)
+        implementation(libs.coroutines.android)
+        implementation(project.dependencies.platform(libs.google.firebaseBom))
+        implementation(libs.google.analytics)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(projects.features.bottomSheet.api)
+        implementation(libs.coroutines.test)
+        implementation(libs.mockito.mockitoCore)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

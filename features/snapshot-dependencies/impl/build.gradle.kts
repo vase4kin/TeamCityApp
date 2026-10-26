@@ -14,34 +14,63 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.snapshot_dependencies.impl" }
-dependencies {
-    api(projects.features.snapshotDependencies.presentation)
-    implementation(libs.coroutines.rx2)
-    implementation(projects.libraries.coroutines)
-    implementation(projects.libraries.data)
-    implementation(projects.features.buildHistory.api)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.buildDetails.api)
-    implementation(projects.features.snapshotDependencies.api)
-    implementation(projects.libraries.listState)
-    implementation(projects.libraries.listUi)
-    implementation(projects.libraries.buildUi)
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    testImplementation(libs.coroutines.test)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    ksp(libs.dagger.compiler)
+
+kotlin { android { namespace = "teamcityapp.features.snapshot_dependencies.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.snapshot_dependencies.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        api(projects.features.snapshotDependencies.api)
+        api(projects.libraries.designSystem)
+        api(projects.libraries.listPresentation)
+        api(projects.libraries.buildPresentation)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+    }
+}
+kotlin.sourceSets.named("commonTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.androidx.paging.testing)
+        implementation(libs.turbine)
+    }
+}
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+        implementation(libs.coroutines.rx2)
+        implementation(projects.libraries.coroutines)
+        implementation(projects.libraries.data)
+        implementation(projects.features.buildHistory.api)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.buildDetails.api)
+        implementation(projects.features.snapshotDependencies.api)
+        implementation(projects.libraries.listState)
+        implementation(projects.libraries.listUi)
+        implementation(projects.libraries.buildUi)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+        implementation(project.dependencies.platform(libs.google.firebaseBom))
+        implementation(libs.google.analytics)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

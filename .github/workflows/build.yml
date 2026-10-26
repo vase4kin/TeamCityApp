@@ -59,6 +59,7 @@ jobs:
       - name: Verify CI scripts and plan unit-test shards
         id: unit-plan
         run: |
+          python3 scripts/check-feature-modules.py
           python3 -m unittest discover -s scripts/tests
           python3 scripts/unit-test-ci.py plan
 

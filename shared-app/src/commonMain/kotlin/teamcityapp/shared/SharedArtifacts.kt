@@ -23,9 +23,9 @@ import kotlinx.serialization.json.Json
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.*
+import teamcityapp.features.artifacts.impl.resources.*
 import teamcityapp.features.artifacts.impl.router.artifactMenu
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
-import teamcityapp.features.artifacts.presentation.resources.*
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.libraries.navigation.*
@@ -37,7 +37,7 @@ internal fun sharedArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         SharedEntry(ArtifactsDestination::class, ArtifactsDestination.serializer()) { destination, nav, id ->
             val platform = LocalNativePlatform.current
             val diagnostics = platform.diagnostics
-            val title = destination.name.ifEmpty { org.jetbrains.compose.resources.stringResource(teamcityapp.features.artifacts.presentation.resources.Res.string.artifacts_title) }
+            val title = destination.name.ifEmpty { org.jetbrains.compose.resources.stringResource(teamcityapp.features.artifacts.impl.resources.Res.string.artifacts_title) }
             val vm = viewModel {
                 ArtifactsViewModel(
                     destinationState(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(destination.build), ArtifactsViewModel.URL to destination.href, ArtifactsViewModel.NAME to title)),

@@ -1,0 +1,170 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.properties.impl
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import teamcityapp.features.properties.api.Property
+import teamcityapp.features.properties.impl.resources.*
+import teamcityapp.libraries.design_system.resolve
+import teamcityapp.libraries.theme.MessageContent
+import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
+
+@Composable
+fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modifier: Modifier = Modifier, copyAvailable: Boolean = true) {
+    val listState = rememberTeamCityLazyListState()
+    Surface(modifier = modifier.fillMaxSize()) {
+        when (state) {
+            PropertiesUiState.Empty -> MessageContent(
+                message = stringResource(Res.string.empty_list_message_parameters),
+                modifier = Modifier.fillMaxSize()
+            )
+
+            is PropertiesUiState.Content -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
+                    // Duplicate parameter names are valid; preserve their order and identities by index.
+                    itemsIndexed(state.rows) { index, row ->
+                        PropertyRow(row, { onCopy(row.property) }, index, state.rows.lastIndex, copyAvailable)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PropertyRow(row: PropertyRowUiState, onCopy: () -> Unit, index: Int, lastIndex: Int, copyAvailable: Boolean) {
+    val property = row.property
+    val empty = property.value.isEmpty()
+    var expanded by rememberSaveable(property.name, property.value) { mutableStateOf(false) }
+    var overflows by remember(property.value) { mutableStateOf(false) }
+    val copyLabel = stringResource(Res.string.copy_property, property.name)
+    val expandLabel = stringResource(if (expanded) Res.string.hide_full_property_value else Res.string.show_full_property_value)
+    val expandDescription = stringResource(if (expanded) Res.string.hide_full_property_value_description else Res.string.show_full_property_value_description, property.name)
+    val shape = RoundedCornerShape(
+        topStart = if (index == 0) MaterialTheme.shapes.medium.topStart else MaterialTheme.shapes.extraSmall.topStart,
+        topEnd = if (index == 0) MaterialTheme.shapes.medium.topEnd else MaterialTheme.shapes.extraSmall.topEnd,
+        bottomStart = if (index == lastIndex) MaterialTheme.shapes.medium.bottomStart else MaterialTheme.shapes.extraSmall.bottomStart,
+        bottomEnd = if (index == lastIndex) MaterialTheme.shapes.medium.bottomEnd else MaterialTheme.shapes.extraSmall.bottomEnd
+    )
+    Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column {
+            Row(
+                Modifier.fillMaxWidth().testTag("properties:row:$index").then(
+                    if (empty || !copyAvailable) Modifier else Modifier.clickable(role = Role.Button, onClickLabel = copyLabel, onClick = onCopy)
+                ).padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.propertyRowVerticalPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyContentSpacing)
+            ) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
+                    Text(property.name, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
+                    if (!expanded) {
+                        SelectionContainer {
+                            Text(
+                                text = row.valueText.resolve(),
+                                color = if (empty) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.bodyLarge,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                onTextLayout = { overflows = it.hasVisualOverflow }
+                            )
+                        }
+                    }
+                }
+                if (!empty && copyAvailable) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_content_copy_black_24dp),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(TeamCityDimensions.compactIconSize)
+                    )
+                }
+            }
+            if (expanded || overflows) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Row(
+                    Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.minimumTouchTarget).testTag("properties:expand:$index")
+                        .clickable(role = Role.Button, onClickLabel = expandDescription) { expanded = !expanded }
+                        .semantics {
+                            contentDescription = expandDescription
+                            stateDescription = expandLabel
+                        }.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.mediumSpacing),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(expandLabel, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+                    Icon(painterResource(if (expanded) Res.drawable.ic_expand_less_24dp else Res.drawable.ic_expand_more_24dp), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(TeamCityDimensions.compactIconSize))
+                }
+            }
+            if (expanded) {
+                SelectionContainer {
+                    Text(
+                        property.value,
+                        Modifier.fillMaxWidth().testTag("properties:full:$index").padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, bottom = TeamCityDimensions.contentPadding),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PropertiesPreview() {
+    TeamCityTheme {
+        PropertiesScreen(PropertiesUiState.Content(listOf(Property("env.CI", "true"), Property("sdk", ""))), {})
+    }
+}
+
+@Preview
+@Composable
+private fun EmptyPropertiesPreview() {
+    TeamCityTheme { PropertiesScreen(PropertiesUiState.Empty, {}) }
+}

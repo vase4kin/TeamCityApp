@@ -14,28 +14,50 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.agents.impl" }
-dependencies {
-    api(projects.features.agents.presentation)
-    implementation(projects.features.drawer.api)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.agents.api)
-    implementation(projects.libraries.listState)
-    implementation(projects.libraries.listUi)
-    implementation(projects.libraries.theme)
-    implementation(projects.libraries.resources)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    testImplementation(libs.coroutines.test)
-    ksp(libs.dagger.compiler)
+
+kotlin { android { namespace = "teamcityapp.features.agents.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.agents.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        api(projects.features.agents.api)
+        api(projects.libraries.designSystem)
+        api(projects.libraries.listPresentation)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+    }
+}
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+        implementation(projects.features.drawer.api)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.agents.api)
+        implementation(projects.libraries.listState)
+        implementation(projects.libraries.listUi)
+        implementation(projects.libraries.theme)
+        implementation(projects.libraries.resources)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

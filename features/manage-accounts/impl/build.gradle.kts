@@ -15,34 +15,65 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.manage_accounts.impl" }
-dependencies {
-    api(projects.features.manageAccounts.presentation)
-    implementation(projects.libraries.cacheManager)
-    implementation(projects.libraries.coroutines)
-    implementation(projects.libraries.session)
-    implementation(projects.features.createAccount.api)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.manageAccounts.api)
-    implementation(projects.libraries.theme)
-    implementation(projects.libraries.resources)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    testImplementation(libs.mockito.mockitoCore)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.turbine)
-    ksp(libs.dagger.compiler)
+
+kotlin { android { namespace = "teamcityapp.features.manage_accounts.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.manage_accounts.impl.resources"
+}
+kotlin.sourceSets {
+    named("commonMain") {
+        dependencies {
+            api(projects.features.manageAccounts.api)
+            api(projects.libraries.authenticationShared)
+            implementation(libs.multiplatform.lifecycle.viewmodel)
+            implementation(libs.multiplatform.lifecycle.runtime)
+            implementation(libs.coroutines.core)
+            implementation(libs.multiplatform.compose.backhandler)
+        }
+    }
+    named("commonTest") {
+        dependencies {
+            implementation(libs.coroutines.test)
+            implementation(libs.turbine)
+        }
+    }
+}
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+        implementation(projects.libraries.cacheManager)
+        implementation(projects.libraries.coroutines)
+        implementation(projects.libraries.session)
+        implementation(projects.features.createAccount.api)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.manageAccounts.api)
+        implementation(projects.libraries.theme)
+        implementation(projects.libraries.resources)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+        implementation(project.dependencies.platform(libs.google.firebaseBom))
+        implementation(libs.google.analytics)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.mockito.mockitoCore)
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

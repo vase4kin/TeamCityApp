@@ -106,19 +106,19 @@ class UnitTestCiTest(unittest.TestCase):
 
     def test_kmp_common_tests_are_scheduled_and_coverage_round_trips(self):
         with (self.root / "settings.gradle.kts").open("a") as settings:
-            settings.write('\ninclude(":features:about:presentation")')
-        module = "features/about/presentation"
+            settings.write('\ninclude(":features:about:impl")')
+        module = "features/about/impl"
         self.write(self.root, f"{module}/build.gradle.kts", 'id("teamcityapp.kmp.compose")')
         self.write(self.root, f"{module}/src/commonTest/kotlin/AboutTest.kt", "class AboutTest")
         self.write(self.root, f"{module}/build/classes/kotlin/android/main/About.class", "shared")
         self.write(self.root, f"{module}/build/jacoco/testAndroidHostTest.exec", "shared coverage")
         tasks = " ".join(s["tasks"] for s in ci.plan(self.root)["include"])
-        self.assertIn(":features:about:presentation:testAndroidHostTest", tasks)
-        self.assertNotIn(":features:about:presentation:testDebugUnitTest", tasks)
+        self.assertIn(":features:about:impl:testAndroidHostTest", tasks)
+        self.assertNotIn(":features:about:impl:testDebugUnitTest", tasks)
         self.pack_all()
         consumer = self.consumer()
         ci.restore(consumer, self.inputs)
-        self.assertEqual([p.read_text() for p in ci.coverage_paths(consumer, ":features:about:presentation")], ["shared"])
+        self.assertEqual([p.read_text() for p in ci.coverage_paths(consumer, ":features:about:impl")], ["shared"])
 
     def test_kmp_screenshot_modules_schedule_the_host_golden_task(self):
         self.write(self.root, "libraries/shared/build.gradle.kts",

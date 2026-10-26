@@ -15,32 +15,53 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.change_details.impl" }
-dependencies {
-    api(projects.features.changeDetails.presentation)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.changeDetails.api)
-    implementation(projects.libraries.resources)
-    implementation(projects.libraries.theme)
-    implementation(projects.libraries.chromeTabs)
-    implementation(projects.libraries.storage)
-    implementation(projects.libraries.storageModels)
-    implementation(projects.libraries.api)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    testImplementation(libs.mockito.mockitoCore)
-    ksp(libs.dagger.compiler)
+
+kotlin { android { namespace = "teamcityapp.features.change_details.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.change_details.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        api(projects.features.changeDetails.api)
+        api(projects.libraries.designSystem)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+    }
+}
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.changeDetails.api)
+        implementation(projects.libraries.resources)
+        implementation(projects.libraries.theme)
+        implementation(projects.libraries.chromeTabs)
+        implementation(projects.libraries.storage)
+        implementation(projects.libraries.storageModels)
+        implementation(projects.libraries.api)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+        implementation(project.dependencies.platform(libs.google.firebaseBom))
+        implementation(libs.google.analytics)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.mockito.mockitoCore)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

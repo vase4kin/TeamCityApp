@@ -380,6 +380,33 @@ class AndroidConventionPluginsTest {
         verify(projectDir)
     }
 
+    @Test
+    fun `KMP feature injection processes Android without exposing Hilt to native or common code`() {
+        val projectDir = createProject("kmp-hilt")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            plugins {
+                id("teamcityapp.kmp.compose")
+                id("teamcityapp.kmp.hilt")
+            }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(!plugins.hasPlugin("com.google.dagger.hilt.android"))
+                    check(tasks.findByName("compileAndroidMainJavaWithJavac") != null)
+                    check(configurations.getByName("androidMainImplementation").dependencies.any { it.name == "hilt-android" })
+                    check(configurations.getByName("kspAndroid").dependencies.map { it.name }.toSet() == setOf("hilt-compiler", "dagger-compiler"))
+                    for (name in listOf("kspIosArm64", "kspIosSimulatorArm64", "kspCommonMainMetadata")) {
+                        check(configurations.findByName(name)?.dependencies.orEmpty().isEmpty())
+                    }
+                    check(configurations.getByName("commonMainImplementation").dependencies.none { it.group == "com.google.dagger" })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
     private fun createProject(name: String, vararg modules: String): File {
         val projectDir = temporaryFolder.newFolder(name)
         File(projectDir, "libs.versions.toml").writeText(

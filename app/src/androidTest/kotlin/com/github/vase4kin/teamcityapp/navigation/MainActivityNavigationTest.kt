@@ -222,6 +222,7 @@ class MainActivityNavigationTest {
     @Test fun packagedAndroidNoticesUseTheSharedReaderAndAllThemeChoices() {
         launchAbout().use { scenario ->
             await(info.version)
+            captureDisplay(scenario, "about-consolidated")
             compose.onNodeWithText("Open sources libraries").performScrollTo().performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("licenses:android_0").fetchSemanticsNodes().isNotEmpty() }
             captureDisplay(scenario, "licenses")
