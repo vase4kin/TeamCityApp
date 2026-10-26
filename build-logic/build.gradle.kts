@@ -28,6 +28,10 @@ gradlePlugin {
             id = "teamcityapp.android.application"
             implementationClass = "teamcityapp.buildlogic.AndroidApplicationConventionPlugin"
         }
+        register("androidAppTests") {
+            id = "teamcityapp.android.app-tests"
+            implementationClass = "teamcityapp.buildlogic.AndroidAppTestsConventionPlugin"
+        }
         register("androidLibrary") {
             id = "teamcityapp.android.library"
             implementationClass = "teamcityapp.buildlogic.AndroidLibraryConventionPlugin"

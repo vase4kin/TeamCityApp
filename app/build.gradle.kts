@@ -21,6 +21,7 @@ import teamcityapp.buildlogic.verifyR8SmokeTestReports
 
 plugins {
     id("teamcityapp.android.application")
+    id("teamcityapp.android.app-tests")
     id("teamcityapp.android.compose")
     id("org.jetbrains.kotlin.plugin.parcelize")
     id("teamcityapp.android.hilt")

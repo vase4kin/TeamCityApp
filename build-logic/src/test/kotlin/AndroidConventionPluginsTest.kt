@@ -176,6 +176,47 @@ class AndroidConventionPluginsTest {
         verify(projectDir, "verifyConventions", "-PinstrumentationCoverage")
     }
 
+    @Test
+    fun `app test convention includes owned Kotlin and Java suites but isolates R8`() {
+        val projectDir = createProject("app-tests", "app", "features:about:impl", "libraries:session")
+        val roots = listOf(
+            "features/about/impl/src/androidAppTest",
+            "libraries/session/src/androidAppTest"
+        )
+        (roots + "features/about/api/src/androidAppTest").forEach {
+            File(projectDir, "$it/kotlin").mkdirs()
+            File(projectDir, "$it/java").mkdirs()
+        }
+        File(projectDir, "features/about/impl/build.gradle.kts").writeText("")
+        File(projectDir, "libraries/session/build.gradle.kts").writeText("")
+        val appDir = File(projectDir, "app").apply { mkdirs() }
+        File(appDir, "build.gradle.kts").writeText(
+            """
+            plugins { id("teamcityapp.android.app-tests") }
+            android { namespace = "teamcityapp.conventiontest" }
+            val r8 = providers.gradleProperty("r8Verification").isPresent
+            if (r8) {
+                android.sourceSets.getByName("androidTest").setRoot("src/r8VerificationTest")
+            }
+            tasks.register("verifyConventions") {
+                doLast {
+                    val sources = android.sourceSets.getByName("androidTest")
+                    val kotlin = sources.kotlin.directories.map { project.file(it).canonicalFile }.toSet()
+                    val java = sources.java.directories.map { project.file(it).canonicalFile }.toSet()
+                    for (owner in listOf("features/about/impl", "libraries/session")) {
+                        check(kotlin.contains(rootProject.file("${'$'}owner/src/androidAppTest/kotlin")) == !r8)
+                        check(java.contains(rootProject.file("${'$'}owner/src/androidAppTest/java")) == !r8)
+                    }
+                    check(kotlin.none { it.path.contains("/api/") })
+                    check(java.none { it.path.contains("/api/") })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir, ":app:verifyConventions")
+        verify(projectDir, ":app:verifyConventions", "-Pr8Verification")
+    }
+
     private fun verifyConventions(kind: String) {
         val projectDir = createProject(kind)
         File(projectDir, "build.gradle.kts").writeText(

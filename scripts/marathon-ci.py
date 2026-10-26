@@ -66,6 +66,16 @@ def push_commit_subjects(root, event):
     return result.stdout.decode().splitlines()
 
 
+def app_test_roots(root):
+    """Sources compiled into the application test APK by the app-tests convention.
+
+    Library-local androidTest/androidDeviceTest suites have their own runner and
+    must not appear in the Marathon application APK catalog.
+    """
+    return [root / "app/src/androidTest", *sorted((root / "features").glob("*/impl/src/androidAppTest")),
+            *sorted((root / "libraries").glob("*/src/androidAppTest"))]
+
+
 def source_test_index(root):
     """Validate selectors against the repository's ordinary Kotlin JUnit4 tests.
 
@@ -74,7 +84,7 @@ def source_test_index(root):
     """
     index = {}
     annotations = r"((?:@[\w.]+(?:\([^\n]*?\))?\s*)+)"
-    for path in (root / "app/src/androidTest").rglob("*.kt"):
+    for path in sorted(path for directory in app_test_roots(root) for path in directory.rglob("*.kt")):
         # Preserve string boundaries: URLs in @Ignore reasons are not comments.
         tokens = r'"""[\s\S]*?"""|"(?:\\.|[^"\\])*"|/\*[\s\S]*?\*/|//[^\n]*'
         text = re.sub(tokens, lambda match: ('""' if match[0].startswith('"') else '') + '\n' * match[0].count('\n'), path.read_text())
@@ -139,6 +149,11 @@ def changed_selection(paths, catalog, available, index, mapping):
         normalized = owner.replace("-", "_")
         prefixes = (f"com.github.vase4kin.teamcityapp.{normalized}.", f"teamcityapp.features.{normalized}.")
         found = {test for test in available if test.replace("-", "_").startswith(prefixes)}
+        # Legacy class/package names are preserved when ownership moves. Resolve
+        # them by their feature directory as well as the historical package.
+        for path, tests in index.items():
+            if path.startswith(f"features/{owner}/impl/src/androidAppTest/"):
+                found.update(tests)
         for pattern in mapping.get(owner, {}).get("tests", []):
             found.update(test for test in available if fnmatch.fnmatchcase(test, pattern))
         return found
