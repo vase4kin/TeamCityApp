@@ -576,3 +576,93 @@ final full shared-root JVM/native run passed. The initial missing nested golden
 fixtures were recorded only after reviewing all 18 images, then all 222 History
 screenshot cases passed. These setup failures remain in the build logs.
 No application branch was pushed, no PR was opened, and no app was uploaded.
+
+
+## Owner follow-up: Android-only Open Source Libraries
+
+The About implementation now owns an `expect`/`actual` capability method:
+`supportsOpenSourceLibraries()` returns true in `androidMain` and false in
+`iosMain`. The common composable conditionally includes the Libraries row;
+Source Code and the other About actions remain shared. Android's shared-root
+callback delegates to `NativePlatform.openSourceLibraries()` and opens the
+existing Google `OssLicensesMenuActivity` rather than the custom reader.
+
+Removed the custom catalog/text reader, its `AppLicenseRepository` contract,
+the Android text adapter, nine `.txt` and two JSON Compose resources, reader-only
+strings and 40 reader screenshot fixtures. Ten new controlled About fixtures
+cover the iOS capability across themes, compact/expanded layouts and enlarged
+text. Existing Android-configured About fixtures remain unchanged.
+
+The two persisted `NativeLicense*Destination` types remain only for compatibility:
+old restored visits close back to their existing About owner, or replace a lone
+retired root with About. They have no catalog, text loading or reader UI.
+
+The original native redistribution notices were consolidated into one iOS build
+resource, `iosApp/TeamCityApp/ThirdPartyNotices.plist`. It retains the inventory
+of 78 runtime artifacts and 29 native notices and their original text, without
+an in-app entry point. The notice collector, Xcode resource phase, release audit
+and current architecture/release documentation now describe that packaging-only
+resource. Audits validate notice text hashes, XML/binary plist equivalence and
+absence of the retired viewer resources. No dependency terms were discarded.
+
+Verification is retained under `build/kmp-about-libraries/`:
+
+| Check | Result / evidence |
+| --- | --- |
+| About and shared-app JVM tests | 176 passed (`final-jvm-build.log`) |
+| About and shared-app Native tests | 40 passed (`native-tests.log`) |
+| Script suite | 93 passed (`script-tests-final.log`) |
+| Real Android OSS plugin and Back | 1 passed (`android-plugin-test.log`, `android-plugin.png`) |
+| Normal iOS Settings/theme/About journey | Focused rerun passed (`ios-ui-rerun.log`, `AboutPlatform-rerun.xcresult`) |
+| Deterministic native About bottom capture | Passed (`ios-preview.log`, `AboutPreview.xcresult`, `ios-about-preview-bottom.png`) |
+| Source/simulator/signed-device packaging | Zero errors (`source-audit.json`, `simulator-package-audit-final.json`, `iphone-package-audit.json`) |
+| Signed optimized normal iPhone build | Passed; signature verified (`iphone-build.log`) |
+| Boundaries and formatting | Passed (`feature-boundaries.log`, `format-final.log`) |
+
+The initial UI test queried a native Button rather than the shared accessibility
+element. Its corrected focused rerun passed. Xcode's post-test `simctl diagnose`
+collector stalled; after the test completed, the owned collector was stopped and
+xcodebuild finalized with exit 0. The deterministic preview capture additionally
+passed with `-collect-test-diagnostics never`; this flag changes diagnostic
+collection, not assertions or accessibility auditing. The initial bundle remains
+an interrupted diagnostic artifact; the passing rerun and preview results are
+recorded separately. The first package comparison also caught Xcode's conversion
+of XML plist resources to binary; the audit now compares canonical plist data,
+with a regression check and intact text-integrity checks.
+
+The earlier owner-requested Login Accounts shortcut and Profile Sign out removal
+is local checkpoint `39a4bd1d3c9ad6a68e3ab0a63945934807171007`. Its 378 JVM
+cases, one Android account-flow case and two iOS journeys passed across the
+initial selection and a focused coachmark-aware rerun. Actual Android/iOS Login
+and Profile captures are in `build/kmp-account-ui-cleanup/` and the private report.
+
+Installation of the current signed candidate remains deferred by the owner.
+Physical-phone, full VoiceOver and actual iOS 17 runtime acceptance remain open.
+The updated private journal includes the platform policy, controlled before/
+after renders, native Android plugin, native iOS preview and earlier Account/Login
+captures. No application branch was pushed and no app was uploaded.
+
+Local implementation checkpoint: `b86c348a066d36be390a772fc9bc08ffec4c282f` (84 scoped files, including intentional removals).
+
+A clean shared-module Android rebuild also removed 11 stale, previously generated
+Compose catalog assets from the local APK (`android-clean-rebuild.log`). The
+final APK zip contains no `files/licenses/` entries. The source and fresh iOS
+packages were already free of those assets. `shared-app-test-results/` preserves
+the completed JVM/native reports from before the build-directory cleanup.
+
+
+The private platform-policy report was published on **26 October 2026,
+23:35 Asia/Bangkok**:
+
+- Site: https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/#platform-about.
+- Pushed Site source: `91745d7ff43196ca201a44fd2444201e3226ba9f`.
+- Saved version: `appgprj_6adef83dcd248191bf11c7147cdf489d~appgver_95b8f5c56fb8819182e300daf6bf5430`.
+- Successful deployment: `appgdep_6adf8141e2f48191b27dad8b27a87252`.
+- Audience remains owner-private. Nine new image references/digests were verified.
+- Browser checks passed at 390px, the normal viewport and 1200px, with no
+  horizontal overflow or console warnings/errors after wrapping the code example.
+  `build/kmp-about-libraries/report-platform-about.png` retains the visual proof.
+
+Current signed normal candidate: `build/kmp-about-libraries/TeamCityApp.app`.
+`iphone-candidate.json` records its executable digest; the package audit and
+strict signature verification pass. No installation or distribution is claimed.

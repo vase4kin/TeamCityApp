@@ -202,8 +202,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   Native browser/log/diff, sharing and clipboard actions stay in UI-owned adapters;
   API credentials never enter browser links. Settings shares presentation over the
   portable theme-preference contract, retaining Android DataStore and native
-  UserDefaults. About links native account actions, Apple rating requests and bundled
-  runtime-license texts. Native diagnostics use fixed OS event labels and Apple's
+  UserDefaults. About links native account actions and Apple rating requests. Its Open Source
+  Libraries action is enabled by the About feature's Android capability and uses
+  Google's OSS Licenses screen; iOS hides it. iOS redistribution notices are a
+  packaging-only `ThirdPartyNotices.plist`, with no in-app catalog or reader. Native diagnostics use fixed OS event labels and Apple's
   crash reports; hosted iOS analytics/crash upload is unconfigured.
   Native interactive list rows keep clipped fragments below the standard touch
   target out of VoiceOver until scrolling reveals them. Preserve each action and
@@ -221,8 +223,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   automatic prompt becomes available only after a later process launch. Host
   recreation/account switching do not count as another launch. Manual rating stays
   immediately available; Home coachmarks suppress the inline rating card.
-  Both platforms offer all four shared theme choices and common license-reader UI;
-  license inventories are platform-specific dependency data.
+  Both platforms offer all four shared theme choices. Open Source Libraries is
+  Android-only; keep its capability actuals in the About implementation source sets.
+  Retired `NativeLicense*Destination` keys remain decode-only compatibility routes
+  that close to About, without restoring the removed reader.
 - KMP feature `impl` modules apply `teamcityapp.kmp.compose`, optional
   `teamcityapp.kmp.hilt` for Android-only KSP/Dagger/Hilt processing, and
   `teamcityapp.android.screenshot`. Keep framework AndroidEntryPoints and the

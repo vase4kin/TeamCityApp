@@ -75,13 +75,13 @@ Refresh offline notices after changing dependencies:
 2. Obtain the matching official iOS Release arm64 archive from JetBrains/skia.
 3. Run `scripts/collect-ios-notices.py --audit <source-audit.json>
    --skia-archive <downloaded.zip> --kotlin-native <matching-toolchain-directory>`.
-4. Inspect the inventory and hashes in the bundled `native-inventory.json`.
-   Review added component terms and notices before distributing. Standard Apache
-   text, Kotlin runtime notices and native redistribution texts are available
-   offline through the existing TeamCityApp/Skia license readers.
+4. Inspect the inventory and hashes in `iosApp/TeamCityApp/ThirdPartyNotices.plist`.
+   The single iOS resource retains standard Apache text, Kotlin runtime notices
+   and native redistribution texts. It is packaging data, with no in-app catalog
+   or reader. Review added component terms and notices before distributing.
 
 The collector pins Skiko 0.150.2, Skia m150-a3f509bf52 and the latter's DEPS refs.
-Upgrade these deliberately with the toolchain. The collector normalizes combined
+Upgrade these deliberately with the toolchain. The collector writes the packaging resource and normalizes combined
 notice text to LF before computing its bundled hash, so Git checkout normalization
 does not invalidate provenance. Upstream source hashes retain the original bytes. Notices extracted conservatively
 from a native archive can include components eliminated from the final executable;
