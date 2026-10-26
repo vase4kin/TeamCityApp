@@ -56,7 +56,7 @@ release readiness. P2 covers the explicitly scoped final platform refinements.
 - [x] Phase 4 — Build management (P1; completed 2026-10-22)
 - [x] Phase 5 — Downloads and platform integrations (P1; completed 2026-10-23)
 - [x] Phase 6 — Release validation and cleanup (P1; completed 2026-10-26; final qualification deferred by owner)
-- [ ] Phase 7 — Platform review and refinements (P2; planning)
+- [ ] Phase 7 — Platform review and refinements (P2; review recorded; refinement scope pending)
 
 ## Phase 1 — Toolchain and shared foundation
 
@@ -327,9 +327,11 @@ Phase 6 is now closed by the owner; Phase 7 review/planning is active.
 refinement implementation awaits agreement on the bounded list below.
 **Outcome:** agreed refinements, final qualification and migration acceptance.
 
-- [ ] Review Android/iOS side by side: Account/Manage/Add/sign-out, Home and
+- [x] Review Android/iOS side by side: Account/Manage/Add/sign-out, Home and
   retained tabs, History/Overview/sections, Run/Filter, artifacts and Settings/About.
   Distinguish product defects from intentional OS integrations and visual differences.
+  Review recorded in [Phase 7 evidence](kmp-phase-7.md); the new iOS Home journey
+  has an identified first-use coachmark test gap, not a claimed complete pass.
 - [ ] Agree a bounded punch list with priority, expected behavior and testable
   completion criteria for each item before implementing refinements.
 - [ ] Fix the selected defects and polish shared UI/behavior in common code.
@@ -359,7 +361,12 @@ closing Phase 6.
   owner acceptance of the migration. App upload/distribution needs separate authorization.
 
 **Gate:** the agreed refinement list and every final acceptance item are complete.
-**Report/commits:** Phase 7 report pending; Phase 6 report remains linked above.
+**Review report:** [Private Phase 7 comparison and proposed punch list](https://teamcityapp-kmp-phase-seven-20261026.andrey-tolpeev.chatgpt.site/).
+**Evidence:** [Review findings, acceptance criteria and measured verification](kmp-phase-7.md).
+The review proposes P7-01–P7-04 first, with P7-05/P7-06 optional. No fixes are
+implemented or agreed yet; the final Phase 7 report and acceptance gates remain open.
+**Checkpoint:** this review/checklist is saved as a docs-only local GitButler
+checkpoint on `codex/kmp-phase-1`; application source and golden files are unchanged.
 
 ## References
 
