@@ -237,14 +237,15 @@ class MainActivityNavigationTest {
         }
     }
 
-    @Test fun sharedAccountManageAddAndSignOutUseOneRoot() {
+    @Test fun sharedAccountManageAddAndLastRemovalUseOneRoot() {
         ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java)).use { scenario ->
             fun click(tag: String) {
                 compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
-                if (tag == "drawer:manage" || tag == "accounts:sign-out") compose.onNodeWithTag(tag).performScrollTo().performClick() else compose.onNodeWithTag(tag).performClick()
+                if (tag == "drawer:manage") compose.onNodeWithTag(tag).performScrollTo().performClick() else compose.onNodeWithTag(tag).performClick()
             }
             click("home:account")
             compose.onNodeWithTag("drawer:manage").assertExists()
+            compose.onNodeWithTag("accounts:sign-out").assertDoesNotExist()
             captureDisplay(scenario, "account")
             click("drawer:manage")
             compose.onNodeWithTag("accounts:list").assertExists()
@@ -254,12 +255,14 @@ class MainActivityNavigationTest {
             captureDisplay(scenario, "add")
             androidx.test.espresso.Espresso.pressBack()
             compose.onNodeWithText("Discard").performClick()
-            androidx.test.espresso.Espresso.pressBack()
-            click("accounts:sign-out")
+            compose.onNode(hasContentDescription("Remove", substring = true)).performScrollTo().performClick()
+            compose.onNodeWithText("Remove").performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("login:submit").fetchSemanticsNodes().isNotEmpty() }
-            captureDisplay(scenario, "signed-out")
+            compose.onNodeWithTag("login:accounts").assertDoesNotExist()
+            captureDisplay(scenario, "last-account-removed")
             scenario.recreate()
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("login:submit").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("login:accounts").assertDoesNotExist()
         }
     }
 }

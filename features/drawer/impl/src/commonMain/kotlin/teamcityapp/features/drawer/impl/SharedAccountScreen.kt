@@ -49,8 +49,7 @@ fun SharedAccountScreen(
     onRetry: () -> Unit = {},
     onRetrySelection: () -> Unit = {},
     onDismissMissing: () -> Unit = {},
-    onNavigateUp: () -> Unit = {},
-    onSignOut: (() -> Unit)? = null
+    onNavigateUp: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
@@ -75,7 +74,7 @@ fun SharedAccountScreen(
             SharedDrawerScreen(
                 state, onSelect, onAddAccount, onManageAccounts, onSettings, onAbout, onPrivacy, onRate,
                 modifier = Modifier.fillMaxHeight().testTag("account:content"), onRetry = onRetry, onRetrySelection = onRetrySelection,
-                onDismissMissing = onDismissMissing, listState = listState, onSignOut = onSignOut
+                onDismissMissing = onDismissMissing, listState = listState
             )
         }
     }

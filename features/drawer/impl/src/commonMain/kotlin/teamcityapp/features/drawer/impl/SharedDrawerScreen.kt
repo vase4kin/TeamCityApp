@@ -63,8 +63,7 @@ fun SharedDrawerScreen(
     onRetry: () -> Unit = {},
     onRetrySelection: () -> Unit = {},
     onDismissMissing: () -> Unit = {},
-    listState: LazyListState = rememberLazyListState(),
-    onSignOut: (() -> Unit)? = null
+    listState: LazyListState = rememberLazyListState()
 ) {
     Surface(modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
         Column(Modifier.navigationBarsPadding()) {
@@ -113,7 +112,6 @@ fun SharedDrawerScreen(
                     DrawerMenu(Res.drawable.ic_accounts, stringResource(Res.string.drawer_manage), "drawer:manage", state.canInteract, onManageAccounts, last = true, tonal = true)
                     Spacer(Modifier.height(TeamCityDimensions.sectionSpacing))
                 }
-                if (onSignOut != null) item("sign-out") { DrawerMenu(Res.drawable.ic_account_outline, stringResource(Res.string.drawer_sign_out), "accounts:sign-out", state.canInteract, onSignOut, first = true, last = true) }
                 item("settings") { DrawerMenu(Res.drawable.ic_settings_black_24dp, stringResource(Res.string.drawer_item_settings), "drawer:settings", state.canInteract, onSettings, first = true) }
                 item("about") { DrawerMenu(Res.drawable.ic_info_outline_black_24dp, stringResource(Res.string.drawer_item_about), "drawer:about", state.canInteract, onAbout) }
                 item("footer") { DrawerFooter(state.canInteract, onPrivacy, onRate) }

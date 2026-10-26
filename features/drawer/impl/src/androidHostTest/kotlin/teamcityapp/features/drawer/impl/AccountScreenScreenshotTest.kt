@@ -71,13 +71,9 @@ class AccountScreenScreenshotTest(private val stateName: String, private val var
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
-        compose.setContent { CompositionLocalProvider(LocalLayoutDirection provides if (variant.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) { TeamCityTheme(darkTheme = variant.dark) { SharedAccountScreen(drawerFixture(if (stateName == "sign_out") "one" else stateName), {}, {}, {}, {}, {}, {}, {}, onSignOut = if (stateName == "sign_out") ({}) else null) } } }
+        compose.setContent { CompositionLocalProvider(LocalLayoutDirection provides if (variant.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) { TeamCityTheme(darkTheme = variant.dark) { SharedAccountScreen(drawerFixture(stateName), {}, {}, {}, {}, {}, {}, {}) } } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "sign_out") {
-            compose.onNodeWithTag("accounts:sign-out").performScrollTo()
-            compose.waitForIdle()
-        }
         if (stateName == "scrolled") {
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
             compose.mainClock.advanceTimeBy(500)
@@ -96,8 +92,8 @@ class AccountScreenScreenshotTest(private val stateName: String, private val var
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            val existing = listOf("sign_out", "loading", "empty", "error", "one", "mixed", "no_active", "long", "scrolled", "switching", "switch_error", "missing").flatMap { state ->
-                (variants + (if (state == "one") listOf(Variant("rtl_phone_$theme", 360, 800, dark, 1f, rtl = true)) else emptyList()) + if (state in listOf("sign_out", "one", "long", "scrolled")) listOf(Variant("double_font_$theme", 360, 800, dark, 2f)) else emptyList()).map { arrayOf<Any>(state, it) }
+            val existing = listOf("loading", "empty", "error", "one", "mixed", "no_active", "long", "scrolled", "switching", "switch_error", "missing").flatMap { state ->
+                (variants + (if (state == "one") listOf(Variant("rtl_phone_$theme", 360, 800, dark, 1f, rtl = true)) else emptyList()) + if (state in listOf("one", "long", "scrolled")) listOf(Variant("double_font_$theme", 360, 800, dark, 2f)) else emptyList()).map { arrayOf<Any>(state, it) }
             }
             existing + listOf(
                 arrayOf<Any>("named", Variant("phone_$theme", 360, 800, dark, 1f)),

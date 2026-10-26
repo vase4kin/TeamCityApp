@@ -76,7 +76,7 @@ class AccountsScreenScreenshotTest(private val scene: String, private val varian
             }
         )
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(variant.dark) { SharedAccountScreen(state, {}, {}, {}, {}, {}, {}, {}, onSignOut = {}) } }
+        compose.setContent { TeamCityTheme(variant.dark) { SharedAccountScreen(state, {}, {}, {}, {}, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (scene == "scrolled") {

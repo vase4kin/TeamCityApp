@@ -52,13 +52,13 @@ class AccountsScreenTest {
         compose.onNodeWithTag("drawer:manage").performScrollTo().performClick()
         assertEquals(1, add)
         assertEquals(1, manage)
+        compose.onNodeWithTag("accounts:sign-out").assertDoesNotExist()
         compose.onNodeWithTag("accounts:row:${alice.id.identityKey}:remove").assertDoesNotExist()
     }
 
-    @Test fun nativeSignOutIsCapabilityGatedAndBusyOperationsDisableIt() {
-        compose.setContent { TeamCityTheme { SharedAccountScreen(state.copy(selection = AccountSwitchUiState.SigningOut), {}, {}, {}, {}, {}, {}, {}, onSignOut = {}) } }
-        compose.onNodeWithTag("drawer:list").performScrollToNode(hasTestTag("accounts:sign-out"))
-        compose.onNodeWithTag("accounts:sign-out").assertIsNotEnabled()
+    @Test fun busyAccountDisablesManagementActions() {
+        compose.setContent { TeamCityTheme { SharedAccountScreen(state.copy(selection = AccountSwitchUiState.SigningOut), {}, {}, {}, {}, {}, {}, {}) } }
+        compose.onNodeWithTag("accounts:sign-out").assertDoesNotExist()
         compose.onNodeWithTag("drawer:list").performScrollToNode(hasTestTag("drawer:add"))
         compose.onNodeWithTag("drawer:add").assertIsNotEnabled()
     }

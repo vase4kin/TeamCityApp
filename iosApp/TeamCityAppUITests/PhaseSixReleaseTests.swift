@@ -62,23 +62,31 @@ func assertNativeHeaderSafeArea(_ header: XCUIElement, app: XCUIApplication, fil
     XCTAssertLessThanOrEqual(actual.maxY, safe.maxY + 0.5, file: file, line: line)
 }
 
-/// Release retains its isolated validation vault. Reach Login through normal
-/// navigation/sign-out instead of clearing accounts or relying on test order.
+/// Release retains its isolated validation vault. Remove its saved test accounts
+/// through Manage Accounts instead of clearing Keychain or relying on test order.
 func prepareValidationLogin(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
     func element(_ id: String) -> XCUIElement { app.descendants(matching: .any).matching(identifier: id).firstMatch }
-    for _ in 0..<8 {
-        if element("auth:url").waitForExistence(timeout: 1) && !element("create-account:form").exists { return }
+    for _ in 0..<16 {
+        if element("auth:url").waitForExistence(timeout: 1) && !element("create-account:form").exists {
+            XCTAssertFalse(element("login:accounts").exists, file: file, line: line)
+            return
+        }
+        if element("accounts:list").exists {
+            let remove = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND identifier ENDSWITH %@", "accounts:row:", ":remove")).firstMatch
+            if remove.exists && remove.isHittable {
+                remove.tap()
+                XCTAssertTrue(element("accounts:dialog").waitForExistence(timeout: 10), file: file, line: line)
+                app.buttons["Remove"].tap()
+                continue
+            }
+        }
         if element("drawer:list").exists {
-            let signOut = element("accounts:sign-out")
+            let manage = element("drawer:manage")
             for _ in 0..<8 {
-                if signOut.exists && signOut.isHittable { break }
+                if manage.exists && manage.isHittable { break }
                 app.swipeUp()
             }
-            if signOut.exists && signOut.isHittable {
-                signOut.tap()
-                XCTAssertTrue(element("auth:url").waitForExistence(timeout: 10), file: file, line: line)
-                return
-            }
+            if manage.exists && manage.isHittable { manage.tap(); continue }
         }
         if element("home:account").exists { element("home:account").tap(); continue }
         let back = app.buttons["Navigate up"].exists ? app.buttons["Navigate up"].firstMatch : app.buttons["Back"].firstMatch

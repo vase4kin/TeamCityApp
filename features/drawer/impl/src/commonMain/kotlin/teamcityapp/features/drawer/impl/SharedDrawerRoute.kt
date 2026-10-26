@@ -24,7 +24,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import teamcityapp.features.drawer.impl.router.DrawerRouter
 @OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
-fun SharedDrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel, onNavigateUp: () -> Unit = {}, showSignOut: Boolean = false) {
+fun SharedDrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel, onNavigateUp: () -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(router) {
@@ -80,6 +80,6 @@ fun SharedDrawerRoute(router: DrawerRouter, viewModel: DrawerViewModel, onNaviga
         },
         onRetry = viewModel::retry,
         onRetrySelection = viewModel::retrySelection, onDismissMissing = viewModel::dismissMissing,
-        onNavigateUp = onNavigateUp, onSignOut = if (showSignOut) viewModel::signOut else null
+        onNavigateUp = onNavigateUp
     )
 }

@@ -164,7 +164,7 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
                 SharedEntry(teamcityapp.features.home.api.HomeDestination::class, teamcityapp.features.home.api.HomeDestination.serializer(), { builder ->
                     builder.polymorphic(NavigationResult::class) { subclass(teamcityapp.features.home.api.HomeTabSelection::class, teamcityapp.features.home.api.HomeTabSelection.serializer()) }
                 }) { destination, navigator, entryId -> SharedHomeContent(destination, checkNotNull(graph), navigator, result, entryId) },
-                SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, navigator, _ -> LoginContent(model, navigator) },
+                SharedEntry(LoginDestination::class, LoginDestination.serializer()) { _, _, _ -> LoginContent(model) },
                 SharedEntry(AccountsDestination::class, AccountsDestination.serializer()) { _, navigator, _ -> SharedAccountContent(model, navigator) },
                 SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator, _ -> ProjectsContent(destination, checkNotNull(graph), navigator) },
                 SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator, entryId -> HistoryContent(destination, checkNotNull(graph), navigator, entryId) },
@@ -237,7 +237,7 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
 }
 
 @Composable
-private fun LoginContent(model: SharedAppViewModel, navigator: Navigator) {
+private fun LoginContent(model: SharedAppViewModel) {
     val diagnostics = LocalNativePlatform.current.diagnostics
     val authentication = remember(model) {
         object : AuthenticationRepository {
@@ -255,35 +255,28 @@ private fun LoginContent(model: SharedAppViewModel, navigator: Navigator) {
     }
     val state by vm.state.collectAsStateWithLifecycle()
     var dialog by remember { mutableStateOf(LoginDialog.None) }
-    Box(Modifier.fillMaxSize()) {
-        SharedLoginScreen(
-            state, vm::update, vm::submit,
-            { disabled -> if (disabled) dialog = LoginDialog.Ssl else vm.update(state.form.copy(sslDisabled = false)) },
-            {
-                vm.demoClicked()
-                dialog = LoginDialog.Demo
-            },
-            dialog,
-            onConfirm = {
-                when (dialog) {
-                    LoginDialog.Ssl -> vm.update(state.form.copy(sslDisabled = true))
-                    LoginDialog.Demo -> vm.tryDemo()
-                    LoginDialog.None -> Unit
-                }
-                dialog = LoginDialog.None
-            },
-            onDecline = {
-                if (dialog == LoginDialog.Demo) vm.declineDemo()
-                dialog = LoginDialog.None
-            },
-            onConfirmHttp = vm::confirmHttp, onDeclineHttp = vm::declineHttp, onDismissUnauthorized = vm::dismissUnauthorized
-        )
-        TextButton(
-            { navigator.push(AccountsDestination) },
-            Modifier.align(Alignment.TopEnd).safeDrawingPadding().testTag("login:accounts"),
-            enabled = !state.form.busy
-        ) { Text(stringResource(Res.string.journey_accounts)) }
-    }
+    SharedLoginScreen(
+        state, vm::update, vm::submit,
+        { disabled -> if (disabled) dialog = LoginDialog.Ssl else vm.update(state.form.copy(sslDisabled = false)) },
+        {
+            vm.demoClicked()
+            dialog = LoginDialog.Demo
+        },
+        dialog,
+        onConfirm = {
+            when (dialog) {
+                LoginDialog.Ssl -> vm.update(state.form.copy(sslDisabled = true))
+                LoginDialog.Demo -> vm.tryDemo()
+                LoginDialog.None -> Unit
+            }
+            dialog = LoginDialog.None
+        },
+        onDecline = {
+            if (dialog == LoginDialog.Demo) vm.declineDemo()
+            dialog = LoginDialog.None
+        },
+        onConfirmHttp = vm::confirmHttp, onDeclineHttp = vm::declineHttp, onDismissUnauthorized = vm::dismissUnauthorized
+    )
 }
 
 @Composable

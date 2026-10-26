@@ -16,7 +16,6 @@
 
 <resources>
     <string name="preview_action_unavailable">This action is not available in this preview.</string>
-    <string name="journey_accounts">Accounts</string>
     <string name="journey_back">Back</string>
     <string name="journey_active">Active account</string>
     <string name="journey_select">Use account</string>

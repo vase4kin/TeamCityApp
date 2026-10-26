@@ -95,9 +95,8 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         app.buttons["OK"].tap()
         XCTAssertTrue(element(app,"auth:error").waitForExistence(timeout: 35))
         capture("phase2_unreachable_server",app)
-        element(app,"login:accounts").tap()
-        XCTAssertTrue(app.staticTexts["Add an account to connect to TeamCity"].waitForExistence(timeout: 10))
-        capture("phase2_empty_accounts",app)
+        XCTAssertFalse(element(app,"login:accounts").exists)
+        capture("phase2_login_without_accounts_shortcut",app)
     }
     private func waitUntilSettled(_ target: XCUIElement) {
         // Compose scroll deceleration may outlive XCTest's UIKit-idle check.
@@ -193,13 +192,9 @@ final class PhaseTwoLiveSmokeTests: XCTestCase {
         element(app,"navigation:up").tap()
         XCTAssertTrue(kotlin.waitForExistence(timeout: 10))
         element(app,"home:account").tap()
-        let signOut = element(app,"accounts:sign-out")
-        XCTAssertTrue(signOut.waitForExistence(timeout: 10))
+        XCTAssertTrue(element(app,"drawer:manage").waitForExistence(timeout: 10))
+        XCTAssertFalse(element(app,"accounts:sign-out").exists)
         capture("phase2_saved_accounts",app)
-        signOut.tap()
-        XCTAssertTrue(element(app,"login:accounts").waitForExistence(timeout: 10))
-        capture("phase2_signed_out",app)
-        element(app,"login:accounts").tap()
         let saved = app.buttons.matching(NSPredicate(format:"identifier BEGINSWITH %@", "drawer:account:")).firstMatch
         XCTAssertTrue(saved.waitForExistence(timeout: 10))
         saved.tap()
@@ -283,6 +278,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
         prepareValidationLogin(app)
+        capture("login_without_accounts_shortcut", app)
         tap(app, "auth:guest")
         let url = element(app, "auth:url")
         url.tap()
@@ -327,6 +323,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertTrue(element(app, "auth:warning").waitForExistence(timeout: 10))
         capture("add_account_http_consent", app)
         app.buttons["OK"].tap()
+        acknowledgeHomePrompt(app, "Drawer")
         XCTAssertTrue(element(app, "home:account").waitForExistence(timeout: 30))
         tap(app, "home:account")
         tap(app, "drawer:manage", scroll: true)
@@ -347,17 +344,13 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: oneRemaining, object: app)], timeout: 15), .completed)
         XCTAssertTrue(remove.firstMatch.label.contains("/manage-added/"))
         capture("manage_accounts_inactive_removed", app)
-        back(app)
-        tap(app, "accounts:sign-out", scroll: true)
-        XCTAssertTrue(element(app, "auth:url").waitForExistence(timeout: 20))
-        tap(app, "login:accounts")
-        tap(app, "drawer:manage", scroll: true)
-        XCTAssertTrue(element(app, "accounts:list").waitForExistence(timeout: 10))
+        // Remove the active account through Manage Accounts, the normal account-management path.
         XCTAssertEqual(remove.count, 1)
         remove.firstMatch.tap()
         XCTAssertTrue(element(app, "accounts:dialog").waitForExistence(timeout: 10))
         app.buttons["Remove"].tap()
         XCTAssertTrue(element(app, "auth:url").waitForExistence(timeout: 20))
+        XCTAssertFalse(element(app, "login:accounts").exists)
         capture("manage_accounts_last_removed_login", app)
     }
 
@@ -370,6 +363,7 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         }
         tap(app, "home:account")
         XCTAssertTrue(element(app, "drawer:manage").waitForExistence(timeout: 15))
+        XCTAssertFalse(element(app, "accounts:sign-out").exists)
         capture("account_android_parity", app)
         try audit()
         tap(app, "drawer:add", scroll: true)

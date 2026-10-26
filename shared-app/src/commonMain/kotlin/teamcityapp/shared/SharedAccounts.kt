@@ -134,5 +134,5 @@ internal fun SharedAccountContent(model: SharedAppViewModel, nav: Navigator) {
             }
         }
     }
-    SharedDrawerRoute(router, vm, onNavigateUp = { nav.pop() }, showSignOut = model.sessions.state.value is AccountSessionState.Active)
+    SharedDrawerRoute(router, vm, onNavigateUp = { nav.pop() })
 }
