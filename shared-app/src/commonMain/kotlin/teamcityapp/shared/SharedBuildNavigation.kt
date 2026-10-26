@@ -22,11 +22,11 @@ import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.navigation.Navigator
 
-/** History rows already contain the complete launch snapshot, as on Android.
+/** History, running, queued and snapshot-dependency rows already contain the complete launch snapshot.
  * A reference-loading visit would add a second transition and discard that snapshot.
  * Queued-result Show actions retain their separate reference-resolution route.
  */
-internal fun Navigator.openHistoryBuild(originEntryId: String, build: BuildLaunchData, configurationName: String) {
+internal fun Navigator.openBuildSnapshot(originEntryId: String, build: BuildLaunchData, configurationName: String? = build.configuration?.name) {
     if (current.id != originEntryId) return
     push(BuildDetailsDestination(build, configurationName))
 }

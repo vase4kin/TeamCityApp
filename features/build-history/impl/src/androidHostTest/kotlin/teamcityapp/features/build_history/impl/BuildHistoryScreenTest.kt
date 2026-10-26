@@ -20,12 +20,17 @@ import android.app.Application
 import android.content.Context
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.StateRestorationTester
@@ -61,11 +66,13 @@ internal fun HistoryTestScreen(
     onRetry: () -> Unit = {},
     onAppendRetry: () -> Unit = {},
     onBuild: (BuildLaunchData) -> Unit = {},
+    modifier: Modifier = Modifier,
+    coachmark: @Composable (OnboardingState.Available, Rect, () -> Unit) -> Unit = { prompt, bounds, dismiss -> HistoryCoachmark(prompt, bounds, dismiss) },
     snackbar: androidx.compose.material3.SnackbarHostState = androidx.compose.runtime.remember { androidx.compose.material3.SnackbarHostState() }
 ) {
-    BuildHistoryScreen(
+    SharedBuildHistoryScreen(
         "Build Android and check all supported configurations", state, controls, rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, append,
-        onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, snackbar = snackbar
+        onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, modifier = modifier, snackbar = snackbar, coachmark = coachmark
     )
 }
 
@@ -311,6 +318,43 @@ class BuildHistoryScreenTest {
         compose.onNodeWithTag("history:coachmark:Filter").assertIsDisplayed()
         val dismissBounds = compose.onNodeWithTag("history:prompt-dismiss").fetchSemanticsNode().boundsInRoot
         assertTrue("The tip must leave room for its bottom-toolbar anchor", dismissBounds.bottom < runTop)
+    }
+
+    @Test fun nestedHistorySpotlightsTheRealButtonsAndKeepsItsCardAboveThem() {
+        val prompt = androidx.compose.runtime.mutableStateOf<BuildHistoryPrompt?>(null)
+        var host = Rect.Zero
+        var spotlight = Rect.Zero
+        compose.setContent {
+            TeamCityTheme {
+                Box(Modifier.fillMaxSize().padding(start = 24.dp, top = 88.dp, bottom = 96.dp)) {
+                    HistoryTestScreen(
+                        controls = BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available(prompt.value)),
+                        modifier = Modifier.onGloballyPositioned { host = it.boundsInRoot() },
+                        coachmark = { state, bounds, dismiss ->
+                            spotlight = bounds
+                            HistoryCoachmark(state, bounds, dismiss)
+                        }
+                    )
+                }
+            }
+        }
+        val buttons = mapOf(BuildHistoryPrompt.Run to "run", BuildHistoryPrompt.Filter to "filter", BuildHistoryPrompt.Favorite to "favorite")
+        val actual = buttons.mapValues { (_, tag) -> compose.onNodeWithTag("history:$tag").fetchSemanticsNode().boundsInRoot }
+        for ((step, _) in buttons) {
+            compose.runOnIdle { prompt.value = step }
+            compose.onNodeWithTag("history:coachmark:$step").assertIsDisplayed()
+            compose.runOnIdle {
+                val target = actual.getValue(step)
+                val highlighted = spotlight.translate(host.topLeft)
+                assertEquals("The spotlight must use the nested pane's coordinates", target.center, highlighted.center)
+                assertTrue("The spotlight covers the complete action", highlighted.left <= target.left && highlighted.top <= target.top && highlighted.right >= target.right && highlighted.bottom >= target.bottom)
+                assertTrue("The target stays above Home navigation", spotlight.bottom <= host.height)
+            }
+            val dismiss = compose.onNodeWithTag("history:prompt-dismiss").fetchSemanticsNode().boundsInRoot
+            assertTrue("The prompt must not cover $step", dismiss.bottom < actual.getValue(step).top)
+            compose.onNodeWithTag("history:prompt-dismiss").performClick()
+            compose.runOnIdle { prompt.value = null }
+        }
     }
 
     @Test fun emptyRetainsRunAndFavoriteWhileInitialErrorHidesOnlyRun() {

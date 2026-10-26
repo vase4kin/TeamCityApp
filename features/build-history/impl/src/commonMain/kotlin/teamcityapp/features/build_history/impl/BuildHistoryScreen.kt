@@ -25,8 +25,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -92,10 +95,12 @@ fun SharedBuildHistoryScreen(
     val prompt = (controls.onboarding as? OnboardingState.Available)?.takeIf {
         it.prompt != null && (it.prompt != BuildHistoryPrompt.Run || state != ListUiState.Error)
     }
-    val promptBounds = prompt?.prompt?.let(anchors::get)
+    var overlayOrigin by remember { mutableStateOf<Offset?>(null) }
+    val promptBounds = overlayOrigin?.let { origin -> prompt?.prompt?.let(anchors::get)?.translate(-origin) }
     var actionHeight by remember { mutableStateOf(FloatingToolbarDefaults.ContainerSize) }
     val density = LocalDensity.current
-    BoxWithConstraints(modifier.fillMaxSize()) {
+    // Actions report root coordinates; History may sit below safe areas inside a retained Home pane.
+    BoxWithConstraints(modifier.fillMaxSize().onGloballyPositioned { overlayOrigin = it.boundsInRoot().topLeft }) {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).then(if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier),
             topBar = {

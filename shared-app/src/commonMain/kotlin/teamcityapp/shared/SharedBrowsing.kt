@@ -160,15 +160,15 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                 onBrowseProjects = LocalFavoritesProjectsAction.current ?: {}
             )
         },
-        SharedEntry(RunningBuildsDestination::class, RunningBuildsDestination.serializer()) { _, nav, _ ->
+        SharedEntry(RunningBuildsDestination::class, RunningBuildsDestination.serializer()) { _, nav, entryId ->
             val vm = viewModel { RunningBuildsViewModel(repositories.running) }
             val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-            SharedRunningBuildsScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, { nav.push(BuildDetailsReferenceDestination(it.href, it.configuration?.name)) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) }, onApplyUpdates = vm::applyUpdates)
+            SharedRunningBuildsScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) }, onApplyUpdates = vm::applyUpdates)
         },
-        SharedEntry(BuildQueueDestination::class, BuildQueueDestination.serializer()) { _, nav, _ ->
+        SharedEntry(BuildQueueDestination::class, BuildQueueDestination.serializer()) { _, nav, entryId ->
             val vm = viewModel { BuildQueueViewModel(repositories.queue) }
             val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-            SharedBuildQueueScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, { nav.push(BuildDetailsReferenceDestination(it.href, it.configuration?.name)) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) }, onApplyUpdates = vm::applyUpdates)
+            SharedBuildQueueScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) }, onApplyUpdates = vm::applyUpdates)
         },
         SharedEntry(AgentsDestination::class, AgentsDestination.serializer()) { _, nav, _ ->
             val vm = viewModel { AgentsViewModel(repositories.agents) }
@@ -215,7 +215,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                                 onPauseOrDispose { vm.onPaused() }
                             }
                             val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-                            SnapshotDependenciesScreen(state, vm::refresh, vm::retry, { nav.push(BuildDetailsReferenceDestination(it.href, it.configuration?.name)) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) })
+                            SnapshotDependenciesScreen(state, vm::refresh, vm::retry, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) })
                         }
 
                         else -> Unit

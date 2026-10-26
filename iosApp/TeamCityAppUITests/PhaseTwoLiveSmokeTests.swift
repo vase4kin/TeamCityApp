@@ -412,6 +412,78 @@ final class PhaseThreeBrowsingSmokeTests: XCTestCase {
         capture("history_one_back", app)
     }
 
+    func testHistoryCoachmarksAndDependencyBuildNavigation() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Read-only fixture is opt-in") }
+        continueAfterFailure = false
+        let app = fixtureApp()
+        tap(app, "navigation:row:configuration:Demo_Build")
+        var promptBottoms: [String: CGFloat] = [:]
+        for (prompt, action) in [("Run", "run"), ("Filter", "filter"), ("Favorite", "favorite")] {
+            let overlay = element(app, "history:coachmark:" + prompt)
+            XCTAssertTrue(overlay.waitForExistence(timeout: 15))
+            let dismiss = element(app, "history:prompt-dismiss")
+            XCTAssertTrue(dismiss.isHittable)
+            capture("history_spotlight_" + action, app)
+            promptBottoms[action] = dismiss.frame.maxY
+            dismiss.press(forDuration: 0.2)
+            XCTAssertTrue(overlay.waitForNonExistence(timeout: 10))
+        }
+        let navigation = element(app, "home:tab:Projects")
+        for action in ["run", "filter", "favorite"] {
+            let button = element(app, "history:" + action)
+            XCTAssertTrue(button.isHittable)
+            XCTAssertLessThan(promptBottoms[action]!, button.frame.minY, "Prompt leaves its target visible")
+            XCTAssertLessThanOrEqual(button.frame.maxY, navigation.frame.minY, "Action stays above Home navigation")
+        }
+        capture("history_spotlight_targets", app)
+        tap(app, "history:build:1")
+        tap(app, "overview:section:Snapshots", scroll: true)
+        XCTAssertTrue(element(app, "snapshot:build:2").waitForExistence(timeout: 20))
+        capture("dependency_before_open", app)
+        tap(app, "snapshot:build:2")
+        XCTAssertTrue(waitForSharedContent(app, "details:actions", timeout: 20))
+        XCTAssertTrue(element(app, "overview:row:Result").waitForExistence(timeout: 20))
+        capture("dependency_build_single_visit", app)
+        back(app)
+        XCTAssertTrue(element(app, "snapshot:build:2").waitForExistence(timeout: 10))
+        XCTAssertFalse(element(app, "overview:screen").exists)
+        capture("dependency_build_one_back", app)
+        back(app)
+        XCTAssertTrue(element(app, "overview:section:Snapshots").waitForExistence(timeout: 10))
+    }
+
+    func testRunningAndQueuedBuildsReturnToTheirSourceWithOneBack() throws {
+        guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Read-only fixture is opt-in") }
+        continueAfterFailure = false
+        let app = fixtureApp("/manage")
+        tap(app, "home:tab:Activity")
+        acknowledgeHomePrompt(app, "Running")
+        tap(app, "home:filter:RunningAll")
+        XCTAssertTrue(element(app, "running_builds:build:3").waitForExistence(timeout: 20))
+        capture("running_before_open", app)
+        tap(app, "running_builds:build:3")
+        XCTAssertTrue(waitForSharedContent(app, "details:actions", timeout: 20))
+        XCTAssertTrue(app.staticTexts["#3"].waitForExistence(timeout: 10))
+        capture("running_build_single_visit", app)
+        back(app)
+        XCTAssertTrue(element(app, "running_builds:build:3").waitForExistence(timeout: 10))
+        XCTAssertFalse(element(app, "overview:screen").exists)
+        capture("running_build_one_back", app)
+        tap(app, "home:tab:Queue")
+        acknowledgeHomePrompt(app, "Queue")
+        tap(app, "home:filter:QueuedAll")
+        XCTAssertTrue(element(app, "build_queue:build:4").waitForExistence(timeout: 20))
+        capture("queue_before_open", app)
+        tap(app, "build_queue:build:4")
+        XCTAssertTrue(waitForSharedContent(app, "details:actions", timeout: 20))
+        XCTAssertTrue(app.staticTexts["#4"].waitForExistence(timeout: 10))
+        capture("queue_build_single_visit", app)
+        back(app)
+        XCTAssertTrue(element(app, "build_queue:build:4").waitForExistence(timeout: 10))
+        XCTAssertFalse(element(app, "overview:screen").exists)
+        capture("queue_build_one_back", app)
+    }
+
     func testRefreshedBuildSectionsUseTheLoadedSnapshot() throws {
         guard ProcessInfo.processInfo.environment["TEAMCITY_FIXTURE_UI"] == "1" else { throw XCTSkip("Read-only fixture is opt-in") }
         continueAfterFailure = false

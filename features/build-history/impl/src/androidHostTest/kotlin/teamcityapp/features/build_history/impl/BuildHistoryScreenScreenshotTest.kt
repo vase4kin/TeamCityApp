@@ -17,12 +17,17 @@
 package teamcityapp.features.build_history.impl
 
 import android.app.Application
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
@@ -99,9 +104,9 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
         val onboarding = when (stateName) {
             "onboarding_loading" -> OnboardingState.Loading
             "onboarding_unavailable" -> OnboardingState.Unavailable
-            "prompt_run" -> OnboardingState.Available(BuildHistoryPrompt.Run)
-            "prompt_filter" -> OnboardingState.Available(BuildHistoryPrompt.Filter)
-            "prompt_favorite" -> OnboardingState.Available(BuildHistoryPrompt.Favorite)
+            "prompt_run", "nested_run" -> OnboardingState.Available(BuildHistoryPrompt.Run)
+            "prompt_filter", "nested_filter" -> OnboardingState.Available(BuildHistoryPrompt.Filter)
+            "prompt_favorite", "nested_favorite" -> OnboardingState.Available(BuildHistoryPrompt.Favorite)
             "prompt_saving" -> OnboardingState.Available(BuildHistoryPrompt.Filter, saving = true)
             "prompt_save_failed" -> OnboardingState.Available(BuildHistoryPrompt.Filter, saveFailed = true)
             else -> OnboardingState.Available()
@@ -124,7 +129,9 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 }
             }
             TeamCityTheme(darkTheme = variant.dark) {
-                HistoryTestScreen(state, BuildHistoryControls(favorite, onboarding), rows, append, snackbar = snackbar)
+                Box(if (stateName.startsWith("nested_")) Modifier.fillMaxSize().padding(start = 24.dp, top = 88.dp, bottom = 96.dp) else Modifier.fillMaxSize()) {
+                    HistoryTestScreen(state, BuildHistoryControls(favorite, onboarding), rows, append, snackbar = snackbar)
+                }
             }
         }
         compose.mainClock.advanceTimeBy(500)
@@ -196,7 +203,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             listOf(
                 "tooltip", "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "previous_year", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_remove_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
-                "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed",
+                "nested_run", "nested_filter", "nested_favorite", "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed",
                 "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_scrolled", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
             ).flatMap { name ->
                 variants.map { arrayOf<Any>(name, it) }
