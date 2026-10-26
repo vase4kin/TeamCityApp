@@ -15,6 +15,7 @@
  */
 
 package teamcityapp.shared
+import io.ktor.http.Url
 import kotlin.test.*
 import teamcityapp.libraries.builds.BuildLaunchData
 class SharedWebLinksTest {
@@ -23,9 +24,35 @@ class SharedWebLinksTest {
 
     @Test fun webLinksKeepContextAndNeverInjectApiCredentials() {
         assertEquals("https://teamcity.example/context/viewLog.html?buildId=1", activeServerWebUrl(server, "viewLog.html?buildId=1"))
-        assertEquals("https://teamcity.example/context/downloadBuildLog.html?buildId=1&guest=1", buildLogUrl(server, build, true))
+        assertEquals("https://teamcity.example/context/viewLog.html?buildId=1&tab=buildLog&guest=1", buildLogUrl(server, build, true))
         assertFalse(buildLogUrl(server, build, false).contains("guest"))
         assertEquals("https://teamcity.example/context/repository/download/Demo_Build/1:id/report/index.html?guest=1", artifactBrowserUrl(server, build, "/context/app/rest/builds/id:1/artifacts/metadata/report/index.html", true))
+    }
+
+    @Test fun runningSuccessfulAndFailedBuildsOpenTheLogViewer() {
+        for ((state, status) in listOf("running" to "SUCCESS", "finished" to "SUCCESS", "finished" to "FAILURE")) {
+            val current = build.copy(state = state, status = status, webUrl = "https://other.example/downloadBuildLog.html?buildId=stale")
+            assertEquals("https://teamcity.example/context/viewLog.html?buildId=1&tab=buildLog", buildLogUrl(server, current, false))
+        }
+    }
+
+    @Test fun logViewerEncodesTheBuildIdWithoutChangingItsTabOrGuestMode() {
+        for (id in listOf("42&tab=other&guest=1", "42#download", "a b+c?next=/other")) {
+            for (guest in listOf(false, true)) {
+                val url = Url(buildLogUrl(server, build.copy(id = id), guest))
+                assertEquals("/context/viewLog.html", url.encodedPath)
+                assertEquals(listOf(id), url.parameters.getAll("buildId"))
+                assertEquals(listOf("buildLog"), url.parameters.getAll("tab"))
+                assertEquals(if (guest) listOf("1") else null, url.parameters.getAll("guest"))
+                assertTrue(url.fragment.isEmpty())
+                assertTrue(url.user.isNullOrEmpty())
+                assertTrue(url.password.isNullOrEmpty())
+            }
+        }
+    }
+
+    @Test fun logViewerUsesTheActiveServerRoot() {
+        assertEquals("https://other.example/viewLog.html?buildId=1&tab=buildLog", buildLogUrl("https://other.example/", build, false))
     }
 
     @Test fun privateArtifactsUseTheBrowsersLoginRatherThanForcingGuest() {

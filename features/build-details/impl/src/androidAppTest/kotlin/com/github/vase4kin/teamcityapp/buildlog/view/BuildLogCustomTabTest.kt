@@ -30,6 +30,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.di.modules.*
 import com.github.vase4kin.teamcityapp.helper.*
 import com.github.vase4kin.teamcityapp.navigation.*
@@ -69,7 +70,18 @@ class BuildLogCustomTabTest {
     }
 
     @Test fun viewLogOpensTheActiveServersLogInACustomTab() {
-        val build = Mocks.successBuild()
+        assertLogOpensInBrowser(Mocks.successBuild())
+    }
+
+    @Test fun runningBuildLogOpensTheViewerInACustomTab() {
+        assertLogOpensInBrowser(Mocks.runningBuild())
+    }
+
+    @Test fun failedBuildLogOpensTheViewerInACustomTab() {
+        assertLogOpensInBrowser(Mocks.failedBuild())
+    }
+
+    private fun assertLogOpensInBrowser(build: Build) {
         activity.launchActivity(Intent().putExtras(Bundle().apply { putSerializable(BundleExtractorValues.BUILD, build) }))
         intending(hasAction(Intent.ACTION_VIEW)).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:log").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
