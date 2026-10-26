@@ -31,7 +31,6 @@ interface NativeDiagnostics {
 interface NativePlatform {
     val responseCache: teamcityapp.libraries.network.ResponseCacheStore? get() = null
     val powerSaving: kotlinx.coroutines.flow.Flow<Boolean> get() = kotlinx.coroutines.flow.flowOf(false)
-    val licenses: AppLicenseRepository get() = BundledLicenseRepository
     val diagnostics: NativeDiagnostics
     val files: ArtifactFileStore
     val theme: ThemePreferencesRepository
@@ -46,6 +45,7 @@ interface NativePlatform {
     /** True means the OS accepted presentation, not that the user exported the file. */
     fun openFile(path: String): Boolean
     fun rate()
+    fun openSourceLibraries() = Unit
     fun event(name: String) = diagnostics.event(name)
     fun rejected(action: NativePlatformFailure)
     fun clearFailure()

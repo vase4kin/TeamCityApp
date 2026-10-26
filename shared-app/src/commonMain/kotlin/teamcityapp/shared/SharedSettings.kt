@@ -39,7 +39,6 @@ import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 import teamcityapp.shared.resources.*
 
-@Serializable internal data object NativeLicensesDestination : NavKey
 internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> = setOf(
     SharedEntry(SettingsDestination::class, SettingsDestination.serializer()) { _, nav, _ ->
         val platform = LocalNativePlatform.current
@@ -71,7 +70,7 @@ internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         SharedAboutRoute(repository, APP_VERSION, platform::browser, { action ->
             when (action) {
                 AboutAction.Rate -> platform.rate()
-                AboutAction.Libraries -> nav.push(NativeLicensesDestination)
+                AboutAction.Libraries -> platform.openSourceLibraries()
                 AboutAction.Issue -> platform.browser("https://github.com/vase4kin/TeamCityApp/issues/new/choose")
                 AboutAction.Source -> platform.browser("https://github.com/vase4kin/TeamCityApp")
                 AboutAction.Website -> platform.browser("https://teamcity.app")
@@ -80,40 +79,11 @@ internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
             }
         }, { nav.pop() })
     },
-    SharedEntry(NativeLicensesDestination::class, NativeLicensesDestination.serializer()) { _, nav, _ ->
-        val platform = LocalNativePlatform.current
-        var revision by remember { mutableIntStateOf(0) }
-        val catalog by produceState<LicenseCatalogState>(LicenseCatalogState.Loading, revision) {
-            value = try {
-                LicenseCatalogState.Content(platform.licenses.entries())
-            } catch (c: kotlinx.coroutines.CancellationException) {
-                throw c
-            } catch (_: Exception) {
-                LicenseCatalogState.Error
-            }
-        }
-        when (val state = catalog) {
-            LicenseCatalogState.Loading -> SharedTeamCityScreen(stringResource(Res.string.platform_licenses), { nav.pop() }) { LoadingContent(it) }
-            LicenseCatalogState.Error -> SharedTeamCityScreen(stringResource(Res.string.platform_licenses), { nav.pop() }) { SharedErrorContent(it, { revision++ }) }
-            is LicenseCatalogState.Content -> SharedLicensesList({ nav.push(NativeLicenseDestination(it)) }, { nav.pop() }, state.entries)
-        }
+    // Persisted reader visits from earlier builds close back to their live About owner.
+    SharedEntry(NativeLicensesDestination::class, NativeLicensesDestination.serializer()) { _, nav, entryId ->
+        LaunchedEffect(entryId) { nav.closeRetiredLicenseScreens(entryId) }
     },
-    SharedEntry(NativeLicenseDestination::class, NativeLicenseDestination.serializer()) { destination, nav, _ ->
-        val platform = LocalNativePlatform.current
-        var revision by remember { mutableIntStateOf(0) }
-        var entry by remember { mutableStateOf<AppLicense?>(null) }
-        val state by produceState<SharedLicenseText>(SharedLicenseText.Loading, destination.id, revision) {
-            value = SharedLicenseText.Loading
-            value = try {
-                val found = platform.licenses.entries().single { it.id == destination.id }
-                entry = found
-                SharedLicenseText.Content(platform.licenses.text(found.id))
-            } catch (c: kotlinx.coroutines.CancellationException) {
-                throw c
-            } catch (_: Exception) {
-                SharedLicenseText.Error
-            }
-        }
-        SharedLicenseScreen(entry?.name ?: stringResource(Res.string.platform_licenses), state, { revision++ }, entry?.source?.let { source -> { platform.browser(source) } }, { nav.pop() })
+    SharedEntry(NativeLicenseDestination::class, NativeLicenseDestination.serializer()) { _, nav, entryId ->
+        LaunchedEffect(entryId) { nav.closeRetiredLicenseScreens(entryId) }
     }
 )

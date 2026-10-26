@@ -40,19 +40,30 @@ def privacy_errors(data):
     return errors
 
 
-def license_errors(folder):
+
+def notice_digest(path):
+    # Xcode may compile an XML plist into binary without changing its contents.
+    canonical = plistlib.dumps(plistlib.loads(path.read_bytes()), fmt=plistlib.FMT_BINARY, sort_keys=True)
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def license_errors(path):
     errors = []
     try:
-        provenance = json.loads((folder / "provenance.json").read_text())
-        for entry in provenance["entries"]:
-            path = folder / (entry["id"] + ".txt")
-            if not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest() != entry["sha256"]:
-                errors.append("Missing or stale bundled license: " + entry["id"])
-        inventory = json.loads((folder / "native-inventory.json").read_text())
+        bundle = plistlib.loads(path.read_bytes())
+        if bundle.get("formatVersion") != 1:
+            errors.append("Unknown native notice bundle format")
+        inventory = bundle["inventory"]
         if not inventory.get("artifacts") or not inventory.get("notices"):
             errors.append("Empty native redistribution inventory")
-    except (OSError, ValueError, KeyError):
-        errors.append("Missing or invalid native redistribution inventory")
+        texts = {entry["id"]: entry for entry in bundle["licenses"]}
+        if not {"apache-2.0", "native"}.issubset(texts):
+            errors.append("Missing native redistribution license text")
+        for entry in texts.values():
+            if not entry["text"].strip() or hashlib.sha256(entry["text"].encode()).hexdigest() != entry["sha256"]:
+                errors.append("Missing or stale bundled license: " + entry["id"])
+    except (OSError, ValueError, KeyError, TypeError):
+        errors.append("Missing or invalid native redistribution notices")
     return errors
 
 
@@ -76,7 +87,7 @@ def source_audit(root):
     errors.extend(privacy_errors(manifest))
     project = (root / "iosApp/TeamCityApp.xcodeproj/project.pbxproj").read_text()
     errors.extend(deployment_errors(minimum, project))
-    for resource in ["PrivacyInfo.xcprivacy in Resources", "Assets.xcassets in Resources"]:
+    for resource in ["PrivacyInfo.xcprivacy in Resources", "Assets.xcassets in Resources", "ThirdPartyNotices.plist in Resources"]:
         if project.count(resource) < 2:
             errors.append(f"Resource missing from build phase: {resource}")
     icon = root / "iosApp/TeamCityApp/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
@@ -86,7 +97,7 @@ def source_audit(root):
         image = icon.read_bytes()
         if image[:8] != b"\x89PNG\r\n\x1a\n" or len(image) < 26 or struct.unpack(">II", image[16:24]) != (1024, 1024) or image[25] in [4, 6]:
             errors.append("iOS icon must be an opaque 1024px PNG")
-    errors.extend(license_errors(root / "shared-app/src/commonMain/composeResources/files/licenses"))
+    errors.extend(license_errors(root / "iosApp/TeamCityApp/ThirdPartyNotices.plist"))
     return {"version": version, "iosMarketingVersion": ios_version, "minimumOS": minimum, "errors": errors}
 
 
@@ -130,17 +141,16 @@ def app_audit(app, version, minimum):
         errors.append("Built app has no compiled iPhone icon")
     if info.get("MinimumOSVersion") != minimum:
         errors.append("Unexpected iOS deployment minimum")
-    licenses = list(app.rglob("files/licenses/native-inventory.json"))
-    if len(licenses) != 1:
-        errors.append("Built app has no unique bundled native license inventory")
-    else:
-        errors.extend(license_errors(licenses[0].parent))
+    notices = app / "ThirdPartyNotices.plist"
+    errors.extend(license_errors(notices))
+    if any(app.rglob("files/licenses")):
+        errors.append("Built app still includes the retired in-app license catalog")
     binary = app / info["CFBundleExecutable"]
     return {"bundleId": info.get("CFBundleIdentifier"), "version": info.get("CFBundleShortVersionString"),
             "buildNumber": info.get("CFBundleVersion"), "minimumOS": info.get("MinimumOSVersion"),
             "binaryBytes": binary.stat().st_size, "binarySha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
             "embeddedProvisioning": (app / "embedded.mobileprovision").exists(),
-            "licenseInventorySha256": hashlib.sha256(licenses[0].read_bytes()).hexdigest() if len(licenses) == 1 else None,
+            "licenseInventorySha256": notice_digest(notices) if notices.is_file() else None,
             "errors": errors}
 
 
@@ -155,14 +165,14 @@ def main():
     result = {"source": source_audit(args.root)}
     if args.dependencies:
         result["dependencies"] = dependencies(args.dependencies, args.cache)
-        bundled = json.loads((args.root / "shared-app/src/commonMain/composeResources/files/licenses/native-inventory.json").read_text())
+        bundled = plistlib.loads((args.root / "iosApp/TeamCityApp/ThirdPartyNotices.plist").read_bytes())["inventory"]
         signature = lambda entries: sorted((x["coordinate"], x["artifactSha256"], x["pomSha256"]) for x in entries)
         if signature(result["dependencies"]) != signature(bundled["artifacts"]):
             result["source"]["errors"].append("Resolved native dependencies differ from bundled notices; regenerate and review")
     if args.app:
         result["app"] = app_audit(args.app, result["source"]["iosMarketingVersion"], result["source"]["minimumOS"])
-        inventory = args.root / "shared-app/src/commonMain/composeResources/files/licenses/native-inventory.json"
-        if result["app"]["licenseInventorySha256"] != hashlib.sha256(inventory.read_bytes()).hexdigest():
+        inventory = args.root / "iosApp/TeamCityApp/ThirdPartyNotices.plist"
+        if result["app"]["licenseInventorySha256"] != notice_digest(inventory):
             result["app"]["errors"].append("Built app license inventory differs from current source")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n")

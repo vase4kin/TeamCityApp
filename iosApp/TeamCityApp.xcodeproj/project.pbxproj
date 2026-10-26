@@ -23,6 +23,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A70B60000000000000000001 /* ThirdPartyNotices.plist in Resources */ = {isa = PBXBuildFile; fileRef = A70B60000000000000000002 /* ThirdPartyNotices.plist */; };
 		D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */; };
 		D2BE410BAA7F49F8B09600B1 /* PhaseSixReleaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */; };
 		D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A70B60000000000000000002 /* ThirdPartyNotices.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ThirdPartyNotices.plist; sourceTree = "<group>"; };
 		D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseSixReleaseTests.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				C7A0891E31688C2C0F105FC1 /* App.swift */,
+				A70B60000000000000000002 /* ThirdPartyNotices.plist */,
 				D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */,
 				D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */,
 				309D16499181FB9957B42C68 /* Info.plist */,
@@ -217,6 +220,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70B60000000000000000001 /* ThirdPartyNotices.plist in Resources */,
 				D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */,
 				D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */,
 			);

@@ -80,12 +80,7 @@ class PlatformScreensScreenshotTest(private val scene: String, private val varia
                 when (scene) {
                     "settings_all_modes", "settings_all_modes_scrolled" -> SettingsScreen(SettingsUiState.Content(ThemeMode.System, ThemeMode.entries), {}, {}, {}, {})
                     "settings_auto_battery" -> SettingsScreen(SettingsUiState.Content(ThemeMode.AutoBattery, ThemeMode.entries), {}, {}, {}, {})
-                    "license_content_no_source" -> SharedLicenseScreen("Android library", SharedLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nA packaged Android notice without a separate upstream URL."), {}, null, {})
                     "navigation_save_error" -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { NavigationSaveError({}, Modifier.align(Alignment.BottomCenter)) }
-                    "licenses" -> SharedLicensesList({}, {})
-                    "license_loading" -> SharedLicenseScreen("Kotlin — Apache 2.0", SharedLicenseText.Loading, {}, {}, {})
-                    "license_error" -> SharedLicenseScreen("Kotlin — Apache 2.0", SharedLicenseText.Error, {}, {}, {})
-                    "license_content" -> SharedLicenseScreen("Kotlin — Apache 2.0", SharedLicenseText.Content("Apache License\nVersion 2.0, January 2004\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\nThis deterministic fixture verifies the bundled text reader and its upstream action."), {}, {}, {})
                     else -> NativeFailureDialog(NativePlatformFailure.valueOf(scene), {})
                 }
             }
@@ -112,7 +107,7 @@ class PlatformScreensScreenshotTest(private val scene: String, private val varia
                 Variant("large_font_$theme", 360, 800, dark, 1.5f),
                 Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            (listOf("navigation_save_error", "licenses", "license_loading", "license_error", "license_content", "settings_all_modes", "settings_all_modes_scrolled", "settings_auto_battery", "license_content_no_source") + NativePlatformFailure.entries.map { it.name }).flatMap { scene ->
+            (listOf("navigation_save_error", "settings_all_modes", "settings_all_modes_scrolled", "settings_auto_battery") + NativePlatformFailure.entries.map { it.name }).flatMap { scene ->
                 variants.map { arrayOf<Any>(scene, it) }
             }
         }

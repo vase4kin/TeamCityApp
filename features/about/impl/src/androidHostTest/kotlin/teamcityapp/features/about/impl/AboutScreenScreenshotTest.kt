@@ -72,7 +72,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
         val state = when (stateName) {
             "loading" -> AboutUiState.Loading
 
-            "available" -> AboutUiState.Content(
+            "available", "ios_available" -> AboutUiState.Content(
                 ServerDetailsUiState.Available(ServerDetailsUiModel("2026.1", "https://teamcity.example"))
             )
 
@@ -84,7 +84,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
         compose.mainClock.autoAdvance = state != AboutUiState.Loading
         // Keep release version bumps independent of the visual fixture.
         compose.setContent {
-            TeamCityTheme(darkTheme = variant.dark) { AboutScreen(state, {}, {}, {}, appVersion = "1.52.8") }
+            TeamCityTheme(darkTheme = variant.dark) { SharedAboutScreen(state, {}, {}, {}, appVersion = "1.52.8", showOpenSourceLibraries = stateName != "ios_available") }
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
@@ -94,7 +94,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
         } else {
             compose.onNodeWithText(context.getString(R.string.about_app_text_app)).assertExists()
             compose.onNodeWithText("1.52.8").assertIsDisplayed()
-            if (stateName == "available") {
+            if (stateName == "available" || stateName == "ios_available") {
                 compose.onNodeWithText("https://teamcity.example").assertIsDisplayed()
             } else {
                 compose.onNodeWithTag("about:server-unavailable").assertExists()
@@ -130,7 +130,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "available", "unavailable").flatMap { state ->
+            listOf("loading", "available", "unavailable", "ios_available").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

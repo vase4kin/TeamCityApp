@@ -61,7 +61,10 @@ class AndroidAppPlatform(
         androidx.core.content.ContextCompat.registerReceiver(context, receiver, android.content.IntentFilter(android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED), androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED)
         awaitClose { context.unregisterReceiver(receiver) }
     }
-    override val licenses: AppLicenseRepository = AndroidLicenseRepository(activity.applicationContext)
+    override fun openSourceLibraries() {
+        com.google.android.gms.oss.licenses.OssLicensesMenuActivity.setActivityTitle(activity.getString(teamcityapp.features.about.impl.R.string.about_app_text_libraries))
+        activity.startActivity(Intent(activity, com.google.android.gms.oss.licenses.OssLicensesMenuActivity::class.java))
+    }
     override val diagnostics: NativeDiagnostics = AndroidDiagnostics(activity.applicationContext)
     override val files: ArtifactFileStore = AndroidArtifactFileStore(activity.applicationContext)
     override val failure = MutableStateFlow<NativePlatformFailure?>(null)

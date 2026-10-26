@@ -1088,7 +1088,7 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
         capture("long_download_export", app)
     }
 
-    func testSettingsThemePersistenceAndAboutLicenses() throws {
+    func testSettingsThemePersistenceAndAboutHidesLibraries() throws {
         let app = try platformApp()
         tap(app, "home:account")
         capture("accounts_platform_actions", app)
@@ -1112,11 +1112,14 @@ final class PhaseFivePlatformSmokeTests: XCTestCase {
             waitUntilGone(app, "Not Now")
         }
         capture("rating_returned", app)
-        tap(app, "Open sources libraries", scroll: true)
-        XCTAssertTrue(element(app, "licenses:list").waitForExistence(timeout: 10))
-        capture("licenses", app)
-        tap(app, "licenses:kotlin")
-        XCTAssertTrue(element(app, "license:text").waitForExistence(timeout: 10))
-        capture("license_offline_text", app)
+        let source = element(app, "Source code")
+        for _ in 0..<8 {
+            if source.exists && source.isHittable { break }
+            app.swipeUp(velocity: .slow)
+        }
+        XCTAssertTrue(source.isHittable)
+        XCTAssertFalse(element(app, "Open sources libraries").exists)
+        XCTAssertFalse(element(app, "licenses:list").exists)
+        capture("about_without_libraries", app)
     }
 }

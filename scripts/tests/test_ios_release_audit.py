@@ -69,6 +69,26 @@ class IosReleaseAuditTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             self.assertTrue(audit.license_errors(Path(directory)))
 
+    def test_packaging_notices_detect_missing_and_tampered_license_texts(self):
+        source = Path(__file__).resolve().parents[2] / "iosApp/TeamCityApp/ThirdPartyNotices.plist"
+        self.assertEqual(audit.license_errors(source), [])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ThirdPartyNotices.plist"
+            data = plistlib.loads(source.read_bytes())
+            data["licenses"][0]["text"] += "changed"
+            path.write_bytes(plistlib.dumps(data))
+            self.assertTrue(audit.license_errors(path))
+            data["licenses"] = []
+            path.write_bytes(plistlib.dumps(data))
+            self.assertTrue(audit.license_errors(path))
+
+    def test_compiled_binary_plist_matches_the_xml_notice_source(self):
+        source = Path(__file__).resolve().parents[2] / "iosApp/TeamCityApp/ThirdPartyNotices.plist"
+        with tempfile.TemporaryDirectory() as directory:
+            compiled = Path(directory) / "ThirdPartyNotices.plist"
+            compiled.write_bytes(plistlib.dumps(plistlib.loads(source.read_bytes()), fmt=plistlib.FMT_BINARY))
+            self.assertEqual(audit.notice_digest(source), audit.notice_digest(compiled))
+
     def test_empty_native_inventory_cannot_pass(self):
         with tempfile.TemporaryDirectory() as directory:
             tsv = Path(directory) / "dependencies.tsv"

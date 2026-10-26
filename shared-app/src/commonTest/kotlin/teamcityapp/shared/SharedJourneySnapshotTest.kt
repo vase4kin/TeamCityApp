@@ -55,17 +55,32 @@ class SharedJourneySnapshotTest {
         assertNull(decodeSharedSnapshot(encoded, public, "bob"))
     }
 
-    @Test fun installedLicenseDestinationIdentifiersRemainReadableAfterSharedFileRenames() {
+    @Test fun retiredLicenseVisitsRestoreAndCloseToTheirExistingAboutOwner() {
         val public = DestinationRegistry(
             setOf(
+                SharedEntry(AboutDestination::class, AboutDestination.serializer()) { _, _, _ -> },
                 SharedEntry(NativeLicensesDestination::class, NativeLicensesDestination.serializer()) { _, _, _ -> },
                 SharedEntry(NativeLicenseDestination::class, NativeLicenseDestination.serializer()) { _, _, _ -> }
             )
         )
-        val snapshot = NavigationSnapshot(listOf(NavigationEntry("catalog", NativeLicensesDestination), NavigationEntry("reader", NativeLicenseDestination("kotlin"))), sessionKey = "alice")
+        val about = NavigationEntry("about", AboutDestination)
+        val snapshot = NavigationSnapshot(listOf(about, NavigationEntry("catalog", NativeLicensesDestination), NavigationEntry("reader", NativeLicenseDestination("kotlin"))), sessionKey = "alice")
         val encoded = public.encodeSnapshot(snapshot)
         assertTrue(encoded.contains("teamcityapp.shared.NativeLicenseDestination"))
         val envelope = sharedJourneyJson.encodeToString(SavedSharedJourney(encoded))
-        assertEquals(snapshot, decodeSharedSnapshot(envelope, public, "alice")?.first)
+        val restored = checkNotNull(decodeSharedSnapshot(envelope, public, "alice")?.first)
+        assertEquals(snapshot, restored)
+        val navigator = Navigator(androidx.compose.runtime.mutableStateOf(restored))
+        navigator.closeRetiredLicenseScreens("reader")
+        assertEquals(listOf(about), navigator.snapshot.entries)
+        navigator.closeRetiredLicenseScreens("catalog")
+        assertEquals(about, navigator.current)
+    }
+
+    @Test fun aRetiredLicenseRootFallsBackToAboutWithoutAReader() {
+        val navigator = Navigator(androidx.compose.runtime.mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("reader", NativeLicenseDestination("kotlin"))))))
+        navigator.closeRetiredLicenseScreens("reader")
+        assertEquals(AboutDestination, navigator.current.destination)
+        assertEquals(1, navigator.snapshot.entries.size)
     }
 }

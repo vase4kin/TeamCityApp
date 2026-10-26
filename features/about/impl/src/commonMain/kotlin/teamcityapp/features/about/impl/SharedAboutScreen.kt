@@ -55,7 +55,8 @@ fun SharedAboutScreen(
     onOpenUrl: (String) -> Unit,
     onAction: (AboutAction) -> Unit,
     onClose: () -> Unit,
-    appVersion: String
+    appVersion: String,
+    showOpenSourceLibraries: Boolean = supportsOpenSourceLibraries()
 ) {
     val versionDescription = stringResource(Res.string.about_application_version_description, appVersion)
     val size = LocalWindowInfo.current.containerSize
@@ -108,8 +109,10 @@ fun SharedAboutScreen(
                             AboutRow(stringResource(Res.string.about_app_text_source_code), Res.drawable.ic_github_circle) {
                                 onAction(AboutAction.Source)
                             }
-                            AboutRow(stringResource(Res.string.about_app_text_libraries), Res.drawable.ic_github_circle) {
-                                onAction(AboutAction.Libraries)
+                            if (showOpenSourceLibraries) {
+                                AboutRow(stringResource(Res.string.about_app_text_libraries), Res.drawable.ic_github_circle) {
+                                    onAction(AboutAction.Libraries)
+                                }
                             }
                         }
                     }

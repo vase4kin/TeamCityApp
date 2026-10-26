@@ -237,6 +237,33 @@ class MainActivityNavigationTest {
         }
     }
 
+    @Test fun aboutLibrariesLaunchesTheAndroidOssPlugin() {
+        androidx.test.espresso.intent.Intents.init()
+        try {
+            val target = androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent(com.google.android.gms.oss.licenses.OssLicensesMenuActivity::class.java.name)
+            launchAbout().use {
+                await("navigation-server")
+                compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Open sources libraries"))
+                compose.onNodeWithText("Open sources libraries").performClick()
+                androidx.test.espresso.intent.Intents.intended(target)
+                InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+                var pluginVisible = false
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    pluginVisible = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                        .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
+                        .any { it is com.google.android.gms.oss.licenses.OssLicensesMenuActivity }
+                }
+                assertTrue("The Android plugin owns the visible licenses screen", pluginVisible)
+                val file = java.io.File(app.getExternalFilesDir(null), "android-oss-licenses-plugin.png")
+                file.outputStream().use { stream -> androidx.test.runner.screenshot.Screenshot.capture().bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream) }
+                androidx.test.espresso.Espresso.pressBack()
+                await("navigation-server")
+            }
+        } finally {
+            androidx.test.espresso.intent.Intents.release()
+        }
+    }
+
     @Test fun sharedAccountManageAddAndLastRemovalUseOneRoot() {
         ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java)).use { scenario ->
             fun click(tag: String) {

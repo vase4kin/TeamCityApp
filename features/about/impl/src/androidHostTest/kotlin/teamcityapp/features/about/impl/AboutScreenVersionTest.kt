@@ -17,6 +17,7 @@
 package teamcityapp.features.about.impl
 
 import android.app.Application
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -54,6 +55,21 @@ class AboutScreenVersionTest {
         compose.onNodeWithText("9.87.65").assertIsDisplayed()
         compose.onNodeWithContentDescription("Application version 9.87.65").assertIsDisplayed()
         compose.onNodeWithText(ABOUT_APP_VERSION).assertDoesNotExist()
+    }
+
+    @Test fun androidLibrariesActionRemainsAvailable() {
+        val actions = mutableListOf<AboutAction>()
+        compose.setContent { TeamCityTheme { SharedAboutScreen(content, {}, actions::add, {}, "1.2.3") } }
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Open sources libraries"))
+        compose.onNodeWithText("Open sources libraries").performClick()
+        assertEquals(listOf(AboutAction.Libraries), actions)
+    }
+
+    @Test fun iosConfigurationKeepsSourceCodeWithoutLibraries() {
+        compose.setContent { TeamCityTheme { SharedAboutScreen(content, {}, {}, {}, "1.2.3", showOpenSourceLibraries = false) } }
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Source code"))
+        compose.onNodeWithText("Source code").assertIsDisplayed()
+        compose.onNodeWithText("Open sources libraries").assertDoesNotExist()
     }
 
     @Test fun serverLinkKeepsItsDescriptiveLabelAndAction() {
