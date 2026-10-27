@@ -845,3 +845,52 @@ unchanged golden bytes. Production/mock debug APKs and the mock instrumentation
 APK build, and all 53 selected account/login/navigation/rating/test-details device
 integration cases pass. The reserved-character diff-link regression found during
 the move is fixed and covered in Change Details on both platforms.
+
+
+## Android application-module ownership audit
+
+`app` retains the framework application/activity, installed component/extra
+compatibility, root saved-state and launch coordination, DI wiring, native OS
+ports, and the Android test host. Alias names and argument/serialized payload
+formats remain unchanged.
+
+- Android artifact file writes and the bounded response-cache file store now live
+  beside their contracts in `libraries/shared-data` and `libraries/network`, with
+  their persistence tests. Cache names, artifact paths, atomic writes and partial
+  cleanup behavior remain intact.
+- `libraries/session` owns legacy onboarding/rating preference conversion. DI only
+  supplies its dependencies. Tests cover all thirteen prompt identities, partial
+  completion, the installed rating key and preservation of existing preference data.
+- About owns the Android OSS licenses launcher, localized title, SDK activity
+  declarations and resource-keep declaration. The host supplies the action and
+  retains application packaging and FileProvider wiring.
+- Codec/DTO compatibility tests move to `libraries/data`; account-key tests move
+  to Session; Splash and filter adapter tests move to their feature implementations.
+  Cross-feature navigation/account tests and offline Ktor wire fixtures stay in app.
+- Remove the unconsumed artifact platform factory/router and its API contracts.
+  The export integration case observes the real chooser/FileProvider bytes and
+  checks that recreation neither replays export nor changes the originating visit.
+- Remove EventBus, its DI providers/accessors, dependency, keep rules and artificial
+  self-only smoke subscriber. Keep timezone/serialization/network/OSS checks in the
+  six-case minified smoke suite. Remove unused animation toggles, the unused root
+  lifecycle holder, obsolete fixtures/View matchers and the retired activation test
+  that referenced deleted registrations. Active launch/restoration tests remain.
+- Remove retired feature strings, vectors, IDs, array, style and unused launcher
+  foreground rasters from app resources;
+  feature-hosted tests resolve their owning modules' resources. Keep application
+  name, active launcher artwork, splash theme and FileProvider configuration in the host.
+
+The ownership check rejects Android-host feature resource references/copy,
+feature presentation state, file/cache implementations and preference conversion.
+The dependency check also prevents the retired EventBus dependency from returning.
+
+Verification: 3,989 final JVM/Android host cases report zero failures (one existing
+skip), including the moved codec and account/Splash suites; 107 repository script
+tests pass. Both production and mock debug builds and lint pass with no unused
+app-resource findings. The mock instrumentation APK builds; all 54 selected device
+cases pass, including real exported bytes and visit ownership through recreation.
+The optimized verification app and its test APK build, and all six R8 smoke cases
+pass, covering data reflection/serialization, Keystore, the common cache, dates,
+startup and dynamic licenses resources/activity launch. Effective OSS activity
+attributes/themes match the declarations before their ownership move. Screenshot
+golden files remain unchanged.

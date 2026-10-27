@@ -58,7 +58,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   Account destination, preserving account switching and existing account/app actions.
   Filters are inline actions; only Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
   Filter Builds deliver typed results to History's originating visit. Legacy filter
-  serialization remains behind app adapters to preserve existing request semantics.
+  serialization remains behind feature-owned compatibility adapters to preserve existing request semantics.
 - Build Details is an Overview hub with a prominent status card, Results,
   Execution, Build setup, and Configuration/project groups. Available section
   destinations in the common production root use the same complete, same-build snapshot
@@ -104,8 +104,15 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 ## Repository layout
 
-- `app/`: application/framework entry points, root navigation/account composition,
-  `di` bindings and app-dependent authentication/filter/platform `integration` adapters.
+- `app/`: application/framework entry points, installed Intent compatibility,
+  account/navigation composition, DI bindings and UI-owned OS ports. Feature
+  actions and resources stay in their implementations. Android file/cache storage
+  lives beside its contracts in `libraries/shared-data`/`libraries/network`;
+  `libraries/session` owns installed preference migration. Host resources contain
+  application identity, launch artwork/theme and FileProvider configuration. Feature and codec unit tests
+  live with their owners; root/manifest/cross-feature tests and offline wire fixtures
+  remain application-hosted. The retired artifact router/factory, EventBus,
+  animation toggles and old root lifecycle holder are removed.
 - `libraries/data/`: installed DTO/filter codecs and shared build mapping;
   preserve serialized legacy packages even when source ownership moves.
 - `libraries/session/`: encrypted account storage, session identity and graph ownership
