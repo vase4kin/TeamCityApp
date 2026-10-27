@@ -34,7 +34,6 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -139,7 +138,7 @@ class SnapshotDependenciesFragmentTest {
         activityRule.launchActivity(BuildComposeFixtures.intent(BuildComposeFixtures.incoming.copy(snapshotDependencies = null)))
         awaitTag("overview:list")
         compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:section:Parameters"))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.tab_snapshot_dependencies)).assertCountEquals(0)
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.tab_snapshot_dependencies)).assertCountEquals(0)
     }
 
     @Test fun presentEmptySnapshotCollectionStillCreatesTabAndEmptyState() {
@@ -208,7 +207,7 @@ class SnapshotDependenciesFragmentTest {
             Builds(3, snapshots.map(BuildComposeFixtures::legacy))
         }.whenever(teamCityService) { listBuilds(anyString()) }
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
-            tab(text(R.string.tab_snapshot_dependencies))
+            tab(text(teamcityapp.features.build_details.impl.R.string.tab_snapshot_dependencies))
             awaitTag("snapshot:build:dependency-1")
             val completedLists = lists.get()
             scenario.recreate()
@@ -236,7 +235,7 @@ class SnapshotDependenciesFragmentTest {
         compose.waitUntil(10_000) { cancellations.get() == 1 }
         assertFalse(pending.isAwaiting)
         dependencies()
-        tab(text(R.string.tab_snapshot_dependencies))
+        tab(text(teamcityapp.features.build_details.impl.R.string.tab_snapshot_dependencies))
         awaitTag("snapshot:build:dependency-1")
         snapshotText(text(teamcityapp.libraries.theme.R.string.error_load_message)).assertCountEquals(0)
     }
@@ -252,7 +251,7 @@ class SnapshotDependenciesFragmentTest {
     private fun start() {
         doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(BuildComposeFixtures.incoming.href) }
         activityRule.launchActivity(BuildComposeFixtures.intent())
-        tab(text(R.string.tab_snapshot_dependencies))
+        tab(text(teamcityapp.features.build_details.impl.R.string.tab_snapshot_dependencies))
     }
     private fun assertRootDestination(expected: androidx.navigation3.runtime.NavKey) {
         compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == expected }

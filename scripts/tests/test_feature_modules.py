@@ -111,6 +111,28 @@ class FeatureModulesTest(unittest.TestCase):
         self.write("shared-app/src/commonMain/kotlin/Entry.kt", "val vm = viewModel { LoginViewModel(repository, tracker) }; SharedLoginRoute(vm); vm.applyFilter(result.filter)")
         self.assertEqual([], guard.validate(self.root))
 
+    def test_android_host_rejects_feature_resources_and_presentation(self):
+        for body in ("import teamcityapp.features.about.impl.R", "val title = teamcityapp.features.about.impl.R.string.title", "val state = LoginUiState()"):
+            with self.subTest(body=body):
+                self.write("app/src/main/kotlin/Leak.kt", body)
+                self.assertTrue(any("feature" in e for e in guard.validate(self.root)))
+
+    def test_android_host_rejects_persistence_and_migration_implementations(self):
+        for body in ("class AndroidFiles(context: Context) : ArtifactFileStore", "class AndroidCache : ResponseCacheStore", "val preferences = AccountPreferences()"):
+            with self.subTest(body=body):
+                self.write("app/src/main/kotlin/Leak.kt", body)
+                self.assertTrue(any("persistence" in e or "preference migration" in e for e in guard.validate(self.root)))
+
+    def test_android_host_rejects_feature_copy_but_keeps_app_identity(self):
+        self.write("app/src/main/res/values/strings.xml", '<resources><string name="app_name">TeamCityApp</string></resources>')
+        self.assertEqual([], guard.validate(self.root))
+        self.write("app/src/main/res/values/strings.xml", '<resources><string name="build_title">Build</string></resources>')
+        self.assertTrue(any("feature copy" in e for e in guard.validate(self.root)))
+
+    def test_android_host_can_wire_library_and_feature_adapters(self):
+        self.write("app/src/main/kotlin/Host.kt", "class HostModel @Inject constructor(cache: ResponseCacheStore) : SharedAppViewModel(); val cache = AndroidResponseCacheStore(context); openSourceLibraries(activity)")
+        self.assertEqual([], guard.validate(self.root))
+
     def test_obsolete_root_dependency_is_rejected(self):
         self.write("shared-app/build.gradle.kts", "implementation(projects.features.about.presentation)")
         self.assertTrue(any("obsolete presentation" in e for e in guard.validate(self.root)))

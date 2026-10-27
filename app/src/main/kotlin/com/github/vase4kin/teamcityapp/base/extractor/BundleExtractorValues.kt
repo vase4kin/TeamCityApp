@@ -22,15 +22,8 @@ package com.github.vase4kin.teamcityapp.base.extractor
 interface BundleExtractorValues {
     companion object {
         const val BUILD = "build"
-        const val URL = "url"
         const val NAME = "name"
-        const val ID = "id"
         const val IS_REQUIRED_TO_RELOAD = "isRequiredToReload"
         const val IS_NEW_ACCOUNT_CREATED = "isNewAccountCreated"
-        const val PASSED_COUNT_PARAM = "passedCount"
-        const val FAILED_COUNT_PARAM = "failedCount"
-        const val IGNORED_COUNT_PARAM = "ignoredCount"
-        const val BUILD_ID = "buildId"
-        const val BUILD_LIST_FILTER = "filter"
     }
 }

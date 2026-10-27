@@ -14,8 +14,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormat
 import teamcityapp.features.properties.repository.models.Properties
@@ -141,28 +139,9 @@ object R8SmokeChecks {
     }
 
     @JvmStatic
-    fun verifyEventBusAndDates() {
-        val bus = EventBus.builder().build()
-        val subscriber = SmokeSubscriber()
-        bus.register(subscriber)
-        try {
-            bus.post(SmokeEvent("delivered"))
-            check(subscriber.received == "delivered")
-        } finally {
-            bus.unregister(subscriber)
-        }
+    fun verifyDates() {
         val zone = DateTimeZone.forID("Europe/Berlin")
         val date = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(zone).parseDateTime("2026-01-01 12:00")
         check(zone.getOffset(date.millis) == 3_600_000)
-    }
-}
-
-class SmokeEvent(val message: String)
-class SmokeSubscriber {
-    var received: String? = null
-
-    @Subscribe
-    fun onEvent(event: SmokeEvent) {
-        received = event.message
     }
 }

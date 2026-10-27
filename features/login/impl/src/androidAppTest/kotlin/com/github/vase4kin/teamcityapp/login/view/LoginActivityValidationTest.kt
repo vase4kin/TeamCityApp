@@ -30,7 +30,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -91,7 +90,7 @@ class LoginActivityValidationTest {
         compose.onNodeWithTag("auth:url").performTextInput("google.com")
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("login:submit").performClick()
-        compose.onNodeWithText(context.getString(R.string.server_correct_url)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_correct_url)).assertIsDisplayed()
     }
 
     @Test

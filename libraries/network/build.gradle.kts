@@ -43,3 +43,9 @@ tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
     providers.gradleProperty("teamcityLiveServer").orNull?.let { systemProperty("teamcity.liveServer", it) }
     providers.gradleProperty("teamcityLiveEvidence").orNull?.let { systemProperty("teamcity.liveEvidence", it) }
 }
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.robolectric)
+    }
+}

@@ -13,11 +13,6 @@
     <init>();
 }
 
-# EventBus 3.0 discovers subscribers at runtime; no generated subscriber index.
--keepclassmembers class * {
-    @org.greenrobot.eventbus.Subscribe <methods>;
-}
--keep,allowobfuscation class org.greenrobot.eventbus.ThreadMode { *; }
 
 # Bundles still carry Java Serializable build models and filters.
 -keep class com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl {

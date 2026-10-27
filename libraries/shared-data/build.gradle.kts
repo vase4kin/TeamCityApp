@@ -46,3 +46,9 @@ kotlin.sourceSets.named("commonTest") {
         implementation(libs.coroutines.test)
     }
 }
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.robolectric)
+    }
+}

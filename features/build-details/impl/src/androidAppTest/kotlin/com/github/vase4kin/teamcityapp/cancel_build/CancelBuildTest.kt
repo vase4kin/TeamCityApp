@@ -32,7 +32,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -195,13 +194,13 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_build_from_queue))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_build_from_queue))
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_removed_from_queue))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_removed_from_queue))
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")
@@ -238,13 +237,13 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_build_from_queue_2))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_build_from_queue_2))
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_removed_from_queue))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_removed_from_queue))
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")
@@ -282,10 +281,10 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_remove_build_from_queue_forbidden_error))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_remove_build_from_queue_forbidden_error))
     }
 
     @Test
@@ -320,10 +319,10 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_base_remove_build_from_queue_error))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_base_remove_build_from_queue_error))
     }
 
     @Test
@@ -357,13 +356,13 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build_2))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_the_build_2))
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_stopped))
 
         // Checking Result was changed
         assertOverviewResult("Error with smth")
@@ -414,13 +413,13 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_the_build))
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_stopped))
 
         // Checking Result was changed
         assertOverviewResult("Error with smth")
@@ -458,10 +457,10 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_stop_build_forbidden_error))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_stop_build_forbidden_error))
     }
 
     @Test
@@ -496,10 +495,10 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_base_stop_build_error))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_base_stop_build_error))
     }
 
     @Test
@@ -533,14 +532,14 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Check re-add text is displayed and click on it
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build))
-        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).performClick()
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_re_add_build))
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_re_add_build)).performClick()
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_stopped))
 
         // Checking Result was changed
         assertOverviewResult("Error with smth")
@@ -587,13 +586,13 @@ class CancelBuildTest {
         compose.tapBuildAction("Cancel")
 
         // Check re-add text is displayed and click on it
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).assertCountEquals(0)
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_re_add_build)).assertCountEquals(0)
 
         // Click on cancel build
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_removed_from_queue))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_removed_from_queue))
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")

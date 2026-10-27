@@ -34,7 +34,6 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -51,8 +50,6 @@ import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarSubTitle
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
@@ -179,7 +176,7 @@ class OverviewFragmentTest {
         openLegacy(Mocks.successBuild())
         clickRow("Result")
         sheet(text(SheetR.string.build_element_copy))
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.build_element_copy_text))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.build_element_copy_text))
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
             assertEquals("Success", clipboard.primaryClip!!.getItemAt(0).text.toString())
@@ -275,9 +272,9 @@ class OverviewFragmentTest {
         doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_the_build))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_stopped))
         verifyBlocking(teamCityService) { cancelBuild("/builds/42", BuildCancelRequest(false)) }
     }
 
@@ -285,9 +282,9 @@ class OverviewFragmentTest {
         doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).onFirst().performClick()
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
-        compose.awaitDisplayedText(text(R.string.text_build_is_stopped))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_re_add_build)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(teamcityapp.features.build_details.impl.R.string.text_build_is_stopped))
         verifyBlocking(teamCityService) { cancelBuild("/builds/42", BuildCancelRequest(true)) }
     }
 
@@ -295,41 +292,41 @@ class OverviewFragmentTest {
         doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming)).whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.incoming)
         menu(text(OverviewR.string.overview_remove))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).assertCountEquals(0)
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
-        compose.awaitDisplayedText(text(R.string.text_build_is_removed_from_queue))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_re_add_build)).assertCountEquals(0)
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(teamcityapp.features.build_details.impl.R.string.text_build_is_removed_from_queue))
         verifyBlocking(teamCityService) { cancelBuild("/queue/42", BuildCancelRequest(false)) }
     }
 
     @Test fun stopForbiddenKeepsCurrentRows() {
-        stopFailure(403, R.string.error_stop_build_forbidden_error)
+        stopFailure(403, teamcityapp.features.build_details.impl.R.string.error_stop_build_forbidden_error)
     }
 
     @Test fun stopServerErrorKeepsCurrentRows() {
-        stopFailure(500, R.string.error_base_stop_build_error)
+        stopFailure(500, teamcityapp.features.build_details.impl.R.string.error_base_stop_build_error)
     }
 
     @Test fun restartUsesCurrentBranchAndOwnProperties() {
         doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming)).whenever(teamCityService) { queueBuild(com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
-        compose.awaitDisplayedText(text(R.string.text_build_is_restarted))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(teamcityapp.features.build_details.impl.R.string.text_build_is_restarted))
         val queued = org.mockito.kotlin.argumentCaptor<Build>()
         verifyBlocking(teamCityService) { queueBuild(queued.capture()) }
         assertEquals("current-config", queued.firstValue.buildType?.id)
         assertEquals("current-branch", queued.firstValue.branchName)
         assertEquals("env", queued.firstValue.properties!!.properties.single().name)
         assertEquals("production", queued.firstValue.properties!!.properties.single().value)
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_restarted))
     }
 
     @Test fun restartForbiddenIsReported() {
-        restartFailure(403, R.string.error_restart_build_forbidden_error)
+        restartFailure(403, teamcityapp.features.build_details.impl.R.string.error_restart_build_forbidden_error)
     }
 
     @Test fun restartServerFailureIsReported() {
-        restartFailure(500, R.string.error_base_restart_build_error)
+        restartFailure(500, teamcityapp.features.build_details.impl.R.string.error_base_restart_build_error)
     }
 
     @Test fun restoredOverviewRetainsLoadedStateAndNativeActions() {
@@ -347,7 +344,7 @@ class OverviewFragmentTest {
             compose.awaitDisplayedText("Current configuration")
             assertEquals(completedCalls, calls.get())
             menu(text(OverviewR.string.overview_stop))
-            compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
+            compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_the_build))
         }
     }
 
@@ -424,7 +421,7 @@ class OverviewFragmentTest {
 
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(queued)).use { scenario ->
             row("WaitReason", "Previous queued build")
-            compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.tab_artifacts)).assertCountEquals(0)
+            compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.tab_artifacts)).assertCountEquals(0)
             val oldEntry = currentRootSnapshot().entries.last()
 
             // Pending work makes disposal observable, beyond replacing the native presenter.
@@ -510,7 +507,7 @@ class OverviewFragmentTest {
         doSuspendableAnswer { throw MockHttpFailure(code) }.whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_stop_button)).onFirst().performClick()
         compose.awaitDisplayedText(text(message))
         row("Result", "Running current build")
     }
@@ -518,7 +515,7 @@ class OverviewFragmentTest {
         doSuspendableAnswer { throw MockHttpFailure(code) }.whenever(teamCityService) { queueBuild(com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_button)).onFirst().performClick()
         compose.awaitDisplayedText(text(message))
         row("Result", "Current build succeeded")
     }

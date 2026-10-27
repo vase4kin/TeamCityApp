@@ -26,6 +26,7 @@ dependencies {
     api(projects.libraries.storage)
     api(projects.libraries.storageModels)
     implementation(libs.gson)
+    implementation(projects.libraries.onboarding)
     implementation(projects.libraries.api)
     implementation(projects.libraries.security)
     implementation(libs.androidx.annotationn)

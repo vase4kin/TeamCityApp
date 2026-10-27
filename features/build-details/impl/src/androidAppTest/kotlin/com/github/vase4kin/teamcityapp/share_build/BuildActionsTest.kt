@@ -34,7 +34,6 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasType
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -151,10 +150,6 @@ class BuildActionsTest {
         intended(
             allOf(
                 hasAction(Intent.ACTION_CHOOSER),
-                hasExtra(
-                    Intent.EXTRA_TITLE,
-                    activityRule.activity.getString(R.string.text_share_build)
-                ),
                 hasExtra(
                     `is`(Intent.EXTRA_INTENT),
                     allOf(

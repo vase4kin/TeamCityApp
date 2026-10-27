@@ -36,7 +36,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -208,13 +207,13 @@ class RestartBuildTest {
         compose.tapBuildAction("Restart")
 
         // Check dialog text is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_the_build))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_the_build))
 
         // Click on restart button
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_restarted))
 
         // Checking passed params
         verifyBlocking(teamCityService) { queueBuild(capture(buildArgumentCaptor)) }
@@ -226,7 +225,7 @@ class RestartBuildTest {
         assertThat(capturedProperty.value, `is`(equalTo(PROPERTY_VALUE)))
 
         // Click on show button of queued build snack bar
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_show_build)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_show_build)).onFirst().performClick()
 
         // Check build is opened
         compose.waitUntil(10_000) {
@@ -309,25 +308,25 @@ class RestartBuildTest {
         compose.tapBuildAction("Restart")
 
         // Click on restart button
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_build_is_restarted))
 
         // Click on show button of queued build snack bar
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_show_build)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_show_build)).onFirst().performClick()
 
         // Check error snack bar
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_opening_build))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_opening_build))
 
         // Click on retry button
         compose.waitUntil(10_000) {
-            compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.download_artifact_retry_snack_bar_retry_button)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+            compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_retry)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.download_artifact_retry_snack_bar_retry_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_retry)).onFirst().performClick()
 
         // Check error snack bar
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_opening_build))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_opening_build))
     }
 
     @Test
@@ -357,10 +356,10 @@ class RestartBuildTest {
         compose.tapBuildAction("Restart")
 
         // Click on restart button
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_restart_build_forbidden_error))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_restart_build_forbidden_error))
     }
 
     @Test
@@ -390,9 +389,9 @@ class RestartBuildTest {
         compose.tapBuildAction("Restart")
 
         // Click on restart button
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_base_restart_build_error))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.error_base_restart_build_error))
     }
 }

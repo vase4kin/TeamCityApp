@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.coroutines.android)
+    testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     ksp(libs.dagger.compiler)

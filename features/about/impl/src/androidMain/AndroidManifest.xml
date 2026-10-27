@@ -1,5 +1,6 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2020 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -13,5 +14,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<manifest />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/OssTheme.MyApp" />
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/OssTheme.MyApp" />
+    </application>
+</manifest>

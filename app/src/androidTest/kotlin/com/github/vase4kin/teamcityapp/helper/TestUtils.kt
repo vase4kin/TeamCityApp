@@ -17,93 +17,12 @@
 package com.github.vase4kin.teamcityapp.helper
 
 import android.content.Context
-import androidx.appcompat.widget.Toolbar
-import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewAssertion
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import org.hamcrest.Matcher
-import org.hamcrest.core.Is.`is`
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl
 
-/**
- * Useful test utils
- */
+/** Shared installed-preference setup for feature-hosted instrumentation. */
 class TestUtils {
     companion object {
-        /**
-         * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
-         *
-         * @param title
-         * @return
-         */
-        @JvmStatic
-        fun matchToolbarTitle(
-            title: CharSequence
-        ) {
-            onView(isAssignableFrom(Toolbar::class.java))
-                .check(matches(withToolbarTitle(`is`(title))))
-        }
-
-        @JvmStatic
-        fun matchToolbarSubTitle(
-            title: CharSequence
-        ) {
-            onView(isAssignableFrom(Toolbar::class.java))
-                .check(matches(withToolbarSubTitle(`is`(title))))
-        }
-
-        /**
-         * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
-         *
-         * @param textMatcher
-         * @return
-         */
-        private fun withToolbarTitle(
-            textMatcher: Matcher<CharSequence>
-        ): Matcher<Any> = object : BoundedMatcher<Any, Toolbar>(Toolbar::class.java) {
-            public override fun matchesSafely(toolbar: Toolbar): Boolean = textMatcher.matches(toolbar.title)
-
-            override fun describeTo(description: org.hamcrest.Description) {
-                description.appendText("with toolbar title: ")
-                textMatcher.describeTo(description)
-            }
-        }
-
-        private fun withToolbarSubTitle(
-            textMatcher: Matcher<CharSequence>
-        ): Matcher<Any> = object : BoundedMatcher<Any, Toolbar>(Toolbar::class.java) {
-            public override fun matchesSafely(toolbar: Toolbar): Boolean = textMatcher.matches(toolbar.subtitle)
-
-            override fun describeTo(description: org.hamcrest.Description) {
-                description.appendText("with toolbar subtitle: ")
-                textMatcher.describeTo(description)
-            }
-        }
-
-        /**
-         * https://gist.github.com/chemouna/00b10369eb1d5b00401b
-         *
-         * @param count
-         * @return
-         */
-        @JvmStatic
-        fun hasItemsCount(count: Int): ViewAssertion = ViewAssertion { view, noViewFoundException ->
-            if (view !is RecyclerView) {
-                throw noViewFoundException
-            }
-            assertThat(view.adapter?.itemCount ?: 0, `is`(count))
-        }
-
-        /**
-         * Helper method to disable all onboarding
-         */
         @JvmStatic
         fun disableOnboarding() {
             val context =
@@ -138,12 +57,6 @@ class TestUtils {
                 onboardingManager.saveShareBuildPromptShown(false)
                 onboardingManager.saveOpenBuildInBrowserPromptShown(false)
             }
-        }
-
-        @JvmStatic
-        fun matchHomeToolbarTitle(viewId: Int, titleStringId: Int) {
-            onView(withId(viewId))
-                .check(matches(withText(titleStringId)))
         }
     }
 }

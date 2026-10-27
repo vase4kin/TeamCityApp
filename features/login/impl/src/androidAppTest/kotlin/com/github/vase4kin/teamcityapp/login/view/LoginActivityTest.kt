@@ -305,7 +305,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:submit").performClick()
 
         compose.onNodeWithText(context.getString(R.string.warning_ssl_dialog_title)).assertIsDisplayed()
-        compose.onNodeWithText(context.getString(R.string.server_not_secure_http)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_not_secure_http)).assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.dialog_ok_title).uppercase()).performClick()
 
         compose.waitForIdle()

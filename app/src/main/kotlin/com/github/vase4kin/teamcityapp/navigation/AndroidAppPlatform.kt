@@ -27,21 +27,19 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import java.io.File
-import java.io.FileOutputStream
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
-import teamcityapp.features.artifacts.api.DownloadedArtifact
+import teamcityapp.features.about.impl.router.openSourceLibraries
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.app_theme.ThemePreferencesRepository
+import teamcityapp.libraries.network.AndroidResponseCacheStore
+import teamcityapp.libraries.shared_data.AndroidArtifactFileStore
 import teamcityapp.libraries.shared_data.ArtifactFileStore
-import teamcityapp.libraries.shared_data.ArtifactTarget
-import teamcityapp.libraries.shared_data.PendingArtifact
 import teamcityapp.shared.*
 
-/** UI-owned OS launchers only. Feature rules and request execution live in the common root. */
+/** UI-owned OS launchers only. Feature rules live in feature modules; repositories live in shared-data. */
 class AndroidAppPlatform(
     private val activity: Activity,
     private val lifecycle: Lifecycle,
@@ -63,8 +61,7 @@ class AndroidAppPlatform(
         awaitClose { context.unregisterReceiver(receiver) }
     }
     override fun openSourceLibraries() {
-        com.google.android.gms.oss.licenses.OssLicensesMenuActivity.setActivityTitle(activity.getString(teamcityapp.features.about.impl.R.string.about_app_text_libraries))
-        activity.startActivity(Intent(activity, com.google.android.gms.oss.licenses.OssLicensesMenuActivity::class.java))
+        openSourceLibraries(activity)
     }
     override val files: ArtifactFileStore = AndroidArtifactFileStore(activity.applicationContext)
     override val failure = MutableStateFlow<NativePlatformFailure?>(null)
@@ -111,40 +108,4 @@ class AndroidAppPlatform(
         true
     }.getOrDefault(false)
     override fun rate() = perform(NativePlatformFailure.Rating) { rating.open(activity) }
-}
-
-/** The common transfer target owns naming; this adapter only writes and atomically moves bytes. */
-internal class AndroidArtifactFileStore(context: Context) : ArtifactFileStore {
-    private val context = context.applicationContext
-    override fun create(target: ArtifactTarget): PendingArtifact {
-        val folder = File(context.cacheDir, "TeamCityArtifacts/${target.transferId}")
-        check(!folder.exists() && folder.mkdirs()) { "Cannot create download directory" }
-        val pending = File(folder, target.pendingName)
-        val output = File(folder, target.name)
-        val stream = FileOutputStream(pending)
-        return object : PendingArtifact {
-            private var open = true
-            private var complete = false
-            override fun write(bytes: ByteArray, count: Int) {
-                check(open)
-                stream.write(bytes, 0, count)
-            }
-            override fun finish(): DownloadedArtifact {
-                check(open)
-                stream.fd.sync()
-                stream.close()
-                open = false
-                check(pending.renameTo(output)) { "Cannot finish artifact download" }
-                complete = true
-                return DownloadedArtifact(output.absolutePath)
-            }
-            override fun close() {
-                if (open) {
-                    stream.close()
-                    open = false
-                }
-                if (!complete) folder.deleteRecursively()
-            }
-        }
-    }
 }

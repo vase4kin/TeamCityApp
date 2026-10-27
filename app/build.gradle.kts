@@ -23,7 +23,6 @@ plugins {
     id("teamcityapp.android.application")
     id("teamcityapp.android.app-tests")
     id("teamcityapp.android.compose")
-    id("org.jetbrains.kotlin.plugin.parcelize")
     id("teamcityapp.android.hilt")
     id("teamcityapp.android.coverage")
     alias(libs.plugins.firebase.crashlytics)
@@ -145,8 +144,12 @@ androidComponents {
 dependencies {
     if (r8VerificationEnabled) {
         "r8VerificationImplementation"(libs.ktor.client.mock)
+        "r8VerificationImplementation"(libs.jodaTime)
+        "r8VerificationImplementation"(libs.gson)
     }
-    implementation(libs.gson)
+    "mockImplementation"(libs.gson)
+    androidTestImplementation(libs.gson)
+    androidTestImplementation(libs.google.openSourceLicensesLibrary)
     "mockImplementation"(libs.ktor.client.mock)
     "mockImplementation"(libs.okhttp.okhttp)
     implementation(projects.libraries.analytics)
@@ -243,10 +246,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
 
-    // Event bus
-    implementation(libs.eventBus)
     // Others
-    implementation(libs.jodaTime)
     // Dagger
     implementation(libs.dagger.dagger)
     ksp(libs.dagger.compiler)
@@ -258,7 +258,6 @@ dependencies {
     // Firebase
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.firebasePerf)
-    implementation(libs.google.openSourceLicensesLibrary)
     // Unit tests
     testImplementation(libs.robolectric)
     testImplementation(libs.coroutines.test)
@@ -334,13 +333,14 @@ if (r8VerificationEnabled) {
 
 val verifyProductionNetworking = tasks.register("verifyProductionNetworking") {
     group = "verification"
-    description = "Rejects retired networking libraries in production and mock Android runtimes."
+    description = "Rejects retired networking libraries and EventBus in production and mock Android runtimes."
     doLast {
         val retiredGroups = setOf(
             "com.squareup.retrofit2",
             "io.reactivex.rxjava2",
             "com.github.VictorAlbertos.RxCache",
-            "com.github.VictorAlbertos.Jolyglot"
+            "com.github.VictorAlbertos.Jolyglot",
+            "org.greenrobot"
         )
         for (variant in listOf("prodDebug", "prodRelease", "mockDebug")) {
             val retired = configurations.getByName("${variant}RuntimeClasspath")

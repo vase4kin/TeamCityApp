@@ -34,7 +34,6 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
-import com.github.vase4kin.teamcityapp.integration.platform.artifacts.ComposeArtifactsPlatformModule
 import dagger.hilt.android.testing.*
 import java.io.File
 import javax.inject.Inject
@@ -57,7 +56,6 @@ import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalTestApi::class)
 @HiltAndroidTest
-@UninstallModules(ComposeArtifactsPlatformModule::class)
 @RunWith(AndroidJUnit4::class)
 class BuildDetailsNavigationTest {
     @get:Rule(order = 99)
@@ -84,24 +82,22 @@ class BuildDetailsNavigationTest {
     @Inject lateinit var launcher: RootDestinationLauncher
 
     private val mapper = BuildLaunchMapper()
-    private val opened = mutableListOf<DownloadedArtifact>()
-    private val browser = mutableListOf<String>()
 
-    @BindValue @JvmField
-    val platforms: ArtifactsPlatformRouterFactory = object : ArtifactsPlatformRouterFactory {
-        override fun create(activity: Activity): ArtifactsAppRouter = object : ArtifactsAppRouter {
-            override fun permission(activity: Activity, file: ArtifactDownload) = ArtifactPermission.Allowed
-            override fun openDownloadedFile(activity: Activity, file: DownloadedArtifact) {
-                assertTrue(activity is MainActivity)
-                assertTrue(File(file.path).isFile)
-                opened += file
-            }
-            override fun openBrowser(activity: Activity, build: BuildLaunchData, href: String) {
-                assertTrue(activity is MainActivity)
-                browser += href
-            }
-            override fun dispose(activity: Activity) {}
+    @get:Rule(order = 4)
+    val exportIntents = object : org.junit.rules.ExternalResource() {
+        override fun before() {
+            androidx.test.espresso.intent.Intents.init()
+            androidx.test.espresso.intent.Intents.intending(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER))
+                .respondWith(android.app.Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         }
+        override fun after() {
+            androidx.test.espresso.intent.Intents.release()
+        }
+    }
+    private fun exportedFiles(): List<android.net.Uri> = androidx.test.espresso.intent.Intents.getIntents().mapNotNull { chooser ->
+        if (chooser.action != Intent.ACTION_CHOOSER) return@mapNotNull null
+        val send = androidx.core.content.IntentCompat.getParcelableExtra(chooser, Intent.EXTRA_INTENT, Intent::class.java) ?: return@mapNotNull null
+        androidx.core.content.IntentCompat.getParcelableExtra(send, Intent.EXTRA_STREAM, android.net.Uri::class.java)
     }
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
 
@@ -188,6 +184,8 @@ class BuildDetailsNavigationTest {
             open(scenario, build)
             tab("Artifacts")
             awaitTag("artifacts:list")
+            var originVisit: String? = null
+            scenario.onActivity { originVisit = it.navigationSnapshot?.entries?.last()?.id }
             compose.onNodeWithTag("artifacts:row:/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res").performClick()
             awaitTag("artifacts:list")
             awaitText("res")
@@ -198,14 +196,18 @@ class BuildDetailsNavigationTest {
             scenario.recreate()
             awaitTag("sheet:ArtifactDownload")
             compose.onNodeWithTag("sheet:ArtifactDownload").performClick()
-            compose.waitUntil(15_000) { opened.size == 1 }
+            compose.waitUntil(15_000) { exportedFiles().size == 1 }
+            val exported = exportedFiles().single()
+            assertEquals("text", app.contentResolver.openInputStream(exported)!!.bufferedReader().use { it.readText() })
             scenario.recreate()
             awaitTag("artifacts:list")
-            assertEquals(1, opened.size)
+            assertEquals(1, exportedFiles().size)
             pressBack()
             awaitTag("artifacts:list")
-            compose.onNodeWithTag("details:section:Artifacts").assertIsDisplayed()
-            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
+            scenario.onActivity {
+                assertEquals(originVisit, it.navigationSnapshot?.entries?.last()?.id)
+                assertTrue(it.supportFragmentManager.fragments.isEmpty())
+            }
         }
     }
 
@@ -406,7 +408,7 @@ class BuildDetailsNavigationTest {
                 awaitTag("navigation:row:project:id")
                 compose.waitUntil(10_000) { closed.count == 0L }
                 assertEquals("completed download", completed.readText())
-                assertTrue(opened.isEmpty())
+                assertTrue(exportedFiles().isEmpty())
                 verifyBlocking(service, times(1)) { downloadFile(org.mockito.kotlin.any()) }
             }
         } finally {

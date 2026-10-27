@@ -20,11 +20,6 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import org.greenrobot.eventbus.EventBus
-import teamcityapp.libraries.coroutines.IoDispatcher
-import teamcityapp.libraries.onboarding.OnboardingManager
-import teamcityapp.libraries.storage.Storage
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -35,13 +30,4 @@ interface AppComponent {
     fun themePreferences(): teamcityapp.libraries.app_theme.ThemePreferencesRepository
 
     fun sharedUserStorage(): SharedUserStorage
-
-    fun storage(): Storage
-
-    fun eventBus(): EventBus
-
-    fun onboardingManager(): OnboardingManager
-
-    @IoDispatcher
-    fun ioDispatcher(): CoroutineDispatcher
 }

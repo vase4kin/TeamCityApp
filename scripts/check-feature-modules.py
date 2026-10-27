@@ -77,6 +77,24 @@ def validate(root):
     for source in (root / "app/src/main").rglob("*"):
         if source.suffix in {".kt", ".java"} and re.search(r"^import com\.google\.firebase\.analytics\.", source.read_text(), re.MULTILINE):
             errors.append(f"{source.relative_to(root)}: analytics SDKs belong in libraries/analytics platform source sets")
+    # Android is a composition/platform host, with the same feature ownership boundary.
+    app_main = root / "app/src/main"
+    for source in app_main.rglob("*"):
+        if source.suffix not in {".kt", ".java"}:
+            continue
+        text = source.read_text()
+        if re.search(r"\bteamcityapp\.features\.[\w.]+\.(?:R|resources)\b", text, re.MULTILINE):
+            errors.append(f"{source.relative_to(root)}: feature resources belong in feature platform adapters")
+        if re.search(r"\b(?:[A-Z]\w*UiState|PagingListSnapshot|collectAsLazyPagingItems)\b", text):
+            errors.append(f"{source.relative_to(root)}: feature presentation belongs in feature modules")
+        if re.search(r"class\s+\w+(?:\([^{}\n]*\))?\s*:\s*(?:[\w.]+\.)?(?:ArtifactFileStore|ResponseCacheStore)\b", text):
+            errors.append(f"{source.relative_to(root)}: platform persistence belongs beside its library contract")
+        if re.search(r'\bAccountPreferences\s*\(|"(?:home\.Drawer|history\.Run|details\.Stop)"', text):
+            errors.append(f"{source.relative_to(root)}: legacy preference migration belongs in libraries/session")
+    for source in (app_main / "res/values").glob("*.xml"):
+        for name in re.findall(r'<(?:string|plurals|array|string-array)\s+name="([^"]+)"', source.read_text()):
+            if name != "app_name":
+                errors.append(f"{source.relative_to(root)}: feature copy {name} belongs in its owning module")
     for include in includes:
         if not (root / include[1:].replace(":", "/") / "build.gradle.kts").exists():
             errors.append(f"{include}: includes a missing feature module")

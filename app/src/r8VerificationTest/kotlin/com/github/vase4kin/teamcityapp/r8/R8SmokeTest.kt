@@ -22,7 +22,7 @@ class R8SmokeTest {
 
     @Test fun ktorAndDiskCache() = R8SmokeChecks.verifyKtorAndCache(context)
 
-    @Test fun eventBusAndTimezoneResources() = R8SmokeChecks.verifyEventBusAndDates()
+    @Test fun timezoneResources() = R8SmokeChecks.verifyDates()
 
     @Test fun loginScreenStarts() {
         val intent = Intent().setClassName(context, "com.github.vase4kin.teamcityapp.login.view.LoginActivity")

@@ -25,7 +25,6 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import javax.inject.Singleton;
-import org.greenrobot.eventbus.EventBus;
 import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
 import teamcityapp.libraries.security.CryptoManager;
@@ -56,13 +55,6 @@ public class AppModule {
     @Singleton
     protected Storage provideStorage(SharedUserStorage sharedUserStorage) {
         return sharedUserStorage;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
-    protected EventBus providesEventBus() {
-        return EventBus.getDefault();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
