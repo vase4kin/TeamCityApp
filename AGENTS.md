@@ -17,7 +17,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   OSS licenses activities remain platform integrations. Java and Kotlin coexist.
 - The Compose features and the Home/Build Details shells use `api`/`impl`
   modules. APIs expose serializable destination keys, small contracts and immutable
-  public models. Implementations register existing route composables through Hilt,
+  public models. Implementations expose shared composables hosted by the common root,
   own their UI, ViewModels, trackers and destination/platform routers, and have no
   implementation-to-implementation feature dependencies. Kotlin sources and tests
   use the corresponding `kotlin` roots.
@@ -36,21 +36,19 @@ to the requested behavior and the coherent migration slice needed to support it.
   are validated against account identity before restoring content. Switching users,
   including users on the same server, replaces old owners and cancels their work.
   Account preparation owns API/cache initialization; signed-out sessions return to Login.
-- `libraries/data` owns existing wire DTOs, Retrofit/Gson service/repository contracts,
-  RxJava/RxCache integration and shared build mapping. `libraries/session` owns encrypted
-  account storage, account identity/guards and opaque API-graph lifetime/clear contracts.
-  Independent suspend/Flow adapters belong to their feature implementations; app-dependent
-  filter/auth/platform bridges remain in `app/integration`. The concrete Dagger account
-  graph and Hilt composition remain in `app/di` until the separate graph migration.
-  Preserve wire DTOs and their serialized class names for cache compatibility.
-  Cancelling coroutine repository calls must dispose their Rx subscriptions.
-  Room, broader DataStore migration and WorkManager remain target technologies.
-- About maps the legacy server DTO into its plain API model. Settings uses the
+- `libraries/network` and `libraries/shared-data` own the common Ktor transport,
+  authentication, response cache and account repositories for both production hosts.
+  `libraries/data` retains installed wire DTOs, build/filter compatibility codecs and
+  shared build mapping; preserve their serialized names and fields. `libraries/session`
+  owns encrypted Android account storage and identity guards. The retired Android
+  Retrofit/RxCache graph and repository adapters have been removed. RxJava is limited
+  to offline fixtures in the app's `mock` flavor. See `docs/networking.md`.
+- About maps the common server response into its plain API model. Settings uses the
   shared `libraries/app-theme` DataStore contract, migrating the old theme preference
   without changing other preferences. Google's licenses screen remains external.
-- Login and Create Account share stateless controls and authentication analytics
-  in `libraries/authentication`; server URL formatting belongs to `libraries/remote`.
-  App adapters preserve challenge-based Basic authentication, explicit HTTP/SSL
+- Login and Create Account share stateless controls and authentication analytics.
+  Common Ktor authentication owns production URL validation and Basic challenges;
+  `libraries/remote` retains legacy URL codecs. Shared repositories preserve explicit HTTP/SSL
   consent, encrypted persistence, duplicate detection and API initialization.
   Pending submissions survive recreation without duplicate requests; passwords
   stay in memory and are cleared after successful persistence.
@@ -107,7 +105,7 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 - `app/`: application/framework entry points, root navigation/account composition,
   `di` bindings and app-dependent authentication/filter/platform `integration` adapters.
-- `libraries/data/`: network DTOs/contracts/cache integration and shared build mapping;
+- `libraries/data/`: installed DTO/filter codecs and shared build mapping;
   preserve serialized legacy packages even when source ownership moves.
 - `libraries/session/`: encrypted account storage, session identity and graph ownership
   contracts; it must not depend on the app or a concrete Dagger component.
@@ -218,9 +216,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   Capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
   section counts once to their exact live originating build visit. Both production
   hosts execute the common network/authentication/response-cache stack. Android's
-  old Retrofit/RxCache/authentication modules remain for compatibility codecs and
-  legacy regression harnesses; they no longer drive the common production root.
-  Preserve their serialized DTO/account formats and old cache files. Old RxCache
+  retired Retrofit/RxCache/authentication graph is removed. Installed DTO/account
+  codecs remain, and old Android route regression harnesses live in `androidHostTest`
+  with explicit fake ViewModels. Preserve serialized formats and old cache files. Old RxCache
   entries are not imported into the new bounded cache; its first read refetches.
   Shared onboarding/rating state is account scoped. Rating uses the common local
   eligibility rule rather than the retired Android Firebase Remote Config gate:
@@ -314,9 +312,9 @@ the scoped shared-code rules above apply to migrated KMP modules.
   persistence entities, domain models, and UI-specific models distinct at layer
   boundaries, with explicit mappings. Keep domain models independent of Android,
   network serialization, and persistence implementation details.
-- Network: use Retrofit/OkHttp and Kotlin serialization for new or migrated network
-  contracts. Keep existing Retrofit/Gson services behind repository adapters until
-  their owning contracts are migrated; preserve server and authentication behavior.
+- Network: use the shared Ktor/Kotlin serialization stack for new and migrated
+  contracts on both platforms. Android uses Ktor's OkHttp engine and iOS its Darwin
+  engine. Preserve server, authentication, account isolation and cancellation behavior.
 - Storage and background work: use Room for new structured local storage,
   DataStore for new preferences, and WorkManager for deferrable background work.
   When replacing existing storage, preserve persisted data, provide migrations,
@@ -349,21 +347,19 @@ the scoped shared-code rules above apply to migrated KMP modules.
   or storage interfaces while old implementations remain. Do not add direct
   Retrofit or SharedPreferences access to UI code.
 - Screens use Compose and ViewModels; do not add native hosts, presenters or
-  callback-holding state holders. Existing RxJava, cache and encrypted account
-  implementations remain behind explicit repository adapters. Keep those boundaries
-  working until their owning data/storage contracts are migrated.
+  callback-holding state holders. Keep networking and caching in the common Ktor
+  repositories, and encrypted account storage behind its portable contract.
 - Destination and platform routers are UI-scoped. Obtain retained state with
   `@HiltViewModel` and `hiltViewModel()` inside registered entries; keep Activities,
   Fragments, adapters and callbacks out of ViewModels. Use the root destination
   owner and retained child-pane contracts rather than creating native screen hosts.
-- The app's `Repository` may extend migrated feature repository API contracts.
-  Its production and mock implementations own their corresponding suspend/Flow
-  behavior, including Rx bridges and DTO mappings when needed. Expose these
-  interfaces through small DI providers rather than putting adapter classes in
-  DI module files. Preserve caching and cancellation semantics.
-- API dependencies come from `ApiSession`, which initializes lazily and rebuilds
-  on account/authentication changes. Clear the session when logging out. Access
-  account storage through Hilt rather than through the account API graph.
+- Common repositories implement feature API contracts with suspend/Flow behavior.
+  Keep transport behavior and DTO mapping out of DI modules. Mock builds supply
+  responses through Ktor's mock engine and execute the same repositories.
+- Production API dependencies come from the account-generation-scoped common
+  `TeamCityAccountGraph` owned by `SharedAppViewModel`. Account replacement closes
+  old work and invalidates its cache. Access Android account storage through Hilt;
+  do not recreate the retired `ApiSession` or Dagger REST graph.
 - Match resource acquisition and cleanup to visible composition and destination
   ownership. Reinitialize AndroidView resources when revisiting their content and
   dispose pending callbacks and platform resources when that content leaves.
