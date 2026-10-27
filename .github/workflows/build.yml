@@ -65,7 +65,9 @@ jobs:
 
       - name: Select UI test policy and suite
         id: policy
-        run: python3 scripts/marathon-ci.py policy --selection-dir marathon-selection
+        # Temporarily pause all Marathon runs, including manual overrides.
+        # Remove --paused to restore the existing suite and coverage policy.
+        run: python3 scripts/marathon-ci.py policy --paused --selection-dir marathon-selection
 
       - name: Upload UI test selection
         if: steps.policy.outputs.run_ui_tests == 'true'

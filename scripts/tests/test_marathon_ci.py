@@ -18,6 +18,30 @@ spec.loader.exec_module(ci)
 
 
 class MarathonPolicyTest(unittest.TestCase):
+    def test_pause_skips_selection_and_coverage_for_every_ci_trigger(self):
+        events = [
+            ("push", "refs/heads/dev", {"before": "old-tip", "after": "new-tip"}),
+            ("pull_request", "refs/pull/1/merge", {"pull_request": {"title": "feat: add screen"}}),
+            ("workflow_dispatch", "refs/heads/dev", {}),
+            *[("workflow_dispatch", "refs/heads/dev", {"inputs": {"run_ui_tests": "true", "suite": suite}})
+              for suite in ("full", "smoke", "single", "random")],
+        ]
+        for name, ref, event in events:
+            with self.subTest(name=name, event=event), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "event.json").write_text(json.dumps(event))
+                env = dict(os.environ, GITHUB_EVENT_PATH=str(root / "event.json"), GITHUB_EVENT_NAME=name,
+                           GITHUB_REF=ref, GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+                with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--paused", "--selection-dir", str(root / "selection")]), patch.object(ci, "policy") as normal_policy, patch.object(ci, "source_test_index") as discover, patch.object(ci, "changed_paths") as compare, patch("sys.stdout", new_callable=io.StringIO):
+                    ci.main()
+                normal_policy.assert_not_called()
+                discover.assert_not_called()
+                compare.assert_not_called()
+                outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+                self.assertEqual(outputs, {"run_ui_tests": "false", "suite": "none", "collect_coverage": "false", "matrix": '{"include": []}'})
+                self.assertFalse((root / "selection").exists())
+                self.assertIn("Marathon execution is temporarily paused in CI", (root / "summary").read_text())
+
     def test_chore_pr_titles_skip_automatic_ui_tests(self):
         for title in ("chore: update docs", "chore(ci): tune CI", "chore(build): update Android tooling"):
             for action in ("opened", "synchronize", "reopened", "edited"):
@@ -233,6 +257,8 @@ class ChangedSelectionTest(unittest.TestCase):
     def test_build_log_sources_resources_and_mock_data_select_custom_tab_contract(self):
         expected = self.smoke | {
             "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#viewLogOpensTheActiveServersLogInACustomTab",
+            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#runningBuildLogOpensTheViewerInACustomTab",
+            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#failedBuildLogOpensTheViewerInACustomTab",
         }
         for path in ("app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt", "app/src/main/res/layout/fragment_build_log.xml", "app/src/mock/assets/fake_build_log.html"):
             with self.subTest(path=path):

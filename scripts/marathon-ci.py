@@ -257,6 +257,7 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     plan = commands.add_parser("policy")
     plan.add_argument("--selection-dir", type=Path, required=True)
+    plan.add_argument("--paused", action="store_true", help="Temporarily skip all Marathon suites and instrumentation coverage")
     verify = commands.add_parser("verify")
     verify.add_argument("--results", type=Path, required=True)
     verify.add_argument("--selection", type=Path, required=True)
@@ -267,7 +268,8 @@ def main():
         print(f"Verified {count} successful {args.label} tests")
         return
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
-    decision = policy(os.environ["GITHUB_EVENT_NAME"], os.environ["GITHUB_REF"], event)
+    decision = ({"run": False, "suite": "none", "reason": "Marathon execution is temporarily paused in CI"}
+                if args.paused else policy(os.environ["GITHUB_EVENT_NAME"], os.environ["GITHUB_REF"], event))
     selected = None
     if decision["run"]:
         inputs = event.get("inputs", {})
