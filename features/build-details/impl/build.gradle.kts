@@ -65,8 +65,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.hilt.viewModelCompose)
         implementation(libs.compose.material3.windowSizeClass)
         implementation(libs.coroutines.android)
-        implementation(project.dependencies.platform(libs.google.firebaseBom))
-        implementation(libs.google.analytics)
     }
 }
 kotlin.sourceSets.named("androidHostTest") {

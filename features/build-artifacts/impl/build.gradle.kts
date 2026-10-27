@@ -16,7 +16,6 @@
 
 plugins {
     id("teamcityapp.kmp.compose")
-    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
 
@@ -51,7 +50,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(projects.libraries.theme)
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-        implementation(libs.androidx.hilt.viewModelCompose)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
     }

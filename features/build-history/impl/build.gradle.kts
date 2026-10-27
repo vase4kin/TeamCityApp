@@ -66,8 +66,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.paging.common)
         implementation(libs.androidx.paging.compose)
         implementation(libs.coroutines.android)
-        implementation(project.dependencies.platform(libs.google.firebaseBom))
-        implementation(libs.google.analytics)
     }
 }
 kotlin.sourceSets.named("androidHostTest") {

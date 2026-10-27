@@ -25,7 +25,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.coroutines.IoDispatcher
 import teamcityapp.libraries.onboarding.OnboardingManager
-import teamcityapp.libraries.remote.RemoteService
 import teamcityapp.libraries.storage.Storage
 
 @EntryPoint
@@ -45,8 +44,6 @@ interface AppComponent {
     fun firebaseAnalytics(): FirebaseAnalytics
 
     fun onboardingManager(): OnboardingManager
-
-    fun remoteService(): RemoteService
 
     @IoDispatcher
     fun ioDispatcher(): CoroutineDispatcher

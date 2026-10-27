@@ -18,13 +18,8 @@ package com.github.vase4kin.teamcityapp.account.create.dagger;
 
 import android.content.Context;
 import androidx.annotation.VisibleForTesting;
-import com.github.vase4kin.teamcityapp.BuildConfig;
-import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -32,7 +27,6 @@ import javax.inject.Singleton;
 import org.greenrobot.eventbus.EventBus;
 import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
-import teamcityapp.libraries.remote.RemoteService;
 import teamcityapp.libraries.security.CryptoManager;
 import teamcityapp.libraries.security.CryptoManagerImpl;
 import teamcityapp.libraries.storage.Storage;
@@ -81,24 +75,5 @@ public class CreateAccountActivityValidationTestAppModule {
     @Singleton
     protected OnboardingManager providesOnboardingManager(@ApplicationContext Context context) {
         return new OnboardingManagerImpl(context);
-    }
-
-    @Singleton
-    @Provides
-    protected FirebaseRemoteConfig providesRemoteConfig() {
-        FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings =
-                new FirebaseRemoteConfigSettings.Builder()
-                        .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
-                        .build();
-        firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
-        firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
-        return firebaseRemoteConfig;
-    }
-
-    @Singleton
-    @Provides
-    protected RemoteService provicesRemoteService(FirebaseRemoteConfig remoteConfig) {
-        return new RemoteServiceImpl(remoteConfig);
     }
 }

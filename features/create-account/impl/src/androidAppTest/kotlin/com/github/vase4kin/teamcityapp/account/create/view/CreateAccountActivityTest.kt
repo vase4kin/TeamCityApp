@@ -19,23 +19,12 @@ package com.github.vase4kin.teamcityapp.account.create.view
 import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.pressImeActionButton
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityTestAppModule
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.di.modules.AppModule
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
@@ -43,32 +32,18 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
-import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
-import dagger.hilt.components.SingletonComponent
-import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.doAnswer
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
@@ -76,7 +51,6 @@ import org.mockito.kotlin.whenever
 /**
  * Tests for [MainActivity] with mocked internet connection
  */
-@UninstallModules(AppModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class CreateAccountActivityTest {
@@ -255,8 +229,4 @@ class CreateAccountActivityTest {
         assertThat(app.appInjector.sharedUserStorage().activeUser.teamcityUrl, `is`("$URL/server"))
         compose.onNodeWithTag("home:tab:Projects").assertIsDisplayed()
     }
-
-    @Module(includes = [CreateAccountActivityTestAppModule::class])
-    @InstallIn(SingletonComponent::class)
-    object TestBindings
 }

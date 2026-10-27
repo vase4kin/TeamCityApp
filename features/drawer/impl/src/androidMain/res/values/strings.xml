@@ -18,11 +18,8 @@
     <string name="account_title">Account</string>
     <string name="account_back">Back</string>
     <!--new drawer-->
-    <string name="text_menu_accounts">Accounts</string>
     <string name="text_rate_the_app">Rate the app</string>
-    <string name="text_divider">•</string>
     <string name="text_add_account">Add another account</string>
-    <string name="text_manage_accounts">Manage accounts</string>
     <string name="drawer_loading">Loading accounts</string>
     <string name="drawer_load_error">Accounts could not be loaded.</string>
     <string name="drawer_switch_error">The account could not be switched.</string>
@@ -33,7 +30,6 @@
     <string name="drawer_current_short">Current</string>
     <string name="drawer_manage">Manage accounts</string>
     <string name="drawer_ssl_disabled">SSL verification disabled</string>
-<string name="drawer_accounts_title">Your accounts</string>
 <string name="drawer_empty_accounts">Add an account to connect to TeamCity</string>
 <string name="drawer_sign_out">Sign out</string>
 <string name="drawer_signing_out">Signing out</string>

@@ -19,7 +19,6 @@ import teamcityapp.buildlogic.Config
 
 plugins {
     id("teamcityapp.kmp.compose")
-    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
 
@@ -57,12 +56,10 @@ kotlin.sourceSets.named("androidMain") {
         implementation(projects.libraries.theme)
         implementation(projects.libraries.chromeTabs)
         implementation(libs.compose.material3.windowSizeClass)
-        implementation(libs.dagger.dagger)
         implementation(libs.androidx.appcompat)
         implementation(libs.google.openSourceLicensesLibrary)
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-        implementation(libs.androidx.hilt.viewModelCompose)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
         implementation(libs.kotlin.stdlib)

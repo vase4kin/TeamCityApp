@@ -21,7 +21,6 @@ Copyright 2026 Andrey Tolpeev
 <string name="discard_dialog_content">Discard user account?</string>
 <string name="discard_dialog_positive_button_text">Discard</string>
 <string name="discard_dialog_negative_button_text">Cancel</string>
-    <string name="title_activity_create_account">Create account</string>
     <string name="signing_in">Signing in…</string>
     <string name="connecting">Connecting…</string>
 </resources>

@@ -170,7 +170,6 @@ dependencies {
     implementation(projects.libraries.storageModels)
     implementation(projects.libraries.onboarding)
     implementation(projects.libraries.security)
-    implementation(projects.libraries.remote)
 
     implementation(projects.features.testDetails.api)
     implementation(projects.features.testDetails.impl)
@@ -258,7 +257,6 @@ dependencies {
     // Firebase
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
-    implementation(libs.google.firebaseConfig)
     implementation(libs.google.firebasePerf)
     implementation(libs.google.openSourceLicensesLibrary)
     // Unit tests

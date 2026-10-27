@@ -21,7 +21,6 @@ import android.app.Activity
 import android.app.Instrumentation.ActivityResult
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
@@ -33,41 +32,31 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.di.modules.AppModule
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.destinationIntent
-import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.home.dagger.RateTheAppTestAppModule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.testing.*
-import dagger.hilt.components.SingletonComponent
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
-import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
-import teamcityapp.libraries.remote.RemoteService
+import teamcityapp.libraries.session.homeBuildAccountKey
 
-@UninstallModules(AppModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class RateTheAppTest {
@@ -93,10 +82,15 @@ class RateTheAppTest {
 
     @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
-    @BindValue @Mock
-    lateinit var remoteService: RemoteService
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
-    private val sharedPreferences: SharedPreferences get() = context.getSharedPreferences("rateTheAppPref", Context.MODE_PRIVATE)
+    private val app get() = context.applicationContext as TeamCityApplicationBase
+    private fun preferences(): teamcityapp.libraries.accounts.AccountPreferences = kotlinx.coroutines.runBlocking {
+        preferenceStorage().preferences(app.appInjector.sharedUserStorage().activeUser.homeBuildAccountKey())
+    }
+    private fun updatePreferences(transform: (teamcityapp.libraries.accounts.AccountPreferences) -> teamcityapp.libraries.accounts.AccountPreferences) = kotlinx.coroutines.runBlocking {
+        preferenceStorage().updatePreferences(app.appInjector.sharedUserStorage().activeUser.homeBuildAccountKey(), transform)
+    }
+    private fun preferenceStorage() = dagger.hilt.EntryPoints.get(app, com.github.vase4kin.teamcityapp.helper.SharedRootTestState::class.java).accounts() as teamcityapp.libraries.accounts.AccountPreferencesStorage
 
     companion object {
         @JvmStatic @BeforeClass
@@ -109,8 +103,8 @@ class RateTheAppTest {
             clearAll()
             saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         }
-        sharedPreferences.edit().clear().commit()
-        `when`(remoteService.isNotChurn()).thenReturn(true)
+        context.getSharedPreferences("rateTheAppPref", Context.MODE_PRIVATE).edit().clear().commit()
+        updatePreferences { it.copy(ratingHandled = false, ratingViewedBuildIds = setOf("one", "two", "three"), ratingQualifiedLaunch = "previous-process-launch") }
     }
 
     @Test fun eligibleRatingAppearsBetweenFirstAndSecondEntries() {
@@ -168,11 +162,11 @@ class RateTheAppTest {
     }
 
     @Test fun ineligibleUserDoesNotSeeRating() {
-        `when`(remoteService.isNotChurn()).thenReturn(false)
+        updatePreferences { it.copy(ratingViewedBuildIds = emptySet(), ratingQualifiedLaunch = null) }
         activityRule.launchActivity(null)
         awaitRows()
         compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
-        Assert.assertFalse(sharedPreferences.getBoolean("rated", false))
+        Assert.assertFalse(preferences().ratingHandled)
     }
 
     @Test fun cancelledChoiceSurvivesRecreationWithoutReloadingEntries() {
@@ -183,7 +177,7 @@ class RateTheAppTest {
             scenario.recreate()
             awaitRows()
             compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
-            Assert.assertTrue(sharedPreferences.getBoolean("rated", false))
+            Assert.assertTrue(preferences().ratingHandled)
             verifyBlocking(teamCityService, times(1)) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
         }
     }
@@ -197,12 +191,8 @@ class RateTheAppTest {
     }
     private fun awaitHandled() {
         compose.waitUntil(10_000) {
-            sharedPreferences.getBoolean("rated", false) && compose.onAllNodesWithTag("navigation:rating").fetchSemanticsNodes().isEmpty()
+            preferences().ratingHandled && compose.onAllNodesWithTag("navigation:rating").fetchSemanticsNodes().isEmpty()
         }
     }
     private fun text(id: Int) = context.getString(id)
-
-    @Module(includes = [RateTheAppTestAppModule::class])
-    @InstallIn(SingletonComponent::class)
-    object TestBindings
 }
