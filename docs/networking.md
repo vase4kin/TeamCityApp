@@ -113,7 +113,7 @@ The audit compared the 18 legacy Android feature tracker implementations and
 `AuthenticationAnalytics` at `ca5fbc5b1130bcf0ca9d1d7fd14ae371b8e2cbae` with the common
 production composition root. The older quick-filter repository at `dafbb39f1`
 also confirms that selection tracking followed successful preference application.
-Shared mappings now preserve the legacy event identities rather than emitting
+Feature-owned portable trackers preserve the legacy event identities rather than emitting
 renamed migration aliases. Each action emits one event; aliases are not emitted
 alongside the legacy name.
 
@@ -149,15 +149,15 @@ Portable `AnalyticsEvent` payloads preserve the exact parameter keys and values:
   invalid-URL/HTTP-consent descriptions. Storage failures retain
   `Failed to save user data!` and the original `login_user_failed` event.
 
-The Android adapter sends structured payloads to the existing Firebase backend.
-The default `NativeDiagnostics.analytics` implementation discards parameters and
-emits only the fixed event label. iOS uses that default: no parameter, server,
-credential or failure-message value enters OS diagnostics, and no hosted iOS
-analytics SDK is introduced. Branch names are used only to choose the historical
+`libraries/analytics` owns the common `AnalyticsTracker` contract and typed payloads.
+Its `AndroidAnalyticsTracker` sends them to the existing Firebase backend. Its
+`IosAnalyticsTracker` discards parameters and logs only the fixed event label:
+no parameter, server, credential or failure-message value enters OS logs, and
+no hosted iOS analytics SDK is introduced. Branch names are used only to choose the historical
 filtered-history event; their contents are not sent as analytics parameters.
 
-Common contract tests cover every tracker method, tab/filter value, boolean state,
-and forbidden/server error branch. Android tests capture the actual Firebase
+Feature-owned common contract tests cover every tracker method, tab/filter value, boolean state,
+and forbidden/server error branch. Analytics-module Android tests capture the actual Firebase
 `Bundle`, including false (`0`), true (`1`), empty strings and null bundles.
 Filter tracking is a required constructor/interface dependency, so production
 callers cannot silently omit it during future migrations. ViewModel tests verify
@@ -166,7 +166,8 @@ requests do not emit successful selection events, and that user/guest typed
 failures retain informative analytics messages. Shared UI layouts and screenshot
 golden files are unchanged.
 
-Verification: 1,926 focused Android host/app tests and 187 iOS simulator tests passed,
+Parity-restoration verification before the ownership refactor: 1,926 focused
+Android host/app tests and 187 iOS simulator tests passed,
 including the event-contract and Firebase adapter suites. Production/mock Android
 APKs and mock instrumentation compiled, and all 53 selected account/startup/rating/
 detail/navigation integration tests passed on an isolated API 34 emulator. Source
@@ -189,3 +190,38 @@ Home's Favorites FAB has been retired by the UI redesign. The surviving Add
 Projects CTA retains `favorites_tab_click_on_action`, and Projects navigation
 retains `tab_selected`; no FAB click is fabricated for an absent control. The old
 FAB mapping remains covered for callers that use that tracker contract.
+
+## Analytics ownership
+
+Each feature implementation owns its dedicated `<Feature>TrackerImpl` in
+`src/commonMain/kotlin/.../impl/tracker/`, together with its event-mapping tests
+in `commonTest`. Favorites, Snapshot Dependencies and Artifacts each have their
+own tracker; they do not share a browsing tracker. `shared-app` contains constructor
+wiring and generic visibility orchestration, with no feature event names or
+tracker implementations.
+
+`libraries/analytics` contains the portable `AnalyticsTracker`, `AnalyticsEvent`
+and `AnalyticsValue` contracts. Its `androidMain` owns `AndroidAnalyticsTracker`
+and the Firebase dependency; `iosMain` owns `IosAnalyticsTracker` and local logging.
+Backend tests live in that module's platform test source sets. Android binds the
+backend in the app's DI package; navigation receives only the interface.
+
+`AuthenticationEventTracker` in `libraries/authentication-shared` is reusable
+authentication functionality consumed by the dedicated Login and Add Account
+trackers. Home receives the Quick Filter API contract rather than depending on
+its implementation. Restart-reference tracking belongs to Build Details and
+implements the Build Overview API's `BuildReferenceTracker`. No feature depends
+on another feature's implementation.
+
+The source-boundary check rejects tracker implementations or event mappings in
+`shared-app`, and Firebase Analytics SDK imports in feature production sources.
+The old Android-only tracker implementations and their SDK-specific tests are
+replaced by feature-owned portable implementations/tests; the old root tracker
+file and navigation-owned analytics backend are removed.
+
+Ownership-refactor verification: 3,853 Android host tests reported zero failures
+(one existing skip), with 74 app unit tests, four legacy authentication UI tests,
+387 iOS simulator tests and 100 repository script tests passing. Both Android
+hosts and the mock instrumentation APK built, and all 53 selected Android
+integration tests passed with the injected analytics backend. Event names,
+parameter keys/values and screenshot golden bytes remain unchanged by this refactor.
