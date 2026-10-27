@@ -894,3 +894,50 @@ pass, covering data reflection/serialization, Keystore, the common cache, dates,
 startup and dynamic licenses resources/activity launch. Effective OSS activity
 attributes/themes match the declarations before their ownership move. Screenshot
 golden files remain unchanged.
+
+
+## Feature-module ownership audit — 2026-10-27
+
+Audit all 27 feature api/impl pairs. Production Android feature code retains OS
+actuals, artifact file IO, the licenses launcher and installed filter adapters.
+Move superseded native screen wrappers, routers, response mappers, reference
+ViewModels and Splash UI/storage fixtures into their owning test source sets,
+with their regression coverage. Keep the shared artifact-menu decision in common
+production code; its retired request/permission router types belong only in the
+Android harness. Replace the unused raw-argument Action Sheet ViewModel with
+state tests over the typed menu used in production. The About device/screenshot
+harness renders the common screen directly.
+
+Login, Create Account, Run Build and Filter Builds own their tracker contracts
+inside implementation modules. Preserve every event label and parameter. Keep
+Quick Filter selection and Overview-reference tracking contracts public because
+other features consume those workflows through APIs.
+
+Move 16 single-feature repository/locator tests from the shared root into
+Navigation, Favorites, Running Builds, Changes, Tests, Run Build, Build Details
+and Filter Builds. `libraries/network-testing` provides only generic account,
+vault and MockEngine ports; features construct their own repositories. The root
+retains cross-feature query/preferences and production-composition integration
+assertions. Rating device tests live with Navigation. Multi-feature Home,
+Favorites/History and Overview/management journeys remain application-hosted in
+the app integration suite. Existing test packages and golden paths stay stable.
+
+Remove 33 unused resource declarations/files and move dependencies used only by
+legacy harnesses out of production source sets. Installed activity aliases,
+serialized filter names/fields/UID, live typed results and OS actions retain
+their existing contracts. Module checks reject implementation imports across
+feature source/tests, implementation types in APIs and network fixtures in
+production feature sources. Application-hosted navigation tests may read the
+private resources of the destinations they assert.
+
+
+Verification: 3,953 selected Android/JVM cases (zero failures; one existing skip),
+301 selected iOS simulator cases and 115 script cases pass. Both app flavors and
+the mock instrumentation APK build successfully, lint reports zero errors, and
+formatting/module ownership checks pass. Existing screenshot baseline paths and
+PNG bytes remain unchanged.
+The final APK passes 54 selected device cases covering authentication, installed
+startup aliases, account replacement, rating, About actions and real artifact
+export. The optimized APK passes all six smoke cases, including installed
+Serializable filter decoding and dynamic OSS-license resources. The task-owned
+emulator is stopped after verification; checkpoints remain local.

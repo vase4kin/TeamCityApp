@@ -122,6 +122,9 @@ to the requested behavior and the coherent migration slice needed to support it.
 - `features/`: feature `api`/`impl` modules. APIs own small contracts and plain
   public models; implementations own Compose UI, ViewModels, UI-scoped routers,
   private resources, behavioral tests, and screenshot baselines.
+- `libraries/network-testing/`: test-only account/vault/HTTP fixtures shared by
+  feature-owned repository tests, with no feature dependencies or UI. Add it only
+  to test source sets. Keep cross-feature composition/result assertions in the root.
 - `libraries/`: shared API, storage, models, resources, theme, networking helpers,
   security, utilities, and other reusable components.
 - `build-logic/src/main/kotlin/Config.kt`: SDK/JVM settings and application version.
@@ -164,20 +167,24 @@ to the requested behavior and the coherent migration slice needed to support it.
   Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
   Parameters, Snapshot Dependencies, Run Build, Filter Builds, Quick Filter,
   Action Bottom Sheet, Build Details, Artifacts and Settings `impl` modules own their common UI
-  and ViewModels, with Android Hilt/router adapters in `androidMain` and Robolectric/
-  Roborazzi tests in `androidHostTest`. Every feature has only `api` and `impl`;
+  and ViewModels. Production `androidMain` contains OS actuals/actions and installed
+  codec adapters; superseded Android screens/routers and native-shell ViewModels
+  live only in the owning feature's test source sets. Robolectric/Roborazzi tests
+  live in `androidHostTest`. Every feature has only `api` and `impl`;
   do not create a separate feature `presentation` module. Use `commonTest` for
   portable behavioral tests and `iosMain`/`iosTest` only for feature-specific native
   needs. Cross-feature implementation dependencies remain prohibited. Do not
   duplicate shared layouts in platform adapters. `shared-app` is the composition
-  root and consumes feature implementations. Feature-owned `Shared*Route` containers
+  root and consumes feature implementations. Owner-only tracker interfaces live
+  beside their implementation; only tracking contracts actually consumed across
+  features remain in feature APIs. Feature-owned `Shared*Route` containers
   collect UI state and own screen lifecycle/analytics, paging, dialogs, notices,
   search controls and download/export policy. The root constructs dependencies,
   wires native ports and coordinates navigation/results/session ownership. Build
   Details and Overview compose through content callbacks without implementation
   dependencies. Account-picker repository adapters live in Drawer and Manage
-  Accounts; native theme, artifact-file and response-cache persistence belong to
-  their owning libraries. `features/splash` retains its Android
+  Accounts; native theme and response-cache persistence belong to their libraries,
+  while Artifacts owns its file ports and native backends. `features/splash` retains its Android
   launch-compatibility api/impl pair; new shared features use KMP.
 - Shared ViewModels use plain constructor injection and lifecycle-owned factories.
   Hilt remains the Android composition mechanism, with thin Android ViewModels
