@@ -41,15 +41,16 @@ to the requested behavior and the coherent migration slice needed to support it.
   `libraries/data` retains installed wire DTOs, build/filter compatibility codecs and
   shared build mapping; preserve their serialized names and fields. `libraries/session`
   owns encrypted Android account storage and identity guards. The retired Android
-  Retrofit/RxCache graph and repository adapters have been removed. RxJava is limited
-  to offline fixtures in the app's `mock` flavor. See `docs/networking.md`.
+  Retrofit/RxCache graph and repository adapters have been removed. Offline mocks
+  use suspend fixture methods and coroutine gates; neither flavor depends on RxJava.
+  See `docs/networking.md`.
 - About maps the common server response into its plain API model. Settings uses the
   shared `libraries/app-theme` DataStore contract, migrating the old theme preference
   without changing other preferences. Google's licenses screen remains external.
 - Login and Create Account share stateless controls and authentication analytics.
   Common Ktor authentication owns production URL validation and Basic challenges;
-  `libraries/remote` retains legacy URL codecs. Shared repositories preserve explicit HTTP/SSL
-  consent, encrypted persistence, duplicate detection and API initialization.
+  shared repositories preserve explicit HTTP/SSL consent, encrypted persistence,
+  duplicate detection and API initialization.
   Pending submissions survive recreation without duplicate requests; passwords
   stay in memory and are cleared after successful persistence.
 - Sheet content must not draw its own handle; the Navigation 3 Material sheet host owns
@@ -297,9 +298,9 @@ the scoped shared-code rules above apply to migrated KMP modules.
   in a named shared module with an explicit contract, such as `libraries/app-rating`,
   rather than a miscellaneous utility extension or another feature implementation.
 - Data: expose suspend functions and flows through repositories. UI and ViewModels
-  must not call Retrofit, Room, DataStore, or other storage APIs directly. Put
-  shared or nontrivial cross-repository operations in use cases. Existing Rx APIs
-  and caches may be reused behind coroutine adapters with cancellation support.
+  must not call Ktor, Room, DataStore, or other storage APIs directly. Put shared
+  or nontrivial cross-repository operations in use cases. Preserve cancellation
+  and cache behavior behind repository boundaries.
 - DI: use Hilt for new and refactored dependency-injection infrastructure across
   the app, features, data, storage, background work, and tests that need injection.
   Use `@HiltViewModel` for ViewModels. Inject dispatchers, repositories, services,
@@ -345,7 +346,7 @@ the scoped shared-code rules above apply to migrated KMP modules.
   feature-to-feature coupling.
 - Keep network and persistence access behind existing repository, data manager,
   or storage interfaces while old implementations remain. Do not add direct
-  Retrofit or SharedPreferences access to UI code.
+  Ktor or SharedPreferences access to UI code.
 - Screens use Compose and ViewModels; do not add native hosts, presenters or
   callback-holding state holders. Keep networking and caching in the common Ktor
   repositories, and encrypted account storage behind its portable contract.

@@ -25,8 +25,8 @@ Platform adapters own secure storage, atomic cache bytes and file export.
 
 The retired Android Retrofit services, RxJava repository adapters, RxCache runtime,
 Jolyglot dependency, Dagger REST component and `ApiSession` have been removed.
-The app's `verifyProductionNetworking` task checks both production runtime
-classpaths and runs with production assembly and `check`. OkHttp remains as Ktor's
+The app's `verifyProductionNetworking` task checks production and mock runtime
+classpaths and runs with app assembly and `check`. OkHttp remains as Ktor's
 Android engine. Gson remains at the previously resolved version for installed
 account and launch formats.
 
@@ -51,10 +51,11 @@ HTTP clients or an account graph. `SharedMockClient` converts fixture responses
 into Ktor mock-engine responses; the common transport, parser and repositories
 then execute normally. Explicit loopback fixtures still use the platform engine.
 
-RxJava and its coroutine bridge are confined to the mock flavor to retain existing
-asynchronous fixtures, including blocked requests and cancellation. Retrofit and
-RxCache are absent from both flavors. Authentication UI tests feed this same Ktor
-fixture seam. Startup tests exercise shared account restoration. Older route
+Fixture methods are suspend functions. `PendingFixture` uses a coroutine gate and
+tracks active waiters so tests can verify request cancellation and late responses.
+RxJava, its coroutine bridge, Retrofit and RxCache are absent from both flavors.
+Authentication UI tests feed this same Ktor fixture seam. Startup tests exercise
+shared account restoration. Older route
 regression helpers live in each feature's `androidHostTest`, receive explicit fake
 ViewModels and have no production Hilt bindings.
 
@@ -70,16 +71,38 @@ repository tests run through `:libraries:network:testAndroidHostTest`,
 ## Cleanup verification — 2026-10-27
 
 The production and mock debug APKs and mock instrumentation APK built successfully.
-Both production runtime dependency checks passed; a temporary Gradle init script
+Production debug/release and mock debug runtime dependency checks passed; a
+temporary Gradle init script
 injecting RxJava was rejected by the guard as expected, without changing source
 configuration. Source boundaries and Spotless passed.
 
 Passing checks included 3,828 shared/feature Android host tests (including golden
-verification), 74 app unit tests, 11 DTO/account compatibility tests, 59 common
+verification; one existing test skipped), 74 app unit tests, 11 DTO/account
+compatibility tests, 59 common
 network/repository tests on the iOS simulator and 96 repository script tests.
 Screenshot golden bytes remained unchanged.
 
-On the local API 34 emulator, all 39 selected Login, Add Account, startup, About
-and Home integration tests passed. All six smoke tests also passed in the
+On the local API 34 emulator, all 53 selected Login, Add Account, startup, About,
+Home, Test Details and rating integration tests passed. All six smoke tests also
+passed in the
 minified, debug-signed R8 verification APK, including common Ktor decoding and
 disk-cache restoration. This follow-up changed no shared screen layouts.
+
+## Further unused-code cleanup
+
+The reference audit also removed the old Remote Config rating facade, its copied
+test DI modules, and the now-orphaned `libraries/remote` URL formatter module.
+Production URL normalization remains in the common Ktor transport. Rating tests
+seed the shared account-local eligibility policy directly.
+
+Removed code includes unconsumed analytics implementations/bindings, loading and
+filter helpers, an unused session-clear contract, and redundant authentication
+and sheet wrappers/interfaces. Fourteen feature modules no longer apply Hilt/KSP
+or declare Hilt Compose/Dagger dependencies without corresponding source usages.
+The audit also removed 42 unused drawable/animation files, 81 obsolete Android
+string/plural/array entries, and unused version-catalog aliases.
+
+Installed DTO/account classes and serialized signatures remain intact. Native
+framework callbacks, generated DI entry points, test-used adapters, installed
+launch aliases and dynamically loaded OSS resources remain supported. No shared
+screen layout or intentional screenshot fixture changed.
