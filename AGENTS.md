@@ -210,7 +210,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   Libraries action is enabled by the About feature's Android capability and uses
   Google's OSS Licenses screen; iOS hides it. iOS redistribution notices are a
   packaging-only `ThirdPartyNotices.plist`, with no in-app catalog or reader. Native diagnostics use fixed OS event labels and Apple's
-  crash reports; hosted iOS analytics/crash upload is unconfigured.
+  crash reports; hosted iOS analytics/crash upload is unconfigured. Shared trackers
+  preserve legacy Android Firebase event names and parameter keys through portable
+  structured events. Android encodes flags as SDK-supported numeric values; iOS
+  logs only fixed event labels and discards every parameter.
   Native interactive list rows keep clipped fragments below the standard touch
   target out of VoiceOver until scrolling reveals them. Preserve each action and
   label after reveal; keep Android semantics unchanged and retain strict audits.

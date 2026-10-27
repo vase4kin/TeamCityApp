@@ -106,3 +106,86 @@ Installed DTO/account classes and serialized signatures remain intact. Native
 framework callbacks, generated DI entry points, test-used adapters, installed
 launch aliases and dynamically loaded OSS resources remain supported. No shared
 screen layout or intentional screenshot fixture changed.
+
+## Analytics migration parity audit — 2026-10-27
+
+The audit compared the 18 legacy Android feature tracker implementations and
+`AuthenticationAnalytics` at `ca5fbc5b1130bcf0ca9d1d7fd14ae371b8e2cbae` with the common
+production composition root. The older quick-filter repository at `dafbb39f1`
+also confirms that selection tracking followed successful preference application.
+Shared mappings now preserve the legacy event identities rather than emitting
+renamed migration aliases. Each action emits one event; aliases are not emitted
+alongside the legacy name.
+
+| Area | Restored or verified legacy events |
+| --- | --- |
+| Login and Add Account | `screen_first_login`, `screen_create_account`, `login_user_success`, `login_guest_user_success`, `login_user_failed`, `login_guest_user_failed`, and the three `event_user_*try_it_out` actions |
+| Home | `screen_home`, `tab_selected`, the four tab-specific FAB actions and `favorites_tab_click_on_action` |
+| Projects and rating | `screen_project`, `rate_show`, `rate_cancel`, `rate_now` |
+| Build History | `screen_build_list`, `run_build_fab_click`, `build_list_show_queued_details` |
+| Run Build | `screen_run_build`, `run_build_success`, `run_build_custom_params_success`, `run_build_failed`, `run_build_forbidden_error`, `run_build_add_custom_param_click`, `run_build_clear_all_params`, `run_build_add_custom_param` |
+| Build Filters | `screen_filter_builds`, `build_list_filters_applied` |
+| Quick Filters, including inline Home chips | `filter_running_builds_selected`, `filter_queued_builds_selected`, `filter_agents_selected` |
+| Build Details | `screen_build_details`, `build_cancel_confirm`, `build_cancel_success`, separate forbidden/server cancel and restart errors, `build_restart_success`, `build_restart_show_success`, `build_restart_show_failure` |
+| Overview actions | `share_build`, `open_browser_build`, `cancel_build`, `restart_build`, `open_build_type`, `show_builds_filtered_by_branch`, `open_project` |
+| Change and Test Details | `screen_open_change`, `change_click_more_details`, `change_click_view_file_diff`, `screen_test_details` |
+| Favorites and Snapshot Dependencies | `favorites_open_build_type`, `screen_snapshot_dependencies` |
+| Account destination | `screen_open_drawer` and the seven legacy `drawer_*` actions, despite the current full-screen presentation |
+| Manage Accounts | `screen_account_list`, `remove_account`, `account_ssl_warning` |
+| Settings | Existing `screen_settings` and all four `theme_set_*` events remain unchanged |
+| Artifacts | The old implementation was a no-op. The existing common `screen_artifacts` event remains; no retired stub was reinstated |
+
+Portable `AnalyticsEvent` payloads preserve the exact parameter keys and values:
+
+- `tab`: `PROJECTS`, `FAVORITES`, `RUNNING_BUILDS`, `BUILD_QUEUE`, `AGENTS`.
+- `filter`: `RUNNING_ALL`, `RUNNING_FAVORITES`, `QUEUE_ALL`, `QUEUE_FAVORITES`,
+  `AGENTS_CONNECTED`, `AGENTS_DISCONNECTED`.
+- `sslEnabled` and `param_re_add_to_the_queue`: portable boolean flags, encoded as
+  Android `long` values `1`/`0`. This uses the SDK's documented numeric parameter
+  types while retaining both true and false values. See the
+  [Firebase Android event contract](https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics#logEvent(java.lang.String,android.os.Bundle)).
+- `errorMessage`: existing explicit messages are retained. Typed transport errors
+  that previously supplied an empty message use public, stable HTTP/connection/
+  invalid-URL/HTTP-consent descriptions. Storage failures retain
+  `Failed to save user data!` and the original `login_user_failed` event.
+
+The Android adapter sends structured payloads to the existing Firebase backend.
+The default `NativeDiagnostics.analytics` implementation discards parameters and
+emits only the fixed event label. iOS uses that default: no parameter, server,
+credential or failure-message value enters OS diagnostics, and no hosted iOS
+analytics SDK is introduced. Branch names are used only to choose the historical
+filtered-history event; their contents are not sent as analytics parameters.
+
+Common contract tests cover every tracker method, tab/filter value, boolean state,
+and forbidden/server error branch. Android tests capture the actual Firebase
+`Bundle`, including false (`0`), true (`1`), empty strings and null bundles.
+Filter tracking is a required constructor/interface dependency, so production
+callers cannot silently omit it during future migrations. ViewModel tests verify
+that duplicate, failed, stale-account and cancelled filter
+requests do not emit successful selection events, and that user/guest typed
+failures retain informative analytics messages. Shared UI layouts and screenshot
+golden files are unchanged.
+
+Verification: 1,926 focused Android host/app tests and 187 iOS simulator tests passed,
+including the event-contract and Firebase adapter suites. Production/mock Android
+APKs and mock instrumentation compiled, and all 53 selected account/startup/rating/
+detail/navigation integration tests passed on an isolated API 34 emulator. Source
+boundaries, formatting and unchanged golden bytes were checked.
+
+The call-site audit also restored lifecycle-driven Login, History, Build Details
+and Test Details views, History's Run action, and both Change Details browser/diff
+actions. A shared screen-view effect tracks visibility and owner replacement,
+without recording another view on ordinary recomposition. It invokes existing
+ViewModel tracking hooks without introducing additional data refreshes.
+
+Restart-reference outcomes are recorded at the actual reference request boundary,
+with cancellation checks, once per request. Count loading/retries and re-collection
+of completed content do not replay the outcome. Only `fromRestart` Show visits
+participate in `build_restart_show_success` / `build_restart_show_failure`;
+ordinary History Show visits and Overview refreshes do not. Reference tracking is
+an explicit dependency, with an explicit `None` policy for ordinary Overview loads.
+
+Home's Favorites FAB has been retired by the UI redesign. The surviving Add
+Projects CTA retains `favorites_tab_click_on_action`, and Projects navigation
+retains `tab_selected`; no FAB click is fabricated for an absent control. The old
+FAB mapping remains covered for callers that use that tracker contract.
