@@ -46,7 +46,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.Co
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.util.ArrayList
 import okhttp3.ResponseBody
 import org.hamcrest.MatcherAssert.assertThat
@@ -65,6 +64,10 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 
 private const val PARAMETER_NAME = "version"
 private const val PARAMETER_VALUE = "1.3.2"
@@ -139,7 +142,7 @@ class RunBuildActivityTest {
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking triggered build
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.timeout(5_000)).queueBuild(capture(buildCaptor))
+        verifyBlocking(teamCityService, org.mockito.Mockito.timeout(5_000)) { queueBuild(capture(buildCaptor)) }
         val capturedBuild = buildCaptor.value
         assertThat(capturedBuild.branchName, `is`("master"))
         assertThat(capturedBuild.agent, `is`(nullValue()))
@@ -157,14 +160,12 @@ class RunBuildActivityTest {
         val agents = ArrayList<Agent>()
         val agent = Agent("agent 1")
         agents.add(agent)
-        `when`(teamCityService.listAgents(false, null, null)).thenReturn(
-            Single.just(
-                Agents(
-                    1,
-                    agents
-                )
+        doReturn(
+            Agents(
+                1,
+                agents
             )
-        )
+        ).whenever(teamCityService) { listAgents(false, null, null) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, "href")
@@ -176,7 +177,7 @@ class RunBuildActivityTest {
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking that build was triggered with agent
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.timeout(5_000)).queueBuild(capture(buildCaptor))
+        verifyBlocking(teamCityService, org.mockito.Mockito.timeout(5_000)) { queueBuild(capture(buildCaptor)) }
         val capturedBuild = buildCaptor.value
         assertThat(capturedBuild.agent, `is`(agent))
         // Checking activity is finishing
@@ -198,11 +199,7 @@ class RunBuildActivityTest {
     @Test
     fun testUserCanSeeNoAgentsAvailableTextIfNoAgentsAvailable() {
         // Prepare mocks
-        `when`(teamCityService.listAgents(false, null, null)).thenReturn(
-            Single.error(
-                RuntimeException("error")
-            )
-        )
+        doSuspendableAnswer { throw RuntimeException("error") }.whenever(teamCityService) { listAgents(false, null, null) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, "href")
@@ -241,7 +238,7 @@ class RunBuildActivityTest {
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking triggered build
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.timeout(5_000)).queueBuild(capture(buildCaptor))
+        verifyBlocking(teamCityService, org.mockito.Mockito.timeout(5_000)) { queueBuild(capture(buildCaptor)) }
         val capturedBuild = buildCaptor.value
         assertThat(capturedBuild.branchName, `is`("master"))
         assertThat(capturedBuild.agent, `is`(nullValue()))
@@ -278,7 +275,7 @@ class RunBuildActivityTest {
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking triggered build
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.timeout(5_000)).queueBuild(capture(buildCaptor))
+        verifyBlocking(teamCityService, org.mockito.Mockito.timeout(5_000)) { queueBuild(capture(buildCaptor)) }
         val capturedBuild = buildCaptor.value
         assertThat(capturedBuild.properties!!.properties.size, `is`(equalTo(1)))
         val capturedProperty = capturedBuild.properties!!.properties[0]
@@ -316,7 +313,7 @@ class RunBuildActivityTest {
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking triggered build
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.timeout(5_000)).queueBuild(capture(buildCaptor))
+        verifyBlocking(teamCityService, org.mockito.Mockito.timeout(5_000)) { queueBuild(capture(buildCaptor)) }
         val capturedBuild = buildCaptor.value
         assertThat(capturedBuild.properties, `is`(nullValue()))
         // Checking activity is finishing

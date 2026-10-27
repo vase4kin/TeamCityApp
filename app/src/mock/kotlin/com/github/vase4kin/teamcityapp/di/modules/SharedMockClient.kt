@@ -26,7 +26,6 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.http.*
 import io.ktor.http.content.TextContent
-import kotlinx.coroutines.rx2.await
 
 /** Mock wire boundary only: the production common parser, guards, repositories and UI still run. */
 internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = HttpClient(
@@ -43,46 +42,46 @@ internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = Http
                 request.method == HttpMethod.Post -> {
                     val body = (request.body as? TextContent)?.text ?: error("Missing mock mutation payload")
                     if (endpoint == "buildQueue") {
-                        api.queueBuild(gson.fromJson(body, Build::class.java)).await()
+                        api.queueBuild(gson.fromJson(body, Build::class.java))
                     } else {
-                        api.cancelBuild(path, gson.fromJson(body, BuildCancelRequest::class.java)).await()
+                        api.cancelBuild(path, gson.fromJson(body, BuildCancelRequest::class.java))
                     }
                 }
 
-                endpoint == "server" -> api.serverInfo().await()
+                endpoint == "server" -> api.serverInfo()
 
-                endpoint.startsWith("projects/") -> api.listBuildTypes(id()).await()
+                endpoint.startsWith("projects/") -> api.listBuildTypes(id())
 
-                endpoint.startsWith("buildTypes/") && endpoint.endsWith("/builds") -> api.listBuilds(id(), query["locator"].orEmpty()).await()
+                endpoint.startsWith("buildTypes/") && endpoint.endsWith("/builds") -> api.listBuilds(id(), query["locator"].orEmpty())
 
-                endpoint.startsWith("buildTypes/") && endpoint.endsWith("/branches") -> api.listBranches(id()).await()
+                endpoint.startsWith("buildTypes/") && endpoint.endsWith("/branches") -> api.listBranches(id())
 
-                endpoint.startsWith("buildTypes/") -> api.buildType(id()).await()
+                endpoint.startsWith("buildTypes/") -> api.buildType(id())
 
                 "/artifacts/content/" in endpoint -> {
-                    val bytes = api.downloadFile(path).await().use { it.bytes() }
+                    val bytes = api.downloadFile(path).use { it.bytes() }
                     return@MockEngine respond(bytes, HttpStatusCode.OK, headersOf(HttpHeaders.ContentLength, bytes.size.toString()))
                 }
 
-                "/artifacts/" in endpoint -> api.listArtifacts(path, query["locator"].orEmpty()).await()
+                "/artifacts/" in endpoint -> api.listArtifacts(path, query["locator"].orEmpty())
 
-                endpoint.startsWith("builds/id:") || endpoint.startsWith("buildQueue/id:") -> api.build(path).await()
+                endpoint.startsWith("builds/id:") || endpoint.startsWith("buildQueue/id:") -> api.build(path)
 
-                endpoint == "buildQueue" -> api.listQueueBuilds(query["locator"], query["fields"]).await()
+                endpoint == "buildQueue" -> api.listQueueBuilds(query["locator"], query["fields"])
 
-                endpoint == "builds" && "running:true" in query["locator"].orEmpty() -> api.listRunningBuilds(query["locator"].orEmpty(), query["fields"]).await()
+                endpoint == "builds" && "running:true" in query["locator"].orEmpty() -> api.listRunningBuilds(query["locator"].orEmpty(), query["fields"])
 
-                endpoint == "builds" -> api.listBuilds(query["locator"].orEmpty()).await()
+                endpoint == "builds" -> api.listBuilds(query["locator"].orEmpty())
 
-                endpoint == "agents" -> api.listAgents(query["includeDisconnected"]?.toBoolean(), query["fields"], query["locator"]).await()
+                endpoint == "agents" -> api.listAgents(query["includeDisconnected"]?.toBoolean(), query["fields"], query["locator"])
 
-                endpoint == "changes" -> api.listChanges(link()).await()
+                endpoint == "changes" -> api.listChanges(link())
 
-                endpoint.startsWith("changes/") -> api.change(link()).await()
+                endpoint.startsWith("changes/") -> api.change(link())
 
-                endpoint == "testOccurrences" -> api.listTestOccurrences(link()).await()
+                endpoint == "testOccurrences" -> api.listTestOccurrences(link())
 
-                endpoint.startsWith("testOccurrences/") -> api.testOccurrence(link()).await()
+                endpoint.startsWith("testOccurrences/") -> api.testOccurrence(link())
 
                 else -> return@MockEngine respond("{}", HttpStatusCode.NotFound)
             }

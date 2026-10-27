@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.navigation.LegacyBuildHistoryEntry
@@ -44,14 +45,15 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
 import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.BuildHistoryQuery
@@ -95,11 +97,11 @@ class BuildHistoryActivityTest {
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
         val fallback = FakeTeamCityServiceImpl()
-        doAnswer { invocation ->
+        doSuspendableAnswer { invocation ->
             val href: String = invocation.getArgument(0)
-            (details[href] ?: details["/$href"])?.let { Single.just(it) } ?: fallback.build(if (href.startsWith("/")) href else "/$href")
-        }.whenever(teamCityService).build(anyString())
-        doReturn(Single.just(Branches(listOf(Branch("main"), Branch("branch/raw"))))).whenever(teamCityService).listBranches(anyString())
+            (details[href] ?: details["/$href"])?.let { it } ?: fallback.build(if (href.startsWith("/")) href else "/$href")
+        }.whenever(teamCityService) { build(anyString()) }
+        doReturn(Branches(listOf(Branch("main"), Branch("branch/raw")))).whenever(teamCityService) { listBranches(anyString()) }
     }
 
     @After fun cleanup() {
@@ -114,7 +116,7 @@ class BuildHistoryActivityTest {
             scenario.recreate()
             awaitRow("1")
             scenario.onActivity { Assert.assertEquals(MainActivity::class.java, it.javaClass) }
-            verify(teamCityService, times(1)).listBuilds("build_type_id", filter.toLocator())
+            verifyBlocking(teamCityService, times(1)) { listBuilds("build_type_id", filter.toLocator()) }
         }
     }
 
@@ -123,7 +125,7 @@ class BuildHistoryActivityTest {
         launch().use { scenario ->
             awaitRow("1")
             compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
-            verify(teamCityService).listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR)
+            verifyBlocking(teamCityService) { listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR) }
             scenario.onActivity {
                 Assert.assertEquals(LegacyBuildHistoryEntry.LEGACY_ACTIVITY, it.intent.component?.className)
                 Assert.assertEquals("build_type_id", it.intent.getStringExtra("id"))
@@ -137,12 +139,12 @@ class BuildHistoryActivityTest {
         installPage(listOf(build("1")))
         launch(filter).use { scenario ->
             awaitRow("1")
-            verify(teamCityService).listBuilds("build_type_id", filter.toLocator())
+            verifyBlocking(teamCityService) { listBuilds("build_type_id", filter.toLocator()) }
             scenario.onActivity { Assert.assertFalse(it.intent.hasExtra("filter")) }
             scenario.recreate()
             awaitRow("1")
-            verify(teamCityService, times(1)).listBuilds("build_type_id", filter.toLocator())
-            verify(teamCityService, never()).listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR)
+            verifyBlocking(teamCityService, times(1)) { listBuilds("build_type_id", filter.toLocator()) }
+            verifyBlocking(teamCityService, never()) { listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR) }
         }
     }
 
@@ -171,7 +173,7 @@ class BuildHistoryActivityTest {
     }
 
     @Test fun initialFailureCanBeRetriedAndEmptySuccessStillExposesRun() {
-        doReturn(Single.error<Builds>(IllegalStateException("offline"))).whenever(teamCityService).listBuilds(anyString(), anyString())
+        doSuspendableAnswer { throw IllegalStateException("offline") }.whenever(teamCityService) { listBuilds(anyString(), anyString()) }
         launch().use {
             awaitText(text(teamcityapp.libraries.theme.R.string.action_retry))
             installPage(emptyList())
@@ -186,7 +188,7 @@ class BuildHistoryActivityTest {
         installPage(listOf(build("1")))
         launch().use {
             awaitRow("1")
-            doReturn(Single.error<Builds>(IllegalStateException("refresh offline"))).whenever(teamCityService).listBuilds(anyString(), anyString())
+            doSuspendableAnswer { throw IllegalStateException("refresh offline") }.whenever(teamCityService) { listBuilds(anyString(), anyString()) }
             pullRefresh()
             awaitText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
             compose.onNodeWithTag("history:build:1").assertIsDisplayed()
@@ -204,7 +206,7 @@ class BuildHistoryActivityTest {
             scenario.recreate()
             awaitText(text(HistoryR.string.history_empty))
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
-            doReturn(Single.error<Builds>(IllegalStateException("offline"))).whenever(teamCityService).listBuilds(anyString(), anyString())
+            doSuspendableAnswer { throw IllegalStateException("offline") }.whenever(teamCityService) { listBuilds(anyString(), anyString()) }
             compose.onRoot().performTouchInput { swipe(start = center.copy(y = height * .2f), end = center.copy(y = height * .85f), durationMillis = 600) }
             awaitText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
             compose.onNodeWithText(text(HistoryR.string.history_empty)).assertIsDisplayed()
@@ -216,15 +218,15 @@ class BuildHistoryActivityTest {
         val url = "/app/rest/builds?locator=opaque:12&fields=build(id,href)"
         installPage((1..12).map { build("$it") }, url)
         registerDetails(more)
-        doReturn(Single.just(page(more))).whenever(teamCityService).listMoreBuilds(url)
+        doReturn(page(more)).whenever(teamCityService) { listMoreBuilds(url) }
         launch().use { scenario ->
             awaitRow("1")
             scrollTo("12")
             scrollTo("20")
             scenario.recreate()
             scrollTo("20")
-            verify(teamCityService, times(1)).listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR)
-            verify(teamCityService, times(1)).listMoreBuilds(url)
+            verifyBlocking(teamCityService, times(1)) { listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR) }
+            verifyBlocking(teamCityService, times(1)) { listMoreBuilds(url) }
         }
     }
 
@@ -232,7 +234,7 @@ class BuildHistoryActivityTest {
         installPage((1..12).map { build("$it") }, "/next/12")
         registerDetails(listOf(build("13")))
         val failed = AtomicBoolean(true)
-        doAnswer { if (failed.get()) Single.error<Builds>(IllegalStateException("append offline")) else Single.just(page(listOf(build("13")))) }.whenever(teamCityService).listMoreBuilds("/next/12")
+        doSuspendableAnswer { if (failed.get()) throw IllegalStateException("append offline") else page(listOf(build("13"))) }.whenever(teamCityService) { listMoreBuilds("/next/12") }
         launch().use {
             awaitRow("1")
             scrollTo("12")
@@ -243,20 +245,20 @@ class BuildHistoryActivityTest {
             failed.set(false)
             compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
             scrollTo("13")
-            verify(teamCityService, times(2)).listMoreBuilds("/next/12")
+            verifyBlocking(teamCityService, times(2)) { listMoreBuilds("/next/12") }
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
         }
     }
 
     @Test fun emptyContinuationEndsPagingWithoutStaleCursor() {
         installPage((1..12).map { build("$it") }, "/next/12")
-        doReturn(Single.just(page(emptyList(), "/stale/next"))).whenever(teamCityService).listMoreBuilds("/next/12")
+        doReturn(page(emptyList(), "/stale/next")).whenever(teamCityService) { listMoreBuilds("/next/12") }
         launch().use {
             awaitRow("1")
             scrollTo("12")
             compose.waitUntil(10_000) { moreCalls("/next/12") == 1 }
             compose.waitForIdle()
-            verify(teamCityService, never()).listMoreBuilds("/stale/next")
+            verifyBlocking(teamCityService, never()) { listMoreBuilds("/stale/next") }
             compose.onNodeWithTag("history:build:12").assertIsDisplayed()
         }
     }
@@ -301,27 +303,27 @@ class BuildHistoryActivityTest {
     @Test fun queuedShowNavigatesImmediatelyAndResolvesCompleteTypedSnapshot() {
         installPage(emptyList())
         prepareRun(Activity.RESULT_OK)
-        val pending = SingleSubject.create<Build>()
-        doReturn(pending).whenever(teamCityService).build("/queued/result")
+        val pending = PendingFixture<Build>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { build("/queued/result") }
         launch().use {
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
             completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
             compose.onNodeWithTag("details:reference-loading").assertIsDisplayed()
-            pending.onSuccess(fullBuild("queued"))
+            pending.complete(fullBuild("queued"))
             assertCompleteBuildDestination("queued")
             // Reference resolution and the newly visible Overview each own one request.
-            verify(teamCityService, times(2)).build("/queued/result")
+            verifyBlocking(teamCityService, times(2)) { build("/queued/result") }
         }
     }
 
     @Test fun queuedShowFailureRetriesDirectServerRequest() {
         installPage(emptyList())
         prepareRun(Activity.RESULT_OK)
-        doReturn(Single.error<Build>(IllegalStateException("offline"))).whenever(teamCityService).build("/queued/result")
+        doSuspendableAnswer { throw IllegalStateException("offline") }.whenever(teamCityService) { build("/queued/result") }
         launch().use {
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
@@ -329,11 +331,11 @@ class BuildHistoryActivityTest {
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             awaitText(text(teamcityapp.features.build_details.impl.R.string.error_opening_build))
-            doReturn(Single.just(fullBuild("queued"))).whenever(teamCityService).build("/queued/result")
+            doReturn(fullBuild("queued")).whenever(teamCityService) { build("/queued/result") }
             compose.onNodeWithText(text(HistoryR.string.history_retry)).performClick()
             assertCompleteBuildDestination("queued")
             // Failed reference loading, explicit retry, and the new Overview load.
-            verify(teamCityService, times(3)).build("/queued/result")
+            verifyBlocking(teamCityService, times(3)) { build("/queued/result") }
         }
     }
 
@@ -363,18 +365,18 @@ class BuildHistoryActivityTest {
     @Test fun newFilterHidesOldRowsUntilNewPageCompletes() {
         installPage(listOf(build("1")))
         val filter = selectedFilter()
-        val pending = SingleSubject.create<Builds>()
-        doReturn(pending).whenever(teamCityService).listBuilds("build_type_id", filter.toLocator())
+        val pending = PendingFixture<Builds>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { listBuilds("build_type_id", filter.toLocator()) }
         filterResult = Activity.RESULT_OK
         launch().use {
             awaitRow("1")
             compose.onNodeWithTag("history:filter").performClick()
             completeFilter()
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
             compose.onNodeWithTag("history:build:1").assertDoesNotExist()
             val rows = listOf(build("2"))
             registerDetails(rows)
-            pending.onSuccess(page(rows))
+            pending.complete(page(rows))
             awaitRow("2")
         }
     }
@@ -458,7 +460,7 @@ class BuildHistoryActivityTest {
             awaitRow("1")
             scenario.recreate()
             awaitRow("1")
-            verify(teamCityService, times(1)).listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR)
+            verifyBlocking(teamCityService, times(1)) { listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR) }
         }
     }
 
@@ -482,7 +484,7 @@ class BuildHistoryActivityTest {
             awaitRow("real-run")
             awaitText(text(HistoryR.string.history_queued))
             Assert.assertEquals(2, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
-            verify(teamCityService).queueBuild(org.mockito.kotlin.any<Build>())
+            verifyBlocking(teamCityService) { queueBuild(org.mockito.kotlin.any<Build>()) }
         }
     }
 
@@ -498,30 +500,30 @@ class BuildHistoryActivityTest {
             val locator = "state:queued,branch:default:any,personal:true,pinned:any"
             compose.waitUntil(10_000) { pageCalls(locator) == 1 }
             awaitText(text(HistoryR.string.history_filters_applied))
-            verify(teamCityService).listBuilds("build_type_id", locator)
+            verifyBlocking(teamCityService) { listBuilds("build_type_id", locator) }
         }
     }
 
     @Test fun pendingQueuedShowSurvivesRecreationWithoutDuplicateRequestOrLaunch() {
         installPage(emptyList())
         prepareRun(Activity.RESULT_OK)
-        val pending = SingleSubject.create<Build>()
-        doReturn(pending).whenever(teamCityService).build("/queued/result")
+        val pending = PendingFixture<Build>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { build("/queued/result") }
         launch().use { scenario ->
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
             completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
             scenario.recreate()
             compose.onNodeWithTag("details:reference-loading").assertIsDisplayed()
-            verify(teamCityService, times(1)).build("/queued/result")
-            pending.onSuccess(fullBuild("queued"))
+            verifyBlocking(teamCityService, times(1)) { build("/queued/result") }
+            pending.complete(fullBuild("queued"))
             assertCompleteBuildDestination("queued")
             scenario.recreate()
             compose.waitForIdle()
-            verify(teamCityService, times(2)).build("/queued/result")
+            verifyBlocking(teamCityService, times(2)) { build("/queued/result") }
             Assert.assertEquals(1, snapshot().entries.count { it.destination is BuildDetailsDestination })
         }
     }
@@ -529,8 +531,8 @@ class BuildHistoryActivityTest {
     @Test fun destroyingHistoryCancelsPendingQueuedShowAndIgnoresLateResponse() {
         installPage(emptyList())
         prepareRun(Activity.RESULT_OK)
-        val pending = SingleSubject.create<Build>()
-        doReturn(pending).whenever(teamCityService).build("/queued/result")
+        val pending = PendingFixture<Build>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { build("/queued/result") }
         val scenario = launch()
         try {
             awaitText(text(HistoryR.string.history_empty))
@@ -538,12 +540,12 @@ class BuildHistoryActivityTest {
             completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
         } finally {
             scenario.close()
         }
-        compose.waitUntil(10_000) { !pending.hasObservers() }
-        pending.onSuccess(fullBuild("late"))
+        compose.waitUntil(10_000) { !pending.isAwaiting }
+        pending.complete(fullBuild("late"))
         Assert.assertEquals(Lifecycle.State.DESTROYED, scenario.state)
     }
 
@@ -553,7 +555,7 @@ class BuildHistoryActivityTest {
     ).also { scenario = it }
     private fun installPage(rows: List<Build>, next: String? = null) {
         registerDetails(rows)
-        doReturn(Single.just(page(rows, next))).whenever(teamCityService).listBuilds(anyString(), anyString())
+        doReturn(page(rows, next)).whenever(teamCityService) { listBuilds(anyString(), anyString()) }
     }
     private fun registerDetails(rows: List<Build>) {
         rows.forEach { details[it.href] = it }
@@ -585,7 +587,7 @@ class BuildHistoryActivityTest {
     }
     private fun prepareRun(resultCode: Int) {
         runResult = resultCode
-        doReturn(Single.just(fullBuild("queued"))).whenever(teamCityService).queueBuild(org.mockito.kotlin.any<Build>())
+        doReturn(fullBuild("queued")).whenever(teamCityService) { queueBuild(org.mockito.kotlin.any<Build>()) }
     }
     private fun completeRun() {
         compose.waitUntil(10_000) { compose.onAllNodes(hasTestTag("run-build:submit") and isEnabled()).fetchSemanticsNodes().isNotEmpty() }

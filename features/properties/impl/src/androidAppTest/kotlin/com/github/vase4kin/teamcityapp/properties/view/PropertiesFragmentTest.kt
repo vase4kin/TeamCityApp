@@ -51,7 +51,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.BeforeClass
@@ -61,6 +60,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 import teamcityapp.features.properties.repository.models.Properties
 
 private const val NAME = "name"
@@ -122,7 +123,7 @@ class PropertiesFragmentTest {
     @Test
     fun testUserCanSeeBuildProperties() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -149,7 +150,7 @@ class PropertiesFragmentTest {
     @Test
     fun testUserCanSeeEmptyPropertiesMessageIfPropertiesAreNull() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -174,7 +175,7 @@ class PropertiesFragmentTest {
     @Test
     fun testUserCanSeeEmptyPropertiesMessageIfPropertiesAreEmpty() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -208,7 +209,7 @@ class PropertiesFragmentTest {
     fun testUserCanCopyPropertyValueFromTheList() {
         ConditionWatcher.setTimeoutLimit(TIMEOUT)
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

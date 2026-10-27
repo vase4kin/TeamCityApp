@@ -26,7 +26,6 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-import io.reactivex.Single
 import okhttp3.ResponseBody
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
@@ -40,187 +39,187 @@ interface TeamCityService {
      * @param includeDisconnected - determine what agents to return
      * @param fields - additional TC fields
      * @param locator - TC locator
-     * @return [Single] with [Agents]
+     * @return [Agents]
      */
 
-    fun listAgents(
+    suspend fun listAgents(
         includeDisconnected: Boolean?,
         fields: String?,
         locator: String?
-    ): Single<Agents>
+    ): Agents
 
     /**
      * List build types by Id
      *
      * @param id - Id of build type
-     * @return @return [Single] with [NavigationNode]
+     * @return @return [NavigationNode]
      */
 
-    fun listBuildTypes(id: String): Single<NavigationNode>
+    suspend fun listBuildTypes(id: String): NavigationNode
 
     /**
      * Get single build type details
      *
      * @param url - Build type url
-     * @return [Single] with [BuildType]
+     * @return [BuildType]
      */
 
-    fun buildType(id: String): Single<BuildType>
+    suspend fun buildType(id: String): BuildType
 
     /**
      * Get single build details
      *
      * @param url - Build url
-     * @return [Single] with [Build]
+     * @return [Build]
      */
 
-    fun build(url: String): Single<Build>
+    suspend fun build(url: String): Build
 
     /**
      * List builds
      *
      * @param id - BuildType id
      * @param locator - TC locator
-     * @return [Single] with [Builds]
+     * @return [Builds]
      */
 
-    fun listBuilds(
+    suspend fun listBuilds(
         id: String,
         locator: String
-    ): Single<Builds>
+    ): Builds
 
     /**
      * List running builds
      *
      * @param locator - TC build locator
      * @param fields - Additional TC fields
-     * @return [Single] with [Builds]
+     * @return [Builds]
      */
 
-    fun listRunningBuilds(
+    suspend fun listRunningBuilds(
         locator: String,
         fields: String?
-    ): Single<Builds>
+    ): Builds
 
     /**
      * List queued builds
      *
      * @param locator - TC build locator
      * @param fields - Additional TC fields
-     * @return [Single] with [Builds]
+     * @return [Builds]
      */
 
-    fun listQueueBuilds(
+    suspend fun listQueueBuilds(
         locator: String?,
         fields: String?
-    ): Single<Builds>
+    ): Builds
 
     /**
      * List builds by locator
      *
      * @param locator - teamcity locator to list builds
-     * @return [Single] with [Builds]
+     * @return [Builds]
      */
 
-    fun listBuilds(locator: String): Single<Builds>
+    suspend fun listBuilds(locator: String): Builds
 
     /**
      * List more builds
      *
      * @param url - More builds url
-     * @return [Single] with [Builds]
+     * @return [Builds]
      */
 
-    fun listMoreBuilds(url: String): Single<Builds>
+    suspend fun listMoreBuilds(url: String): Builds
 
     /**
      * List build artifacts
      *
      * @param url - Artifacts url
      * @param locator - TC locator
-     * @return [Single] with [Files]
+     * @return [Files]
      */
 
-    fun listArtifacts(
+    suspend fun listArtifacts(
         url: String,
         locator: String
-    ): Single<Files>
+    ): Files
 
     /**
      * Download artifact file by url
      *
      * @param url - Artifact file url
-     * @return [Single] with [ResponseBody]
+     * @return [ResponseBody]
      */
 
-    fun downloadFile(url: String): Single<ResponseBody>
+    suspend fun downloadFile(url: String): ResponseBody
 
     /**
      * List tests
      *
      * @param url - Build tests url
-     * @return [Single] with [TestOccurrences]
+     * @return [TestOccurrences]
      */
 
-    fun listTestOccurrences(url: String): Single<TestOccurrences>
+    suspend fun listTestOccurrences(url: String): TestOccurrences
 
     /**
      * Get single test info by url
      *
      * @param url - Test url
-     * @return [Single] with [TestOccurrence]
+     * @return [TestOccurrence]
      */
 
-    fun testOccurrence(url: String): Single<TestOccurrence>
+    suspend fun testOccurrence(url: String): TestOccurrence
 
     /**
      * List changes
      *
      * @param url - Build changes url
-     * @return [Single] with [Changes]
+     * @return [Changes]
      */
 
-    fun listChanges(url: String): Single<Changes>
+    suspend fun listChanges(url: String): Changes
 
     /**
      * Get single change
      *
      * @param url - Change url
-     * @return [Single] with [com.github.vase4kin.teamcityapp.changes.api.Changes.Change]
+     * @return [com.github.vase4kin.teamcityapp.changes.api.Changes.Change]
      */
 
-    fun change(url: String): Single<Changes.Change>
+    suspend fun change(url: String): Changes.Change
 
     /**
      * List branches
      *
      * @param id - Build type id
-     * @return [Single] with [com.github.vase4kin.teamcityapp.changes.api.Changes.Change]
+     * @return [com.github.vase4kin.teamcityapp.changes.api.Changes.Change]
      */
 
-    fun listBranches(id: String): Single<Branches>
+    suspend fun listBranches(id: String): Branches
 
     /**
      * Queue build
      *
      * @param build - Build to post
-     * @return [Single] with [Build]
+     * @return [Build]
      */
 
-    fun queueBuild(build: Build): Single<Build>
+    suspend fun queueBuild(build: Build): Build
 
     /**
      * Cancel/Removing build
      *
      * @param buildCancelRequest - request to stop a build
-     * @return [Single] with [Build]
+     * @return [Build]
      */
 
-    fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build>
+    suspend fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Build
 
     /**
      * Server info
      */
 
-    fun serverInfo(): Single<ServerInfo>
+    suspend fun serverInfo(): ServerInfo
 }

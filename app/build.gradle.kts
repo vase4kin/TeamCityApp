@@ -148,8 +148,6 @@ dependencies {
     }
     implementation(libs.gson)
     "mockImplementation"(libs.ktor.client.mock)
-    "mockImplementation"(libs.rxjava.rxJava)
-    "mockImplementation"(libs.coroutines.rx2)
     "mockImplementation"(libs.okhttp.okhttp)
     implementation(projects.sharedApp)
     implementation(projects.libraries.sharedData)
@@ -338,7 +336,7 @@ if (r8VerificationEnabled) {
 
 val verifyProductionNetworking = tasks.register("verifyProductionNetworking") {
     group = "verification"
-    description = "Rejects retired networking libraries in production Android runtimes."
+    description = "Rejects retired networking libraries in production and mock Android runtimes."
     doLast {
         val retiredGroups = setOf(
             "com.squareup.retrofit2",
@@ -346,7 +344,7 @@ val verifyProductionNetworking = tasks.register("verifyProductionNetworking") {
             "com.github.VictorAlbertos.RxCache",
             "com.github.VictorAlbertos.Jolyglot"
         )
-        for (variant in listOf("prodDebug", "prodRelease")) {
+        for (variant in listOf("prodDebug", "prodRelease", "mockDebug")) {
             val retired = configurations.getByName("${variant}RuntimeClasspath")
                 .incoming.resolutionResult.allComponents
                 .mapNotNull { it.moduleVersion }
@@ -356,5 +354,5 @@ val verifyProductionNetworking = tasks.register("verifyProductionNetworking") {
     }
 }
 
-tasks.matching { it.name in setOf("check", "assembleProdDebug", "assembleProdRelease", "assembleProdR8Verification") }
+tasks.matching { it.name in setOf("check", "assembleProdDebug", "assembleProdRelease", "assembleProdR8Verification", "assembleMockDebug") }
     .configureEach { dependsOn(verifyProductionNetworking) }

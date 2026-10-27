@@ -36,6 +36,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -49,14 +50,16 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.R as HistoryR
@@ -179,15 +182,15 @@ class FavoritesFragmentTest {
     @Test fun partialFailureKeepsSavedIdsAndSuccessfulRowsAndCanBeRetried() {
         storage.addBuildTypeToFavorites("good")
         storage.addBuildTypeToFavorites("missing")
-        `when`(teamCityService.buildType("good")).thenReturn(Single.just(build("good", "Available configuration")))
-        `when`(teamCityService.buildType("missing")).thenReturn(Single.error(RuntimeException("offline")))
+        doReturn(build("good", "Available configuration")).whenever(teamCityService) { buildType("good") }
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { buildType("missing") }
         openFavorites()
         awaitConfiguration("good")
         compose.onNodeWithTag("favorites:partial").assertIsDisplayed()
         configuration("good").assertTextContains("Available configuration")
         configuration("missing").assertDoesNotExist()
         Assert.assertEquals(listOf("good", "missing"), storage.favoriteBuildTypeIds)
-        `when`(teamCityService.buildType("missing")).thenReturn(Single.just(build("missing", "Recovered configuration")))
+        doReturn(build("missing", "Recovered configuration")).whenever(teamCityService) { buildType("missing") }
         compose.onNodeWithText(text(FavoritesR.string.favorites_retry)).performClick()
         awaitConfiguration("missing")
         compose.onNodeWithTag("favorites:partial").assertDoesNotExist()
@@ -198,14 +201,14 @@ class FavoritesFragmentTest {
     @Test fun allFailedFavoritesShowAnErrorKeepSavedIdsAndCanBeRetried() {
         storage.addBuildTypeToFavorites("good")
         storage.addBuildTypeToFavorites("missing")
-        `when`(teamCityService.buildType(anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { buildType(anyString()) }
         openFavorites()
         assertTextVisible(text(FavoritesR.string.favorites_all_failed))
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_title))
         compose.onNodeWithText(text(FavoritesR.string.favorites_empty)).assertDoesNotExist()
         Assert.assertEquals(listOf("good", "missing"), storage.favoriteBuildTypeIds)
-        `when`(teamCityService.buildType("good")).thenReturn(Single.just(build("good", "Recovered first")))
-        `when`(teamCityService.buildType("missing")).thenReturn(Single.just(build("missing", "Recovered second")))
+        doReturn(build("good", "Recovered first")).whenever(teamCityService) { buildType("good") }
+        doReturn(build("missing", "Recovered second")).whenever(teamCityService) { buildType("missing") }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         awaitConfiguration("missing")
         configuration("good").assertIsDisplayed()
@@ -216,12 +219,12 @@ class FavoritesFragmentTest {
         storage.addBuildTypeToFavorites("build_type_id")
         openFavorites()
         awaitConfiguration("build_type_id")
-        `when`(teamCityService.buildType(anyString())).thenReturn(Single.error(RuntimeException("offline refresh")))
+        doSuspendableAnswer { throw RuntimeException("offline refresh") }.whenever(teamCityService) { buildType(anyString()) }
         compose.onNodeWithTag("favorites:list").performTouchInput { swipeDown() }
         assertTextVisible(text(FavoritesR.string.favorites_all_failed))
         configuration("build_type_id").assertIsDisplayed()
         Assert.assertEquals(listOf("build_type_id"), storage.favoriteBuildTypeIds)
-        `when`(teamCityService.buildType("build_type_id")).thenReturn(Single.just(build("build_type_id", "Updated favorite")))
+        doReturn(build("build_type_id", "Updated favorite")).whenever(teamCityService) { buildType("build_type_id") }
         compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
         awaitConfiguration("build_type_id")
         assertTextVisible("Updated favorite")
@@ -236,8 +239,8 @@ class FavoritesFragmentTest {
             awaitConfiguration("build_type_id")
             scenario.recreate()
             awaitConfiguration("build_type_id")
-            verify(teamCityService, times(1)).buildType("build_type_id")
-            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
+            verifyBlocking(teamCityService, times(1)) { buildType("build_type_id") }
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
         }
     }
 
@@ -250,19 +253,19 @@ class FavoritesFragmentTest {
             scenario.recreate()
             awaitConfiguration("build_type_id")
             compose.onAllNodesWithText(text(FavoritesR.string.favorites_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
-            verify(teamCityService, times(1)).buildType("build_type_id")
+            verifyBlocking(teamCityService, times(1)) { buildType("build_type_id") }
             compose.onNodeWithTag("home:tab:Projects").performClick()
             awaitProjectRow()
             scenario.recreate()
             awaitProjectRow()
             compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
-            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
             clickFavorites()
             awaitConfiguration("build_type_id")
             compose.waitUntil(10_000) { mockingDetails(teamCityService).invocations.count { it.method.name == "buildType" && it.arguments.contentEquals(arrayOf("build_type_id")) } == 2 }
             scenario.recreate()
             awaitConfiguration("build_type_id")
-            verify(teamCityService, times(2)).buildType("build_type_id")
+            verifyBlocking(teamCityService, times(2)) { buildType("build_type_id") }
         }
     }
 
@@ -273,14 +276,14 @@ class FavoritesFragmentTest {
         saveUser("bob")
         storage.addBuildTypeToFavorites("bob-build")
         storage.setUserActive(Mocks.URL, "alice")
-        val alice = SingleSubject.create<BuildType>()
-        val bob = SingleSubject.create<BuildType>()
-        `when`(teamCityService.buildType("alice-build")).thenReturn(alice)
-        `when`(teamCityService.buildType("bob-build")).thenReturn(bob)
+        val alice = PendingFixture<BuildType>()
+        val bob = PendingFixture<BuildType>()
+        doSuspendableAnswer { alice.await() }.whenever(teamCityService) { buildType("alice-build") }
+        doSuspendableAnswer { bob.await() }.whenever(teamCityService) { buildType("bob-build") }
         ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjectRow()
             clickFavorites()
-            compose.waitUntil(10_000) { alice.hasObservers() }
+            compose.waitUntil(10_000) { alice.isAwaiting }
             scenario.onActivity { activity ->
                 storage.setUserActive(Mocks.URL, "bob")
                 activity.startActivity(
@@ -290,20 +293,20 @@ class FavoritesFragmentTest {
                 )
             }
             awaitProjectRow()
-            compose.waitUntil(10_000) { !alice.hasObservers() }
+            compose.waitUntil(10_000) { !alice.isAwaiting }
             clickFavorites()
-            compose.waitUntil(10_000) { bob.hasObservers() }
+            compose.waitUntil(10_000) { bob.isAwaiting }
             // A late result from Alice must never appear in Bob's restored tab.
-            alice.onSuccess(build("alice-build", "Alice private configuration"))
-            bob.onSuccess(build("bob-build", "Bob configuration"))
+            alice.complete(build("alice-build", "Alice private configuration"))
+            bob.complete(build("bob-build", "Bob configuration"))
             awaitConfiguration("bob-build")
             configuration("bob-build").assertTextContains("Bob configuration")
             configuration("alice-build").assertDoesNotExist()
             Assert.assertEquals("bob", storage.activeUser.userName)
             Assert.assertEquals(listOf("bob-build"), storage.favoriteBuildTypeIds)
             Assert.assertEquals(listOf("alice-build"), storage.userAccounts.single { it.userName == "alice" }.buildTypeIds)
-            verify(teamCityService, times(1)).buildType("alice-build")
-            verify(teamCityService, times(1)).buildType("bob-build")
+            verifyBlocking(teamCityService, times(1)) { buildType("alice-build") }
+            verifyBlocking(teamCityService, times(1)) { buildType("bob-build") }
         }
     }
 

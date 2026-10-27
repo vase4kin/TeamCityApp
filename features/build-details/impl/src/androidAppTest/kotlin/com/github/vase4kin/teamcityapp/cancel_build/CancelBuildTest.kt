@@ -54,7 +54,6 @@ import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import okhttp3.ResponseBody
 import org.hamcrest.Matchers.equalTo
@@ -71,6 +70,10 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 
 private const val NAME = "name"
 
@@ -149,15 +152,14 @@ class CancelBuildTest {
     @Test
     fun testUserCanRemoveQueuedBuildFromQueueWhichWasStartedByHim() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-            .thenReturn(Single.just(Mocks.queuedBuild2()))
+        doReturn(build, Mocks.queuedBuild2()).whenever(teamCityService) { build(anyString()) }
 
-        `when`(
-            teamCityService.cancelBuild(
+        doReturn(Mocks.queuedBuild2()).whenever(teamCityService) {
+            cancelBuild(
                 Mocks.queuedBuild2().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.just(Mocks.queuedBuild2()))
+        }
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -208,14 +210,13 @@ class CancelBuildTest {
     @Test
     fun testUserCanRemoveQueuedBuildFromQueueWhichWasStartedNotByHim() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-            .thenReturn(Single.just(Mocks.queuedBuild2()))
-        `when`(
-            teamCityService.cancelBuild(
+        doReturn(build, Mocks.queuedBuild2()).whenever(teamCityService) { build(anyString()) }
+        doReturn(Mocks.queuedBuild2()).whenever(teamCityService) {
+            cancelBuild(
                 Mocks.queuedBuild2().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.just(Mocks.queuedBuild2()))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -252,14 +253,14 @@ class CancelBuildTest {
     @Test
     fun testUserCanSeeForbiddenErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
         val httpException = MockHttpFailure(HTTP_FORBIDDEN)
-        `when`(
-            teamCityService.cancelBuild(
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) {
+            cancelBuild(
                 build.href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.error(httpException))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -290,14 +291,14 @@ class CancelBuildTest {
     @Test
     fun testUserCanSeeServerErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
         val httpException = MockHttpFailure(500)
-        `when`(
-            teamCityService.cancelBuild(
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) {
+            cancelBuild(
                 build.href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.error(httpException))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -328,14 +329,13 @@ class CancelBuildTest {
     @Test
     fun testUserCanStopBuildWhichWasStartedByNotHim() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
-            .thenReturn(Single.just(Mocks.failedBuild()))
-        `when`(
-            teamCityService.cancelBuild(
+        doReturn(Mocks.runningBuild(), Mocks.failedBuild()).whenever(teamCityService) { build(anyString()) }
+        doReturn(Mocks.failedBuild()).whenever(teamCityService) {
+            cancelBuild(
                 Mocks.failedBuild().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.just(Mocks.failedBuild()))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -372,14 +372,13 @@ class CancelBuildTest {
     @Test
     fun testUserCanStopBuildWhichWasStartedByHim() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
-            .thenReturn(Single.just(Mocks.failedBuild()))
-        `when`(
-            teamCityService.cancelBuild(
+        doReturn(Mocks.runningBuild(), Mocks.failedBuild()).whenever(teamCityService) { build(anyString()) }
+        doReturn(Mocks.failedBuild()).whenever(teamCityService) {
+            cancelBuild(
                 Mocks.failedBuild().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.just(Mocks.failedBuild()))
+        }
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -430,14 +429,14 @@ class CancelBuildTest {
     @Test
     fun testUserCanSeeForbiddenErrorWhenStoppingBuild() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
+        doReturn(Mocks.runningBuild()).whenever(teamCityService) { build(anyString()) }
         val httpException = MockHttpFailure(HTTP_FORBIDDEN)
-        `when`(
-            teamCityService.cancelBuild(
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) {
+            cancelBuild(
                 Mocks.runningBuild().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.error(httpException))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -468,14 +467,14 @@ class CancelBuildTest {
     @Test
     fun testUserCanSeeServerErrorWhenStoppingBuild() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
+        doReturn(Mocks.runningBuild()).whenever(teamCityService) { build(anyString()) }
         val httpException = MockHttpFailure(500)
-        `when`(
-            teamCityService.cancelBuild(
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) {
+            cancelBuild(
                 Mocks.runningBuild().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.error(httpException))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -506,14 +505,13 @@ class CancelBuildTest {
     @Test
     fun testUserCanReAddBuildWhenStoppingIt() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
-            .thenReturn(Single.just(Mocks.failedBuild()))
-        `when`(
-            teamCityService.cancelBuild(
+        doReturn(Mocks.runningBuild(), Mocks.failedBuild()).whenever(teamCityService) { build(anyString()) }
+        doReturn(Mocks.failedBuild()).whenever(teamCityService) {
+            cancelBuild(
                 Mocks.failedBuild().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.just(Mocks.failedBuild()))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -548,10 +546,12 @@ class CancelBuildTest {
         assertOverviewResult("Error with smth")
 
         // Verify build was re-added
-        verify(teamCityService).cancelBuild(
-            anyString(),
-            capture(buildCancelRequestArgumentCaptor)
-        )
+        verifyBlocking(teamCityService) {
+            cancelBuild(
+                anyString(),
+                capture(buildCancelRequestArgumentCaptor)
+            )
+        }
         val (isReAddIntoQueue) = buildCancelRequestArgumentCaptor.value
         assertThat(isReAddIntoQueue, `is`(equalTo(true)))
     }
@@ -559,14 +559,13 @@ class CancelBuildTest {
     @Test
     fun testUserCanNotReAddBuildToQueueWhenRemovingItFromQueue() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-            .thenReturn(Single.just(Mocks.queuedBuild2()))
-        `when`(
-            teamCityService.cancelBuild(
+        doReturn(build, Mocks.queuedBuild2()).whenever(teamCityService) { build(anyString()) }
+        doReturn(Mocks.queuedBuild2()).whenever(teamCityService) {
+            cancelBuild(
                 Mocks.queuedBuild2().href,
                 BuildCancelRequest(false)
             )
-        ).thenReturn(Single.just(Mocks.queuedBuild2()))
+        }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -600,10 +599,12 @@ class CancelBuildTest {
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")
 
         // Verify build wasn't re-added
-        verify(teamCityService).cancelBuild(
-            anyString(),
-            capture(buildCancelRequestArgumentCaptor)
-        )
+        verifyBlocking(teamCityService) {
+            cancelBuild(
+                anyString(),
+                capture(buildCancelRequestArgumentCaptor)
+            )
+        }
         val (isReAddIntoQueue) = buildCancelRequestArgumentCaptor.value
         assertThat(isReAddIntoQueue, `is`(equalTo(false)))
     }

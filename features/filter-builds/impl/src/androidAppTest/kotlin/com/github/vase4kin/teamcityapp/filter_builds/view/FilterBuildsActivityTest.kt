@@ -48,7 +48,6 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.util.ArrayList
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
@@ -64,6 +63,9 @@ import org.mockito.Mockito.timeout
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 
 /**
  * Tests for typed Filter Builds results delivered to History
@@ -115,12 +117,12 @@ class FilterBuildsActivityTest {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        `when`(
-            teamCityService.listBuilds(
+        doReturn(Builds(0, emptyList())).whenever(teamCityService) {
+            listBuilds(
                 anyString(),
                 anyString()
             )
-        ).thenReturn(Single.just(Builds(0, emptyList())))
+        }
     }
 
     @Test
@@ -186,7 +188,7 @@ class FilterBuildsActivityTest {
         val branches = ArrayList<Branch>()
         branches.add(Branch("dev1"))
         branches.add(Branch("dev2"))
-        `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(branches)))
+        doReturn(Branches(branches)).whenever(teamCityService) { listBranches(anyString()) }
 
         // Starting the activity
         activityRule.launchActivity(null)
@@ -378,7 +380,7 @@ class FilterBuildsActivityTest {
                 invocation.method.name == "listBuilds" && invocation.arguments.getOrNull(1) == locator
             }
         }
-        verify(teamCityService).listBuilds(anyString(), eq(locator))
+        verifyBlocking(teamCityService) { listBuilds(anyString(), eq(locator)) }
     }
 
     private fun openHistoryConfiguration() {

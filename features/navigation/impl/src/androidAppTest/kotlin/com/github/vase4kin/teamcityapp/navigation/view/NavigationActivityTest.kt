@@ -34,12 +34,15 @@ import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.navigation.impl.R as NavigationR
 
 @HiltAndroidTest
@@ -84,7 +87,7 @@ class NavigationActivityTest {
             scenario.recreate()
             awaitRows()
             scenario.onActivity { Assert.assertEquals(MainActivity::class.java, it.javaClass) }
-            verify(teamCityService, times(1)).listBuildTypes("selected-project")
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes("selected-project") }
         }
     }
 
@@ -92,7 +95,7 @@ class NavigationActivityTest {
         launch().use { scenario ->
             awaitRows()
             compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
-            verify(teamCityService).listBuildTypes("selected-project")
+            verifyBlocking(teamCityService) { listBuildTypes("selected-project") }
             scenario.onActivity {
                 Assert.assertEquals(LegacyProjectEntry.LEGACY_ACTIVITY, it.intent.component?.className)
                 Assert.assertEquals("selected-project", it.intent.getStringExtra("id"))
@@ -107,7 +110,7 @@ class NavigationActivityTest {
             scenario.recreate()
             awaitRows()
             compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
-            verify(teamCityService, times(1)).listBuildTypes("selected-project")
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes("selected-project") }
         }
     }
 
@@ -120,11 +123,11 @@ class NavigationActivityTest {
     }
 
     @Test fun initialErrorRetainsProjectTitleAndCanBeRetried() {
-        `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listBuildTypes(anyString()) }
         launch().use {
             assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
             compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
-            `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(Mocks.navigationNode()))
+            doReturn(Mocks.navigationNode()).whenever(teamCityService) { listBuildTypes(anyString()) }
             compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
             awaitRows()
         }
@@ -133,11 +136,11 @@ class NavigationActivityTest {
     @Test fun refreshFailureKeepsRowsAndAllowsAnotherRefresh() {
         launch().use {
             awaitRows()
-            `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.error(RuntimeException("refresh offline")))
+            doSuspendableAnswer { throw RuntimeException("refresh offline") }.whenever(teamCityService) { listBuildTypes(anyString()) }
             compose.onNodeWithTag("navigation:list").performTouchInput { swipeDown() }
             assertTextVisible(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
             compose.onNodeWithTag("navigation:row:project:id").assertIsDisplayed()
-            `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(Mocks.navigationNode()))
+            doReturn(Mocks.navigationNode()).whenever(teamCityService) { listBuildTypes(anyString()) }
             compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
             compose.waitUntil(10_000) {
                 compose.onAllNodesWithText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed)).fetchSemanticsNodes().isEmpty()

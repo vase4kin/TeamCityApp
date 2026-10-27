@@ -56,7 +56,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import okhttp3.ResponseBody
 import org.hamcrest.CoreMatchers
@@ -75,6 +74,10 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.properties.repository.models.Properties
 
 private const val BRANCH_NAME = "refs/heads/dev"
@@ -154,33 +157,28 @@ class RestartBuildTest {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        `when`(
-            teamCityService.listAgents(
+        doReturn(Mocks.connectedAgents()).whenever(teamCityService) {
+            listAgents(
                 any(),
                 any(),
                 any()
             )
-        ).thenReturn(Single.just(Mocks.connectedAgents()))
-        `when`(
-            teamCityService.listArtifacts(
+        }
+        doReturn(Mocks.artifacts()).whenever(teamCityService) {
+            listArtifacts(
                 any(),
                 any()
             )
-        ).thenReturn(Single.just(Mocks.artifacts()))
-        `when`(teamCityService.listTestOccurrences(any())).thenReturn(Single.just(Mocks.ignoredTests()))
-        `when`(teamCityService.listChanges(any())).thenReturn(Single.just(Mocks.changes()))
+        }
+        doReturn(Mocks.ignoredTests()).whenever(teamCityService) { listTestOccurrences(any()) }
+        doReturn(Mocks.changes()).whenever(teamCityService) { listChanges(any()) }
     }
 
     @Test
     fun testUserCanRestartBuildWithTheSameParameters() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-            .thenReturn(Single.just(build2))
-        `when`(teamCityService.queueBuild(any())).thenReturn(
-            Single.just(
-                Mocks.queuedBuild2()
-            )
-        )
+        doReturn(build, build2).whenever(teamCityService) { build(anyString()) }
+        doReturn(Mocks.queuedBuild2()).whenever(teamCityService) { queueBuild(any()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -195,7 +193,7 @@ class RestartBuildTest {
             Properties(
                 listOf(property)
             )
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(buildToRestart)).thenReturn(Single.just(build2))
+        doReturn(buildToRestart, build2).whenever(teamCityService) { build(anyString()) }
         b.putSerializable(BundleExtractorValues.BUILD, buildToRestart)
         b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
         intent.putExtras(b)
@@ -219,7 +217,7 @@ class RestartBuildTest {
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
 
         // Checking passed params
-        verify(teamCityService).queueBuild(capture(buildArgumentCaptor))
+        verifyBlocking(teamCityService) { queueBuild(capture(buildArgumentCaptor)) }
         val capturedBuild = buildArgumentCaptor.value
         assertThat(capturedBuild.branchName, `is`(equalTo(BRANCH_NAME)))
         assertThat(capturedBuild.properties!!.properties.size, `is`(equalTo(1)))
@@ -248,14 +246,24 @@ class RestartBuildTest {
     fun testUserCanRestartBuildWithTheSameParametersButFailedToOpenItThen() {
         // Prepare mocks
         val httpException = MockHttpFailure(500)
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-            .thenReturn(Single.error(httpException))
-            .thenReturn(Single.error(httpException))
-        `when`(teamCityService.queueBuild(any())).thenReturn(
-            Single.just(
-                Mocks.queuedBuild2()
-            )
-        )
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        build
+                    }
+
+                    1 -> {
+                        throw httpException
+                    }
+
+                    else -> {
+                        throw httpException
+                    }
+                }
+            }.whenever(teamCityService) { build(anyString()) }
+        }
+        doReturn(Mocks.queuedBuild2()).whenever(teamCityService) { queueBuild(any()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -270,7 +278,23 @@ class RestartBuildTest {
             Properties(
                 listOf(property)
             )
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(buildToRestart)).thenReturn(Single.error(httpException)).thenReturn(Single.error(httpException))
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        buildToRestart
+                    }
+
+                    1 -> {
+                        throw httpException
+                    }
+
+                    else -> {
+                        throw httpException
+                    }
+                }
+            }.whenever(teamCityService) { build(anyString()) }
+        }
         b.putSerializable(BundleExtractorValues.BUILD, buildToRestart)
         b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
         intent.putExtras(b)
@@ -309,13 +333,9 @@ class RestartBuildTest {
     @Test
     fun testUserCanSeeForbiddenErrorWhenRestartingBuild() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
         val httpException = MockHttpFailure(HTTP_FORBIDDEN)
-        `when`(teamCityService.queueBuild(any())).thenReturn(
-            Single.error(
-                httpException
-            )
-        )
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) { queueBuild(any()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -346,13 +366,9 @@ class RestartBuildTest {
     @Test
     fun testUserCanSeeServerErrorWhenRestartingBuild() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
         val httpException = MockHttpFailure(500)
-        `when`(teamCityService.queueBuild(any())).thenReturn(
-            Single.error(
-                httpException
-            )
-        )
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) { queueBuild(any()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

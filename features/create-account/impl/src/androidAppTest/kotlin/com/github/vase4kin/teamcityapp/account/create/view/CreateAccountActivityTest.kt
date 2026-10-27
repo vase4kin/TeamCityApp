@@ -38,6 +38,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.di.modules.AppModule
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -68,6 +69,9 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 
 /**
  * Tests for [MainActivity] with mocked internet connection
@@ -199,7 +203,7 @@ class CreateAccountActivityTest {
      */
     @Test
     fun testUserIsNotifiedIfServerReturnsBadResponse() {
-        org.mockito.Mockito.doReturn(io.reactivex.Single.error<teamcityapp.features.about.repository.models.ServerInfo>(com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(404))).`when`(teamCityService).serverInfo()
+        doSuspendableAnswer { throw com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(404) }.whenever(teamCityService) { serverInfo() }
 
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
@@ -208,32 +212,32 @@ class CreateAccountActivityTest {
     }
 
     @Test fun pendingGuestAuthenticationRetainsItsOwnerAcrossRootRecreation() {
-        val pending = io.reactivex.subjects.SingleSubject.create<teamcityapp.features.about.repository.models.ServerInfo>()
-        org.mockito.Mockito.doReturn(pending).`when`(teamCityService).serverInfo()
+        val pending = PendingFixture<teamcityapp.features.about.repository.models.ServerInfo>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { serverInfo() }
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
         compose.waitForIdle()
-        compose.waitUntil(5_000) { pending.hasObservers() }
+        compose.waitUntil(5_000) { pending.isAwaiting }
         InstrumentationRegistry.getInstrumentation().runOnMainSync { activityRule.activity.recreate() }
         compose.waitForIdle()
         compose.onNodeWithTag("create-account:submit").assertIsNotEnabled()
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.times(1)).serverInfo()
-        pending.onSuccess(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
+        verifyBlocking(teamCityService, org.mockito.Mockito.times(1)) { serverInfo() }
+        pending.complete(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
         awaitHome()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(true))
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.times(1)).serverInfo()
+        verifyBlocking(teamCityService, org.mockito.Mockito.times(1)) { serverInfo() }
     }
 
     @Test fun replacingTheAccountStackCancelsPendingAuthenticationAndIgnoresLateSuccess() {
-        val pending = io.reactivex.subjects.SingleSubject.create<teamcityapp.features.about.repository.models.ServerInfo>()
-        org.mockito.Mockito.doReturn(pending).`when`(teamCityService).serverInfo()
+        val pending = PendingFixture<teamcityapp.features.about.repository.models.ServerInfo>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { serverInfo() }
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
         compose.waitForIdle()
-        compose.waitUntil(5_000) { pending.hasObservers() }
+        compose.waitUntil(5_000) { pending.isAwaiting }
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             activityRule.activity.startActivity(
                 android.content.Intent().setClassName(context, IncomingDestinationResolver.HOME_COMPONENT).apply {
@@ -243,8 +247,8 @@ class CreateAccountActivityTest {
             )
         }
         awaitHome()
-        compose.waitUntil(5_000) { !pending.hasObservers() }
-        pending.onSuccess(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
+        compose.waitUntil(5_000) { !pending.isAwaiting }
+        pending.complete(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
         compose.waitForIdle()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(false))

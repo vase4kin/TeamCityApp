@@ -37,6 +37,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.di.modules.AppModule
 import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -67,6 +68,9 @@ import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.libraries.security.CryptoManager
 
 /**
@@ -258,7 +262,7 @@ class LoginActivityTest {
     @Test
     @Throws(IOException::class)
     fun testUserIsNotifiedIfServerReturnsBadResponse() {
-        org.mockito.Mockito.doReturn(io.reactivex.Single.error<teamcityapp.features.about.repository.models.ServerInfo>(com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(404))).`when`(teamCityService).serverInfo()
+        doSuspendableAnswer { throw com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(404) }.whenever(teamCityService) { serverInfo() }
 
         activityRule.launchActivity(null)
 
@@ -274,7 +278,7 @@ class LoginActivityTest {
     @Test
     @Throws(IOException::class)
     fun testUserIsNotifiedIfServerReturns401Request() {
-        org.mockito.Mockito.doReturn(io.reactivex.Single.error<teamcityapp.features.about.repository.models.ServerInfo>(com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(401))).`when`(teamCityService).serverInfo()
+        doSuspendableAnswer { throw com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(401) }.whenever(teamCityService) { serverInfo() }
 
         activityRule.launchActivity(null)
 
@@ -333,19 +337,19 @@ class LoginActivityTest {
 
     @Test
     fun pendingGuestAuthenticationSurvivesActivityRecreationWithoutAnotherRequest() {
-        val pending = io.reactivex.subjects.SingleSubject.create<teamcityapp.features.about.repository.models.ServerInfo>()
-        org.mockito.Mockito.doReturn(pending).`when`(teamCityService).serverInfo()
+        val pending = PendingFixture<teamcityapp.features.about.repository.models.ServerInfo>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { serverInfo() }
         activityRule.launchActivity(null)
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("login:submit").performClick()
         compose.waitForIdle()
-        compose.waitUntil(5_000) { pending.hasObservers() }
+        compose.waitUntil(5_000) { pending.isAwaiting }
         InstrumentationRegistry.getInstrumentation().runOnMainSync { activityRule.activity.recreate() }
         compose.waitForIdle()
         compose.onNodeWithTag("login:submit").assertIsNotEnabled()
-        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.times(1)).serverInfo()
-        pending.onSuccess(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
+        verifyBlocking(teamCityService, org.mockito.Mockito.times(1)) { serverInfo() }
+        pending.complete(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
         compose.waitForIdle()
         compose.waitForIdle()
         awaitHome()

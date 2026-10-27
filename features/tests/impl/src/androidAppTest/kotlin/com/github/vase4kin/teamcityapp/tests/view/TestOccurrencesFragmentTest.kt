@@ -52,7 +52,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import org.hamcrest.CoreMatchers.equalTo
@@ -62,6 +61,9 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.whenever
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.features.test_details.impl.TestDetailsViewModel
 import teamcityapp.features.tests.impl.R as TestsR
@@ -114,7 +116,7 @@ class TestOccurrencesFragmentTest {
             clearAll()
             saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         }
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.failedBuild()))
+        doReturn(Mocks.failedBuild()).whenever(teamCityService) { build(anyString()) }
     }
 
     @Test fun failedFilterRetainsBuildCountsAndRows() {
@@ -127,7 +129,7 @@ class TestOccurrencesFragmentTest {
 
     @Test fun freshCountsReplaceOpeningSnapshotAndReturnToOverviewOnSystemBack() {
         val summary = Gson().fromJson("""{"count":21,"passed":16,"failed":3,"ignored":2}""", TestOccurrences::class.java)
-        `when`(teamCityService.listTestOccurrences(SUMMARY_URL)).thenReturn(Single.just(summary))
+        doReturn(summary).whenever(teamCityService) { listTestOccurrences(SUMMARY_URL) }
         openTests()
         assertTextVisible(text(TestsR.string.tests_total, 21))
         assertTextVisible(text(TestsR.string.tests_section_failed, 3))
@@ -167,31 +169,31 @@ class TestOccurrencesFragmentTest {
     }
 
     @Test fun emptyFailedFilterUsesItsOwnMessage() {
-        `when`(teamCityService.listTestOccurrences(FAILED_URL)).thenReturn(Single.just(TestOccurrences(0)))
+        doReturn(TestOccurrences(0)).whenever(teamCityService) { listTestOccurrences(FAILED_URL) }
         openTests()
         assertTextVisible(text(TestsR.string.tests_empty_failed))
     }
 
     @Test fun emptyPassedFilterUsesItsOwnMessage() {
-        `when`(teamCityService.listTestOccurrences(PASSED_URL)).thenReturn(Single.just(TestOccurrences(0)))
+        doReturn(TestOccurrences(0)).whenever(teamCityService) { listTestOccurrences(PASSED_URL) }
         openTests()
         compose.onNodeWithTag("tests:filter:Passed").performClick()
         assertTextVisible(text(TestsR.string.tests_empty_passed))
     }
 
     @Test fun emptyIgnoredFilterUsesItsOwnMessage() {
-        `when`(teamCityService.listTestOccurrences(IGNORED_URL)).thenReturn(Single.just(TestOccurrences(0)))
+        doReturn(TestOccurrences(0)).whenever(teamCityService) { listTestOccurrences(IGNORED_URL) }
         openTests()
         compose.onNodeWithTag("tests:filter:Ignored").performClick()
         assertTextVisible(text(TestsR.string.tests_empty_ignored))
     }
 
     @Test fun initialListFailureCanBeRetriedWithinTheTestsTab() {
-        `when`(teamCityService.listTestOccurrences(FAILED_URL)).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listTestOccurrences(FAILED_URL) }
         openTests()
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         val fake = FakeTeamCityServiceImpl()
-        `when`(teamCityService.listTestOccurrences(FAILED_URL)).thenAnswer { fake.listTestOccurrences(FAILED_URL) }
+        doSuspendableAnswer { fake.listTestOccurrences(FAILED_URL) }.whenever(teamCityService) { listTestOccurrences(FAILED_URL) }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         assertTextVisible("Test 1")
         assertTextVisible("Test 6")
@@ -201,15 +203,15 @@ class TestOccurrencesFragmentTest {
         val fails = AtomicBoolean(true)
         val pageCalls = AtomicInteger()
         val fake = FakeTeamCityServiceImpl()
-        `when`(teamCityService.listTestOccurrences(anyString())).thenAnswer {
+        doSuspendableAnswer {
             val url: String = it.getArgument(0)
             if (url.contains("fields=count")) {
-                if (fails.get()) Single.error<TestOccurrences>(RuntimeException("count offline")) else fake.listTestOccurrences(url)
+                if (fails.get()) throw RuntimeException("count offline") else fake.listTestOccurrences(url)
             } else {
                 pageCalls.incrementAndGet()
                 fake.listTestOccurrences(url)
             }
-        }
+        }.whenever(teamCityService) { listTestOccurrences(anyString()) }
         openTests("Tests (?)")
         assertTextVisible("Test 1")
         assertTextVisible(text(TestsR.string.tests_count_unavailable))
@@ -225,11 +227,11 @@ class TestOccurrencesFragmentTest {
     @Test fun configurationRecreationRetainsTheSelectedFilterAndCompletedPages() {
         val pageCalls = AtomicInteger()
         val fake = FakeTeamCityServiceImpl()
-        `when`(teamCityService.listTestOccurrences(anyString())).thenAnswer {
+        doSuspendableAnswer {
             val url: String = it.getArgument(0)
             if (!url.contains("fields=count")) pageCalls.incrementAndGet()
             fake.listTestOccurrences(url)
-        }
+        }.whenever(teamCityService) { listTestOccurrences(anyString()) }
         ActivityScenario.launch<MainActivity>(buildIntent()).use { scenario ->
             awaitTab("Tests (16)", scenario)
             compose.tapBuildDetailsSection("Tests")

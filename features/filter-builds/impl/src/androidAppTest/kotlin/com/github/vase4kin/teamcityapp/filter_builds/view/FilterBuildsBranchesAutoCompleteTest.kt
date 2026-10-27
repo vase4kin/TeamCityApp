@@ -44,7 +44,6 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.util.ArrayList
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
@@ -57,6 +56,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 
 private const val TYPE_ID = "TypeId"
 
@@ -118,7 +119,7 @@ class FilterBuildsBranchesAutoCompleteTest {
     @Test
     fun testUserCanNoBranchesAvailableForFilterIfBuildTypeHasEmptyBranchesList() {
         // Prepare mocks
-        `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(ArrayList())))
+        doReturn(Branches(ArrayList())).whenever(teamCityService) { listBranches(anyString()) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
@@ -136,7 +137,7 @@ class FilterBuildsBranchesAutoCompleteTest {
         val branches = ArrayList<Branch>()
         branches.add(Branch("dev1"))
         branches.add(Branch("dev2"))
-        `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(branches)))
+        doReturn(Branches(branches)).whenever(teamCityService) { listBranches(anyString()) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)

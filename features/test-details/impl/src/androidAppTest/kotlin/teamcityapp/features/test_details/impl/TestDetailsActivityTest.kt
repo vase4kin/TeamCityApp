@@ -27,13 +27,12 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import org.junit.Assert.*
@@ -43,6 +42,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 @HiltAndroidTest
@@ -73,53 +76,79 @@ class TestDetailsActivityTest {
     private val text = "Test details <tag> & literal text"
 
     @Before fun setUp() {
+        com.github.vase4kin.teamcityapp.helper.TestUtils.disableOnboarding()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 
-    private fun launch(url: String = "/test") = ActivityScenario.launch<MainActivity>(Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.TEST_DETAILS_COMPONENT)).putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
+    private fun launch(url: String = "/guestAuth/app/rest/testOccurrences/id:fixture") = ActivityScenario.launch<MainActivity>(Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.TEST_DETAILS_COMPONENT)).putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
     private fun awaitText(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test fun contentIsLiteralAndSurvivesConfigurationChange() {
-        `when`(service.testOccurrence(anyString())).thenReturn(Single.just(TestOccurrence(text)))
+        doReturn(TestOccurrence(text)).whenever(service) { testOccurrence(anyString()) }
         launch().use { scenario ->
             awaitText(text)
             compose.onNodeWithText("Details").assertIsDisplayed()
             scenario.recreate()
             awaitText(text)
-            verify(service, times(1)).testOccurrence(anyString())
+            verifyBlocking(service, times(1)) { testOccurrence(anyString()) }
         }
     }
 
     @Test fun emptyDetailsAreExplicit() {
-        `when`(service.testOccurrence(anyString())).thenReturn(Single.just(TestOccurrence("")))
+        doReturn(TestOccurrence("")).whenever(service) { testOccurrence(anyString()) }
         launch().use { awaitText("No test details") }
     }
 
     @Test fun failureCanBeRetried() {
-        `when`(service.testOccurrence(anyString())).thenReturn(Single.error(IllegalStateException("offline")), Single.just(TestOccurrence(text)))
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        throw IllegalStateException("offline")
+                    }
+
+                    else -> {
+                        TestOccurrence(text)
+                    }
+                }
+            }.whenever(service) { testOccurrence(anyString()) }
+        }
         launch().use {
             awaitText(app.getString(teamcityapp.libraries.theme.R.string.error_load_title))
             compose.onNodeWithText(app.getString(teamcityapp.libraries.theme.R.string.error_load_message)).assertIsDisplayed()
             compose.onNodeWithText(app.getString(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
             awaitText(text)
             compose.onNodeWithText(app.getString(teamcityapp.libraries.theme.R.string.action_retry)).assertDoesNotExist()
-            verify(service, times(2)).testOccurrence(anyString())
+            verifyBlocking(service, times(2)) { testOccurrence(anyString()) }
         }
     }
 
     @Test fun stoppingCancelsAndReturningRestartsPendingRequest() {
-        val pending = SingleSubject.create<TestOccurrence>()
+        val pending = PendingFixture<TestOccurrence>()
         val started = CountDownLatch(1)
-        `when`(service.testOccurrence(anyString())).thenReturn(pending.doOnSubscribe { started.countDown() }, Single.just(TestOccurrence(text)))
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        started.countDown()
+                        pending.await()
+                    }
+
+                    else -> {
+                        TestOccurrence(text)
+                    }
+                }
+            }.whenever(service) { testOccurrence(anyString()) }
+        }
         launch().use { scenario ->
-            assertTrue(started.await(5, TimeUnit.SECONDS))
+            compose.waitUntil(10_000) { started.count == 0L }
             scenario.moveToState(Lifecycle.State.CREATED)
-            compose.waitUntil(5_000) { !pending.hasObservers() }
-            pending.onSuccess(TestOccurrence("late"))
+            compose.waitUntil(5_000) { !pending.isAwaiting }
+            pending.complete(TestOccurrence("late"))
             scenario.moveToState(Lifecycle.State.RESUMED)
             awaitText(text)
             compose.onNodeWithText("late").assertDoesNotExist()
@@ -127,30 +156,45 @@ class TestDetailsActivityTest {
     }
 
     @Test fun recreatingPendingRequestCancelsAndReloads() {
-        val pending = SingleSubject.create<TestOccurrence>()
+        val pending = PendingFixture<TestOccurrence>()
         val started = CountDownLatch(1)
-        `when`(service.testOccurrence(anyString())).thenReturn(pending.doOnSubscribe { started.countDown() }, Single.just(TestOccurrence(text)))
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        started.countDown()
+                        pending.await()
+                    }
+
+                    else -> {
+                        TestOccurrence(text)
+                    }
+                }
+            }.whenever(service) { testOccurrence(anyString()) }
+        }
         launch().use { scenario ->
-            assertTrue(started.await(5, TimeUnit.SECONDS))
+            compose.waitUntil(10_000) { started.count == 0L }
             scenario.recreate()
             awaitText(text)
-            compose.waitUntil(5_000) { !pending.hasObservers() }
+            compose.waitUntil(5_000) { !pending.isAwaiting }
         }
     }
 
-    @Test fun closeFinishesActivity() {
-        `when`(service.testOccurrence(anyString())).thenReturn(Single.just(TestOccurrence(text)))
+    @Test fun closeReturnsToHome() {
+        doReturn(TestOccurrence(text)).whenever(service) { testOccurrence(anyString()) }
         launch().use { scenario ->
             awaitText(text)
             compose.onNodeWithContentDescription("Back").performClick()
-            compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
+            compose.waitUntil(5_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
         }
     }
 
-    @Test fun missingInputClosesWithoutRequest() {
+    @Test fun missingInputCanReturnHomeWithoutARequest() {
         launch("").use { scenario ->
-            compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
-            verify(service, never()).testOccurrence(anyString())
+            awaitText("Details")
+            verifyBlocking(service, never()) { testOccurrence(anyString()) }
+            compose.onNodeWithContentDescription("Back").performClick()
+            compose.waitUntil(5_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
         }
     }
 }

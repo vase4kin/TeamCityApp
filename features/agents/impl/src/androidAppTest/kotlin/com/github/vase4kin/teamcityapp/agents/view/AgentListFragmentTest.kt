@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import org.hamcrest.core.AllOf.allOf
@@ -45,6 +44,9 @@ import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.whenever
 import teamcityapp.features.agents.impl.R as AgentsR
 
 @HiltAndroidTest
@@ -110,16 +112,16 @@ class AgentListFragmentTest {
     }
 
     @Test fun failureCanBeRetriedWithoutRecreatingTheFragment() {
-        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listAgents(any(), any(), any()) }
         openAgents()
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
-        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Recovered")))))
+        doReturn(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Recovered")))).whenever(teamCityService) { listAgents(any(), any(), any()) }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         assertTextVisible("Recovered")
     }
 
     @Test fun emptyMessageFollowsTheSelectedFilter() {
-        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Agents(0, emptyList())))
+        doReturn(Agents(0, emptyList())).whenever(teamCityService) { listAgents(any(), any(), any()) }
         openAgents()
         assertTextVisible(text(AgentsR.string.agents_empty_connected))
         showDisconnected()
@@ -129,10 +131,10 @@ class AgentListFragmentTest {
 
     @Test fun returningToTheAgentsTabRetainsItsCompletedList() {
         val calls = AtomicInteger()
-        `when`(teamCityService.listAgents(false, null, null)).thenAnswer {
+        doSuspendableAnswer {
             calls.incrementAndGet()
-            Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Visible agent"))))
-        }
+            Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Visible agent")))
+        }.whenever(teamCityService) { listAgents(false, null, null) }
         openAgents()
         assertTextVisible("Visible agent")
         Assert.assertEquals(1, calls.get())
@@ -146,16 +148,20 @@ class AgentListFragmentTest {
     @Test fun switchingTabsCancelsAPendingAgentsRequest() {
         val disposed = AtomicBoolean()
         val subscribed = AtomicBoolean()
-        `when`(teamCityService.listAgents(false, null, null)).thenReturn(
-            Single.never<Agents>().doOnSubscribe { subscribed.set(true) }.doOnDispose { disposed.set(true) }
-        )
+        doSuspendableAnswer {
+            subscribed.set(true)
+            try {
+                kotlinx.coroutines.awaitCancellation()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                disposed.set(true)
+                throw cancelled
+            }
+        }.whenever(teamCityService) { listAgents(false, null, null) }
         openAgents()
         compose.waitUntil(10_000) { subscribed.get() }
         selectTab("Favorites")
         compose.waitUntil(10_000) { disposed.get() }
-        `when`(teamCityService.listAgents(false, null, null)).thenReturn(
-            Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Returned agent"))))
-        )
+        doReturn(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Returned agent")))).whenever(teamCityService) { listAgents(false, null, null) }
         selectTab("Agents")
         assertTextVisible("Returned agent")
     }

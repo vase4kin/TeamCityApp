@@ -43,6 +43,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.verifyBlocking
 import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
@@ -165,14 +166,14 @@ class HomeStartupNavigationTest {
             awaitTag("agents:list")
             select(HomeTab.Projects)
             awaitRoot()
-            verify(service, times(1)).listBuildTypes("_Root")
+            verifyBlocking(service, times(1)) { listBuildTypes("_Root") }
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            verify(service, times(1)).listAgents(false, "agent(id,name),nextHref", null)
+            verifyBlocking(service, times(1)) { listAgents(false, "agent(id,name),nextHref", null) }
             scenario.recreate()
             awaitTag("agents:list")
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
-            verify(service, times(1)).listAgents(false, "agent(id,name),nextHref", null)
+            verifyBlocking(service, times(1)) { listAgents(false, "agent(id,name),nextHref", null) }
         }
     }
 
@@ -191,7 +192,7 @@ class HomeStartupNavigationTest {
             awaitRoot()
             compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
             assertEquals(Lifecycle.State.RESUMED, scenario.state)
-            verify(service, times(1)).listBuildTypes("id")
+            verifyBlocking(service, times(1)) { listBuildTypes("id") }
         }
     }
 
@@ -217,7 +218,7 @@ class HomeStartupNavigationTest {
             awaitTag("agents:list")
             compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick()
             awaitTag("agents:list")
-            compose.waitUntil(10_000) { runCatching { verify(service).listAgents(true, "agent(id,name),nextHref", null) }.isSuccess }
+            compose.waitUntil(10_000) { runCatching { verifyBlocking(service) { listAgents(true, "agent(id,name),nextHref", null) } }.isSuccess }
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
             compose.onNodeWithTag("quick-filter:content").assertDoesNotExist()
             scenario.recreate()
@@ -257,7 +258,7 @@ class HomeStartupNavigationTest {
             compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            verify(service, times(2)).listAgents(false, "agent(id,name),nextHref", null)
+            verifyBlocking(service, times(2)) { listAgents(false, "agent(id,name),nextHref", null) }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }

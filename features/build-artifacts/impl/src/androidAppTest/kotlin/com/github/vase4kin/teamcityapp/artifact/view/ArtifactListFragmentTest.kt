@@ -45,6 +45,7 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.DeviceEvidence
@@ -61,8 +62,6 @@ import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.atomic.AtomicInteger
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -76,6 +75,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.R as ArtifactsR
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
@@ -153,10 +156,10 @@ class ArtifactListFragmentTest {
     }
 
     @Test fun initialFailureCanRetry() {
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
         start()
         awaitText(text(teamcityapp.libraries.theme.R.string.error_load_message))
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
+        doReturn(Mocks.artifacts()).whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
         val retry = compose.onAllNodesWithText(text(teamcityapp.libraries.theme.R.string.action_retry))
         val visibleRetry = retry.fetchSemanticsNodes().indices.single { index -> runCatching { retry[index].assertIsDisplayed() }.isSuccess }
         retry[visibleRetry].performClick()
@@ -181,8 +184,8 @@ class ArtifactListFragmentTest {
 
     @Test fun archiveOffersDownloadAndOpenWithOpaqueArchiveChildren() {
         val archive = Gson().fromJson("""{"name":"bundle.zip","href":"/metadata/bundle.zip","size":2048,"content":{"href":"/content/bundle.zip"},"children":{"href":"/children/bundle.zip!"}}""", File::class.java)
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Files(listOf(archive))))
-        `when`(teamCityService.listArtifacts("/children/bundle.zip!", "browseArchives:true")).thenReturn(Single.just(Files(listOf(file("Inner file.txt", "/metadata/inner")))))
+        doReturn(Files(listOf(archive))).whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
+        doReturn(Files(listOf(file("Inner file.txt", "/metadata/inner")))).whenever(teamCityService) { listArtifacts("/children/bundle.zip!", "browseArchives:true") }
         start()
         clickFile("/metadata/bundle.zip")
         awaitText(text(SheetR.string.artifact_download))
@@ -195,7 +198,7 @@ class ArtifactListFragmentTest {
 
     @Test fun downloadedFileOpensWithProviderUriAndGrants() {
         intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just("downloaded bytes".toResponseBody()))
+        doReturn("downloaded bytes".toResponseBody()).whenever(teamCityService) { downloadFile(anyString()) }
         openArtifacts(Files(listOf(file("teamcity.unknown", "/metadata/download"))))
         download("/metadata/download")
         compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
@@ -221,13 +224,13 @@ class ArtifactListFragmentTest {
 
     @Test fun downloadFailureCardOffersRetryThatCanSucceed() {
         intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.error(RuntimeException("download offline")))
+        doSuspendableAnswer { throw RuntimeException("download offline") }.whenever(teamCityService) { downloadFile(anyString()) }
         openArtifacts(Files(listOf(file("retry.unknown", "/metadata/retry"))))
         download("/metadata/retry")
         awaitText(text(ArtifactsR.string.artifacts_download_failed))
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(ArtifactsR.string.artifacts_download_failed))
         DeviceEvidence.capture("android_download_failure")
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just("retried".toResponseBody()))
+        doReturn("retried".toResponseBody()).whenever(teamCityService) { downloadFile(anyString()) }
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_retry_download)).performClick()
         compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
         compose.waitUntil(10_000) {
@@ -260,7 +263,7 @@ class ArtifactListFragmentTest {
             override fun contentLength(): Long = 16384
             override fun source() = bytes
         }
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just(body))
+        doReturn(body).whenever(teamCityService) { downloadFile(anyString()) }
         openArtifacts(Files(listOf(File("progress.txt", 16384L, File.Content("/content/progress.txt"), "/metadata/progress"))))
         download("/metadata/progress")
         awaitText("8192 bytes received")
@@ -274,30 +277,37 @@ class ArtifactListFragmentTest {
     }
 
     @Test fun cancelDownloadDisposesTheNetworkRequestWithoutFailureNotification() {
-        val pending = SingleSubject.create<ResponseBody>()
+        val pending = PendingFixture<ResponseBody>()
         val canceled = AtomicInteger()
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending.doOnDispose { canceled.incrementAndGet() })
+        doSuspendableAnswer {
+            try {
+                pending.await()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                canceled.incrementAndGet()
+                throw cancelled
+            }
+        }.whenever(teamCityService) { downloadFile(anyString()) }
         openArtifacts(Files(listOf(file("cancel.unknown", "/metadata/cancel"))))
         download("/metadata/cancel")
         awaitText(text(ArtifactsR.string.artifacts_downloading))
-        compose.waitUntil(10_000) { pending.hasObservers() }
+        compose.waitUntil(10_000) { pending.isAwaiting }
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
         compose.waitUntil(10_000) { canceled.get() == 1 }
-        assertFalse(pending.hasObservers())
+        assertFalse(pending.isAwaiting)
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_downloading)).assertDoesNotExist()
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(ArtifactsR.string.artifacts_download_failed)).assertCountEquals(0)
     }
 
     @Test fun leavingArtifactsCancelsPendingDownloadAndReturningDoesNotResumeIt() {
-        val pending = SingleSubject.create<ResponseBody>()
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
+        val pending = PendingFixture<ResponseBody>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { downloadFile(anyString()) }
         openArtifacts(Files(listOf(file("leave.unknown", "/metadata/leave"))))
         download("/metadata/leave")
         awaitText(text(ArtifactsR.string.artifacts_downloading))
-        compose.waitUntil(10_000) { pending.hasObservers() }
+        compose.waitUntil(10_000) { pending.isAwaiting }
         androidx.test.espresso.Espresso.pressBack()
-        compose.waitUntil(10_000) { !pending.hasObservers() }
+        compose.waitUntil(10_000) { !pending.isAwaiting }
         tab("Artifacts")
         awaitText("leave.unknown")
         compose.onNodeWithTag("artifacts:download-card").assertDoesNotExist()
@@ -305,18 +315,18 @@ class ArtifactListFragmentTest {
     }
 
     @Test fun backgroundingCancelsPendingDownloadWithoutAnErrorOrAutomaticResume() {
-        val pending = SingleSubject.create<ResponseBody>()
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Files(listOf(file("background.unknown", "/metadata/background")))))
+        val pending = PendingFixture<ResponseBody>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { downloadFile(anyString()) }
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(anyString()) }
+        doReturn(Files(listOf(file("background.unknown", "/metadata/background")))).whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(BuildComposeFixtures.finished)).use { scenario ->
             awaitTag("overview:list")
             tab("Artifacts")
             download("/metadata/background")
             awaitText(text(ArtifactsR.string.artifacts_downloading))
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
-            compose.waitUntil(10_000) { !pending.hasObservers() }
+            compose.waitUntil(10_000) { !pending.isAwaiting }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
             awaitText("background.unknown")
             compose.onNodeWithTag("artifacts:download-card").assertDoesNotExist()
@@ -325,18 +335,18 @@ class ArtifactListFragmentTest {
     }
 
     @Test fun restoredArtifactsRetainsPagesAndPendingDownloadWithoutDuplicateWork() {
-        val pending = SingleSubject.create<ResponseBody>()
+        val pending = PendingFixture<ResponseBody>()
         val lists = AtomicInteger()
         val downloads = AtomicInteger()
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenAnswer {
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(anyString()) }
+        doSuspendableAnswer {
             lists.incrementAndGet()
-            Single.just(Files(listOf(file("restore.unknown", "/metadata/restore"))))
-        }
-        `when`(teamCityService.downloadFile(anyString())).thenAnswer {
+            Files(listOf(file("restore.unknown", "/metadata/restore")))
+        }.whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
+        doSuspendableAnswer {
             downloads.incrementAndGet()
-            pending
-        }
+            pending.await()
+        }.whenever(teamCityService) { downloadFile(anyString()) }
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(BuildComposeFixtures.finished)).use { scenario ->
             awaitTag("overview:list")
             tab("Artifacts")
@@ -347,9 +357,9 @@ class ArtifactListFragmentTest {
             awaitText(text(ArtifactsR.string.artifacts_downloading))
             assertEquals(completedLists, lists.get())
             assertEquals(1, downloads.get())
-            assertTrue(pending.hasObservers())
+            assertTrue(pending.isAwaiting)
             compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
-            compose.waitUntil(10_000) { !pending.hasObservers() }
+            compose.waitUntil(10_000) { !pending.isAwaiting }
             awaitText("restore.unknown")
             // The retained destination restores its loaded toolbar after recreation.
             compose.awaitDisplayedText("#latest-number · Current configuration")
@@ -357,25 +367,25 @@ class ArtifactListFragmentTest {
     }
 
     @Test fun apkDownloadUsesAppPrivateStorageWithoutRequestingInstallPermission() {
-        val pending = SingleSubject.create<ResponseBody>()
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
+        val pending = PendingFixture<ResponseBody>()
+        doSuspendableAnswer { pending.await() }.whenever(teamCityService) { downloadFile(anyString()) }
         openArtifacts(Files(listOf(file("app.apk", "/metadata/app.apk"))))
         download("/metadata/app.apk")
         awaitText(text(ArtifactsR.string.artifacts_downloading))
-        compose.waitUntil(10_000) { pending.hasObservers() }
+        compose.waitUntil(10_000) { pending.isAwaiting }
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_permission_denied)).assertDoesNotExist()
         assertFalse(androidx.test.espresso.intent.Intents.getIntents().any { it.action == android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES })
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
-        compose.waitUntil(10_000) { !pending.hasObservers() }
+        compose.waitUntil(10_000) { !pending.isAwaiting }
     }
 
     @Test fun hiddenBuildDetailsArtifactsCannotConsumeFolderActivityDownloadEvents() {
         intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
         val downloads = AtomicInteger()
-        `when`(teamCityService.downloadFile(anyString())).thenAnswer {
+        doSuspendableAnswer {
             downloads.incrementAndGet()
-            Single.just("one owner".toResponseBody())
-        }
+            "one owner".toResponseBody()
+        }.whenever(teamCityService) { downloadFile(anyString()) }
         folders()
         clickFile("/metadata/res")
         awaitText("Nested file.txt")
@@ -387,10 +397,10 @@ class ArtifactListFragmentTest {
 
     @Test fun installedArtifactActivityAcceptsLegacyExtrasAndRestoresItsFolder() {
         val lists = AtomicInteger()
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenAnswer {
+        doSuspendableAnswer {
             lists.incrementAndGet()
-            Single.just(Files(listOf(file("Alias file.txt", "/metadata/alias"))))
-        }
+            Files(listOf(file("Alias file.txt", "/metadata/alias")))
+        }.whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
         listOf(LegacyArtifactsEntry.LEGACY_ACTIVITY, "teamcityapp.features.artifacts.impl.ArtifactsActivity").forEach { component ->
             val alias = Intent().setComponent(ComponentName(context.packageName, component))
                 .putExtra(LegacyArtifactsEntry.BUILD, BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))
@@ -409,22 +419,22 @@ class ArtifactListFragmentTest {
                 assertEquals(completedLists, lists.get())
             }
         }
-        verify(teamCityService, times(2)).listArtifacts("/children/alias", "browseArchives:true")
+        verifyBlocking(teamCityService, times(2)) { listArtifacts("/children/alias", "browseArchives:true") }
     }
     private fun file(name: String, href: String) = File(name, 1024L, File.Content("/content/" + name), href)
     private fun start() {
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(anyString()) }
         activityRule.launchActivity(BuildComposeFixtures.intent(BuildComposeFixtures.finished))
         tab("Artifacts")
     }
     private fun openArtifacts(files: Files) {
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(files))
+        doReturn(files).whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
         start()
     }
     private fun folders() {
         val folder = File("res", File.Children("/children/res"), "/metadata/res")
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Files(listOf(folder))))
-        `when`(teamCityService.listArtifacts("/children/res", "browseArchives:true")).thenReturn(Single.just(Files(listOf(file("Nested file.txt", "/metadata/nested")))))
+        doReturn(Files(listOf(folder))).whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
+        doReturn(Files(listOf(file("Nested file.txt", "/metadata/nested")))).whenever(teamCityService) { listArtifacts("/children/res", "browseArchives:true") }
         start()
         awaitText("res")
     }

@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -41,6 +40,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.settings.api.navigation.SettingsDestination
@@ -81,7 +83,7 @@ class MainActivityNavigationTest {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         runBlocking { app.appInjector.themePreferences().setTheme(ThemeMode.Light) }
-        `when`(service.serverInfo()).thenReturn(Single.just(info))
+        doReturn(info).whenever(service) { serverInfo() }
     }
 
     private fun await(text: String) {
@@ -101,7 +103,7 @@ class MainActivityNavigationTest {
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
             compose.onNodeWithContentDescription("Back").performClick()
             await(info.version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
             assertEquals(Lifecycle.State.RESUMED, scenario.state)
         }
     }
@@ -115,7 +117,7 @@ class MainActivityNavigationTest {
             await("Light theme")
             compose.onNodeWithContentDescription("Back").performClick()
             await(info.version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
         }
     }
 
@@ -147,7 +149,7 @@ class MainActivityNavigationTest {
             await("Light theme")
             compose.onNodeWithContentDescription("Back").performClick()
             await(info.version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
         }
     }
 
@@ -210,7 +212,7 @@ class MainActivityNavigationTest {
                 await("Open or share")
                 compose.onNodeWithTag("artifacts:open-downloaded").performClick()
                 await("Open or share")
-                verify(service, times(1)).downloadFile(org.mockito.kotlin.any())
+                verifyBlocking(service, times(1)) { downloadFile(org.mockito.kotlin.any()) }
                 androidx.test.espresso.intent.Intents.intended(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER), androidx.test.espresso.intent.VerificationModes.times(2))
             }
         } finally {

@@ -36,7 +36,6 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.integration.platform.artifacts.ComposeArtifactsPlatformModule
 import dagger.hilt.android.testing.*
-import io.reactivex.Single
 import java.io.File
 import javax.inject.Inject
 import okio.buffer
@@ -47,6 +46,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.*
@@ -128,7 +131,7 @@ class BuildDetailsNavigationTest {
     @Test fun incomingTabsAndParametersRemainStableWhenOverviewLoadsADifferentSnapshot() {
         val incoming = mapper.toLaunchData(Mocks.failedBuild()).copy(number = "incoming", properties = BuildProperties(listOf(BuildProperty("initial.parameter", "initial-value"))), snapshotDependencies = BuildCollectionLink(null))
         val loaded = incoming.copy(number = "latest", changes = null, tests = null, artifacts = null, snapshotDependencies = null, properties = BuildProperties(listOf(BuildProperty("loaded.parameter", "loaded-value"))))
-        doReturn(Single.just(mapper.toLegacyBuild(loaded))).`when`(service).build(incoming.href)
+        doReturn(mapper.toLegacyBuild(loaded)).whenever(service) { build(incoming.href) }
         launch().use { scenario ->
             open(scenario, incoming)
             awaitText("#latest")
@@ -158,7 +161,7 @@ class BuildDetailsNavigationTest {
     @Test fun branchSheetRestoresAndNavigatesUsingTheLoadedConfigurationAndExactBranch() {
         val incoming = mapper.toLaunchData(Mocks.successBuild())
         val loaded = incoming.copy(buildTypeId = "latest-configuration", branchName = "refs/heads/opaque:branch", configuration = incoming.configuration?.copy(name = "Latest configuration"))
-        doReturn(Single.just(mapper.toLegacyBuild(loaded))).`when`(service).build(incoming.href)
+        doReturn(mapper.toLegacyBuild(loaded)).whenever(service) { build(incoming.href) }
         launch().use { scenario ->
             open(scenario, incoming)
             compose.onNodeWithTag("overview:row:Branch").performClick()
@@ -168,7 +171,7 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("sheet:Branch").performClick()
             awaitTag("history:list")
             val locator = BuildListFilterImpl().apply { setBranch(loaded.branchName.orEmpty()) }.toLocator()
-            compose.waitUntil(10_000) { runCatching { verify(service).listBuilds("latest-configuration", locator) }.isSuccess }
+            compose.waitUntil(10_000) { runCatching { verifyBlocking(service) { listBuilds("latest-configuration", locator) } }.isSuccess }
             pressBack()
             awaitTag("overview:list")
             compose.onNodeWithTag("sheet:content").assertDoesNotExist()
@@ -180,7 +183,7 @@ class BuildDetailsNavigationTest {
         val build = mapper.toLaunchData(Mocks.successBuild())
         val folderHref = "/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"
         val fileHref = "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/AndroidManifest.xml"
-        doReturn(Single.just(Mocks.artifacts())).`when`(service).listArtifacts(folderHref, "browseArchives:true")
+        doReturn(Mocks.artifacts()).whenever(service) { listArtifacts(folderHref, "browseArchives:true") }
         launch().use { scenario ->
             open(scenario, build)
             tab("Artifacts")
@@ -210,11 +213,11 @@ class BuildDetailsNavigationTest {
         val running = mapper.toLaunchData(Mocks.runningBuild())
         val cancelled = running.copy(state = "finished", number = "cancelled", artifacts = BuildCollectionLink("/guestAuth/app/rest/builds/id:92912/artifacts/children/"))
         var current = running
-        doAnswer { Single.just(mapper.toLegacyBuild(current)) }.`when`(service).build(running.href)
-        doAnswer {
+        doSuspendableAnswer { mapper.toLegacyBuild(current) }.whenever(service) { build(running.href) }
+        doSuspendableAnswer {
             current = cancelled
-            Single.just(mapper.toLegacyBuild(cancelled))
-        }.`when`(service).cancelBuild(running.href, BuildCancelRequest(true))
+            mapper.toLegacyBuild(cancelled)
+        }.whenever(service) { cancelBuild(running.href, BuildCancelRequest(true)) }
         launch().use { scenario ->
             open(scenario, running)
             compose.onNodeWithTag("details:action:Cancel").performClick()
@@ -227,7 +230,7 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("overview:screen").assertIsDisplayed()
             tab("Artifacts")
             awaitTag("artifacts:list")
-            verify(service, times(1)).cancelBuild(running.href, BuildCancelRequest(true))
+            verifyBlocking(service, times(1)) { cancelBuild(running.href, BuildCancelRequest(true)) }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
@@ -248,7 +251,7 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("overview:section:Artifacts").assertDoesNotExist()
             scenario.recreate()
             awaitTag("overview:row:WaitReason")
-            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            verifyBlocking(service, times(1)) { queueBuild(org.mockito.kotlin.any()) }
             pressBack()
             compose.waitUntil(10_000) {
                 (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as? BuildDetailsDestination)?.build?.id == build.id
@@ -285,12 +288,12 @@ class BuildDetailsNavigationTest {
         val testsHref = "${build.tests?.href},count:2147483647&fields=count"
         val changesHref = "${build.changes?.href},count:2147483647&fields=count"
         var failed = true
-        doAnswer { if (failed) Single.error<com.github.vase4kin.teamcityapp.tests.api.TestOccurrences>(IllegalStateException("offline count")) else Single.just(com.github.vase4kin.teamcityapp.tests.api.TestOccurrences(16)) }.`when`(service).listTestOccurrences(testsHref)
+        doSuspendableAnswer { if (failed) throw IllegalStateException("offline count") else com.github.vase4kin.teamcityapp.tests.api.TestOccurrences(16) }.whenever(service) { listTestOccurrences(testsHref) }
         launch().use { scenario ->
             open(scenario, build)
             awaitTag("overview:retry-count:Tests")
-            verify(service, times(1)).listTestOccurrences(testsHref)
-            verify(service, times(1)).listChanges(changesHref)
+            verifyBlocking(service, times(1)) { listTestOccurrences(testsHref) }
+            verifyBlocking(service, times(1)) { listChanges(changesHref) }
             scenario.recreate()
             awaitTag("overview:retry-count:Tests")
             failed = false
@@ -299,8 +302,8 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("overview:section:Tests").assertTextContains("16")
             scenario.recreate()
             compose.onNodeWithTag("overview:section:Tests").assertTextContains("16")
-            verify(service, times(2)).listTestOccurrences(testsHref)
-            verify(service, times(1)).listChanges(changesHref)
+            verifyBlocking(service, times(2)) { listTestOccurrences(testsHref) }
+            verifyBlocking(service, times(1)) { listChanges(changesHref) }
         }
     }
 
@@ -377,7 +380,7 @@ class BuildDetailsNavigationTest {
             override fun contentLength() = -1L
             override fun source() = buffered
         }
-        doReturn(Single.just(body)).`when`(service).downloadFile(org.mockito.kotlin.any())
+        doReturn(body).whenever(service) { downloadFile(org.mockito.kotlin.any()) }
         val directory = app.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS) ?: app.filesDir
         directory.mkdirs()
         val completed = File(directory, "AndroidManifest.xml").apply { writeText("completed download") }
@@ -404,7 +407,7 @@ class BuildDetailsNavigationTest {
                 compose.waitUntil(10_000) { closed.count == 0L }
                 assertEquals("completed download", completed.readText())
                 assertTrue(opened.isEmpty())
-                verify(service, times(1)).downloadFile(org.mockito.kotlin.any())
+                verifyBlocking(service, times(1)) { downloadFile(org.mockito.kotlin.any()) }
             }
         } finally {
             closed.countDown()

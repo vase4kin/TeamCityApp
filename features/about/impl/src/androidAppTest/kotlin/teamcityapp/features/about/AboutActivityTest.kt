@@ -31,6 +31,7 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
@@ -38,8 +39,6 @@ import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -51,6 +50,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 
@@ -96,7 +99,7 @@ class AboutActivityTest {
     }
 
     @Test fun contentSurvivesRecreationWithoutFragmentsOrAnotherRequest() {
-        `when`(teamCityService.serverInfo()).thenReturn(Single.just(info))
+        doReturn(info).whenever(teamCityService) { serverInfo() }
         launch().use { scenario ->
             awaitText(info.version)
             compose.onNodeWithText(info.webUrl).assertIsDisplayed()
@@ -106,12 +109,12 @@ class AboutActivityTest {
             awaitText(info.version)
             compose.onNodeWithText(info.webUrl).assertIsDisplayed()
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
-            verify(teamCityService, times(1)).serverInfo()
+            verifyBlocking(teamCityService, times(1)) { serverInfo() }
         }
     }
 
     @Test fun serverFailureStillShowsApplicationAndContactDetails() {
-        `when`(teamCityService.serverInfo()).thenReturn(Single.error(IllegalStateException("offline")))
+        doSuspendableAnswer { throw IllegalStateException("offline") }.whenever(teamCityService) { serverInfo() }
         launch().use {
             awaitText(app.getString(R.string.about_app_text_app))
             compose.onNodeWithText(app.getString(R.string.about_app_text_server_info)).assertIsDisplayed()
@@ -122,14 +125,27 @@ class AboutActivityTest {
     }
 
     @Test fun stoppingCancelsAndReturningLoadsFreshContent() {
-        val request = SingleSubject.create<ServerInfo>()
+        val request = PendingFixture<ServerInfo>()
         val subscribed = CountDownLatch(1)
-        `when`(teamCityService.serverInfo()).thenReturn(request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        subscribed.countDown()
+                        request.await()
+                    }
+
+                    else -> {
+                        info
+                    }
+                }
+            }.whenever(teamCityService) { serverInfo() }
+        }
         launch().use { scenario ->
             compose.waitUntil(10_000) { subscribed.count == 0L }
             scenario.moveToState(Lifecycle.State.CREATED)
-            compose.waitUntil(5_000) { !request.hasObservers() }
-            request.onSuccess(ServerInfo("late result", "https://late.example"))
+            compose.waitUntil(5_000) { !request.isAwaiting }
+            request.complete(ServerInfo("late result", "https://late.example"))
             scenario.moveToState(Lifecycle.State.RESUMED)
             awaitText(info.version)
             compose.onNodeWithText("late result").assertDoesNotExist()
@@ -137,20 +153,33 @@ class AboutActivityTest {
     }
 
     @Test fun recreatingWhileLoadingCancelsAndRestartsRequest() {
-        val request = SingleSubject.create<ServerInfo>()
+        val request = PendingFixture<ServerInfo>()
         val subscribed = CountDownLatch(1)
-        `when`(teamCityService.serverInfo()).thenReturn(request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        subscribed.countDown()
+                        request.await()
+                    }
+
+                    else -> {
+                        info
+                    }
+                }
+            }.whenever(teamCityService) { serverInfo() }
+        }
         launch().use { scenario ->
             compose.waitUntil(10_000) { subscribed.count == 0L }
             scenario.recreate()
             awaitText(info.version)
-            compose.waitUntil(5_000) { !request.hasObservers() }
+            compose.waitUntil(5_000) { !request.isAwaiting }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
 
     @Test fun linksEmailRateAndLicensesKeepTheirDestinations() {
-        `when`(teamCityService.serverInfo()).thenReturn(Single.just(info))
+        doReturn(info).whenever(teamCityService) { serverInfo() }
         launch().use {
             awaitText(info.version)
             Intents.init()
@@ -192,7 +221,7 @@ class AboutActivityTest {
 
     @Test fun typedRequestReusesAnAliasLaunchedHostAndRecreationRetainsItsBackStack() {
         kotlinx.coroutines.runBlocking { app.appInjector.themePreferences().setTheme(teamcityapp.libraries.app_theme.ThemeMode.Light) }
-        `when`(teamCityService.serverInfo()).thenReturn(Single.just(info))
+        doReturn(info).whenever(teamCityService) { serverInfo() }
         launch().use { scenario ->
             awaitText(info.version)
             scenario.onActivity { launcher.open(it, SettingsDestination) }
@@ -203,12 +232,12 @@ class AboutActivityTest {
             awaitText("Light theme")
             compose.onNodeWithContentDescription("Back").performClick()
             awaitText(info.version)
-            verify(teamCityService, times(1)).serverInfo()
+            verifyBlocking(teamCityService, times(1)) { serverInfo() }
         }
     }
 
     @Test fun toolbarBackReturnsToTheSharedHome() {
-        `when`(teamCityService.serverInfo()).thenReturn(Single.just(info))
+        doReturn(info).whenever(teamCityService) { serverInfo() }
         launch().use { scenario ->
             awaitText(info.version)
             compose.onNodeWithContentDescription(app.getString(R.string.action_back)).performClick()

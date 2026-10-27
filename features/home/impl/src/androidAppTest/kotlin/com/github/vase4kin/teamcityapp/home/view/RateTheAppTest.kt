@@ -51,7 +51,6 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.testing.*
 import dagger.hilt.components.SingletonComponent
-import io.reactivex.Single
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.runner.RunWith
@@ -59,6 +58,9 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
@@ -159,7 +161,7 @@ class RateTheAppTest {
     }
 
     @Test fun emptyProjectDoesNotShowRating() {
-        `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(NavigationNode(Projects(emptyList()), BuildTypes(emptyList()))))
+        doReturn(NavigationNode(Projects(emptyList()), BuildTypes(emptyList()))).whenever(teamCityService) { listBuildTypes(anyString()) }
         activityRule.launchActivity(null)
         compose.waitUntil(10_000) { compose.onAllNodesWithText(text(NavigationR.string.navigation_empty)).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
@@ -182,7 +184,7 @@ class RateTheAppTest {
             awaitRows()
             compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
             Assert.assertTrue(sharedPreferences.getBoolean("rated", false))
-            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
         }
     }
 

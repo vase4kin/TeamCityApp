@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import org.junit.*
@@ -45,6 +44,9 @@ import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
@@ -88,8 +90,8 @@ class MainActivityRestorationTest {
         TestUtils.disableOnboarding()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        doReturn(Single.just(ServerInfo("restoration-server", "https://restoration.example"))).`when`(service).serverInfo()
-        doReturn(Single.just(Files(emptyList()))).`when`(service).listArtifacts(org.mockito.kotlin.any(), org.mockito.kotlin.any())
+        doReturn(ServerInfo("restoration-server", "https://restoration.example")).whenever(service) { serverInfo() }
+        doReturn(Files(emptyList())).whenever(service) { listArtifacts(org.mockito.kotlin.any(), org.mockito.kotlin.any()) }
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
     }
 
@@ -108,7 +110,7 @@ class MainActivityRestorationTest {
                 assertEquals(visit, it.navigationSnapshot!!.entries.single().id)
                 assertEquals(destination, it.navigationSnapshot!!.entries.single().destination)
             }
-            verify(service, times(1)).listArtifacts(destination.href, "browseArchives:true")
+            verifyBlocking(service, times(1)) { listArtifacts(destination.href, "browseArchives:true") }
         }
     }
 
@@ -149,7 +151,7 @@ class MainActivityRestorationTest {
             scenario.recreate()
             awaitHome()
             compose.onNodeWithText(destination.name).assertDoesNotExist()
-            verify(service, times(1)).listArtifacts(destination.href, "browseArchives:true")
+            verifyBlocking(service, times(1)) { listArtifacts(destination.href, "browseArchives:true") }
         }
     }
 
@@ -203,7 +205,7 @@ class MainActivityRestorationTest {
                 assertTrue(it.navigationSnapshot!!.results.isEmpty())
                 assertFalse(it.intent.hasExtra(LegacyArtifactsEntry.BUILD))
             }
-            verify(service, times(1)).listArtifacts(destination.href, "browseArchives:true")
+            verifyBlocking(service, times(1)) { listArtifacts(destination.href, "browseArchives:true") }
         }
     }
 
@@ -223,7 +225,7 @@ class MainActivityRestorationTest {
                 assertEquals(destination, it.navigationSnapshot!!.entries.single().destination)
                 assertEquals(visit, it.navigationSnapshot!!.entries.single().id)
             }
-            verify(service, times(1)).listArtifacts(destination.href, "browseArchives:true")
+            verifyBlocking(service, times(1)) { listArtifacts(destination.href, "browseArchives:true") }
         }
     }
 

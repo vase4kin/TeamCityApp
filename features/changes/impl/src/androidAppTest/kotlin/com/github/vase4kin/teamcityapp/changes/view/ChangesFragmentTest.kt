@@ -43,13 +43,15 @@ import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.whenever
 import teamcityapp.features.changes.impl.R as ChangesR
 
 @HiltAndroidTest
@@ -101,17 +103,17 @@ class ChangesFragmentTest {
     }
 
     @Test fun failedChangesCanBeRetriedWithinTheBuildTab() {
-        `when`(teamCityService.listChanges(anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listChanges(anyString()) }
         openChanges("Changes (?)")
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         val fake = FakeTeamCityServiceImpl()
-        `when`(teamCityService.listChanges(anyString())).thenAnswer { fake.listChanges(it.getArgument(0)) }
+        doSuspendableAnswer { fake.listChanges(it.getArgument(0)) }.whenever(teamCityService) { listChanges(anyString()) }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         assertTextVisible("Do you believe?")
     }
 
     @Test fun emptyChangesRetainTheCompatibilityTabCount() {
-        `when`(teamCityService.listChanges(anyString())).thenReturn(Single.just(Changes(emptyList(), 0)))
+        doReturn(Changes(emptyList(), 0)).whenever(teamCityService) { listChanges(anyString()) }
         openChanges("Changes (0)")
         assertTextVisible(text(ChangesR.string.changes_empty))
     }
@@ -119,10 +121,10 @@ class ChangesFragmentTest {
     @Test fun aFailedOptionalCountCanBeRetriedWhileChangesRemainVisible() {
         val countFails = AtomicBoolean(true)
         val fake = FakeTeamCityServiceImpl()
-        `when`(teamCityService.listChanges(anyString())).thenAnswer {
+        doSuspendableAnswer {
             val url: String = it.getArgument(0)
-            if (url.contains("fields=count") && countFails.get()) Single.error<Changes>(RuntimeException("count offline")) else fake.listChanges(url)
-        }
+            if (url.contains("fields=count") && countFails.get()) throw RuntimeException("count offline") else fake.listChanges(url)
+        }.whenever(teamCityService) { listChanges(anyString()) }
         openChanges("Changes (?)")
         assertTextVisible("Do you believe?")
         assertTextVisible(text(ChangesR.string.changes_count_unavailable))

@@ -33,12 +33,14 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination
 import teamcityapp.features.run_build.api.navigation.RunBuildDestination
 import teamcityapp.libraries.theme.R as ThemeR
@@ -71,21 +73,21 @@ class FormActivityAliasesTest {
         TestUtils.disableOnboarding()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        doReturn(Single.just(Branches(listOf(Branch("main"), Branch("release"))))).`when`(service).listBranches(org.mockito.kotlin.any())
+        doReturn(Branches(listOf(Branch("main"), Branch("release")))).whenever(service) { listBranches(org.mockito.kotlin.any()) }
     }
 
     @Test fun bothRunBuildAliasesRetainTheConfigurationAndDraftAndCloseTheirRoot() {
         listOf(IncomingDestinationResolver.RUN_BUILD_COMPONENT, IncomingDestinationResolver.LEGACY_RUN_BUILD_COMPONENT).forEach { component ->
             verifyAlias(component, "run-configuration", RunBuildDestination("run-configuration"))
         }
-        verify(service, times(2)).listBranches("run-configuration")
+        verifyBlocking(service, times(2)) { listBranches("run-configuration") }
     }
 
     @Test fun bothFilterBuildsAliasesRetainTheConfigurationAndDraftAndCloseTheirRoot() {
         listOf(IncomingDestinationResolver.FILTER_BUILDS_COMPONENT, IncomingDestinationResolver.LEGACY_FILTER_BUILDS_COMPONENT).forEach { component ->
             verifyAlias(component, "filter-configuration", FilterBuildsDestination("filter-configuration"))
         }
-        verify(service, times(2)).listBranches("filter-configuration")
+        verifyBlocking(service, times(2)) { listBranches("filter-configuration") }
     }
 
     private fun verifyAlias(component: String, configurationId: String, destination: NavKey) {

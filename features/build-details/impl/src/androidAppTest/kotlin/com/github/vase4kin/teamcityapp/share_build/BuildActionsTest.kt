@@ -50,7 +50,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
@@ -61,6 +60,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 
 private const val BUILD_TYPE_NAME = "name"
 
@@ -117,7 +118,7 @@ class BuildActionsTest {
     @Test
     fun testUserCanShareBuildWebUrl() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -169,7 +170,7 @@ class BuildActionsTest {
     @Test
     fun testUserCanOpenBuildWebUrlInBrowser() {
         // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

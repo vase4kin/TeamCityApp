@@ -46,6 +46,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.User
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -61,8 +62,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.atomic.AtomicInteger
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hamcrest.core.AllOf.allOf
@@ -74,6 +73,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
@@ -163,11 +166,11 @@ class OverviewFragmentTest {
     }
 
     @Test fun initialErrorRetriesIntoCurrentContent() {
-        `when`(teamCityService.build(anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { build(anyString()) }
         activityRule.launchActivity(BuildComposeFixtures.intent())
         compose.waitUntil(10_000) { overviewText(text(teamcityapp.libraries.theme.R.string.error_load_message)).fetchSemanticsNodes().isNotEmpty() }
         overviewText(text(teamcityapp.libraries.theme.R.string.error_load_message)).onFirst().assertIsDisplayed()
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(anyString()) }
         overviewText(text(teamcityapp.libraries.theme.R.string.action_retry)).onFirst().performClick()
         row("Result", "Current build succeeded")
     }
@@ -234,7 +237,7 @@ class OverviewFragmentTest {
         clickRow("Branch")
         sheet(text(SheetR.string.build_element_show_all_builds_built_branch))
         assertRootDestination(BuildHistoryDestination("current-config", "Current configuration", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10"))
-        verify(teamCityService).listBuilds("current-config", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10")
+        verifyBlocking(teamCityService) { listBuilds("current-config", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10") }
     }
 
     @Test fun configurationNavigationUsesLoadedConfiguration() {
@@ -269,33 +272,33 @@ class OverviewFragmentTest {
     }
 
     @Test fun runningLoadedAfterQueuedIncomingUsesStopAndLatestHref() {
-        doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
-        verify(teamCityService).cancelBuild("/builds/42", BuildCancelRequest(false))
+        verifyBlocking(teamCityService) { cancelBuild("/builds/42", BuildCancelRequest(false)) }
     }
 
     @Test fun stoppingCanReAddTheCurrentBuild() {
-        doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).onFirst().performClick()
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
         compose.awaitDisplayedText(text(R.string.text_build_is_stopped))
-        verify(teamCityService).cancelBuild("/builds/42", BuildCancelRequest(true))
+        verifyBlocking(teamCityService) { cancelBuild("/builds/42", BuildCancelRequest(true)) }
     }
 
     @Test fun queuedCurrentBuildUsesRemoveWithoutReAdd() {
-        doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming)).whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.incoming)
         menu(text(OverviewR.string.overview_remove))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).assertCountEquals(0)
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
         compose.awaitDisplayedText(text(R.string.text_build_is_removed_from_queue))
-        verify(teamCityService).cancelBuild("/queue/42", BuildCancelRequest(false))
+        verifyBlocking(teamCityService) { cancelBuild("/queue/42", BuildCancelRequest(false)) }
     }
 
     @Test fun stopForbiddenKeepsCurrentRows() {
@@ -307,13 +310,13 @@ class OverviewFragmentTest {
     }
 
     @Test fun restartUsesCurrentBranchAndOwnProperties() {
-        doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))).`when`(teamCityService).queueBuild(com.github.vase4kin.teamcityapp.helper.any())
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming)).whenever(teamCityService) { queueBuild(com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
         compose.awaitDisplayedText(text(R.string.text_build_is_restarted))
         val queued = org.mockito.kotlin.argumentCaptor<Build>()
-        verify(teamCityService).queueBuild(queued.capture())
+        verifyBlocking(teamCityService) { queueBuild(queued.capture()) }
         assertEquals("current-config", queued.firstValue.buildType?.id)
         assertEquals("current-branch", queued.firstValue.branchName)
         assertEquals("env", queued.firstValue.properties!!.properties.single().name)
@@ -331,10 +334,10 @@ class OverviewFragmentTest {
 
     @Test fun restoredOverviewRetainsLoadedStateAndNativeActions() {
         val calls = AtomicInteger()
-        `when`(teamCityService.build(anyString())).thenAnswer {
+        doSuspendableAnswer {
             calls.incrementAndGet()
-            Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.loaded))
-        }
+            BuildComposeFixtures.legacy(BuildComposeFixtures.loaded)
+        }.whenever(teamCityService) { build(anyString()) }
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
             row("Result", "Running current build")
             val completedCalls = calls.get()
@@ -350,25 +353,32 @@ class OverviewFragmentTest {
 
     @Test fun refreshFailureRetainsSuccessfulContentAndAllowsRetry() {
         openCurrent(BuildComposeFixtures.finished)
-        `when`(teamCityService.build(anyString())).thenReturn(Single.error(RuntimeException("refresh offline")))
+        doSuspendableAnswer { throw RuntimeException("refresh offline") }.whenever(teamCityService) { build(anyString()) }
         compose.onNodeWithTag("overview:list").performTouchInput { swipeDown() }
         awaitText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
         row("Result", "Current build succeeded")
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished.copy(statusText = "Updated after retry"))))
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished.copy(statusText = "Updated after retry"))).whenever(teamCityService) { build(anyString()) }
         compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
         row("Result", "Updated after retry")
     }
 
     @Test fun pendingOverviewIsCanceledOnPauseAndReloadedOnResume() {
-        val pending = SingleSubject.create<Build>()
+        val pending = PendingFixture<Build>()
         val cancellations = AtomicInteger()
-        `when`(teamCityService.build(anyString())).thenReturn(pending.doOnDispose { cancellations.incrementAndGet() })
+        doSuspendableAnswer {
+            try {
+                pending.await()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                cancellations.incrementAndGet()
+                throw cancelled
+            }
+        }.whenever(teamCityService) { build(anyString()) }
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
             compose.waitUntil(10_000) { cancellations.get() == 1 }
-            assertFalse(pending.hasObservers())
-            `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+            assertFalse(pending.isAwaiting)
+            doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(anyString()) }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
             row("Result", "Current build succeeded")
             overviewText(text(teamcityapp.libraries.theme.R.string.error_load_message)).assertCountEquals(0)
@@ -377,7 +387,7 @@ class OverviewFragmentTest {
 
     @Test fun actionOnboardingCanBeDismissedBeforeVisitingAnotherSection() {
         TestUtils.enableOnboarding()
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
+        doReturn(Mocks.artifacts()).whenever(teamCityService) { listArtifacts(anyString(), anyString()) }
         openLegacy(Mocks.successBuild(), BuildComposeFixtures.finished, openedTag = "details:dismiss-prompt")
         awaitTag("details:dismiss-prompt")
         listOf("Run this build again with the same parameters.", "Share a link to this build with others.", "Open this build’s page in a browser.").forEach { copy ->
@@ -407,9 +417,9 @@ class OverviewFragmentTest {
             buildTypeId = "replacement-loaded-config",
             configuration = BuildConfigurationData("replacement-loaded-config", "Replacement loaded configuration", "replacement-project", "Replacement project")
         )
-        doReturn(Single.just(BuildComposeFixtures.legacy(queued))).`when`(teamCityService).build(queued.href)
-        doReturn(Single.just(BuildComposeFixtures.legacy(nextLoaded))).`when`(teamCityService).build(nextIncoming.href)
-        val oldRefresh = SingleSubject.create<Build>()
+        doReturn(BuildComposeFixtures.legacy(queued)).whenever(teamCityService) { build(queued.href) }
+        doReturn(BuildComposeFixtures.legacy(nextLoaded)).whenever(teamCityService) { build(nextIncoming.href) }
+        val oldRefresh = PendingFixture<Build>()
         val oldCancellations = AtomicInteger()
 
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(queued)).use { scenario ->
@@ -418,9 +428,16 @@ class OverviewFragmentTest {
             val oldEntry = currentRootSnapshot().entries.last()
 
             // Pending work makes disposal observable, beyond replacing the native presenter.
-            doReturn(oldRefresh.doOnDispose { oldCancellations.incrementAndGet() }).`when`(teamCityService).build(queued.href)
+            doSuspendableAnswer {
+                try {
+                    oldRefresh.await()
+                } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                    oldCancellations.incrementAndGet()
+                    throw cancelled
+                }
+            }.whenever(teamCityService) { build(queued.href) }
             compose.onNodeWithTag("overview:list").performTouchInput { swipeDown() }
-            compose.waitUntil(10_000) { oldRefresh.hasObservers() }
+            compose.waitUntil(10_000) { oldRefresh.isAwaiting }
             scenario.onActivity { activity ->
                 val replacement = BuildComposeFixtures.intent(nextIncoming)
                 activity.javaClass.getDeclaredMethod("onNewIntent", Intent::class.java).apply {
@@ -430,8 +447,8 @@ class OverviewFragmentTest {
             compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name") }
             scenario.onActivity { assertFalse(it.intent.hasExtra(BundleExtractorValues.BUILD)) }
             compose.waitUntil(10_000) { oldCancellations.get() == 1 }
-            assertFalse(oldRefresh.hasObservers())
-            oldRefresh.onSuccess(BuildComposeFixtures.legacy(queued.copy(waitReason = "Stale queued response")))
+            assertFalse(oldRefresh.isAwaiting)
+            oldRefresh.complete(BuildComposeFixtures.legacy(queued.copy(waitReason = "Stale queued response")))
 
             row("Result", "Replacement build succeeded")
             compose.awaitDisplayedText("#replacement-loaded")
@@ -442,7 +459,7 @@ class OverviewFragmentTest {
             assertNotEquals(oldEntry.id, nextEntry.id)
             assertEquals(teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name"), nextEntry.destination)
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
-            verify(teamCityService, times(1)).build(nextIncoming.href)
+            verifyBlocking(teamCityService, times(1)) { build(nextIncoming.href) }
 
             clickRow("Configuration")
             assertRootDestination(BuildHistoryDestination("replacement-loaded-config", "Replacement loaded configuration"))
@@ -450,7 +467,7 @@ class OverviewFragmentTest {
     }
 
     private fun openLegacy(build: Build, incoming: BuildLaunchData = BuildComposeFixtures.incoming.copy(id = requireNotNull(build.id)), openedTag: String = "overview:list") {
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        doReturn(build).whenever(teamCityService) { build(anyString()) }
         activityRule.launchActivity(BuildComposeFixtures.intent(incoming))
         awaitTag(openedTag)
     }
@@ -490,7 +507,7 @@ class OverviewFragmentTest {
         row(field, expected)
     }
     private fun stopFailure(code: Int, message: Int) {
-        doReturn(Single.error<Build>(MockHttpFailure(code))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
+        doSuspendableAnswer { throw MockHttpFailure(code) }.whenever(teamCityService) { cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
@@ -498,7 +515,7 @@ class OverviewFragmentTest {
         row("Result", "Running current build")
     }
     private fun restartFailure(code: Int, message: Int) {
-        doReturn(Single.error<Build>(MockHttpFailure(code))).`when`(teamCityService).queueBuild(com.github.vase4kin.teamcityapp.helper.any())
+        doSuspendableAnswer { throw MockHttpFailure(code) }.whenever(teamCityService) { queueBuild(com.github.vase4kin.teamcityapp.helper.any()) }
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()

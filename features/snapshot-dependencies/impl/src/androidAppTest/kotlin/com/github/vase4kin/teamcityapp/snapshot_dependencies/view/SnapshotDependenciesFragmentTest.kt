@@ -42,6 +42,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -54,8 +55,6 @@ import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.atomic.AtomicInteger
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Assert.*
@@ -66,6 +65,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
@@ -132,7 +135,7 @@ class SnapshotDependenciesFragmentTest {
     }
 
     @Test fun absentSnapshotCollectionDoesNotCreateATab() {
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(anyString()) }
         activityRule.launchActivity(BuildComposeFixtures.intent(BuildComposeFixtures.incoming.copy(snapshotDependencies = null)))
         awaitTag("overview:list")
         compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:section:Parameters"))
@@ -140,7 +143,7 @@ class SnapshotDependenciesFragmentTest {
     }
 
     @Test fun presentEmptySnapshotCollectionStillCreatesTabAndEmptyState() {
-        `when`(teamCityService.listBuilds(anyString())).thenReturn(Single.just(Builds(0, emptyList())))
+        doReturn(Builds(0, emptyList())).whenever(teamCityService) { listBuilds(anyString()) }
         start()
         awaitText(text(SnapshotR.string.snapshot_dependencies_empty))
     }
@@ -155,7 +158,7 @@ class SnapshotDependenciesFragmentTest {
         compose.onNodeWithTag("snapshot:list").performScrollToNode(hasTestTag("snapshot:configuration:2"))
         compose.onNodeWithTag("snapshot:configuration:2").assertTextContains("Other project - Other configuration")
         compose.onNodeWithTag("snapshot:build:dependency-3").assertTextContains("Finished dependency")
-        verify(teamCityService).listBuilds("42")
+        verifyBlocking(teamCityService) { listBuilds("42") }
     }
 
     @Test fun clickingBuildPassesEveryFieldToBuildDetailsBeforeItsTabsAreCreated() {
@@ -179,7 +182,7 @@ class SnapshotDependenciesFragmentTest {
     }
 
     @Test fun initialFailureCanRetryTheDependencyQuery() {
-        `when`(teamCityService.listBuilds(anyString())).thenReturn(Single.error(RuntimeException("snapshot offline")))
+        doSuspendableAnswer { throw RuntimeException("snapshot offline") }.whenever(teamCityService) { listBuilds(anyString()) }
         start()
         compose.waitUntil(10_000) { snapshotText(text(teamcityapp.libraries.theme.R.string.error_load_message)).fetchSemanticsNodes().isNotEmpty() }
         dependencies()
@@ -189,10 +192,10 @@ class SnapshotDependenciesFragmentTest {
 
     @Test fun failedHydrationIsReportedAndRetriedInsteadOfPassingPartialBuilds() {
         dependencies()
-        `when`(teamCityService.build(running.href)).thenReturn(Single.error(RuntimeException("detail offline")))
+        doSuspendableAnswer { throw RuntimeException("detail offline") }.whenever(teamCityService) { build(running.href) }
         start()
         compose.waitUntil(10_000) { snapshotText(text(teamcityapp.libraries.theme.R.string.error_load_message)).fetchSemanticsNodes().isNotEmpty() }
-        `when`(teamCityService.build(running.href)).thenReturn(Single.just(BuildComposeFixtures.legacy(running)))
+        doReturn(BuildComposeFixtures.legacy(running)).whenever(teamCityService) { build(running.href) }
         snapshotText(text(teamcityapp.libraries.theme.R.string.action_retry)).onFirst().performClick()
         awaitTag("snapshot:build:dependency-2")
     }
@@ -200,10 +203,10 @@ class SnapshotDependenciesFragmentTest {
     @Test fun restoredSnapshotTabRetainsCompletedRowsWithoutDuplicateNetworkWork() {
         val lists = AtomicInteger()
         dependencies()
-        `when`(teamCityService.listBuilds(anyString())).thenAnswer {
+        doSuspendableAnswer {
             lists.incrementAndGet()
-            Single.just(Builds(3, snapshots.map(BuildComposeFixtures::legacy)))
-        }
+            Builds(3, snapshots.map(BuildComposeFixtures::legacy))
+        }.whenever(teamCityService) { listBuilds(anyString()) }
         ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
             tab(text(R.string.tab_snapshot_dependencies))
             awaitTag("snapshot:build:dependency-1")
@@ -217,14 +220,21 @@ class SnapshotDependenciesFragmentTest {
     }
 
     @Test fun switchingAwayCancelsPendingDependenciesAndReturningReloads() {
-        val pending = SingleSubject.create<Builds>()
+        val pending = PendingFixture<Builds>()
         val cancellations = AtomicInteger()
-        `when`(teamCityService.listBuilds(anyString())).thenReturn(pending.doOnDispose { cancellations.incrementAndGet() })
+        doSuspendableAnswer {
+            try {
+                pending.await()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                cancellations.incrementAndGet()
+                throw cancelled
+            }
+        }.whenever(teamCityService) { listBuilds(anyString()) }
         start()
-        compose.waitUntil(10_000) { pending.hasObservers() }
+        compose.waitUntil(10_000) { pending.isAwaiting }
         tab("Overview")
         compose.waitUntil(10_000) { cancellations.get() == 1 }
-        assertFalse(pending.hasObservers())
+        assertFalse(pending.isAwaiting)
         dependencies()
         tab(text(R.string.tab_snapshot_dependencies))
         awaitTag("snapshot:build:dependency-1")
@@ -235,12 +245,12 @@ class SnapshotDependenciesFragmentTest {
     private val finished = BuildComposeFixtures.finished.copy(id = "dependency-3", href = "/builds/dependency-3", statusText = "Finished dependency", configuration = BuildConfigurationData("other-config", "Other configuration", "other-project", "Other project"), buildTypeId = "other-config")
     private val snapshots get() = listOf(queued, running, finished)
     private fun dependencies() {
-        `when`(teamCityService.listBuilds(anyString())).thenReturn(Single.just(Builds(3, snapshots.map(BuildComposeFixtures::legacy))))
-        snapshots.forEach { build -> `when`(teamCityService.build(build.href)).thenReturn(Single.just(BuildComposeFixtures.legacy(build))) }
-        `when`(teamCityService.build(BuildComposeFixtures.incoming.href)).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        doReturn(Builds(3, snapshots.map(BuildComposeFixtures::legacy))).whenever(teamCityService) { listBuilds(anyString()) }
+        snapshots.forEach { build -> doReturn(BuildComposeFixtures.legacy(build)).whenever(teamCityService) { build(build.href) } }
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(BuildComposeFixtures.incoming.href) }
     }
     private fun start() {
-        `when`(teamCityService.build(BuildComposeFixtures.incoming.href)).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        doReturn(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)).whenever(teamCityService) { build(BuildComposeFixtures.incoming.href) }
         activityRule.launchActivity(BuildComposeFixtures.intent())
         tab(text(R.string.tab_snapshot_dependencies))
     }

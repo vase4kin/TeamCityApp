@@ -46,7 +46,6 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.util.ArrayList
 import okhttp3.ResponseBody
@@ -61,6 +60,9 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.whenever
 
 /**
  * Tests for the RunBuild root destination
@@ -112,14 +114,10 @@ class RunBuildActivityMockTest {
     fun testUserCanSeeErrorForbiddenSnackBarIfServerReturnsAnError() {
         // Prepare mocks
         val httpException = MockHttpFailure(HTTP_FORBIDDEN)
-        `when`(teamCityService.queueBuild(any())).thenReturn(
-            Single.error(
-                httpException
-            )
-        )
-        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Mocks.connectedAgents()))
-        `when`(teamCityService.listBranches(any())).thenReturn(Single.just(Branches(emptyList())))
-        `when`(teamCityService.buildType(any())).thenReturn(Single.just(Mocks.buildTypeMock()))
+        doSuspendableAnswer { throw httpException }.whenever(teamCityService) { queueBuild(any()) }
+        doReturn(Mocks.connectedAgents()).whenever(teamCityService) { listAgents(any(), any(), any()) }
+        doReturn(Branches(emptyList())).whenever(teamCityService) { listBranches(any()) }
+        doReturn(Mocks.buildTypeMock()).whenever(teamCityService) { buildType(any()) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, "href")
@@ -134,14 +132,10 @@ class RunBuildActivityMockTest {
     @Test
     fun testUserCanSeeErrorSnackBarIfServerReturnsAnError() {
         // Prepare mocks
-        `when`(teamCityService.queueBuild(any())).thenReturn(
-            Single.error(
-                RuntimeException("error")
-            )
-        )
-        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Mocks.connectedAgents()))
-        `when`(teamCityService.listBranches(any())).thenReturn(Single.just(Branches(emptyList())))
-        `when`(teamCityService.buildType(any())).thenReturn(Single.just(Mocks.buildTypeMock()))
+        doSuspendableAnswer { throw RuntimeException("error") }.whenever(teamCityService) { queueBuild(any()) }
+        doReturn(Mocks.connectedAgents()).whenever(teamCityService) { listAgents(any(), any(), any()) }
+        doReturn(Branches(emptyList())).whenever(teamCityService) { listBranches(any()) }
+        doReturn(Mocks.buildTypeMock()).whenever(teamCityService) { buildType(any()) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, "href")
@@ -159,9 +153,9 @@ class RunBuildActivityMockTest {
         val branches = ArrayList<Branch>()
         branches.add(Branch("dev1"))
         branches.add(Branch("dev2"))
-        `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(branches)))
-        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Mocks.connectedAgents()))
-        `when`(teamCityService.buildType(any())).thenReturn(Single.just(Mocks.buildTypeMock()))
+        doReturn(Branches(branches)).whenever(teamCityService) { listBranches(anyString()) }
+        doReturn(Mocks.connectedAgents()).whenever(teamCityService) { listAgents(any(), any(), any()) }
+        doReturn(Mocks.buildTypeMock()).whenever(teamCityService) { buildType(any()) }
         // Prepare intent
         val intent = Intent()
         intent.putExtra(RUN_BUILD_TYPE_ID, "href")

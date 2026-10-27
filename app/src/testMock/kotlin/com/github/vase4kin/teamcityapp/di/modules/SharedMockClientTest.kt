@@ -17,8 +17,7 @@
 package com.github.vase4kin.teamcityapp.di.modules
 
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -41,18 +40,18 @@ class SharedMockClientTest {
     )
 
     @Test fun fixtureResponsesGoThroughTheCommonKtorParser() = runBlocking<Unit> {
-        whenever(service.serverInfo()).thenReturn(Single.just(ServerInfo("fixture-version", "https://fixture.example/context/")))
+        doReturn(ServerInfo("fixture-version", "https://fixture.example/context/")).whenever(service) { serverInfo() }
         val api = api()
         try {
             assertEquals("fixture-version", api.server().version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
         } finally {
             api.close()
         }
     }
 
     @Test fun httpFailureKeepsItsStatusWithoutReplayingTheFixture() = runBlocking<Unit> {
-        whenever(service.serverInfo()).thenReturn(Single.error(MockHttpFailure(403)))
+        doSuspendableAnswer { throw MockHttpFailure(403) }.whenever(service) { serverInfo() }
         val api = api()
         try {
             try {
@@ -61,17 +60,25 @@ class SharedMockClientTest {
             } catch (error: TeamCityHttpFailure) {
                 assertEquals(403, error.status)
             }
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
         } finally {
             api.close()
         }
     }
 
-    @Test fun cancellingAKtorRequestDisposesThePendingFixtureSubscription() = runBlocking<Unit> {
-        val pending = SingleSubject.create<ServerInfo>()
+    @Test fun cancellingAKtorRequestCancelsThePendingFixtureWaiter() = runBlocking<Unit> {
+        val pending = PendingFixture<ServerInfo>()
         val subscribed = CompletableDeferred<Unit>()
         val disposed = CompletableDeferred<Unit>()
-        whenever(service.serverInfo()).thenReturn(pending.doOnSubscribe { subscribed.complete(Unit) }.doOnDispose { disposed.complete(Unit) })
+        doSuspendableAnswer {
+            subscribed.complete(Unit)
+            try {
+                pending.await()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                disposed.complete(Unit)
+                throw cancelled
+            }
+        }.whenever(service) { serverInfo() }
         val api = api()
         try {
             val request = async { api.server() }
