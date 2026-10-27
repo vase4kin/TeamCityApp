@@ -32,6 +32,7 @@ import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.impl.*
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.settings.impl.*
+import teamcityapp.features.settings.impl.tracker.SettingsTrackerImpl
 import teamcityapp.libraries.app_theme.*
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
@@ -41,9 +42,9 @@ import teamcityapp.shared.resources.*
 internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> = setOf(
     SharedEntry(SettingsDestination::class, SettingsDestination.serializer()) { _, nav, _ ->
         val platform = LocalNativePlatform.current
-        val diagnostics = platform.diagnostics
-        val tracker = remember(diagnostics) {
-            SharedSettingsTracker(diagnostics)
+        val analytics = platform.analytics
+        val tracker = remember(analytics) {
+            SettingsTrackerImpl(analytics)
         }
         val vm = viewModel { SettingsViewModel(platform.theme, ThemeOptions.Shared, tracker) }
         val state by vm.state.collectAsStateWithLifecycle()

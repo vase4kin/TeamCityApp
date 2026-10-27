@@ -29,6 +29,8 @@ compose.resources {
 }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        implementation(projects.features.buildOverview.api)
+        implementation(projects.libraries.analytics)
         api(projects.features.buildDetails.api)
         api(projects.libraries.designSystem)
         implementation(libs.multiplatform.compose.backhandler)
@@ -47,7 +49,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(projects.libraries.data)
         implementation(projects.libraries.navigation)
         implementation(projects.libraries.chromeTabs)
-        implementation(projects.features.buildOverview.api)
         implementation(projects.features.changes.api)
         implementation(projects.features.tests.api)
         implementation(projects.features.properties.api)

@@ -41,18 +41,22 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.build_details.api.BuildDetailsReferenceDestination
+import teamcityapp.features.build_details.impl.tracker.BuildDetailsReferenceTrackerImpl
 import teamcityapp.features.build_history.api.*
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.*
+import teamcityapp.features.build_history.impl.tracker.BuildHistoryTrackerImpl
 import teamcityapp.features.build_overview.impl.*
 import teamcityapp.features.filter_builds.api.toTeamCityLocator
 import teamcityapp.features.login.api.*
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.login.impl.*
+import teamcityapp.features.login.impl.tracker.LoginTrackerImpl
 import teamcityapp.features.navigation.api.NavigationEntry as ProjectEntry
 import teamcityapp.features.navigation.api.NavigationRatingRepository
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.*
+import teamcityapp.features.navigation.impl.tracker.NavigationTrackerImpl
 import teamcityapp.libraries.accounts.*
 import teamcityapp.libraries.authentication.AuthenticationRepository
 import teamcityapp.libraries.design_system.resolve
@@ -169,7 +173,7 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
                 SharedEntry(ProjectDestination::class, ProjectDestination.serializer()) { destination, navigator, _ -> ProjectsContent(destination, checkNotNull(graph), navigator) },
                 SharedEntry(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) { destination, navigator, entryId -> HistoryContent(destination, checkNotNull(graph), navigator, entryId) },
                 SharedEntry(BuildDetailsReferenceDestination::class, BuildDetailsReferenceDestination.serializer()) { destination, navigator, entryId -> OverviewContent(destination, checkNotNull(graph), navigator, entryId) }
-            ) + sharedAccountEntries(model) + sharedBrowsingEntries(graph, platform.diagnostics) + sharedManagementEntries(graph, platform.diagnostics) + sharedArtifactEntries(graph) + sharedSettingsEntries(graph)
+            ) + sharedAccountEntries(model) + sharedBrowsingEntries(graph, platform.analytics) + sharedManagementEntries(graph, platform.analytics) + sharedArtifactEntries(graph) + sharedSettingsEntries(graph)
         )
         result
     }
@@ -238,7 +242,7 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
 
 @Composable
 private fun LoginContent(model: SharedAppViewModel) {
-    val diagnostics = LocalNativePlatform.current.diagnostics
+    val analytics = LocalNativePlatform.current.analytics
     val authentication = remember(model) {
         object : AuthenticationRepository {
             override suspend fun signIn(credentials: teamcityapp.libraries.authentication.AccountCredentials, checkSecureConnection: Boolean, checkDuplicate: Boolean) = model.authentication.signIn(credentials, checkSecureConnection, checkDuplicate)
@@ -250,7 +254,7 @@ private fun LoginContent(model: SharedAppViewModel) {
             object : LoginRepository {
                 override suspend fun demoServer() = DemoServer(true, "https://teamcity.jetbrains.com")
             },
-            SharedLoginTracker(diagnostics)
+            LoginTrackerImpl(analytics)
         )
     }
     SharedScreenAnalytics(vm, vm::viewed)
@@ -282,7 +286,7 @@ private fun LoginContent(model: SharedAppViewModel) {
 
 @Composable
 private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAccountGraph, navigator: Navigator) {
-    val diagnostics = LocalNativePlatform.current.diagnostics
+    val analytics = LocalNativePlatform.current.analytics
     val vm = viewModel {
         NavigationViewModel(
             destinationState(
@@ -294,7 +298,7 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
             ),
             graph,
             checkNotNull(graph.browsing).rating,
-            SharedNavigationTracker(diagnostics)
+            NavigationTrackerImpl(analytics)
         )
     }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -323,7 +327,7 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
 
 @Composable
 private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
-    val diagnostics = LocalNativePlatform.current.diagnostics
+    val analytics = LocalNativePlatform.current.analytics
     val vm = viewModel {
         BuildHistoryViewModel(
             destinationState(
@@ -339,7 +343,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
                 override suspend fun setFavorite(configurationId: String, favorite: Boolean): Unit = checkNotNull(graph.browsing).setFavorite(configurationId, favorite)
             },
             checkNotNull(graph.browsing).historyOnboarding,
-            SharedHistoryTracker(diagnostics)
+            BuildHistoryTrackerImpl(analytics)
         )
     }
     SharedScreenAnalytics(vm, vm::onScreenViewed)
@@ -416,14 +420,14 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
 
 @Composable
 private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
-    val diagnostics = LocalNativePlatform.current.diagnostics
+    val analytics = LocalNativePlatform.current.analytics
     val vm = viewModel {
         BuildReferenceViewModel(
             destination.href,
             object : teamcityapp.features.build_overview.api.BuildOverviewRepository {
                 override suspend fun build(href: String, forceRefresh: Boolean) = graph.build(href, true)
             },
-            SharedBuildReferenceTracker(diagnostics, destination.fromRestart),
+            BuildDetailsReferenceTrackerImpl(analytics, destination.fromRestart),
             checkNotNull(graph.browsing).metadata
         )
     }

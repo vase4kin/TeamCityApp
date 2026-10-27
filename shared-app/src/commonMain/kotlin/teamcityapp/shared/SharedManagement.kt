@@ -30,34 +30,41 @@ import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.features.bottom_sheet.impl.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_details.impl.*
+import teamcityapp.features.build_details.impl.tracker.BuildDetailsTrackerImpl
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
+import teamcityapp.features.build_overview.api.BuildReferenceTracker
 import teamcityapp.features.build_overview.impl.*
+import teamcityapp.features.build_overview.impl.tracker.BuildOverviewTrackerImpl
 import teamcityapp.features.filter_bottom_sheet.api.navigation.*
 import teamcityapp.features.filter_bottom_sheet.impl.*
 import teamcityapp.features.filter_bottom_sheet.impl.router.FilterBottomSheetRouter
+import teamcityapp.features.filter_bottom_sheet.impl.tracker.QuickFilterTrackerImpl
 import teamcityapp.features.filter_builds.api.*
 import teamcityapp.features.filter_builds.api.navigation.*
 import teamcityapp.features.filter_builds.impl.*
 import teamcityapp.features.filter_builds.impl.router.FilterBuildsRouter
+import teamcityapp.features.filter_builds.impl.tracker.FilterBuildsTrackerImpl
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.run_build.api.*
 import teamcityapp.features.run_build.api.navigation.*
 import teamcityapp.features.run_build.impl.*
 import teamcityapp.features.run_build.impl.router.RunBuildRouter
+import teamcityapp.features.run_build.impl.tracker.RunBuildTrackerImpl
+import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.LocalFloatingActionClearance
 
-internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
+internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, analytics: AnalyticsTracker): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
     val repositories = graph.management
     return setOf(
         SharedEntry(RunBuildDestination::class, RunBuildDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(QueuedBuildResult::class, QueuedBuildResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { RunBuildViewModel(repositories.run, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), SharedRunTracker(diagnostics)) }
+            val vm = viewModel { RunBuildViewModel(repositories.run, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), RunBuildTrackerImpl(analytics)) }
             val router = remember(dest, nav) {
                 object : RunBuildRouter {
                     override fun close() {
@@ -73,7 +80,7 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
         SharedEntry(FilterBuildsDestination::class, FilterBuildsDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(BuildFilterResult::class, BuildFilterResult.serializer()) }
         }) { dest, nav, _ ->
-            val vm = viewModel { FilterBuildsViewModel(repositories.filters, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), SharedFilterTracker(diagnostics)) }
+            val vm = viewModel { FilterBuildsViewModel(repositories.filters, destinationState(mapOf(BUILD_TYPE_ID to dest.configurationId)), FilterBuildsTrackerImpl(analytics)) }
             val router = remember(dest, nav) {
                 object : FilterBuildsRouter {
                     override fun close() {
@@ -87,7 +94,7 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
             SharedFilterBuildsRoute(router, vm)
         },
         SharedEntry(QuickFilterDestination::class, QuickFilterDestination.serializer(), presentation = DestinationPresentation.BottomSheet) { dest, nav, _ ->
-            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, destinationState(mapOf("arg_code" to dest.code)), SharedQuickFilterTracker(diagnostics)) }
+            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, destinationState(mapOf("arg_code" to dest.code)), QuickFilterTrackerImpl(analytics)) }
             val router = remember(nav) {
                 object : FilterBottomSheetRouter {
                     override fun close() {
@@ -118,9 +125,9 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
 @Composable
 private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
     val platform = LocalNativePlatform.current
-    val tracker = remember(platform.diagnostics) { SharedOverviewTracker(platform.diagnostics) }
+    val tracker = remember(platform.analytics) { BuildOverviewTrackerImpl(platform.analytics) }
     val server = graph.account.identity.serverUrl
-    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, SharedDetailsTracker(platform.diagnostics)) }
+    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, BuildDetailsTrackerImpl(platform.analytics)) }
     SharedScreenAnalytics(model, model::viewed)
     val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {

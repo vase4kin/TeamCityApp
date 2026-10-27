@@ -20,5 +20,8 @@ compose.resources {
     packageOfResClass = "teamcityapp.libraries.authentication.shared.resources"
 }
 kotlin.sourceSets.named("commonMain") {
-    dependencies { api(projects.libraries.designSystem) }
+    dependencies {
+        api(projects.libraries.designSystem)
+        implementation(projects.libraries.analytics)
+    }
 }

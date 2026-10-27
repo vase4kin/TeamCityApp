@@ -29,6 +29,7 @@ compose.resources {
 }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        implementation(projects.libraries.analytics)
         api(projects.features.filterBuilds.api)
         api(projects.libraries.designSystem)
         implementation(libs.multiplatform.compose.backhandler)
@@ -42,8 +43,7 @@ kotlin.sourceSets.named("androidMain") {
     dependencies {
         implementation(projects.libraries.data)
         implementation(projects.libraries.navigation)
-        implementation(project.dependencies.platform(libs.google.firebaseBom))
-        implementation(libs.google.analytics)
+
         implementation(projects.features.filterBuilds.api)
         implementation(libs.androidx.activity.compose)
         implementation(projects.libraries.theme)

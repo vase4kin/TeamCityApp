@@ -15,6 +15,7 @@
  */
 
 package teamcityapp.shared
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
@@ -38,20 +39,27 @@ import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
 import teamcityapp.features.build_queue.impl.*
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.change_details.impl.*
+import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTrackerImpl
 import teamcityapp.features.changes.impl.*
 import teamcityapp.features.favorites.api.LocalFavoritesProjectsAction
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
 import teamcityapp.features.favorites.impl.*
+import teamcityapp.features.favorites.impl.tracker.FavoritesTrackerImpl
+import teamcityapp.features.filter_bottom_sheet.impl.tracker.QuickFilterTrackerImpl
 import teamcityapp.features.home.api.*
 import teamcityapp.features.home.impl.*
+import teamcityapp.features.home.impl.tracker.HomeTrackerImpl
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.properties.impl.*
 import teamcityapp.features.running_builds.api.navigation.RunningBuildsDestination
 import teamcityapp.features.running_builds.impl.*
 import teamcityapp.features.snapshot_dependencies.impl.*
+import teamcityapp.features.snapshot_dependencies.impl.tracker.SnapshotDependenciesTrackerImpl
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.features.test_details.impl.*
+import teamcityapp.features.test_details.impl.tracker.TestDetailsTrackerImpl
 import teamcityapp.features.tests.impl.*
+import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
@@ -59,10 +67,10 @@ import teamcityapp.libraries.theme.*
 @Composable
 internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
     val repositories = checkNotNull(graph.browsing)
-    val diagnostics = LocalNativePlatform.current.diagnostics
+    val analytics = LocalNativePlatform.current.analytics
     val journey = LocalSharedJourneyMemory.current
     val restored = remember(entryId) { journey.homes[entryId] }
-    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, SharedHomeTracker(diagnostics), repositories.filters) }
+    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, HomeTrackerImpl(analytics, QuickFilterTrackerImpl(analytics)), repositories.filters) }
     LifecycleResumeEffect(navigator.snapshot.results, model) {
         while (true) {
             val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break
@@ -122,7 +130,7 @@ internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAcco
     }
 }
 
-internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
+internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, analytics: AnalyticsTracker): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
     val repositories = checkNotNull(graph.browsing)
     return setOf(
@@ -140,7 +148,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                 { nav.push(AccountsDestination) },
                 { nav.push(ProjectDestination(it.id, it.name)) },
                 {
-                    SharedBrowsingTracker(diagnostics).favoriteConfigurationOpened()
+                    FavoritesTrackerImpl(analytics).configurationOpened()
                     nav.push(BuildHistoryDestination(it.id, it.name))
                 },
                 onBrowseProjects = LocalFavoritesProjectsAction.current ?: {}
@@ -197,7 +205,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                         BuildDetailsSection.Snapshots -> {
                             val vm = viewModel { SnapshotDependenciesViewModel(repositories.snapshots, destinationState(mapOf(SnapshotDependenciesViewModel.BUILD_ID to dest.build.id, SnapshotDependenciesViewModel.BUILD_TYPE_NAME to dest.configurationName.orEmpty()))) }
                             LifecycleResumeEffect(vm) {
-                                SharedBrowsingTracker(diagnostics).snapshotDependenciesViewed()
+                                SnapshotDependenciesTrackerImpl(analytics).viewShown()
                                 vm.onResumed()
                                 onPauseOrDispose { vm.onPaused() }
                             }
@@ -211,7 +219,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             }
         },
         SharedEntry(ChangeDetailsDestination::class, ChangeDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { ChangeDetailsViewModel(destinationState(dest.details?.savedArguments().orEmpty()), SharedChangeDetailsTracker(diagnostics)) }
+            val vm = viewModel { ChangeDetailsViewModel(destinationState(dest.details?.savedArguments().orEmpty()), ChangeDetailsTrackerImpl(analytics)) }
             val state by vm.state.collectAsStateWithLifecycle()
             LifecycleResumeEffect(vm) {
                 vm.onScreenViewed()
@@ -229,7 +237,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
-            val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, SharedTestDetailsTracker(diagnostics)) }
+            val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, TestDetailsTrackerImpl(analytics)) }
             SharedScreenAnalytics(vm, vm::onScreenViewed)
             val state by vm.state.collectAsStateWithLifecycle()
             var query by rememberSaveable { mutableStateOf("") }

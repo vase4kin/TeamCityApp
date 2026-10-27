@@ -33,6 +33,7 @@ import java.io.FileOutputStream
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import teamcityapp.features.artifacts.api.DownloadedArtifact
+import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.app_theme.ThemePreferencesRepository
 import teamcityapp.libraries.shared_data.ArtifactFileStore
@@ -45,7 +46,8 @@ class AndroidAppPlatform(
     private val activity: Activity,
     private val lifecycle: Lifecycle,
     override val theme: ThemePreferencesRepository,
-    private val rating: AppRating
+    private val rating: AppRating,
+    override val analytics: AnalyticsTracker
 ) : NativePlatform {
     override val responseCache: teamcityapp.libraries.network.ResponseCacheStore = AndroidResponseCacheStore(activity.applicationContext)
     override val powerSaving = kotlinx.coroutines.flow.callbackFlow {
@@ -64,7 +66,6 @@ class AndroidAppPlatform(
         com.google.android.gms.oss.licenses.OssLicensesMenuActivity.setActivityTitle(activity.getString(teamcityapp.features.about.impl.R.string.about_app_text_libraries))
         activity.startActivity(Intent(activity, com.google.android.gms.oss.licenses.OssLicensesMenuActivity::class.java))
     }
-    override val diagnostics: NativeDiagnostics = AndroidDiagnostics(activity.applicationContext)
     override val files: ArtifactFileStore = AndroidArtifactFileStore(activity.applicationContext)
     override val failure = MutableStateFlow<NativePlatformFailure?>(null)
     override fun clearFailure() {

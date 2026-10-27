@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.gson)
     "mockImplementation"(libs.ktor.client.mock)
     "mockImplementation"(libs.okhttp.okhttp)
+    implementation(projects.libraries.analytics)
     implementation(projects.sharedApp)
     implementation(projects.libraries.sharedData)
     implementation(projects.features.home.api)
@@ -256,7 +257,6 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
     implementation(libs.google.firebasePerf)
     implementation(libs.google.openSourceLicensesLibrary)
     // Unit tests

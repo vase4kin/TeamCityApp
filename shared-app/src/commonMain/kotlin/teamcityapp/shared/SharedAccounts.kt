@@ -22,20 +22,23 @@ import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.create_account.impl.*
 import teamcityapp.features.create_account.impl.router.CreateAccountRouter
+import teamcityapp.features.create_account.impl.tracker.CreateAccountTrackerImpl
 import teamcityapp.features.drawer.impl.*
 import teamcityapp.features.drawer.impl.router.DrawerRouter
+import teamcityapp.features.drawer.impl.tracker.DrawerTrackerImpl
 import teamcityapp.features.manage_accounts.api.AccountDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.manage_accounts.impl.*
 import teamcityapp.features.manage_accounts.impl.router.ManageAccountsRouter
+import teamcityapp.features.manage_accounts.impl.tracker.ManageAccountsTrackerImpl
 import teamcityapp.libraries.accounts.AccountSessionState
 import teamcityapp.libraries.navigation.*
 
 internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationRegistration> = setOf(
     SharedEntry(ManageAccountsDestination::class, ManageAccountsDestination.serializer()) { _, nav, _ ->
-        val diagnostics = LocalNativePlatform.current.diagnostics
-        val tracker = remember(diagnostics) {
-            SharedManageAccountsTracker(diagnostics)
+        val analytics = LocalNativePlatform.current.analytics
+        val tracker = remember(analytics) {
+            ManageAccountsTrackerImpl(analytics)
         }
         val vm = viewModel { ManageAccountsViewModel(SharedManageAccountsRepository(model.sessions), tracker) }
         val router = remember(nav) {
@@ -58,9 +61,9 @@ internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationReg
         SharedManageAccountsRoute(router, vm)
     },
     SharedEntry(CreateAccountDestination::class, CreateAccountDestination.serializer()) { _, nav, _ ->
-        val diagnostics = LocalNativePlatform.current.diagnostics
-        val tracker = remember(diagnostics) {
-            SharedCreateAccountTracker(diagnostics)
+        val analytics = LocalNativePlatform.current.analytics
+        val tracker = remember(analytics) {
+            CreateAccountTrackerImpl(analytics)
         }
         val vm = viewModel { CreateAccountViewModel(model.authentication, tracker, checkSecureConnection = true) }
         val router = remember(nav) {
@@ -80,9 +83,9 @@ internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationReg
 @Composable
 internal fun SharedAccountContent(model: SharedAppViewModel, nav: Navigator) {
     val platform = LocalNativePlatform.current
-    val diagnostics = platform.diagnostics
-    val tracker = remember(diagnostics) {
-        SharedDrawerTracker(diagnostics)
+    val analytics = platform.analytics
+    val tracker = remember(analytics) {
+        DrawerTrackerImpl(analytics)
     }
     val vm = viewModel { DrawerViewModel(SharedAccountSwitcherRepository(model.sessions), tracker) }
     val router = remember(platform, nav) {

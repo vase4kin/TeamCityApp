@@ -31,6 +31,9 @@ import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
 import platform.posix.*
 import teamcityapp.features.artifacts.api.DownloadedArtifact
+import teamcityapp.libraries.analytics.AnalyticsTracker
+import teamcityapp.libraries.analytics.IosAnalyticsTracker
+import teamcityapp.libraries.analytics.track
 import teamcityapp.libraries.app_theme.*
 import teamcityapp.libraries.shared_data.*
 
@@ -90,7 +93,7 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
         val observer = center.addObserverForName(NSProcessInfoPowerStateDidChangeNotification, null, NSOperationQueue.mainQueue) { trySend(process.lowPowerModeEnabled) }
         awaitClose { center.removeObserver(observer) }
     }
-    override val diagnostics: NativeDiagnostics = IosNativeDiagnostics
+    override val analytics: AnalyticsTracker = IosAnalyticsTracker()
     override val files: ArtifactFileStore = IosArtifactFileStore(NSHomeDirectory() + "/Library/Caches/TeamCityArtifacts")
     override val theme = IosThemePreferences(namespace?.let { "theme.uitest.$it" } ?: "theme.mode.v1")
     override val failure = MutableStateFlow<NativePlatformFailure?>(null)
@@ -100,7 +103,7 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
     override fun rejected(action: NativePlatformFailure) = failed(action)
     private fun failed(action: NativePlatformFailure) {
         failure.value = action
-        event("platform_failure_${action.name.lowercase()}")
+        analytics.track("platform_failure_${action.name.lowercase()}")
     }
     private fun present(controller: UIViewController, action: NativePlatformFailure, reportFailure: Boolean = true): Boolean {
         try {
@@ -112,10 +115,10 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
                 popover.sourceRect = CGRectMake(0.0, 0.0, 1.0, 1.0)
             }
             owner.presentViewController(controller, true, null)
-            event("platform_${action.name.lowercase()}")
+            analytics.track("platform_${action.name.lowercase()}")
             return true
         } catch (_: Exception) {
-            if (reportFailure) failed(action) else event("platform_failure_${action.name.lowercase()}")
+            if (reportFailure) failed(action) else analytics.track("platform_failure_${action.name.lowercase()}")
             return false
         }
     }
@@ -124,12 +127,12 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
         val scene = runCatching { host().view.window?.windowScene }.getOrNull()
         val observers = listOf(
             center.addObserverForName(UIApplicationDidEnterBackgroundNotification, null, NSOperationQueue.mainQueue) {
-                event("platform_background")
+                analytics.track("platform_background")
                 cancel()
             },
             // SwiftUI uses scene lifecycle callbacks; application callbacks alone miss this transition.
             center.addObserverForName(UISceneDidEnterBackgroundNotification, scene, NSOperationQueue.mainQueue) {
-                event("platform_background")
+                analytics.track("platform_background")
                 cancel()
             }
         )
@@ -140,7 +143,7 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
             val parsed = checkNotNull(NSURL.URLWithString(url))
             require(parsed.scheme in listOf("https", "http", "mailto") && parsed.user == null && parsed.password == null)
             UIApplication.sharedApplication.openURL(parsed, emptyMap<Any?, Any?>()) { accepted -> if (!accepted) failed(NativePlatformFailure.Browser) }
-            event("platform_browser")
+            analytics.track("platform_browser")
         } catch (_: Exception) {
             failed(NativePlatformFailure.Browser)
         }
@@ -151,7 +154,7 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
     override fun copy(text: String) {
         try {
             UIPasteboard.generalPasteboard.string = text
-            event("platform_clipboard")
+            analytics.track("platform_clipboard")
         } catch (_: Exception) {
             failed(NativePlatformFailure.Clipboard)
         }
@@ -159,7 +162,7 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
     override fun openFile(path: String): Boolean {
         val root = NSHomeDirectory() + "/Library/Caches/TeamCityArtifacts/"
         if (!path.startsWith(root) || path.split('/').any { it == ".." } || !NSFileManager.defaultManager.fileExistsAtPath(path)) {
-            event("platform_failure_file")
+            analytics.track("platform_failure_file")
             return false
         }
         return present(UIActivityViewController(listOf(NSURL.fileURLWithPath(path)), null), NativePlatformFailure.File, reportFailure = false)
@@ -171,19 +174,11 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
                 failed(NativePlatformFailure.Rating)
             } else {
                 SKStoreReviewController.requestReviewInScene(scene)
-                event("platform_rating_requested")
+                analytics.track("platform_rating_requested")
             }
         } catch (_: Exception) {
             failed(NativePlatformFailure.Rating)
         }
-    }
-}
-
-private object IosNativeDiagnostics : NativeDiagnostics {
-    override fun event(name: String) {
-        // Only enumerated screen/action labels enter OS diagnostics. Never log user/server/request data.
-        require(name.length <= 80 && name.all { it.isLowerCase() || it == '_' })
-        NSLog("TeamCityApp: $name")
     }
 }
 

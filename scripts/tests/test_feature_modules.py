@@ -45,6 +45,27 @@ class FeatureModulesTest(unittest.TestCase):
         self.write("features/about/impl/src/test/screenshots/debug/state.png", "retained fixture")
         self.assertEqual([], guard.validate(self.root))
 
+    def test_feature_owned_analytics_and_root_wiring_are_allowed(self):
+        self.write("features/about/impl/src/commonMain/kotlin/tracker/AboutTrackerImpl.kt",
+                   'class AboutTrackerImpl(private val analytics: AnalyticsTracker) : AboutTracker { fun viewed() = analytics.track("screen_about") }')
+        self.write("shared-app/src/commonMain/kotlin/Root.kt", 'val tracker = AboutTrackerImpl(platform.analytics)')
+        self.assertEqual([], guard.validate(self.root))
+
+    def test_tracker_implementations_and_event_mappings_cannot_return_to_the_root(self):
+        self.write("shared-app/src/commonMain/kotlin/Trackers.kt",
+                   'class AboutTrackerImpl : AboutTracker { fun viewed() = analytics.track("screen_about") }')
+        errors = guard.validate(self.root)
+        self.assertTrue(any("tracker implementations belong" in e for e in errors))
+        self.assertTrue(any("event mappings belong" in e for e in errors))
+
+    def test_feature_android_sources_cannot_depend_on_the_analytics_sdk(self):
+        self.write("features/about/impl/src/androidMain/kotlin/Tracker.kt", 'import com.google.firebase.analytics.FirebaseAnalytics')
+        self.assertTrue(any("analytics SDKs belong" in e for e in guard.validate(self.root)))
+
+    def test_app_navigation_cannot_own_an_analytics_sdk_backend(self):
+        self.write("app/src/main/kotlin/navigation/AndroidTracker.kt", 'import com.google.firebase.analytics.FirebaseAnalytics')
+        self.assertTrue(any("analytics SDKs belong" in e for e in guard.validate(self.root)))
+
     def test_third_feature_module_and_stale_include_are_rejected(self):
         self.write("features/about/presentation/build.gradle.kts", "")
         self.assertTrue(any("expected only api/impl" in e for e in guard.validate(self.root)))

@@ -34,6 +34,7 @@ import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.splash.api.navigation.AccountActivationDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.libraries.accounts.AccountSessionState
+import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.app_theme.ThemePreferencesRepository
 import teamcityapp.libraries.navigation.Navigator
@@ -48,6 +49,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var theme: ThemePreferencesRepository
 
     @Inject lateinit var rating: AppRating
+
+    @Inject lateinit var analytics: AnalyticsTracker
     private val model: AndroidSharedAppViewModel by viewModels()
     private val ready = mutableStateOf(false)
     private val launch = mutableStateOf<SharedAppLaunch?>(null)
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         val launchSplash = LaunchSplashState()
         splash.setKeepOnScreenCondition(launchSplash::keepOnScreen)
         enableEdgeToEdge()
-        val platform = AndroidAppPlatform(this, lifecycle, theme, rating)
+        val platform = AndroidAppPlatform(this, lifecycle, theme, rating, analytics)
         lifecycleScope.launch {
             combine(model.sessions.state, model.restoreFailed) { state, failed -> state != AccountSessionState.Loading || failed }.first { it }
             model.synchronizeSession()

@@ -25,7 +25,7 @@ import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.*
 import teamcityapp.features.artifacts.impl.resources.*
 import teamcityapp.features.artifacts.impl.router.artifactMenu
-import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
+import teamcityapp.features.artifacts.impl.tracker.ArtifactsTrackerImpl
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.libraries.navigation.*
@@ -36,17 +36,13 @@ internal fun sharedArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
     return setOf(
         SharedEntry(ArtifactsDestination::class, ArtifactsDestination.serializer()) { destination, nav, id ->
             val platform = LocalNativePlatform.current
-            val diagnostics = platform.diagnostics
+            val analytics = platform.analytics
             val title = destination.name.ifEmpty { org.jetbrains.compose.resources.stringResource(teamcityapp.features.artifacts.impl.resources.Res.string.artifacts_title) }
             val vm = viewModel {
                 ArtifactsViewModel(
                     destinationState(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(destination.build), ArtifactsViewModel.URL to destination.href, ArtifactsViewModel.NAME to title)),
                     repository,
-                    object : ArtifactsTracker {
-                        override fun viewShown() {
-                            diagnostics.event("screen_artifacts")
-                        }
-                    }
+                    ArtifactsTrackerImpl(analytics)
                 )
             }
             val state by vm.state.collectAsStateWithLifecycle()

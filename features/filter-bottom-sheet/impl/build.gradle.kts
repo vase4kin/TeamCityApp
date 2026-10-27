@@ -16,7 +16,6 @@
 
 plugins {
     id("teamcityapp.kmp.compose")
-    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
     alias(libs.plugins.kotlin.serialization)
 }
@@ -29,6 +28,7 @@ compose.resources {
 }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        implementation(projects.libraries.analytics)
         api(projects.features.filterBottomSheet.api)
         api(projects.libraries.designSystem)
         implementation(libs.multiplatform.compose.backhandler)
@@ -41,13 +41,11 @@ kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.corou
 kotlin.sourceSets.named("androidMain") {
     dependencies {
         implementation(projects.libraries.navigation)
-        implementation(project.dependencies.platform(libs.google.firebaseBom))
-        implementation(libs.google.analytics)
+
         implementation(projects.features.filterBottomSheet.api)
         implementation(projects.libraries.theme)
         implementation(projects.libraries.resources)
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-        implementation(libs.androidx.hilt.viewModelCompose)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
     }

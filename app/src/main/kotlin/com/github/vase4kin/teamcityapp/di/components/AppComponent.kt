@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.di.components
 
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -40,8 +39,6 @@ interface AppComponent {
     fun storage(): Storage
 
     fun eventBus(): EventBus
-
-    fun firebaseAnalytics(): FirebaseAnalytics
 
     fun onboardingManager(): OnboardingManager
 

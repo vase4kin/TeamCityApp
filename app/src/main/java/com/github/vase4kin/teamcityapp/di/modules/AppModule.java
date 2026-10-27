@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.di.modules;
 import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -71,13 +70,6 @@ public class AppModule {
     @Singleton
     protected CryptoManager providesCryptoManager() {
         return new CryptoManagerImpl();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
-    protected FirebaseAnalytics providesFirebaseAnalytics(@ApplicationContext Context context) {
-        return FirebaseAnalytics.getInstance(context);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

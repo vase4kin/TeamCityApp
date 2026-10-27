@@ -22,6 +22,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
+import teamcityapp.features.build_overview.api.BuildReferenceTracker
 import teamcityapp.libraries.builds.BuildLaunchData
 
 @OptIn(ExperimentalCoroutinesApi::class)

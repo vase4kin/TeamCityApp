@@ -25,6 +25,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
+import teamcityapp.features.build_overview.api.BuildReferenceTracker
 import teamcityapp.libraries.list_state.*
 
 /** Resolve a reference through the same full-snapshot repository before exposing Overview rows. */

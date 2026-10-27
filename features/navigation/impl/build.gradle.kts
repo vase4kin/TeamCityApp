@@ -27,6 +27,7 @@ compose.resources {
 }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        implementation(projects.libraries.analytics)
         api(projects.features.navigation.api)
         api(projects.libraries.listPresentation)
         implementation(projects.libraries.designSystem)

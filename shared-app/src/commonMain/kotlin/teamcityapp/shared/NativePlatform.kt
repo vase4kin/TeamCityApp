@@ -19,22 +19,15 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.app_theme.*
 import teamcityapp.libraries.shared_data.ArtifactFileStore
 import teamcityapp.shared.resources.*
 
-/** UI-owned system services never enter retained feature ViewModels or API credentials. */
-interface NativeDiagnostics {
-    fun event(name: String)
-
-    /** Hosts without an analytics backend emit only the fixed event label, never parameters. */
-    fun analytics(record: AnalyticsEvent) = event(record.name)
-}
-
 interface NativePlatform {
     val responseCache: teamcityapp.libraries.network.ResponseCacheStore? get() = null
     val powerSaving: kotlinx.coroutines.flow.Flow<Boolean> get() = kotlinx.coroutines.flow.flowOf(false)
-    val diagnostics: NativeDiagnostics
+    val analytics: AnalyticsTracker
     val files: ArtifactFileStore
     val theme: ThemePreferencesRepository
     val failure: StateFlow<NativePlatformFailure?>
@@ -49,7 +42,6 @@ interface NativePlatform {
     fun openFile(path: String): Boolean
     fun rate()
     fun openSourceLibraries() = Unit
-    fun event(name: String) = diagnostics.event(name)
     fun rejected(action: NativePlatformFailure)
     fun clearFailure()
 }

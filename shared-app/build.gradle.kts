@@ -35,6 +35,7 @@ kotlin {
     }
     sourceSets.named("commonMain") {
         dependencies {
+            api(projects.libraries.analytics)
             implementation(projects.features.drawer.impl)
             implementation(projects.features.manageAccounts.impl)
             implementation(projects.features.createAccount.impl)

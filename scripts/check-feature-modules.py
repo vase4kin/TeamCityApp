@@ -58,6 +58,19 @@ def validate(root):
             for source in (impl / "src/commonMain").rglob("*.kt"):
                 if re.search(r"^import (?:android\.|dagger\.|javax\.inject\.|retrofit2\.|io\.reactivex\.)", source.read_text(), re.MULTILINE):
                     errors.append(f"{source.relative_to(root)}: platform dependency in commonMain")
+    # Event decisions belong to each feature; the root only composes implementations.
+    for source in (root / "shared-app/src/commonMain").rglob("*.kt"):
+        text = source.read_text()
+        if re.search(r"(?:class|object)\s+\w*Tracker\w*\b|object\s*:\s*\w*Tracker\w*\b", text):
+            errors.append(f"{source.relative_to(root)}: tracker implementations belong to their owning feature")
+        if re.search(r'AnalyticsEvent\s*\(|\.track\s*\(\s*"', text):
+            errors.append(f"{source.relative_to(root)}: analytics event mappings belong to their owning feature")
+    for source in features.glob("*/impl/src/*Main/**/*.kt"):
+        if re.search(r"^import com\.google\.firebase\.analytics\.", source.read_text(), re.MULTILINE):
+            errors.append(f"{source.relative_to(root)}: analytics SDKs belong in libraries/analytics platform source sets")
+    for source in (root / "app/src/main").rglob("*"):
+        if source.suffix in {".kt", ".java"} and re.search(r"^import com\.google\.firebase\.analytics\.", source.read_text(), re.MULTILINE):
+            errors.append(f"{source.relative_to(root)}: analytics SDKs belong in libraries/analytics platform source sets")
     for include in includes:
         if not (root / include[1:].replace(":", "/") / "build.gradle.kts").exists():
             errors.append(f"{include}: includes a missing feature module")
