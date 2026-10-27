@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package teamcityapp.shared
+package teamcityapp.features.bottom_sheet.impl
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.lifecycle.compose.LifecycleResumeEffect
+import teamcityapp.features.bottom_sheet.api.*
 
-/** Recomposition is not another screen view; visibility and visit ownership are. */
 @Composable
-internal fun SharedScreenAnalytics(owner: Any, onViewed: () -> Unit) {
-    val latestViewed by rememberUpdatedState(onViewed)
-    LifecycleResumeEffect(owner) {
-        latestViewed()
-        onPauseOrDispose {}
+fun SharedActionSheetRoute(title: String, menu: SheetMenuType, descriptions: List<String>, onCopy: (String) -> Unit, onClose: () -> Unit, onSelected: (SheetItem) -> Unit) {
+    BottomSheetScreen(BottomSheetUiState(title, sheetItems(menu, descriptions))) { item ->
+        if (item.action == SheetAction.Copy) {
+            onCopy(item.description)
+            onClose()
+        } else {
+            onSelected(item)
+        }
     }
 }

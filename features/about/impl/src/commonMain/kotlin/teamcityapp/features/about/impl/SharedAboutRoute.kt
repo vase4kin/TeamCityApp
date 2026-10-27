@@ -35,3 +35,28 @@ fun SharedAboutRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     SharedAboutScreen(state, onOpenUrl, onAction, onClose, appVersion)
 }
+
+/** The host supplies OS capabilities; About owns its action destinations. */
+@Composable
+fun SharedAboutRoute(
+    repository: AboutRepository,
+    appVersion: String,
+    onOpenUrl: (String) -> Unit,
+    onRate: () -> Unit,
+    onLibraries: () -> Unit,
+    onClose: () -> Unit
+) = SharedAboutRoute(repository, appVersion, onOpenUrl, { action ->
+    performAboutAction(action, onOpenUrl, onRate, onLibraries)
+}, onClose)
+
+internal fun performAboutAction(action: AboutAction, onOpenUrl: (String) -> Unit, onRate: () -> Unit, onLibraries: () -> Unit) {
+    when (action) {
+        AboutAction.Rate -> onRate()
+        AboutAction.Libraries -> onLibraries()
+        AboutAction.Issue -> onOpenUrl("https://github.com/vase4kin/TeamCityApp/issues/new/choose")
+        AboutAction.Source -> onOpenUrl("https://github.com/vase4kin/TeamCityApp")
+        AboutAction.Website -> onOpenUrl("https://teamcity.app")
+        AboutAction.Email -> onOpenUrl("mailto:contact@teamcity.app?subject=Questions%20about%20TeamCityApp")
+        AboutAction.Privacy -> onOpenUrl("https://telegra.ph/TeamCityApp-Private-Policy-09-18")
+    }
+}

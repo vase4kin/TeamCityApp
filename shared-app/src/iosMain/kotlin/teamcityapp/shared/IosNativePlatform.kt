@@ -19,69 +19,19 @@
 package teamcityapp.shared
 
 import kotlinx.cinterop.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.*
 import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
-import platform.posix.*
 import teamcityapp.features.artifacts.api.DownloadedArtifact
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.analytics.IosAnalyticsTracker
 import teamcityapp.libraries.analytics.track
 import teamcityapp.libraries.app_theme.*
+import teamcityapp.libraries.network.IosResponseCacheStore
 import teamcityapp.libraries.shared_data.*
-
-/** Files are app-private; iOS grants per-file access through its system export sheet. */
-internal class IosArtifactFileStore(private val directory: String) : ArtifactFileStore {
-    override fun create(target: ArtifactTarget): PendingArtifact {
-        val folder = "$directory/${target.transferId}"
-        check(!NSFileManager.defaultManager.fileExistsAtPath(folder))
-        check(NSFileManager.defaultManager.createDirectoryAtPath(folder, true, null, null)) { "Cannot create download directory" }
-        val pending = "$folder/${target.pendingName}"
-        val output = "$folder/${target.name}"
-        val stream = checkNotNull(fopen(pending, "wb")) { "Cannot create download" }
-        return object : PendingArtifact {
-            var open = true
-            var complete = false
-            override fun write(bytes: ByteArray, count: Int) {
-                check(open && !complete)
-                bytes.usePinned { check(fwrite(it.addressOf(0), 1u, count.toULong(), stream) == count.toULong()) { "Cannot write download" } }
-            }
-            override fun finish(): DownloadedArtifact {
-                check(open && !complete)
-                val flushed = fflush(stream) == 0
-                val closed = fclose(stream) == 0
-                open = false
-                check(flushed && closed) { "Cannot finish download" }
-                check(rename(pending, output) == 0) { "Cannot commit download" }
-                complete = true
-                return DownloadedArtifact(output)
-            }
-            override fun close() {
-                if (open) {
-                    fclose(stream)
-                    open = false
-                }
-                if (!complete) NSFileManager.defaultManager.removeItemAtPath(folder, null)
-            }
-        }
-    }
-}
-
-internal class IosThemePreferences(private val key: String) : ThemePreferencesRepository {
-    private val defaults = NSUserDefaults.standardUserDefaults
-    override val theme = MutableStateFlow(ThemeMode.fromStoredValue(defaults.stringForKey(key)) ?: ThemeMode.System)
-    override suspend fun setTheme(mode: ThemeMode) {
-        withContext(Dispatchers.Default) { defaults.setObject(mode.storedValue, key) }
-        theme.value = mode
-    }
-}
 
 /** UI objects belong to this controller; no retained ViewModel holds UIKit references. */
 internal class IosNativePlatform(private val host: () -> UIViewController, namespace: String?) : NativePlatform {
@@ -179,31 +129,5 @@ internal class IosNativePlatform(private val host: () -> UIViewController, names
         } catch (_: Exception) {
             failed(NativePlatformFailure.Rating)
         }
-    }
-}
-
-/** Foundation owns atomic file bytes; account partitioning and cache lifetime are common. */
-internal class IosResponseCacheStore : teamcityapp.libraries.network.ResponseCacheStore {
-    private val path = NSHomeDirectory() + "/Library/Caches/teamcity_rest_v1.json"
-    override suspend fun read(): String? = withContext(Dispatchers.Default) {
-        lock.withLock {
-            if (!NSFileManager.defaultManager.fileExistsAtPath(path)) {
-                null
-            } else {
-                checkNotNull(NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null))
-            }
-        }
-    }
-    override suspend fun write(value: String) = withContext(Dispatchers.Default) {
-        lock.withLock {
-            val bytes = value.encodeToByteArray()
-            bytes.usePinned {
-                val data = NSData.dataWithBytes(if (bytes.isEmpty()) null else it.addressOf(0), bytes.size.toULong())
-                check(data.writeToFile(path, true)) { "Cannot persist response cache" }
-            }
-        }
-    }
-    companion object {
-        private val lock = Mutex()
     }
 }

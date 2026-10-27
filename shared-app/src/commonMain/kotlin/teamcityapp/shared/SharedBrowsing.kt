@@ -17,24 +17,17 @@
 package teamcityapp.shared
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.ktor.http.encodeURLQueryComponent
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.agents.api.navigation.AgentsDestination
 import teamcityapp.features.agents.impl.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
-import teamcityapp.features.build_overview.impl.overviewSection
 import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
 import teamcityapp.features.build_queue.impl.*
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
@@ -62,7 +55,6 @@ import teamcityapp.features.tests.impl.*
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
-import teamcityapp.libraries.theme.*
 
 @Composable
 internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
@@ -79,10 +71,6 @@ internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAcco
         onPauseOrDispose {}
     }
     val state by model.state.collectAsStateWithLifecycle()
-    LifecycleResumeEffect(model) {
-        model.viewed()
-        onPauseOrDispose {}
-    }
     val children = remember(entryId) {
         listOf(
             NavigationEntry("$entryId/Projects", ProjectDestination()),
@@ -110,23 +98,8 @@ internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAcco
         journey.homes = journey.homes + (entryId to SavedSharedHome(state.selected, activity, snapshots))
     }
     val selectedStack = stacks.getValue("$entryId/${state.selected.name}")
-    val snackbar = remember { SnackbarHostState() }
     CompositionLocalProvider(LocalFavoritesProjectsAction provides model::addProjects, LocalSharedEducationVisible provides (state.prompt != null)) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            HomeNavigationScreen(
-                state, maxWidth >= 600.dp, stacks, registry, entryId,
-                { tab ->
-                    if (tab == state.selected) selectedStack.popToRoot()
-                    model.select(tab)
-                },
-                model::selectFilter, model::retry, model::dismissPrompt, snackbar,
-                { navigator.push(AccountsDestination) },
-                {
-                    if (state.isActivity) selectedStack.popToRoot()
-                    model.selectActivity()
-                }
-            )
-        }
+        SharedHomeRoute(model, state, stacks, registry, entryId, { selectedStack.popToRoot() }, { navigator.push(AccountsDestination) })
     }
 }
 
@@ -136,38 +109,26 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, analytics: Anal
     return setOf(
         SharedEntry(FavoritesDestination::class, FavoritesDestination.serializer()) { _, nav, _ ->
             val vm = viewModel { FavoritesViewModel(repositories.favorites) }
-            LifecycleResumeEffect(vm) {
-                vm.onResumed()
-                onPauseOrDispose { vm.onPaused() }
-            }
-            val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-            FavoritesScreen(
-                state,
-                vm::refresh,
-                vm::retry,
+            SharedFavoritesRoute(
+                vm,
+                FavoritesTrackerImpl(analytics),
                 { nav.push(AccountsDestination) },
                 { nav.push(ProjectDestination(it.id, it.name)) },
-                {
-                    FavoritesTrackerImpl(analytics).configurationOpened()
-                    nav.push(BuildHistoryDestination(it.id, it.name))
-                },
-                onBrowseProjects = LocalFavoritesProjectsAction.current ?: {}
+                { nav.push(BuildHistoryDestination(it.id, it.name)) },
+                LocalFavoritesProjectsAction.current ?: {}
             )
         },
         SharedEntry(RunningBuildsDestination::class, RunningBuildsDestination.serializer()) { _, nav, entryId ->
             val vm = viewModel { RunningBuildsViewModel(repositories.running) }
-            val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-            SharedRunningBuildsScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) }, onApplyUpdates = vm::applyUpdates)
+            SharedRunningBuildsRoute(vm, { nav.push(AccountsDestination) }, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) })
         },
         SharedEntry(BuildQueueDestination::class, BuildQueueDestination.serializer()) { _, nav, entryId ->
             val vm = viewModel { BuildQueueViewModel(repositories.queue) }
-            val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-            SharedBuildQueueScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) }, onApplyUpdates = vm::applyUpdates)
+            SharedBuildQueueRoute(vm, { nav.push(AccountsDestination) }, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) })
         },
         SharedEntry(AgentsDestination::class, AgentsDestination.serializer()) { _, nav, _ ->
             val vm = viewModel { AgentsViewModel(repositories.agents) }
-            val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-            SharedAgentsScreen(state, vm::refresh, vm::retry, { nav.push(AccountsDestination) }, onApplyUpdates = vm::applyUpdates)
+            SharedAgentsRoute(vm, { nav.push(AccountsDestination) })
         },
         SharedEntry(BuildDetailsSectionDestination::class, BuildDetailsSectionDestination.serializer(), additionalSerializers = { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(BuildDetailsSectionCountResult::class, BuildDetailsSectionCountResult.serializer()) }
@@ -180,8 +141,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, analytics: Anal
                 Unit
             }
             SharedSectionBackHandler(count != null && dest.originEntryId != null && nav.current.id == entryId, close)
-            val title = stringResource(overviewSection(dest.section, null).title)
-            SharedTeamCityScreen(title, close) { modifier ->
+            teamcityapp.features.build_overview.impl.SharedBuildSectionScreen(dest.section, close) { modifier ->
                 Box(modifier) {
                     when (dest.section) {
                         BuildDetailsSection.Changes -> {
@@ -197,20 +157,12 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, analytics: Anal
 
                         BuildDetailsSection.Parameters -> {
                             val vm = viewModel { PropertiesViewModel(destinationState(mapOf(PropertiesViewModel.ARG_NAMES to ArrayList(dest.build.properties?.items.orEmpty().map { it.name.orEmpty() }), PropertiesViewModel.ARG_VALUES to ArrayList(dest.build.properties?.items.orEmpty().map { it.value.orEmpty() })))) }
-                            val state by vm.state.collectAsStateWithLifecycle()
-                            val platform = LocalNativePlatform.current
-                            PropertiesScreen(state, { platform.copy(it.value) })
+                            SharedPropertiesRoute(vm, LocalNativePlatform.current::copy)
                         }
 
                         BuildDetailsSection.Snapshots -> {
                             val vm = viewModel { SnapshotDependenciesViewModel(repositories.snapshots, destinationState(mapOf(SnapshotDependenciesViewModel.BUILD_ID to dest.build.id, SnapshotDependenciesViewModel.BUILD_TYPE_NAME to dest.configurationName.orEmpty()))) }
-                            LifecycleResumeEffect(vm) {
-                                SnapshotDependenciesTrackerImpl(analytics).viewShown()
-                                vm.onResumed()
-                                onPauseOrDispose { vm.onPaused() }
-                            }
-                            val state by vm.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-                            SnapshotDependenciesScreen(state, vm::refresh, vm::retry, { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) })
+                            SharedSnapshotDependenciesRoute(vm, SnapshotDependenciesTrackerImpl(analytics), { nav.openBuildSnapshot(entryId, it) }, { id, name -> nav.push(BuildHistoryDestination(id, name)) })
                         }
 
                         else -> Unit
@@ -220,34 +172,12 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, analytics: Anal
         },
         SharedEntry(ChangeDetailsDestination::class, ChangeDetailsDestination.serializer()) { dest, nav, _ ->
             val vm = viewModel { ChangeDetailsViewModel(destinationState(dest.details?.savedArguments().orEmpty()), ChangeDetailsTrackerImpl(analytics)) }
-            val state by vm.state.collectAsStateWithLifecycle()
-            LifecycleResumeEffect(vm) {
-                vm.onScreenViewed()
-                onPauseOrDispose {}
-            }
             val platform = LocalNativePlatform.current
-            val server = graph.account.identity.serverUrl
-            ChangeDetailsScreen(state, {
-                vm.onMoreDetailsClicked()
-                platform.serverBrowser(server, it)
-            }, { id, file ->
-                vm.onFileDiffClicked()
-                platform.serverBrowser(server, "diffView.html?id=${id.encodeURLQueryComponent()}&vcsFileName=${file.encodeURLQueryComponent()}")
-            }, { nav.pop() })
-            LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
+            SharedChangeDetailsRoute(vm, { nav.pop() }, { platform.serverBrowser(graph.account.identity.serverUrl, it) })
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
             val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, TestDetailsTrackerImpl(analytics)) }
-            SharedScreenAnalytics(vm, vm::onScreenViewed)
-            val state by vm.state.collectAsStateWithLifecycle()
-            var query by rememberSaveable { mutableStateOf("") }
-            var wrap by rememberSaveable { mutableStateOf(true) }
-            var match by rememberSaveable { mutableIntStateOf(0) }
-            val platform = LocalNativePlatform.current
-            TestDetailsScreen(state, vm::retry, { nav.pop() }, query, wrap, match, {
-                query = it
-                match = 0
-            }, { wrap = it }, { match = it }, onCopy = platform::copy)
+            SharedTestDetailsRoute(vm, { nav.pop() }, LocalNativePlatform.current::copy)
         }
     )
 }

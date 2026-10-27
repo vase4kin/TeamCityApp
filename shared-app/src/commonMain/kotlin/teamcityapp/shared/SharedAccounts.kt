@@ -40,7 +40,7 @@ internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationReg
         val tracker = remember(analytics) {
             ManageAccountsTrackerImpl(analytics)
         }
-        val vm = viewModel { ManageAccountsViewModel(SharedManageAccountsRepository(model.sessions), tracker) }
+        val vm = viewModel { ManageAccountsViewModel(AccountSessionManageAccountsRepository(model.sessions), tracker) }
         val router = remember(nav) {
             object : ManageAccountsRouter {
                 override fun close() {
@@ -87,7 +87,7 @@ internal fun SharedAccountContent(model: SharedAppViewModel, nav: Navigator) {
     val tracker = remember(analytics) {
         DrawerTrackerImpl(analytics)
     }
-    val vm = viewModel { DrawerViewModel(SharedAccountSwitcherRepository(model.sessions), tracker) }
+    val vm = viewModel { DrawerViewModel(AccountSessionDrawerRepository(model.sessions), tracker) }
     val router = remember(platform, nav) {
         object : DrawerRouter {
             override fun attach() = Unit
@@ -107,7 +107,7 @@ internal fun SharedAccountContent(model: SharedAppViewModel, nav: Navigator) {
                 nav.push(ManageAccountsDestination)
             }
             override fun openPrivacy() {
-                platform.browser("https://telegra.ph/TeamCityApp-Private-Policy-09-18")
+                platform.browser(ACCOUNT_PRIVACY_URL)
             }
             override fun openRate() {
                 platform.rate()

@@ -32,6 +32,7 @@ kotlin.sourceSets.named("commonMain") {
         api(projects.features.testDetails.api)
         api(projects.libraries.designSystem)
         implementation(libs.multiplatform.lifecycle.viewmodel)
+        implementation(libs.multiplatform.lifecycle.runtime)
     }
 }
 kotlin.sourceSets.named("commonTest") {

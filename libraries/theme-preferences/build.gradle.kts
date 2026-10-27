@@ -16,3 +16,5 @@
 
 plugins { id("teamcityapp.kmp.library") }
 kotlin.sourceSets.named("commonMain") { dependencies { api(libs.coroutines.core) } }
+
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }

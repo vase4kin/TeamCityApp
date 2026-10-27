@@ -33,7 +33,9 @@ kotlin.sourceSets.named("commonMain") {
         api(projects.libraries.buildPresentation)
         api(projects.libraries.designSystem)
         implementation(projects.libraries.time)
+        implementation(libs.androidx.paging.compose)
         implementation(libs.multiplatform.lifecycle.viewmodel)
+        implementation(libs.multiplatform.lifecycle.runtime)
     }
 }
 

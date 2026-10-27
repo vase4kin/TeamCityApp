@@ -28,6 +28,7 @@ compose.resources {
 kotlin.sourceSets.named("commonMain") {
     dependencies {
         implementation(projects.libraries.analytics)
+        implementation(libs.multiplatform.lifecycle.runtime)
         api(projects.features.snapshotDependencies.api)
         api(projects.libraries.designSystem)
         api(projects.libraries.listPresentation)

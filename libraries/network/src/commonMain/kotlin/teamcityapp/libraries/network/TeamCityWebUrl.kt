@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package teamcityapp.shared
+package teamcityapp.libraries.network
 
 import io.ktor.http.*
-import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.network.normalizeServerUrl
 
-internal fun activeServerWebUrl(server: String, href: String): String {
+fun activeServerWebUrl(server: String, href: String): String {
     val base = Url(normalizeServerUrl(server))
     val root = base.toString().trimEnd('/')
     val candidate = when {
@@ -33,20 +31,4 @@ internal fun activeServerWebUrl(server: String, href: String): String {
     require(candidate.encodedPath.startsWith(context) && candidate.encodedPath.split('/').flatMap { it.decodeURLPart().split('/', '\\') }.none { it in setOf(".", "..") })
     require(candidate.parameters.names().none { it.equals("password", true) || it.equals("token", true) || it.equals("access_token", true) })
     return candidate.toString()
-}
-internal fun buildLogUrl(server: String, build: BuildLaunchData, guest: Boolean): String {
-    require(build.id.isNotBlank())
-    return URLBuilder(activeServerWebUrl(server, "viewLog.html")).apply {
-        parameters.append("buildId", build.id)
-        parameters.append("tab", "buildLog")
-        if (guest) parameters.append("guest", "1")
-    }.buildString()
-}
-internal fun artifactBrowserUrl(server: String, build: BuildLaunchData, href: String, guest: Boolean): String {
-    // Validate the opaque source before converting metadata to TeamCity's browser download route.
-    activeServerWebUrl(server, href)
-    val path = href.substringAfter("/metadata/", "")
-    require(path.isNotBlank())
-    val configuration = requireNotNull(build.buildTypeId ?: build.configuration?.id)
-    return activeServerWebUrl(server, "repository/download/${configuration.encodeURLPathPart()}/${build.id.encodeURLPathPart()}:id/$path" + if (guest) "?guest=1" else "")
 }

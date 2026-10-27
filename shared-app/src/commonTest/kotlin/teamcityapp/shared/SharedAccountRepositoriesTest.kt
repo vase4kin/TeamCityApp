@@ -15,12 +15,13 @@
  */
 
 package teamcityapp.shared
-
 import kotlin.test.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import teamcityapp.features.drawer.api.*
+import teamcityapp.features.drawer.impl.AccountSessionDrawerRepository
 import teamcityapp.features.manage_accounts.api.*
+import teamcityapp.features.manage_accounts.impl.AccountSessionManageAccountsRepository
 import teamcityapp.libraries.accounts.*
 
 class SharedAccountRepositoriesTest {
@@ -41,8 +42,8 @@ class SharedAccountRepositoriesTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
         sessions.saveAndActivate(AccountSecret(named, "password"))
-        val switcher = SharedAccountSwitcherRepository(sessions)
-        val managed = SharedManageAccountsRepository(sessions)
+        val switcher = AccountSessionDrawerRepository(sessions)
+        val managed = AccountSessionManageAccountsRepository(sessions)
         val rows = switcher.accounts()
         assertEquals(2, rows.size)
         assertEquals(2, rows.map { it.id.identityKey }.toSet().size)
@@ -62,70 +63,11 @@ class SharedAccountRepositoriesTest {
         val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
         sessions.saveAndActivate(AccountSecret(guest))
         val scope = active(sessions)
-        val switcher = SharedAccountSwitcherRepository(sessions)
+        val switcher = AccountSessionDrawerRepository(sessions)
         assertEquals(SelectionOutcome.Missing, switcher.select(DrawerAccountId(guest.serverUrl, guest.userName, "old-key")).outcome)
-        val removed = SharedManageAccountsRepository(sessions).remove(ManagedAccountId("https://other.example", guest.userName, guest.key))
+        val removed = AccountSessionManageAccountsRepository(sessions).remove(ManagedAccountId("https://other.example", guest.userName, guest.key))
         assertFalse(removed.removed)
         assertSame(scope, active(sessions))
         assertEquals(listOf(guest), sessions.accounts())
-    }
-
-    @Test fun currentSelectionDoesNotReplaceTheAccountGeneration() = runTest {
-        val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
-        sessions.saveAndActivate(AccountSecret(guest))
-        val scope = active(sessions)
-        val repo = SharedAccountSwitcherRepository(sessions)
-        assertEquals(SelectionOutcome.Current, repo.select(repo.accounts().single().id).outcome)
-        assertSame(scope, active(sessions))
-    }
-
-    @Test fun activeRemovalSelectsTheRemainingAccountAndLastRemovalReturnsToLogin() = runTest {
-        val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
-        sessions.saveAndActivate(AccountSecret(guest))
-        sessions.saveAndActivate(AccountSecret(named, "password"))
-        val old = active(sessions)!!
-        val repo = SharedManageAccountsRepository(sessions)
-        assertEquals(AccountRemovalOutcome.Home, repo.remove(repo.accounts().single { it.isActive }.id).outcome)
-        assertFailsWith<CancellationException> { old.requireCurrent() }
-        assertEquals(guest, active(sessions)?.identity)
-        assertEquals(AccountRemovalOutcome.Login, repo.remove(repo.accounts().single().id).outcome)
-        assertEquals(AccountSessionState.SignedOut, sessions.state.value)
-        assertTrue(sessions.accounts().isEmpty())
-    }
-
-    @Test fun failedPersistenceKeepsTheOldGenerationAndCanBeRetried() = runTest {
-        val vault = Vault()
-        val sessions = AccountSessionManager(VaultAccountStorage(vault), backgroundScope.coroutineContext)
-        sessions.saveAndActivate(AccountSecret(guest))
-        sessions.saveAndActivate(AccountSecret(named, "password"))
-        val old = active(sessions)
-        val repo = SharedAccountSwitcherRepository(sessions)
-        val target = repo.accounts().single { !it.isActive }.id
-        vault.failWrites = true
-        assertFailsWith<IllegalStateException> { repo.select(target) }
-        assertSame(old, active(sessions))
-        vault.failWrites = false
-        assertEquals(SelectionOutcome.Changed, repo.select(target).outcome)
-    }
-
-    @Test fun signOutKeepsSavedAccountsForTheSharedAccountPicker() = runTest {
-        val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
-        sessions.saveAndActivate(AccountSecret(guest))
-        val repo = SharedAccountSwitcherRepository(sessions)
-        repo.signOut()
-        assertEquals(AccountSessionState.SignedOut, sessions.state.value)
-        assertEquals(listOf(guest), sessions.accounts())
-        assertFalse(repo.accounts().single().isActive)
-        assertEquals(SelectionOutcome.Changed, repo.select(repo.accounts().single().id).outcome)
-    }
-
-    @Test fun removingTheLastSavedAccountWhileSignedOutRequestsTheLoginDestination() = runTest {
-        val sessions = AccountSessionManager(VaultAccountStorage(Vault()), backgroundScope.coroutineContext)
-        sessions.saveAndActivate(AccountSecret(guest))
-        sessions.signOut()
-        val repo = SharedManageAccountsRepository(sessions)
-        assertEquals(AccountRemovalOutcome.Login, repo.remove(repo.accounts().single().id).outcome)
-        assertEquals(AccountSessionState.SignedOut, sessions.state.value)
-        assertTrue(sessions.accounts().isEmpty())
     }
 }

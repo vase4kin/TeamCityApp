@@ -17,50 +17,35 @@
 package teamcityapp.shared
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModuleBuilder
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.build_details.api.BuildDetailsReferenceDestination
 import teamcityapp.features.build_details.impl.tracker.BuildDetailsReferenceTrackerImpl
-import teamcityapp.features.build_history.api.*
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.*
 import teamcityapp.features.build_history.impl.tracker.BuildHistoryTrackerImpl
 import teamcityapp.features.build_overview.impl.*
 import teamcityapp.features.filter_builds.api.toTeamCityLocator
-import teamcityapp.features.login.api.*
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.login.impl.*
 import teamcityapp.features.login.impl.tracker.LoginTrackerImpl
 import teamcityapp.features.navigation.api.NavigationEntry as ProjectEntry
-import teamcityapp.features.navigation.api.NavigationRatingRepository
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.*
 import teamcityapp.features.navigation.impl.tracker.NavigationTrackerImpl
 import teamcityapp.libraries.accounts.*
-import teamcityapp.libraries.authentication.AuthenticationRepository
-import teamcityapp.libraries.design_system.resolve
-import teamcityapp.libraries.list_ui.PagingListSnapshot
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
@@ -243,45 +228,14 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
 @Composable
 private fun LoginContent(model: SharedAppViewModel) {
     val analytics = LocalNativePlatform.current.analytics
-    val authentication = remember(model) {
-        object : AuthenticationRepository {
-            override suspend fun signIn(credentials: teamcityapp.libraries.authentication.AccountCredentials, checkSecureConnection: Boolean, checkDuplicate: Boolean) = model.authentication.signIn(credentials, checkSecureConnection, checkDuplicate)
-        }
-    }
     val vm = viewModel {
         LoginViewModel(
-            authentication,
-            object : LoginRepository {
-                override suspend fun demoServer() = DemoServer(true, "https://teamcity.jetbrains.com")
-            },
+            model.authentication,
+            PublicDemoLoginRepository(),
             LoginTrackerImpl(analytics)
         )
     }
-    SharedScreenAnalytics(vm, vm::viewed)
-    val state by vm.state.collectAsStateWithLifecycle()
-    var dialog by remember { mutableStateOf(LoginDialog.None) }
-    SharedLoginScreen(
-        state, vm::update, vm::submit,
-        { disabled -> if (disabled) dialog = LoginDialog.Ssl else vm.update(state.form.copy(sslDisabled = false)) },
-        {
-            vm.demoClicked()
-            dialog = LoginDialog.Demo
-        },
-        dialog,
-        onConfirm = {
-            when (dialog) {
-                LoginDialog.Ssl -> vm.update(state.form.copy(sslDisabled = true))
-                LoginDialog.Demo -> vm.tryDemo()
-                LoginDialog.None -> Unit
-            }
-            dialog = LoginDialog.None
-        },
-        onDecline = {
-            if (dialog == LoginDialog.Demo) vm.declineDemo()
-            dialog = LoginDialog.None
-        },
-        onConfirmHttp = vm::confirmHttp, onDeclineHttp = vm::declineHttp, onDismissUnauthorized = vm::dismissUnauthorized
-    )
+    SharedLoginRoute(vm)
 }
 
 @Composable
@@ -301,17 +255,10 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
             NavigationTrackerImpl(analytics)
         )
     }
-    val state by vm.state.collectAsStateWithLifecycle()
     val platform = LocalNativePlatform.current
-    androidx.lifecycle.compose.LifecycleResumeEffect(vm, state.openRating) {
-        vm.onResumed()
-        if (state.openRating && vm.consumeRatingRequest()) platform.rate()
-        onPauseOrDispose { vm.onPaused() }
-    }
-    SharedNavigationScreen(
-        state.copy(rating = state.rating.takeUnless { LocalSharedEducationVisible.current } ?: RatingPromptState.Hidden),
-        vm::refresh,
-        vm::retry,
+    SharedNavigationRoute(
+        vm,
+        LocalSharedEducationVisible.current,
         { if (destination.root) navigator.push(AccountsDestination) else navigator.pop() },
         { entry ->
             when (entry) {
@@ -319,9 +266,7 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
                 is ProjectEntry.Configuration -> navigator.push(BuildHistoryDestination(entry.configuration.id, entry.configuration.name))
             }
         },
-        vm::onRateCancel,
-        vm::onRateNow,
-        onRatingRetry = vm::retryRating
+        platform::rate
     )
 }
 
@@ -337,16 +282,11 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
                     BuildHistoryViewModel.EXTRA_LOCATOR to destination.locator
                 )
             ),
-            object : BuildHistoryRepository {
-                override suspend fun page(query: BuildHistoryQuery, nextHref: String?, forceRefresh: Boolean) = graph.page(query, nextHref, forceRefresh)
-                override suspend fun isFavorite(configurationId: String): Boolean = checkNotNull(graph.browsing).isFavorite(configurationId)
-                override suspend fun setFavorite(configurationId: String, favorite: Boolean): Unit = checkNotNull(graph.browsing).setFavorite(configurationId, favorite)
-            },
+            graph,
             checkNotNull(graph.browsing).historyOnboarding,
             BuildHistoryTrackerImpl(analytics)
         )
     }
-    SharedScreenAnalytics(vm, vm::onScreenViewed)
     androidx.lifecycle.compose.LifecycleResumeEffect(navigator.snapshot.results, vm) {
         while (true) {
             val result = navigator.consumeResult(entryId, teamcityapp.features.filter_builds.api.navigation.BuildFilterResult::class) ?: break
@@ -358,64 +298,16 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
         }
         onPauseOrDispose {}
     }
-    val controls by vm.controls.collectAsStateWithLifecycle()
-    val selection by vm.selection.collectAsStateWithLifecycle()
-    LaunchedEffect(selection.query.locator, entryId) {
-        navigator.updateDestination(entryId, destination.copy(locator = selection.query.locator))
-    }
-    key(selection.pages) {
-        val builds = selection.rows.collectAsLazyPagingItems()
-        val rows = PagingListSnapshot(builds)
-        var completed by remember { mutableStateOf(false) }
-        if (builds.loadState.refresh is LoadState.NotLoading) SideEffect { completed = true }
-        val refresh = {
-            vm.prepareRefresh()
-            builds.refresh()
-        }
-        androidx.lifecycle.compose.LifecycleResumeEffect(controls.refreshPending, selection.pages) {
-            if (vm.claimRefresh()) refresh()
-            onPauseOrDispose {}
-        }
-        val snackbar = remember { SnackbarHostState() }
-        val notice = controls.notice
-        val message = notice?.let { stringResource(it.messageRes) }.orEmpty()
-        val action = notice?.actionLabelRes?.let { stringResource(it) }
-        val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
-        LaunchedEffect(notice?.id, lifecycle) {
-            if (notice != null) {
-                lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) {
-                    val result = snackbar.showSnackbar(message, action, duration = if (notice.kind == BuildHistoryNoticeKind.FiltersApplied) SnackbarDuration.Indefinite else SnackbarDuration.Long)
-                    if (result == SnackbarResult.ActionPerformed) {
-                        when (notice.kind) {
-                            BuildHistoryNoticeKind.Queued -> vm.queuedBuildReference()?.let { navigator.push(BuildDetailsReferenceDestination(it, destination.configurationName)) }
-                            BuildHistoryNoticeKind.FiltersApplied -> vm.resetFilters()
-                            BuildHistoryNoticeKind.FavoriteAdded -> navigator.selectHome(teamcityapp.features.home.api.HomeTab.Favorites)
-                            else -> Unit
-                        }
-                    }
-                    vm.dismissNotice(notice.id)
-                }
-            }
-        }
-        SharedBuildHistoryScreen(
-            destination.configurationName, historyListState(rows.items.map { it.build }, builds.loadState.refresh, completed),
-            controls, rows.itemCount, rows::get, rows::peek,
-            when (builds.loadState.append) {
-                is LoadState.Loading -> HistoryAppendState.Loading
-                is LoadState.Error -> HistoryAppendState.Error
-                else -> HistoryAppendState.Idle
-            },
-            { navigator.pop() },
-            {
-                vm.onRunBuildClicked()
-                navigator.push(teamcityapp.features.run_build.api.navigation.RunBuildDestination(destination.configurationId, entryId))
-            },
-            { navigator.push(teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination(destination.configurationId, entryId)) },
-            vm::toggleFavorite, vm::retryFavorite, vm::dismissPrompt, refresh, refresh, builds::retry,
-            { navigator.openBuildSnapshot(entryId, it, destination.configurationName) },
-            snackbar = snackbar
-        )
-    }
+    SharedBuildHistoryRoute(
+        vm, destination.configurationName,
+        { navigator.updateDestination(entryId, destination.copy(locator = it)) },
+        { navigator.pop() },
+        { navigator.push(teamcityapp.features.run_build.api.navigation.RunBuildDestination(destination.configurationId, entryId)) },
+        { navigator.push(teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination(destination.configurationId, entryId)) },
+        { navigator.openBuildSnapshot(entryId, it, destination.configurationName) },
+        { navigator.push(BuildDetailsReferenceDestination(it, destination.configurationName)) },
+        { navigator.selectHome(teamcityapp.features.home.api.HomeTab.Favorites) }
+    )
 }
 
 @Composable
@@ -439,15 +331,8 @@ private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph
             if (result.buildId == buildId) vm.updateCount(result.section, result.count)
         }
     }
-    val build = state.build
-    if (build != null) {
-        androidx.lifecycle.compose.LifecycleResumeEffect(build, navigator) {
-            if (navigator.current.id == entryId) navigator.replace(teamcityapp.features.build_details.api.BuildDetailsDestination(build, destination.configurationName))
-            onPauseOrDispose {}
-        }
-    }
-    SharedTeamCityScreen(destination.configurationName.orEmpty(), { navigator.pop() }) { modifier ->
-        SharedBuildOverviewScreen(state.copy(actions = emptyList()), vm::refresh, vm::retry, {}, modifier, rowActionAvailable = { false })
+    SharedBuildReferenceRoute(vm, destination.configurationName.orEmpty(), { navigator.pop() }) { build ->
+        if (navigator.current.id == entryId) navigator.replace(teamcityapp.features.build_details.api.BuildDetailsDestination(build, destination.configurationName))
     }
 }
 

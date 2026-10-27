@@ -30,6 +30,7 @@ kotlin.sourceSets {
     named("commonMain") {
         dependencies {
             implementation(projects.libraries.analytics)
+            implementation(projects.libraries.accounts)
             api(projects.features.manageAccounts.api)
             api(projects.libraries.authenticationShared)
             implementation(libs.multiplatform.lifecycle.viewmodel)

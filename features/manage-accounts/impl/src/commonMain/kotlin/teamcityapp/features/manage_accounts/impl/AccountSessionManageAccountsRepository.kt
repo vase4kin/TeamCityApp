@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-package teamcityapp.shared
+package teamcityapp.features.manage_accounts.impl
 
-import teamcityapp.features.drawer.api.*
 import teamcityapp.features.manage_accounts.api.*
 import teamcityapp.libraries.accounts.*
 
-/** Maps public account identities only; credentials and mutations remain in the session manager. */
-internal class SharedAccountSwitcherRepository(private val sessions: AccountSessionManager) : DrawerRepository {
-    override val supportsSignOut = true
-    override suspend fun accounts(): List<DrawerAccount> {
-        val active = (sessions.state.value as? AccountSessionState.Active)?.scope?.identity?.key
-        return sessions.accounts().map { DrawerAccount(DrawerAccountId(it.serverUrl, it.userName, it.key), it.key == active, it.sslDisabled) }
-    }
-    override suspend fun select(id: DrawerAccountId): AccountSelection {
-        val identity = sessions.accounts().singleOrNull { it.serverUrl == id.serverUrl && it.userName == id.userName && it.key == id.identityKey }
-            ?: return AccountSelection(accounts(), SelectionOutcome.Missing)
-        val active = (sessions.state.value as? AccountSessionState.Active)?.scope?.identity?.key
-        if (active == identity.key) return AccountSelection(accounts(), SelectionOutcome.Current)
-        sessions.activate(identity.key)
-        return AccountSelection(accounts(), SelectionOutcome.Changed)
-    }
-    override suspend fun signOut() = sessions.signOut()
-}
-
-internal class SharedManageAccountsRepository(private val sessions: AccountSessionManager) : ManageAccountsRepository {
+class AccountSessionManageAccountsRepository(private val sessions: AccountSessionManager) : ManageAccountsRepository {
     override suspend fun accounts(): List<ManagedAccount> {
         val active = (sessions.state.value as? AccountSessionState.Active)?.scope?.identity?.key
         return sessions.accounts().map { ManagedAccount(ManagedAccountId(it.serverUrl, it.userName, it.key), it.key == active, it.sslDisabled) }

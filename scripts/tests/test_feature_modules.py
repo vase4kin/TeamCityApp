@@ -97,6 +97,20 @@ class FeatureModulesTest(unittest.TestCase):
         self.write("features/about/impl/build.gradle.kts", 'id("teamcityapp.android.library")')
         self.assertTrue(any("must use KMP Compose" in e for e in guard.validate(self.root)))
 
+    def test_root_cannot_own_feature_resources_or_paging(self):
+        for body in ("import teamcityapp.features.login.impl.resources.Res", "val rows = collectAsLazyPagingItems()", "val state = LoginUiState()"):
+            with self.subTest(body=body):
+                self.write("shared-app/src/commonMain/kotlin/FeatureLeak.kt", body)
+                self.assertTrue(any("feature routes" in e for e in guard.validate(self.root)))
+
+    def test_root_cannot_own_screen_lifecycle_callbacks(self):
+        self.write("shared-app/src/commonMain/kotlin/FeatureLeak.kt", "LifecycleResumeEffect(vm) { vm.onScreenViewed() }")
+        self.assertTrue(any("screen lifecycle" in e for e in guard.validate(self.root)))
+
+    def test_root_can_compose_routes_and_deliver_navigation_results(self):
+        self.write("shared-app/src/commonMain/kotlin/Entry.kt", "val vm = viewModel { LoginViewModel(repository, tracker) }; SharedLoginRoute(vm); vm.applyFilter(result.filter)")
+        self.assertEqual([], guard.validate(self.root))
+
     def test_obsolete_root_dependency_is_rejected(self):
         self.write("shared-app/build.gradle.kts", "implementation(projects.features.about.presentation)")
         self.assertTrue(any("obsolete presentation" in e for e in guard.validate(self.root)))

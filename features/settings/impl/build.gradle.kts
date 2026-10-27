@@ -33,6 +33,7 @@ kotlin.sourceSets.named("commonMain") {
         api(projects.libraries.themePreferences)
         api(projects.libraries.designSystem)
         implementation(libs.multiplatform.lifecycle.viewmodel)
+        implementation(libs.multiplatform.lifecycle.runtime)
     }
 }
 kotlin.sourceSets.named("commonTest") {

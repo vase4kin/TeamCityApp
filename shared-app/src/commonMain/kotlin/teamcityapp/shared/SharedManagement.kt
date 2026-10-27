@@ -16,15 +16,11 @@
 
 package teamcityapp.shared
 
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.*
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
-import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.features.bottom_sheet.impl.*
@@ -36,6 +32,7 @@ import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
 import teamcityapp.features.build_overview.api.BuildReferenceTracker
 import teamcityapp.features.build_overview.impl.*
+import teamcityapp.features.build_overview.impl.router.BuildOverviewActions
 import teamcityapp.features.build_overview.impl.tracker.BuildOverviewTrackerImpl
 import teamcityapp.features.filter_bottom_sheet.api.navigation.*
 import teamcityapp.features.filter_bottom_sheet.impl.*
@@ -108,14 +105,8 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, analytics: An
             builder.polymorphic(NavigationResult::class) { subclass(ActionSheetResult::class, ActionSheetResult.serializer()) }
         }, DestinationPresentation.BottomSheet) { dest, nav, _ ->
             val platform = LocalNativePlatform.current
-            val items = sheetItems(dest.menu, dest.descriptions)
-            BottomSheetScreen(BottomSheetUiState(dest.title, items)) { item ->
-                if (item.action == SheetAction.Copy) {
-                    platform.copy(item.description)
-                    nav.pop()
-                } else if (!nav.finish(ActionSheetResult(dest.consumerId, item), dest.recipientId)) {
-                    nav.pop()
-                }
+            SharedActionSheetRoute(dest.title, dest.menu, dest.descriptions, platform::copy, { nav.pop() }) { item ->
+                if (!nav.finish(ActionSheetResult(dest.consumerId, item), dest.recipientId)) nav.pop()
             }
         },
         SharedEntry(BuildDetailsDestination::class, BuildDetailsDestination.serializer()) { dest, nav, id -> SharedManagedBuild(dest, graph, nav, id) }
@@ -128,8 +119,6 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
     val tracker = remember(platform.analytics) { BuildOverviewTrackerImpl(platform.analytics) }
     val server = graph.account.identity.serverUrl
     val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, BuildDetailsTrackerImpl(platform.analytics)) }
-    SharedScreenAnalytics(model, model::viewed)
-    val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {
         BuildReferenceViewModel(
             destination.build.href,
@@ -141,38 +130,13 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
         )
     }
     val education = viewModel { BuildDetailsMetadataViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build))), checkNotNull(graph.browsing).metadata, includeCounts = false) }
-    val educationState by education.state.collectAsStateWithLifecycle()
-    LaunchedEffect(state.current) { education.loaded(state.current) }
     val content by overview.state.collectAsStateWithLifecycle()
-    LaunchedEffect(content.build) {
-        content.build?.takeIf { it.id == destination.build.id }?.let { build ->
-            model.loaded(build)
-            // Rating bookkeeping must never turn a successful build response into a UI failure.
-            try {
-                graph.browsing?.buildViewed(build.id)
-            } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                throw cancelled
-            } catch (_: Exception) { /* A later view can retry this optional preference write. */ }
+    val actions = remember(tracker, server, platform) {
+        BuildOverviewActions(tracker, server, graph.account.identity.guest, platform::browser, platform::share) {
+            platform.rejected(if (it == BuildOverviewAction.Share) NativePlatformFailure.Share else NativePlatformFailure.Browser)
         }
     }
-    LaunchedEffect(state.overviewRefresh) { if (state.overviewRefresh > 0) overview.refresh() }
-    val snackbar = remember { SnackbarHostState() }
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val message = state.notice?.let { stringResource(it.message) }
-    val action = state.notice?.actionLabel?.let { stringResource(it) }
-    LaunchedEffect(state.notice?.id, lifecycle) {
-        val notice = state.notice ?: return@LaunchedEffect
-        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            val result = snackbar.showSnackbar(checkNotNull(message), action, duration = SnackbarDuration.Long)
-            model.consumeNotice(notice.id)
-            if (result == SnackbarResult.ActionPerformed && notice.openQueued) model.queuedBuildReference()?.let { nav.push(BuildDetailsReferenceDestination(it, state.subtitle, fromRestart = true)) }
-        }
-    }
-    LifecycleResumeEffect(state.replacement, model, nav.snapshot.results) {
-        state.replacement?.takeIf { nav.current.id == entryId }?.let {
-            model.consumeReplacement(it.id)
-            nav.replace(BuildDetailsDestination(it.build, state.subtitle, forceOverviewRefresh = true, completion = it.completion))
-        }
+    LifecycleResumeEffect(model, nav.snapshot.results) {
         while (true) {
             val result = nav.consumeResult(entryId, BuildDetailsSectionCountResult::class) ?: break
             if (result.buildId == destination.build.id) overview.updateCount(result.section, result.count)
@@ -181,78 +145,34 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
             val result = nav.consumeResult(entryId, ActionSheetResult::class) ?: break
             if (result.consumerId == "overview" && result.item.action == SheetAction.Branch) {
                 destination.build.buildTypeId?.let {
-                    tracker.action(BuildOverviewAction.Configuration, result.item.description)
-                    nav.push(BuildHistoryDestination(it, state.subtitle, BuildFilter(branch = result.item.description).toTeamCityLocator()))
+                    actions.configuration(result.item.description)
+                    nav.push(BuildHistoryDestination(it, model.state.value.subtitle, BuildFilter(branch = result.item.description).toTeamCityLocator()))
                 }
             }
         }
         onPauseOrDispose {}
     }
-    BuildDetailsScreen(state.copy(prompt = educationState.prompt, onboardingFailed = educationState.onboardingFailed), { nav.pop() }, { command ->
-        when (command) {
-            BuildDetailsCommand.Share -> {
-                tracker.action(BuildOverviewAction.Share)
-                runCatching { activeServerWebUrl(server, state.current.webUrl.orEmpty()) }.onSuccess(platform::share).onFailure { platform.rejected(NativePlatformFailure.Share) }.let { }
+    SharedBuildDetailsRoute(
+        model, education, content.build, { graph.browsing?.buildViewed(it.id) }, overview::refresh,
+        actions::perform, { nav.pop() },
+        { href, title -> nav.push(BuildDetailsReferenceDestination(href, title, fromRestart = true)) },
+        { replacement, title ->
+            if (nav.current.id == entryId) {
+                nav.replace(BuildDetailsDestination(replacement.build, title, forceOverviewRefresh = true, completion = replacement.completion))
+                true
+            } else {
+                false
             }
-
-            BuildDetailsCommand.Browser -> {
-                tracker.action(BuildOverviewAction.Browser)
-                platform.serverBrowser(server, state.current.webUrl.orEmpty())
-            }
-
-            BuildDetailsCommand.Log -> {
-                tracker.action(BuildOverviewAction.Log)
-                platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest))
-            }
-
-            BuildDetailsCommand.Cancel -> {
-                tracker.action(if (state.current.state == "queued") BuildOverviewAction.RemoveFromQueue else BuildOverviewAction.Stop)
-                model.requestCancellation()
-            }
-
-            BuildDetailsCommand.Restart -> {
-                tracker.action(BuildOverviewAction.Restart)
-                model.requestRestart()
-            }
-
-            else -> Unit
         }
-    }, model::confirm, model::dismissConfirmation, snackbar, onDismissPrompt = education::dismissPrompt) {
-        SharedBuildOverviewScreen(
-            content,
-            overview::refresh,
-            overview::retry,
-            { row ->
-                if (!state.busy) {
-                    when (row.action) {
-                        OverviewRowAction.Configuration -> state.current.buildTypeId?.let {
-                            tracker.action(BuildOverviewAction.Configuration)
-                            nav.push(BuildHistoryDestination(it, state.subtitle))
-                        }
-
-                        OverviewRowAction.Project -> state.current.configuration?.projectId?.let {
-                            tracker.action(BuildOverviewAction.Project)
-                            nav.push(ProjectDestination(it, state.current.configuration?.projectName.orEmpty()))
-                        }
-
-                        OverviewRowAction.Branch -> (row.value as? OverviewText.Literal)?.let { nav.push(ActionSheetDestination(it.value, listOf(it.value), SheetMenuType.Branch, entryId, "overview")) }
-
-                        OverviewRowAction.Copy -> (row.value as? OverviewText.Literal)?.let { platform.copy(it.value) }
-                    }
-                }
-            },
-            onSection = { section ->
-                if (!state.busy) {
-                    nav.openBuildSection(entryId, destination.build.id, content.build, section, state.subtitle)
-                }
-            },
-            onLog = {
-                tracker.action(BuildOverviewAction.Log)
-                platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest))
-            },
-            onCountRetry = overview::retryCount,
-            bottomContentPadding = LocalFloatingActionClearance.current,
-            rowActionAvailable = { !state.busy && (it.action != OverviewRowAction.Copy || it.value is OverviewText.Literal) }
+    ) { busy, current, subtitle ->
+        SharedBuildOverviewRoute(
+            overview, content, current, busy, actions,
+            { nav.push(BuildHistoryDestination(it, subtitle)) },
+            { id, name -> nav.push(ProjectDestination(id, name)) },
+            { nav.push(ActionSheetDestination(it, listOf(it), SheetMenuType.Branch, entryId, "overview")) },
+            platform::copy,
+            { nav.openBuildSection(entryId, destination.build.id, content.build, it, subtitle) },
+            LocalFloatingActionClearance.current
         )
     }
 }

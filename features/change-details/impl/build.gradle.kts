@@ -29,9 +29,11 @@ compose.resources {
 kotlin.sourceSets.named("commonMain") {
     dependencies {
         implementation(projects.libraries.analytics)
+        implementation(libs.ktor.client.core)
         api(projects.features.changeDetails.api)
         api(projects.libraries.designSystem)
         implementation(libs.multiplatform.lifecycle.viewmodel)
+        implementation(libs.multiplatform.lifecycle.runtime)
     }
 }
 kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }

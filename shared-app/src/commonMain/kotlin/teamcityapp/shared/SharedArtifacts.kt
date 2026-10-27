@@ -17,14 +17,12 @@
 package teamcityapp.shared
 
 import androidx.compose.runtime.*
-import androidx.lifecycle.compose.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.json.Json
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.*
-import teamcityapp.features.artifacts.impl.resources.*
-import teamcityapp.features.artifacts.impl.router.artifactMenu
+import teamcityapp.features.artifacts.impl.router.SharedArtifactsRouter
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTrackerImpl
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.api.navigation.*
@@ -37,7 +35,7 @@ internal fun sharedArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         SharedEntry(ArtifactsDestination::class, ArtifactsDestination.serializer()) { destination, nav, id ->
             val platform = LocalNativePlatform.current
             val analytics = platform.analytics
-            val title = destination.name.ifEmpty { org.jetbrains.compose.resources.stringResource(teamcityapp.features.artifacts.impl.resources.Res.string.artifacts_title) }
+            val title = artifactScreenTitle(destination.name)
             val vm = viewModel {
                 ArtifactsViewModel(
                     destinationState(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(destination.build), ArtifactsViewModel.URL to destination.href, ArtifactsViewModel.NAME to title)),
@@ -45,59 +43,28 @@ internal fun sharedArtifactEntries(graph: TeamCityAccountGraph?): Set<Destinatio
                     ArtifactsTrackerImpl(analytics)
                 )
             }
-            val state by vm.state.collectAsStateWithLifecycle()
-            DisposableEffect(platform, vm) {
-                val unsubscribe = platform.onBackground(vm::cancelUnfinishedDownload)
-                onDispose { unsubscribe() }
+            val router = remember(platform, nav, destination, id) {
+                object : SharedArtifactsRouter {
+                    override fun close() {
+                        nav.pop()
+                    }
+                    override fun openFolder(name: String, href: String) {
+                        nav.push(destination.copy(name = name, href = href))
+                    }
+                    override fun openActions(title: String, descriptions: List<String>, menu: SheetMenuType) {
+                        nav.push(ActionSheetDestination(title, descriptions, menu, id, id))
+                    }
+                    override fun openBrowser(href: String) {
+                        runCatching { artifactBrowserUrl(graph.account.identity.serverUrl, destination.build, href, graph.account.identity.guest) }
+                            .onSuccess(platform::browser).onFailure { platform.rejected(NativePlatformFailure.Browser) }
+                    }
+                    override fun openFile(file: DownloadedArtifact) = platform.openFile(file.path)
+                    override fun onBackground(cancel: () -> Unit) = platform.onBackground(cancel)
+                    override fun consumeAction() = nav.consumeResult(id, ActionSheetResult::class) { it.consumerId == id }?.item
+                }
             }
             val owner = nav.snapshot.entries.lastOrNull { it.destination !is ActionSheetDestination }?.id
-            ArtifactDownloadLifetime(LocalNativeAppLifecycle.current, owner == id, { false }, vm::cancelUnfinishedDownload)
-            LifecycleResumeEffect(vm) {
-                vm.onResumed()
-                onPauseOrDispose {}
-            }
-            LifecycleResumeEffect(nav.snapshot.results, vm) {
-                while (true) {
-                    val result = nav.consumeResult(id, ActionSheetResult::class) { it.consumerId == id } ?: break
-                    val item = result.item
-                    when (item.action) {
-                        SheetAction.ArtifactDownload -> vm.download(ArtifactDownload(item.fileName, item.description))
-
-                        SheetAction.ArtifactOpen -> {
-                            vm.cancelUnfinishedDownload()
-                            nav.push(destination.copy(href = item.description, name = item.fileName))
-                        }
-
-                        SheetAction.ArtifactBrowser -> runCatching { artifactBrowserUrl(graph.account.identity.serverUrl, destination.build, item.description, graph.account.identity.guest) }.onSuccess(platform::browser).onFailure { platform.rejected(NativePlatformFailure.Browser) }.let { }
-
-                        else -> Unit
-                    }
-                }
-                onPauseOrDispose {}
-            }
-            LifecycleResumeEffect(state.download, vm) {
-                (state.download as? ArtifactDownloadState.Ready)?.let { ready ->
-                    vm.claimDownloadedFile(ready.token)?.let { file ->
-                        if (!platform.openFile(file.path)) vm.exportFailed(ready.token)
-                    }
-                }
-                onPauseOrDispose {}
-            }
-            fun menu(file: Artifact) {
-                val (menu, values) = artifactMenu(file)
-                nav.push(ActionSheetDestination(file.name, values.toList(), menu, id, id))
-            }
-            ArtifactsScreen(state, true, null, vm::refresh, vm::retry, {
-                vm.cancelUnfinishedDownload()
-                nav.pop()
-            }, { file ->
-                if (file.isFolder && file.childrenHref != null) {
-                    vm.cancelUnfinishedDownload()
-                    nav.push(destination.copy(href = checkNotNull(file.childrenHref), name = file.name))
-                } else {
-                    menu(file)
-                }
-            }, ::menu, vm::retryDownload, vm::cancelDownload, {}, onOpenDownloadedFile = vm::openDownloadedFile)
+            SharedArtifactsRoute(vm, router, LocalNativeAppLifecycle.current, owner == id, nav.snapshot.results)
         }
     )
 }

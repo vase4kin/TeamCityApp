@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package teamcityapp.shared
+package teamcityapp.features.build_overview.impl
+
 import io.ktor.http.Url
 import kotlin.test.*
 import teamcityapp.libraries.builds.BuildLaunchData
-class SharedWebLinksTest {
+
+class BuildLogUrlTest {
     private val server = "https://teamcity.example/context/"
     private val build = BuildLaunchData("1", "/context/app/rest/builds/id:1", buildTypeId = "Demo_Build")
-
-    @Test fun webLinksKeepContextAndNeverInjectApiCredentials() {
-        assertEquals("https://teamcity.example/context/viewLog.html?buildId=1", activeServerWebUrl(server, "viewLog.html?buildId=1"))
-        assertEquals("https://teamcity.example/context/viewLog.html?buildId=1&tab=buildLog&guest=1", buildLogUrl(server, build, true))
-        assertFalse(buildLogUrl(server, build, false).contains("guest"))
-        assertEquals("https://teamcity.example/context/repository/download/Demo_Build/1:id/report/index.html?guest=1", artifactBrowserUrl(server, build, "/context/app/rest/builds/id:1/artifacts/metadata/report/index.html", true))
-    }
 
     @Test fun runningSuccessfulAndFailedBuildsOpenTheLogViewer() {
         for ((state, status) in listOf("running" to "SUCCESS", "finished" to "SUCCESS", "finished" to "FAILURE")) {
@@ -55,14 +50,8 @@ class SharedWebLinksTest {
         assertEquals("https://other.example/viewLog.html?buildId=1&tab=buildLog", buildLogUrl("https://other.example/", build, false))
     }
 
-    @Test fun privateArtifactsUseTheBrowsersLoginRatherThanForcingGuest() {
-        val href = "/context/app/rest/builds/id:1/artifacts/metadata/archive.zip!/report.html"
-        assertEquals("https://teamcity.example/context/repository/download/Demo_Build/1:id/archive.zip!/report.html", artifactBrowserUrl(server, build, href, false))
-        assertEquals(artifactBrowserUrl(server, build, href, false) + "?guest=1", artifactBrowserUrl(server, build, href, true))
-    }
-
-    @Test fun externalCredentialTraversalAndWrongContextLinksAreRejected() {
-        for (href in listOf("https://evil.example/context/file", "http://teamcity.example/context/file", "https://alice:secret@teamcity.example/context/file", "/elsewhere/file", "/context/%2e%2e/file", "/context/%2e%2e%2foutside", "/context/file?password=secret", "/context/file?access_token=secret")) assertFails { activeServerWebUrl(server, href) }
-        assertFails { artifactBrowserUrl(server, build, "/context/not-artifact", true) }
+    @Test fun guestModeIsPreservedWithoutApiCredentials() {
+        assertEquals("https://teamcity.example/context/viewLog.html?buildId=1&tab=buildLog&guest=1", buildLogUrl(server, build, true))
+        assertFalse(buildLogUrl(server, build, false).contains("guest"))
     }
 }

@@ -65,6 +65,12 @@ def validate(root):
             errors.append(f"{source.relative_to(root)}: tracker implementations belong to their owning feature")
         if re.search(r'AnalyticsEvent\s*\(|\.track\s*\(\s*"', text):
             errors.append(f"{source.relative_to(root)}: analytics event mappings belong to their owning feature")
+        if re.search(r"^import teamcityapp\.features\.[\w.]+\.resources(?:\.|$)", text, re.MULTILINE):
+            errors.append(f"{source.relative_to(root)}: feature resources belong in feature routes")
+        if re.search(r"\b(?:[A-Z]\w*UiState|LoadState|PagingListSnapshot|collectAsLazyPagingItems)\b", text):
+            errors.append(f"{source.relative_to(root)}: feature presentation state and paging belong in feature routes")
+        if re.search(r"\b(?:vm|model)\.(?:viewed|onScreenViewed|onResumed|onPaused)\s*\(", text):
+            errors.append(f"{source.relative_to(root)}: feature screen lifecycle belongs in feature routes")
     for source in features.glob("*/impl/src/*Main/**/*.kt"):
         if re.search(r"^import com\.google\.firebase\.analytics\.", source.read_text(), re.MULTILINE):
             errors.append(f"{source.relative_to(root)}: analytics SDKs belong in libraries/analytics platform source sets")

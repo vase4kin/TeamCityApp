@@ -31,7 +31,8 @@ class TeamCityAccountGraph(
     val browsing: TeamCityBrowsingRepositories? = null,
     artifactStore: ArtifactFileStore? = null
 ) : NavigationRepository,
-    BuildOverviewRepository {
+    BuildOverviewRepository,
+    BuildHistoryRepository {
     val artifacts = artifactStore?.let { TeamCityArtifactsRepository(account, api, it) }
     val management = TeamCityManagementRepositories(account, api)
 
@@ -48,10 +49,12 @@ class TeamCityAccountGraph(
         page.projects.map { NavigationEntry.Project(it, page.descriptions[it.id]) } +
             page.configurations.map { NavigationEntry.Configuration(it) }
     }
-    suspend fun page(query: BuildHistoryQuery, nextHref: String?, forceRefresh: Boolean): BuildHistoryPage = account.run {
+    override suspend fun page(query: BuildHistoryQuery, nextHref: String?, forceRefresh: Boolean): BuildHistoryPage = account.run {
         val page = api.page(query.configurationId, query.locator, nextHref, forceRefresh)
         BuildHistoryPage(page.builds, page.nextHref)
     }
+    override suspend fun isFavorite(configurationId: String): Boolean = checkNotNull(browsing).isFavorite(configurationId)
+    override suspend fun setFavorite(configurationId: String, favorite: Boolean): Unit = checkNotNull(browsing).setFavorite(configurationId, favorite)
     override suspend fun build(href: String, forceRefresh: Boolean) = account.run { api.build(href, forceRefresh) }
 
     companion object {
