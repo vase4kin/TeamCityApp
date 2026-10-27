@@ -44,7 +44,6 @@ import teamcityapp.features.favorites.api.navigation.FavoritesDestination
 import teamcityapp.features.favorites.impl.*
 import teamcityapp.features.home.api.*
 import teamcityapp.features.home.impl.*
-import teamcityapp.features.home.impl.tracker.HomeTracker
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.properties.impl.*
 import teamcityapp.features.running_builds.api.navigation.RunningBuildsDestination
@@ -52,26 +51,10 @@ import teamcityapp.features.running_builds.impl.*
 import teamcityapp.features.snapshot_dependencies.impl.*
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.features.test_details.impl.*
-import teamcityapp.features.test_details.impl.tracker.TestDetailsTracker
 import teamcityapp.features.tests.impl.*
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
-
-private class SharedHomeTracker(private val diagnostics: NativeDiagnostics) : HomeTracker {
-    override fun viewed() = diagnostics.event("home_viewed")
-    override fun selected(tab: HomeTab) = diagnostics.event("home_selected")
-    override fun fab(tab: HomeTab) = diagnostics.event("home_fab")
-    override fun addProjects() = diagnostics.event("home_add_projects")
-}
-private class SharedChangeDetailsTracker(private val diagnostics: NativeDiagnostics) : teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker {
-    override fun trackView() = diagnostics.event("change_details_view")
-    override fun trackMoreDetails() = diagnostics.event("change_details_more_details")
-    override fun trackFileDiff() = diagnostics.event("change_details_file_diff")
-}
-private class SharedTestDetailsTracker(private val diagnostics: NativeDiagnostics) : TestDetailsTracker {
-    override fun trackView() = diagnostics.event("test_details_view")
-}
 
 @Composable
 internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
@@ -156,7 +139,10 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                 vm::retry,
                 { nav.push(AccountsDestination) },
                 { nav.push(ProjectDestination(it.id, it.name)) },
-                { nav.push(BuildHistoryDestination(it.id, it.name)) },
+                {
+                    SharedBrowsingTracker(diagnostics).favoriteConfigurationOpened()
+                    nav.push(BuildHistoryDestination(it.id, it.name))
+                },
                 onBrowseProjects = LocalFavoritesProjectsAction.current ?: {}
             )
         },
@@ -211,6 +197,7 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
                         BuildDetailsSection.Snapshots -> {
                             val vm = viewModel { SnapshotDependenciesViewModel(repositories.snapshots, destinationState(mapOf(SnapshotDependenciesViewModel.BUILD_ID to dest.build.id, SnapshotDependenciesViewModel.BUILD_TYPE_NAME to dest.configurationName.orEmpty()))) }
                             LifecycleResumeEffect(vm) {
+                                SharedBrowsingTracker(diagnostics).snapshotDependenciesViewed()
                                 vm.onResumed()
                                 onPauseOrDispose { vm.onPaused() }
                             }
@@ -232,11 +219,18 @@ internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, diagnostics: Na
             }
             val platform = LocalNativePlatform.current
             val server = graph.account.identity.serverUrl
-            ChangeDetailsScreen(state, { platform.serverBrowser(server, it) }, { id, file -> platform.serverBrowser(server, "diffView.html?id=${id.encodeURLQueryComponent()}&vcsFileName=${file.encodeURLQueryComponent()}") }, { nav.pop() })
+            ChangeDetailsScreen(state, {
+                vm.onMoreDetailsClicked()
+                platform.serverBrowser(server, it)
+            }, { id, file ->
+                vm.onFileDiffClicked()
+                platform.serverBrowser(server, "diffView.html?id=${id.encodeURLQueryComponent()}&vcsFileName=${file.encodeURLQueryComponent()}")
+            }, { nav.pop() })
             LaunchedEffect(state) { if (state == ChangeDetailsUiState.InvalidInput) nav.pop() }
         },
         SharedEntry(TestDetailsDestination::class, TestDetailsDestination.serializer()) { dest, nav, _ ->
             val vm = viewModel { TestDetailsViewModel(destinationState(mapOf(TestDetailsViewModel.ARG_TEST_URL to dest.url)), repositories.testDetails, SharedTestDetailsTracker(diagnostics)) }
+            SharedScreenAnalytics(vm, vm::onScreenViewed)
             val state by vm.state.collectAsStateWithLifecycle()
             var query by rememberSaveable { mutableStateOf("") }
             var wrap by rememberSaveable { mutableStateOf(true) }

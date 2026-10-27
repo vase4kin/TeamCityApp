@@ -88,7 +88,7 @@ open class CreateAccountViewModel constructor(private val repository: Authentica
                 }
 
                 is AuthenticationResult.Failure -> {
-                    if (input.guest) tracker.trackGuestUserLoginFailed(result.message) else tracker.trackUserLoginFailed(result.message)
+                    if (input.guest) tracker.trackGuestUserLoginFailed(result.analyticsMessage()) else tracker.trackUserLoginFailed(result.analyticsMessage())
                     if (result.statusCode == -1) {
                         pending = input
                         mutableState.update { it.copy(httpConfirmation = true) }

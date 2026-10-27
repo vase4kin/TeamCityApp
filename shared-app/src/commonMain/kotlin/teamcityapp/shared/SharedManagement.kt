@@ -30,8 +30,8 @@ import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.features.bottom_sheet.impl.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_details.impl.*
-import teamcityapp.features.build_details.impl.tracker.BuildDetailsTracker
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
 import teamcityapp.features.build_overview.impl.*
 import teamcityapp.features.filter_bottom_sheet.api.navigation.*
@@ -49,31 +49,6 @@ import teamcityapp.features.run_build.impl.router.RunBuildRouter
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.LocalFloatingActionClearance
-
-private class SharedRunTracker(private val diagnostics: NativeDiagnostics) : RunBuildTracker {
-    override fun trackView() = diagnostics.event("run_build_view")
-    override fun trackUserRunBuildSuccess() = diagnostics.event("run_build_user_run_build_success")
-    override fun trackUserRunBuildWithCustomParamsSuccess() = diagnostics.event("run_build_user_run_build_with_custom_params_success")
-    override fun trackUserRunBuildFailed() = diagnostics.event("run_build_user_run_build_failed")
-    override fun trackUserRunBuildFailedForbidden() = diagnostics.event("run_build_user_run_build_failed_forbidden")
-    override fun trackUserClicksOnAddNewBuildParamButton() = diagnostics.event("run_build_user_clicks_on_add_new_build_param_button")
-    override fun trackUserClicksOnClearAllBuildParamsButton() = diagnostics.event("run_build_user_clicks_on_clear_all_build_params_button")
-    override fun trackUserAddsBuildParam() = diagnostics.event("run_build_user_adds_build_param")
-}
-private class SharedFilterTracker(private val diagnostics: NativeDiagnostics) : FilterBuildsTracker {
-    override fun trackView() = diagnostics.event("filter_builds_view")
-    override fun trackUserFilteredBuilds() = diagnostics.event("filter_builds_user_filtered_builds")
-}
-private class SharedDetailsTracker(private val diagnostics: NativeDiagnostics) : BuildDetailsTracker {
-    override fun viewed() = diagnostics.event("build_details_viewed")
-    override fun confirmedCancel(reAdd: Boolean) = diagnostics.event("build_details_confirmed_cancel")
-    override fun cancelSucceeded() = diagnostics.event("build_details_cancel_succeeded")
-    override fun cancelFailed(forbidden: Boolean) = diagnostics.event("build_details_cancel_failed")
-    override fun restartSucceeded() = diagnostics.event("build_details_restart_succeeded")
-    override fun restartFailed(forbidden: Boolean) = diagnostics.event("build_details_restart_failed")
-    override fun queuedOpened() = diagnostics.event("build_details_queued_opened")
-    override fun queuedFailed() = diagnostics.event("build_details_queued_failed")
-}
 
 internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: NativeDiagnostics): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
@@ -112,7 +87,7 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
             SharedFilterBuildsRoute(router, vm)
         },
         SharedEntry(QuickFilterDestination::class, QuickFilterDestination.serializer(), presentation = DestinationPresentation.BottomSheet) { dest, nav, _ ->
-            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, destinationState(mapOf("arg_code" to dest.code))) }
+            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, destinationState(mapOf("arg_code" to dest.code)), SharedQuickFilterTracker(diagnostics)) }
             val router = remember(nav) {
                 object : FilterBottomSheetRouter {
                     override fun close() {
@@ -143,8 +118,10 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, diagnostics: 
 @Composable
 private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
     val platform = LocalNativePlatform.current
+    val tracker = remember(platform.diagnostics) { SharedOverviewTracker(platform.diagnostics) }
     val server = graph.account.identity.serverUrl
     val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, SharedDetailsTracker(platform.diagnostics)) }
+    SharedScreenAnalytics(model, model::viewed)
     val state by model.state.collectAsStateWithLifecycle()
     val overview = viewModel {
         BuildReferenceViewModel(
@@ -152,6 +129,7 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
             object : BuildOverviewRepository {
                 override suspend fun build(href: String, forceRefresh: Boolean) = graph.build(href, forceRefresh || destination.forceOverviewRefresh)
             },
+            BuildReferenceTracker.None,
             checkNotNull(graph.browsing).metadata
         )
     }
@@ -195,18 +173,41 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
         while (true) {
             val result = nav.consumeResult(entryId, ActionSheetResult::class) ?: break
             if (result.consumerId == "overview" && result.item.action == SheetAction.Branch) {
-                destination.build.buildTypeId?.let { nav.push(BuildHistoryDestination(it, state.subtitle, BuildFilter(branch = result.item.description).toTeamCityLocator())) }
+                destination.build.buildTypeId?.let {
+                    tracker.action(BuildOverviewAction.Configuration, result.item.description)
+                    nav.push(BuildHistoryDestination(it, state.subtitle, BuildFilter(branch = result.item.description).toTeamCityLocator()))
+                }
             }
         }
         onPauseOrDispose {}
     }
     BuildDetailsScreen(state.copy(prompt = educationState.prompt, onboardingFailed = educationState.onboardingFailed), { nav.pop() }, { command ->
         when (command) {
-            BuildDetailsCommand.Share -> runCatching { activeServerWebUrl(server, state.current.webUrl.orEmpty()) }.onSuccess(platform::share).onFailure { platform.rejected(NativePlatformFailure.Share) }.let { }
-            BuildDetailsCommand.Browser -> platform.serverBrowser(server, state.current.webUrl.orEmpty())
-            BuildDetailsCommand.Log -> platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest))
-            BuildDetailsCommand.Cancel -> model.requestCancellation()
-            BuildDetailsCommand.Restart -> model.requestRestart()
+            BuildDetailsCommand.Share -> {
+                tracker.action(BuildOverviewAction.Share)
+                runCatching { activeServerWebUrl(server, state.current.webUrl.orEmpty()) }.onSuccess(platform::share).onFailure { platform.rejected(NativePlatformFailure.Share) }.let { }
+            }
+
+            BuildDetailsCommand.Browser -> {
+                tracker.action(BuildOverviewAction.Browser)
+                platform.serverBrowser(server, state.current.webUrl.orEmpty())
+            }
+
+            BuildDetailsCommand.Log -> {
+                tracker.action(BuildOverviewAction.Log)
+                platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest))
+            }
+
+            BuildDetailsCommand.Cancel -> {
+                tracker.action(if (state.current.state == "queued") BuildOverviewAction.RemoveFromQueue else BuildOverviewAction.Stop)
+                model.requestCancellation()
+            }
+
+            BuildDetailsCommand.Restart -> {
+                tracker.action(BuildOverviewAction.Restart)
+                model.requestRestart()
+            }
+
             else -> Unit
         }
     }, model::confirm, model::dismissConfirmation, snackbar, onDismissPrompt = education::dismissPrompt) {
@@ -217,9 +218,18 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
             { row ->
                 if (!state.busy) {
                     when (row.action) {
-                        OverviewRowAction.Configuration -> state.current.buildTypeId?.let { nav.push(BuildHistoryDestination(it, state.subtitle)) }
-                        OverviewRowAction.Project -> state.current.configuration?.projectId?.let { nav.push(ProjectDestination(it, state.current.configuration?.projectName.orEmpty())) }
+                        OverviewRowAction.Configuration -> state.current.buildTypeId?.let {
+                            tracker.action(BuildOverviewAction.Configuration)
+                            nav.push(BuildHistoryDestination(it, state.subtitle))
+                        }
+
+                        OverviewRowAction.Project -> state.current.configuration?.projectId?.let {
+                            tracker.action(BuildOverviewAction.Project)
+                            nav.push(ProjectDestination(it, state.current.configuration?.projectName.orEmpty()))
+                        }
+
                         OverviewRowAction.Branch -> (row.value as? OverviewText.Literal)?.let { nav.push(ActionSheetDestination(it.value, listOf(it.value), SheetMenuType.Branch, entryId, "overview")) }
+
                         OverviewRowAction.Copy -> (row.value as? OverviewText.Literal)?.let { platform.copy(it.value) }
                     }
                 }
@@ -229,7 +239,10 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
                     nav.openBuildSection(entryId, destination.build.id, content.build, section, state.subtitle)
                 }
             },
-            onLog = { platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest)) },
+            onLog = {
+                tracker.action(BuildOverviewAction.Log)
+                platform.browser(buildLogUrl(server, state.current, graph.account.identity.guest))
+            },
             onCountRetry = overview::retryCount,
             bottomContentPadding = LocalFloatingActionClearance.current,
             rowActionAvailable = { !state.busy && (it.action != OverviewRowAction.Copy || it.value is OverviewText.Literal) }

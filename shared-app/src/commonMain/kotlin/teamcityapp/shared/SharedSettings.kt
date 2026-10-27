@@ -32,7 +32,6 @@ import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.impl.*
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.settings.impl.*
-import teamcityapp.features.settings.impl.tracker.SettingsTracker
 import teamcityapp.libraries.app_theme.*
 import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
@@ -44,13 +43,7 @@ internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         val platform = LocalNativePlatform.current
         val diagnostics = platform.diagnostics
         val tracker = remember(diagnostics) {
-            object : SettingsTracker {
-                override fun trackView() = diagnostics.event("screen_settings")
-                override fun trackLightThemeSet() = diagnostics.event("theme_set_light")
-                override fun trackDarkThemeSet() = diagnostics.event("theme_set_dark")
-                override fun trackAutoBatteryThemeSet() = diagnostics.event("theme_set_auto_battery")
-                override fun trackSystemThemeSet() = diagnostics.event("theme_set_system")
-            }
+            SharedSettingsTracker(diagnostics)
         }
         val vm = viewModel { SettingsViewModel(platform.theme, ThemeOptions.Shared, tracker) }
         val state by vm.state.collectAsStateWithLifecycle()

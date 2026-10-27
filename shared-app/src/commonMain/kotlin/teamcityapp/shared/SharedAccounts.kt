@@ -19,18 +19,15 @@ package teamcityapp.shared
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import teamcityapp.features.about.api.navigation.AboutDestination
-import teamcityapp.features.create_account.api.CreateAccountTracker
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.create_account.impl.*
 import teamcityapp.features.create_account.impl.router.CreateAccountRouter
 import teamcityapp.features.drawer.impl.*
 import teamcityapp.features.drawer.impl.router.DrawerRouter
-import teamcityapp.features.drawer.impl.tracker.DrawerTracker
 import teamcityapp.features.manage_accounts.api.AccountDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.manage_accounts.impl.*
 import teamcityapp.features.manage_accounts.impl.router.ManageAccountsRouter
-import teamcityapp.features.manage_accounts.impl.tracker.ManageAccountsTracker
 import teamcityapp.libraries.accounts.AccountSessionState
 import teamcityapp.libraries.navigation.*
 
@@ -38,11 +35,7 @@ internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationReg
     SharedEntry(ManageAccountsDestination::class, ManageAccountsDestination.serializer()) { _, nav, _ ->
         val diagnostics = LocalNativePlatform.current.diagnostics
         val tracker = remember(diagnostics) {
-            object : ManageAccountsTracker {
-                override fun trackView() = diagnostics.event("screen_manage_accounts")
-                override fun trackAccountRemove() = diagnostics.event("account_removed")
-                override fun trackUserClicksOnSslDisabledWarning() = diagnostics.event("account_ssl_warning")
-            }
+            SharedManageAccountsTracker(diagnostics)
         }
         val vm = viewModel { ManageAccountsViewModel(SharedManageAccountsRepository(model.sessions), tracker) }
         val router = remember(nav) {
@@ -67,14 +60,7 @@ internal fun sharedAccountEntries(model: SharedAppViewModel): Set<DestinationReg
     SharedEntry(CreateAccountDestination::class, CreateAccountDestination.serializer()) { _, nav, _ ->
         val diagnostics = LocalNativePlatform.current.diagnostics
         val tracker = remember(diagnostics) {
-            object : CreateAccountTracker {
-                override fun trackView() = diagnostics.event("screen_add_account")
-                override fun trackUserLoginSuccess(isSslEnabled: Boolean) = diagnostics.event("account_added")
-                override fun trackGuestUserLoginSuccess(isSslEnabled: Boolean) = diagnostics.event("guest_account_added")
-                override fun trackUserLoginFailed(errorMessage: String) = diagnostics.event("account_add_failed")
-                override fun trackGuestUserLoginFailed(errorMessage: String) = diagnostics.event("guest_account_add_failed")
-                override fun trackUserDataSaveFailed() = diagnostics.event("account_save_failed")
-            }
+            SharedCreateAccountTracker(diagnostics)
         }
         val vm = viewModel { CreateAccountViewModel(model.authentication, tracker, checkSecureConnection = true) }
         val router = remember(nav) {
@@ -96,16 +82,7 @@ internal fun SharedAccountContent(model: SharedAppViewModel, nav: Navigator) {
     val platform = LocalNativePlatform.current
     val diagnostics = platform.diagnostics
     val tracker = remember(diagnostics) {
-        object : DrawerTracker {
-            override fun trackChangeAccount() = diagnostics.event("account_selected")
-            override fun trackOpenPrivacy() = diagnostics.event("account_privacy")
-            override fun trackRateTheApp() = diagnostics.event("account_rating")
-            override fun trackOpenAbout() = diagnostics.event("account_about")
-            override fun trackOpenAddNewAccount() = diagnostics.event("account_add")
-            override fun trackOpenManageAccounts() = diagnostics.event("account_manage")
-            override fun trackOpenSettings() = diagnostics.event("account_settings")
-            override fun trackView() = diagnostics.event("screen_account")
-        }
+        SharedDrawerTracker(diagnostics)
     }
     val vm = viewModel { DrawerViewModel(SharedAccountSwitcherRepository(model.sessions), tracker) }
     val router = remember(platform, nav) {

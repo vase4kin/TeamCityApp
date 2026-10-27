@@ -15,6 +15,7 @@
  */
 
 package teamcityapp.features.filter_bottom_sheet.impl
+
 import androidx.lifecycle.SavedStateHandle
 import kotlin.test.*
 import kotlinx.coroutines.*
@@ -36,13 +37,19 @@ class FilterBottomSheetViewModelTest {
     @Test fun everyFilterAppliesItsOppositeAndOnlyClosesOnce() = runTest(dispatcher) {
         for (filter in QuickFilter.entries) {
             val calls = mutableListOf<QuickFilter>()
+            val tracked = mutableListOf<QuickFilter>()
             val vm = FilterBottomSheetViewModel(
                 object : QuickFilterRepository {
                     override suspend fun apply(filter: QuickFilter) {
                         calls += filter
                     }
                 },
-                SavedStateHandle(mapOf("arg_code" to filter.ordinal))
+                SavedStateHandle(mapOf("arg_code" to filter.ordinal)),
+                object : QuickFilterTracker {
+                    override fun selected(filter: QuickFilter) {
+                        tracked += filter
+                    }
+                }
             )
             val expected = listOf(
                 Triple(Res.string.title_filter_running_builds, Res.string.text_show_favorites, Res.string.selected_all),
@@ -57,34 +64,71 @@ class FilterBottomSheetViewModelTest {
             vm.apply()
             runCurrent()
             assertEquals(listOf(filter.opposite()), calls)
+            assertEquals(calls, tracked)
             assertTrue(vm.state.value.applied)
             assertTrue(vm.consumeApplied())
             assertFalse(vm.consumeApplied())
             vm.apply()
             runCurrent()
             assertEquals(listOf(filter.opposite()), calls)
+            assertEquals(calls, tracked)
         }
     }
 
     @Test fun failureCanBeRetriedWithoutClosing() = runTest(dispatcher) {
         var fail = true
+        val tracked = mutableListOf<QuickFilter>()
         val vm = FilterBottomSheetViewModel(
             object : QuickFilterRepository {
                 override suspend fun apply(filter: QuickFilter) {
                     if (fail) error("Failed")
                 }
             },
-            SavedStateHandle()
+            SavedStateHandle(),
+            object : QuickFilterTracker {
+                override fun selected(filter: QuickFilter) {
+                    tracked += filter
+                }
+            }
         )
         vm.apply()
         runCurrent()
         assertTrue(vm.state.value.failed)
+        assertTrue(tracked.isEmpty())
         assertFalse(vm.state.value.applied)
         fail = false
         vm.apply()
         runCurrent()
         assertFalse(vm.state.value.failed)
+        assertEquals(listOf(QuickFilter.RunningFavorites), tracked)
         assertTrue(vm.state.value.applied)
+    }
+
+    @Test fun cancelledLateFilterDoesNotEmitASelection() = runTest(dispatcher) {
+        val finish = CompletableDeferred<Unit>()
+        val tracked = mutableListOf<QuickFilter>()
+        val vm = FilterBottomSheetViewModel(
+            object : QuickFilterRepository {
+                override suspend fun apply(filter: QuickFilter) {
+                    withContext(NonCancellable) { finish.await() }
+                }
+            },
+            SavedStateHandle(),
+            object : QuickFilterTracker {
+                override fun selected(filter: QuickFilter) {
+                    tracked += filter
+                }
+            }
+        )
+        val store = androidx.lifecycle.ViewModelStore()
+        store.put("filter", vm)
+        vm.apply()
+        runCurrent()
+        store.clear()
+        finish.complete(Unit)
+        runCurrent()
+        assertTrue(tracked.isEmpty())
+        assertFalse(vm.state.value.applied)
     }
 
     @Test fun invalidFilterArgumentsFallbackSafely() {
@@ -94,7 +138,10 @@ class FilterBottomSheetViewModelTest {
                 object : QuickFilterRepository {
                     override suspend fun apply(filter: QuickFilter) {}
                 },
-                SavedStateHandle(mapOf("arg_code" to 99))
+                SavedStateHandle(mapOf("arg_code" to 99)),
+                object : QuickFilterTracker {
+                    override fun selected(filter: QuickFilter) = Unit
+                }
             ).state.value.filter
         )
     }

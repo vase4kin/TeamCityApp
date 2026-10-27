@@ -26,12 +26,17 @@ import teamcityapp.libraries.authentication.*
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+    private val authenticationFailures = mutableListOf<Pair<Boolean, String>>()
     private val tracker = object : LoginTracker {
         override fun trackView() = Unit
         override fun trackUserLoginSuccess(isSslEnabled: Boolean) = Unit
         override fun trackGuestUserLoginSuccess(isSslEnabled: Boolean) = Unit
-        override fun trackUserLoginFailed(errorMessage: String) = Unit
-        override fun trackGuestUserLoginFailed(errorMessage: String) = Unit
+        override fun trackUserLoginFailed(errorMessage: String) {
+            authenticationFailures += false to errorMessage
+        }
+        override fun trackGuestUserLoginFailed(errorMessage: String) {
+            authenticationFailures += true to errorMessage
+        }
         override fun trackUserDataSaveFailed() = Unit
         override fun trackUserClicksOnTryItOut() = Unit
         override fun trackUserTriesTryItOut() = Unit
@@ -63,6 +68,18 @@ class LoginViewModelTest {
         val vm = LoginViewModel(authentication, demo, tracker)
         scope.backgroundScope.launch(UnconfinedTestDispatcher(scope.testScheduler)) { vm.state.collect() }
         return vm
+    }
+
+    @Test fun analyticsReportsTypedFailureForUserAndGuestOnce() = runTest(dispatcher) {
+        result = AuthenticationResult.Failure(403, "", AuthenticationError.Http(403))
+        val model = viewModel(this)
+        runCurrent()
+        for (guest in listOf(false, true)) {
+            model.update(AuthenticationFormState(serverUrl = "https://ci.example", userName = "user", password = "private-password", guest = guest))
+            model.submit()
+            runCurrent()
+        }
+        assertEquals(listOf(false to "HTTP 403", true to "HTTP 403"), authenticationFailures)
     }
 
     @Test fun validatesEveryRequiredFieldBeforeAuthentication() = runTest(dispatcher) {

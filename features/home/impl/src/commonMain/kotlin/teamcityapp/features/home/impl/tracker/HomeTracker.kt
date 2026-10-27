@@ -20,5 +20,6 @@ interface HomeTracker {
     fun viewed()
     fun selected(tab: HomeTab)
     fun fab(tab: HomeTab)
+    fun filterSelected(filter: teamcityapp.features.filter_bottom_sheet.api.QuickFilter)
     fun addProjects()
 }

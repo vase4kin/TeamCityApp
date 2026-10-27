@@ -113,7 +113,7 @@ open class LoginViewModel(private val authentication: AuthenticationRepository, 
                 AuthenticationResult.DuplicateAccount -> error = AuthenticationError.DuplicateAccount
 
                 is AuthenticationResult.Failure -> {
-                    if (input.guest) tracker.trackGuestUserLoginFailed(result.message) else tracker.trackUserLoginFailed(result.message)
+                    if (input.guest) tracker.trackGuestUserLoginFailed(result.analyticsMessage()) else tracker.trackUserLoginFailed(result.analyticsMessage())
                     when {
                         result.statusCode == -1 -> {
                             pending = input

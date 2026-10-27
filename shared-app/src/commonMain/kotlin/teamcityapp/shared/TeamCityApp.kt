@@ -253,6 +253,7 @@ private fun LoginContent(model: SharedAppViewModel) {
             SharedLoginTracker(diagnostics)
         )
     }
+    SharedScreenAnalytics(vm, vm::viewed)
     val state by vm.state.collectAsStateWithLifecycle()
     var dialog by remember { mutableStateOf(LoginDialog.None) }
     SharedLoginScreen(
@@ -341,6 +342,7 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
             SharedHistoryTracker(diagnostics)
         )
     }
+    SharedScreenAnalytics(vm, vm::onScreenViewed)
     androidx.lifecycle.compose.LifecycleResumeEffect(navigator.snapshot.results, vm) {
         while (true) {
             val result = navigator.consumeResult(entryId, teamcityapp.features.filter_builds.api.navigation.BuildFilterResult::class) ?: break
@@ -400,7 +402,10 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
                 else -> HistoryAppendState.Idle
             },
             { navigator.pop() },
-            { navigator.push(teamcityapp.features.run_build.api.navigation.RunBuildDestination(destination.configurationId, entryId)) },
+            {
+                vm.onRunBuildClicked()
+                navigator.push(teamcityapp.features.run_build.api.navigation.RunBuildDestination(destination.configurationId, entryId))
+            },
             { navigator.push(teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination(destination.configurationId, entryId)) },
             vm::toggleFavorite, vm::retryFavorite, vm::dismissPrompt, refresh, refresh, builds::retry,
             { navigator.openBuildSnapshot(entryId, it, destination.configurationName) },
@@ -411,12 +416,14 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
 
 @Composable
 private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
+    val diagnostics = LocalNativePlatform.current.diagnostics
     val vm = viewModel {
         BuildReferenceViewModel(
             destination.href,
             object : teamcityapp.features.build_overview.api.BuildOverviewRepository {
                 override suspend fun build(href: String, forceRefresh: Boolean) = graph.build(href, true)
             },
+            SharedBuildReferenceTracker(diagnostics, destination.fromRestart),
             checkNotNull(graph.browsing).metadata
         )
     }

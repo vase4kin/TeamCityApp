@@ -41,6 +41,7 @@ class HomeViewModelTest {
     private var pending: suspend () -> Set<HomePrompt> = { setOf(HomePrompt.Drawer, HomePrompt.Favorites, HomePrompt.Running) }
     private val acknowledgements = mutableListOf<HomePrompt>()
     private val events = mutableListOf<String>()
+    private val trackedFilters = mutableListOf<QuickFilter>()
     private var queryFlow: Flow<HomeQuery> = query
     private val applied = mutableListOf<QuickFilter>()
     private var applyFilter: suspend (QuickFilter) -> Unit = { filter ->
@@ -72,6 +73,9 @@ class HomeViewModelTest {
         }
     }
     private val tracker = object : HomeTracker {
+        override fun filterSelected(filter: QuickFilter) {
+            trackedFilters += filter
+        }
         override fun viewed() {
             events += "viewed"
         }
@@ -346,6 +350,7 @@ class HomeViewModelTest {
         model.selectFilter(QuickFilter.AgentsDisconnected)
         runCurrent()
         assertEquals(listOf(QuickFilter.RunningAll, QuickFilter.QueuedAll, QuickFilter.AgentsDisconnected), applied)
+        assertEquals(applied, trackedFilters)
         collector.cancel()
         store.clear()
         model = model(handle)
@@ -399,11 +404,13 @@ class HomeViewModelTest {
         model.selectFilter(QuickFilter.RunningAll)
         runCurrent()
         assertTrue(model.state.value.filterFailed)
+        assertTrue(trackedFilters.isEmpty())
         assertNull(model.state.value.applyingFilter)
         assertEquals(QuickFilter.RunningFavorites, model.state.value.filterOptions.single { it.selected }.filter)
         model.selectFilter(QuickFilter.RunningAll)
         runCurrent()
         assertFalse(model.state.value.filterFailed)
+        assertEquals(listOf(QuickFilter.RunningAll), trackedFilters)
         assertEquals(QuickFilter.RunningAll, model.state.value.filterOptions.single { it.selected }.filter)
     }
 
@@ -427,10 +434,12 @@ class HomeViewModelTest {
         query.value = query.value.copy(accountKey = "account-two")
         runCurrent()
         assertTrue(cancelled)
+        assertTrue(trackedFilters.isEmpty())
         observe(model)
         runCurrent()
         assertNull(model.state.value.applyingFilter)
         assertFalse(model.state.value.filterFailed)
+        assertTrue(trackedFilters.isEmpty())
         assertEquals(QuickFilter.RunningFavorites, model.state.value.filterOptions.single { it.selected }.filter)
     }
 
@@ -443,6 +452,7 @@ class HomeViewModelTest {
         runCurrent()
         assertTrue(applied.isEmpty())
         assertFalse(model.state.value.filterFailed)
+        assertTrue(trackedFilters.isEmpty())
     }
 
     @Test fun coldQueryIsValidatedBeforeApplyingAFilter() = runTest(dispatcher) {
@@ -461,6 +471,7 @@ class HomeViewModelTest {
         runCurrent()
         assertTrue(applied.isEmpty())
         assertFalse(model.state.value.filterFailed)
+        assertTrue(trackedFilters.isEmpty())
     }
 
     @Test fun accountPresentationUsesOnlyTheCurrentQueriesPublicIdentity() {

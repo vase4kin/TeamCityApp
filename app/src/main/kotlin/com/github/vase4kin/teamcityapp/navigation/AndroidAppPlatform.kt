@@ -28,7 +28,6 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import com.google.firebase.analytics.FirebaseAnalytics
 import java.io.File
 import java.io.FileOutputStream
 import kotlinx.coroutines.channels.awaitClose
@@ -146,13 +145,5 @@ internal class AndroidArtifactFileStore(context: Context) : ArtifactFileStore {
                 if (!complete) folder.deleteRecursively()
             }
         }
-    }
-}
-
-private class AndroidDiagnostics(context: Context) : NativeDiagnostics {
-    private val analytics = FirebaseAnalytics.getInstance(context.applicationContext)
-    override fun event(name: String) {
-        require(name.length <= 80 && name.all { it.isLowerCase() || it == '_' })
-        analytics.logEvent(name, null)
     }
 }

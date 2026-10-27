@@ -26,6 +26,9 @@ import teamcityapp.shared.resources.*
 /** UI-owned system services never enter retained feature ViewModels or API credentials. */
 interface NativeDiagnostics {
     fun event(name: String)
+
+    /** Hosts without an analytics backend emit only the fixed event label, never parameters. */
+    fun analytics(record: AnalyticsEvent) = event(record.name)
 }
 
 interface NativePlatform {

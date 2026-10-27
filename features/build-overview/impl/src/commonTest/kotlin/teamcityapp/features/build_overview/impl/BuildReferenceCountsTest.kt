@@ -29,6 +29,7 @@ import teamcityapp.libraries.builds.*
 class BuildReferenceCountsTest {
     private val dispatcher = StandardTestDispatcher()
     private val store = ViewModelStore()
+    private val resolutionEvents = mutableListOf<String>()
     private val build = BuildLaunchData("7", "/app/rest/builds/id:7", changes = BuildCollectionLink("/app/rest/changes?locator=build:(id:7)", 1), tests = BuildTests("/app/rest/tests?locator=build:(id:7)", 1, 1, 0, 2))
 
     @BeforeTest fun before() {
@@ -43,6 +44,14 @@ class BuildReferenceCountsTest {
         build.href,
         object : BuildOverviewRepository {
             override suspend fun build(href: String, forceRefresh: Boolean) = this@BuildReferenceCountsTest.build
+        },
+        object : BuildReferenceTracker {
+            override fun loaded() {
+                resolutionEvents += "loaded"
+            }
+            override fun failed() {
+                resolutionEvents += "failed"
+            }
         },
         object : BuildDetailsMetadataRepository {
             override suspend fun count(build: BuildLaunchData, tab: BuildDetailsSection) = load(tab)
@@ -74,6 +83,7 @@ class BuildReferenceCountsTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.state.collect {} }
         runCurrent()
         assertEquals(3, calls.size)
+        assertEquals(listOf("loaded"), resolutionEvents)
     }
 
     @Test fun leavingTheVisitCancelsPendingCountsAndResumesWithoutDiscardingCompletedCount() = runTest(dispatcher) {

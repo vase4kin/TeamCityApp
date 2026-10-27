@@ -202,6 +202,7 @@ open class BuildHistoryViewModel(
         }
     }
     fun onRunBuildClicked() = tracker.runBuildPressed()
+    fun onScreenViewed() = tracker.viewShown()
     fun onResumed() {
         if (paused) {
             // Global prompts and account favorites can change in another screen. Recheck
@@ -216,7 +217,7 @@ open class BuildHistoryViewModel(
             }
         }
         paused = false
-        tracker.viewShown()
+        onScreenViewed()
     }
     fun onPaused() {
         paused = true

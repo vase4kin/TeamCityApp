@@ -129,6 +129,8 @@ open class HomeViewModel constructor(
                     try {
                         ensureActive()
                         filters.apply(filter)
+                        ensureActive()
+                        tracker.filterSelected(filter)
                     } finally {
                         accountGuard.cancel()
                     }

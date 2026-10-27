@@ -50,7 +50,7 @@ data class FilterBottomSheetUiState(val filter: QuickFilter = QuickFilter.Runnin
     }
 }
 
-open class FilterBottomSheetViewModel constructor(private val repository: QuickFilterRepository, savedStateHandle: SavedStateHandle) : ViewModel() {
+open class FilterBottomSheetViewModel constructor(private val repository: QuickFilterRepository, savedStateHandle: SavedStateHandle, private val tracker: QuickFilterTracker) : ViewModel() {
     private val mutableState = MutableStateFlow(FilterBottomSheetUiState(QuickFilter.entries.getOrElse(savedStateHandle.get<Int>("arg_code") ?: 0) { QuickFilter.RunningAll }))
     val state = mutableState.asStateFlow()
     private var completed = false
@@ -62,6 +62,7 @@ open class FilterBottomSheetViewModel constructor(private val repository: QuickF
             try {
                 repository.apply(filter)
                 kotlinx.coroutines.currentCoroutineContext().ensureActive()
+                tracker.selected(filter)
                 completed = true
                 mutableState.update { it.copy(applying = false, applied = true) }
             } catch (cancelled: CancellationException) {

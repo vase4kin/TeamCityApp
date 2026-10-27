@@ -20,6 +20,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
@@ -27,8 +29,21 @@ import teamcityapp.libraries.list_state.*
 
 /** Resolve a reference through the same full-snapshot repository before exposing Overview rows. */
 @OptIn(ExperimentalCoroutinesApi::class)
-class BuildReferenceViewModel(href: String, repository: BuildOverviewRepository, private val metadata: BuildDetailsMetadataRepository? = null) : ViewModel() {
-    private val loader = RefreshableListLoader(flowOf(href)) { reference, force -> listOf(repository.build(reference, force)) }
+class BuildReferenceViewModel(href: String, repository: BuildOverviewRepository, private val tracker: BuildReferenceTracker, private val metadata: BuildDetailsMetadataRepository? = null) : ViewModel() {
+    private val loader = RefreshableListLoader(flowOf(href)) { reference, force ->
+        val build = try {
+            repository.build(reference, force)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (failure: Exception) {
+            currentCoroutineContext().ensureActive()
+            tracker.failed()
+            throw failure
+        }
+        currentCoroutineContext().ensureActive()
+        tracker.loaded()
+        listOf(build)
+    }
     private val retries = MutableStateFlow(emptyMap<BuildDetailsSection, Long>())
     private val completedCounts = mutableMapOf<Pair<String, BuildDetailsSection>, BuildDetailsCount>()
     val state = loader.state.flatMapLatest { builds ->

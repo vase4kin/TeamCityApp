@@ -26,6 +26,7 @@ import teamcityapp.libraries.authentication.*
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateAccountViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+    private val authenticationFailures = mutableListOf<Pair<Boolean, String>>()
     private var result: AuthenticationResult = AuthenticationResult.Success
     private var pending: CompletableDeferred<AuthenticationResult>? = null
     private val calls = mutableListOf<Triple<AccountCredentials, Boolean, Boolean>>()
@@ -49,12 +50,28 @@ class CreateAccountViewModelTest {
             override fun trackView() = Unit
             override fun trackUserLoginSuccess(isSslEnabled: Boolean) = Unit
             override fun trackGuestUserLoginSuccess(isSslEnabled: Boolean) = Unit
-            override fun trackUserLoginFailed(errorMessage: String) = Unit
-            override fun trackGuestUserLoginFailed(errorMessage: String) = Unit
+            override fun trackUserLoginFailed(errorMessage: String) {
+                authenticationFailures += false to errorMessage
+            }
+            override fun trackGuestUserLoginFailed(errorMessage: String) {
+                authenticationFailures += true to errorMessage
+            }
             override fun trackUserDataSaveFailed() = Unit
         },
         checkSecureConnection
     )
+
+    @Test fun analyticsReportsTypedFailureForUserAndGuestOnce() = runTest(dispatcher) {
+        result = AuthenticationResult.Failure(403, "", AuthenticationError.Http(403))
+        val model = vm()
+        runCurrent()
+        for (guest in listOf(false, true)) {
+            model.update(AuthenticationFormState(serverUrl = "https://ci.example", userName = "user", password = "private-password", guest = guest))
+            model.submit()
+            runCurrent()
+        }
+        assertEquals(listOf(false to "HTTP 403", true to "HTTP 403"), authenticationFailures)
+    }
 
     @Test fun validatesBeforeTouchingRepository() = runTest(dispatcher) {
         val vm = vm()
