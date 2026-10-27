@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import teamcityapp.features.login.api.*
 import teamcityapp.features.login.impl.resources.*
+import teamcityapp.features.login.impl.tracker.LoginTracker
 import teamcityapp.libraries.authentication.*
 
 data class LoginUiState(val form: AuthenticationFormState = AuthenticationFormState(), val demo: DemoServer? = null, val demoLoading: Boolean = true, val httpConfirmation: Boolean = false, val guestUnauthorized: Boolean = false, val signedIn: Boolean = false, val demoSigningIn: Boolean = false) {

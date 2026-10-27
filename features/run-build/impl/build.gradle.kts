@@ -37,24 +37,13 @@ kotlin.sourceSets.named("commonMain") {
         implementation(libs.multiplatform.lifecycle.viewmodel)
     }
 }
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
-
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("commonTest") {
     dependencies {
-        implementation(projects.features.filterBuilds.api)
-
-        implementation(projects.libraries.coroutines)
-        implementation(projects.libraries.data)
-        implementation(projects.libraries.navigation)
-
-        implementation(projects.features.runBuild.api)
-        implementation(libs.androidx.activity.compose)
-        implementation(projects.libraries.theme)
-        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-        implementation(libs.androidx.lifecycle.runtimeCompose)
-        implementation(libs.coroutines.android)
+        implementation(libs.coroutines.test)
+        implementation(projects.libraries.networkTesting)
     }
 }
+
 kotlin.sourceSets.named("androidHostTest") {
     dependencies { implementation(libs.gson) }
     dependencies {
@@ -69,4 +58,19 @@ kotlin.sourceSets.named("androidHostTest") {
 roborazzi {
     outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
     separateOutputDirs.set(false)
+}
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(projects.features.filterBuilds.api)
+        implementation(projects.libraries.coroutines)
+        implementation(projects.libraries.data)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.runBuild.api)
+        implementation(libs.androidx.activity.compose)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+    }
 }

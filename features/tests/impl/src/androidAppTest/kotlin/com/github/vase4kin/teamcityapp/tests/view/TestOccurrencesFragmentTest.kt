@@ -64,7 +64,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.whenever
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
-import teamcityapp.features.test_details.impl.TestDetailsViewModel
 import teamcityapp.features.tests.impl.R as TestsR
 import teamcityapp.libraries.navigation.DestinationRegistry
 

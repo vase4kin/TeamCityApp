@@ -41,16 +41,16 @@ class AboutScreenVersionTest {
     @get:Rule val compose = createComposeRule()
     private val content = AboutUiState.Content(ServerDetailsUiState.Unavailable)
 
-    @Test fun defaultsToTheCurrentApplicationVersion() {
+    @Test fun rendersTheCurrentApplicationVersion() {
         compose.setContent {
-            TeamCityTheme { AboutScreen(content, {}, {}, {}) }
+            TeamCityTheme { SharedAboutScreen(content, {}, {}, {}, appVersion = ABOUT_APP_VERSION) }
         }
         compose.onNodeWithText(ABOUT_APP_VERSION).assertIsDisplayed()
     }
 
     @Test fun rendersAnExplicitVersionForDeterministicFixtures() {
         compose.setContent {
-            TeamCityTheme { AboutScreen(content, {}, {}, {}, appVersion = "9.87.65") }
+            TeamCityTheme { SharedAboutScreen(content, {}, {}, {}, appVersion = "9.87.65") }
         }
         compose.onNodeWithText("9.87.65").assertIsDisplayed()
         compose.onNodeWithContentDescription("Application version 9.87.65").assertIsDisplayed()
@@ -77,7 +77,7 @@ class AboutScreenVersionTest {
         var opened: String? = null
         val available = AboutUiState.Content(ServerDetailsUiState.Available(ServerDetailsUiModel("2026.1", url)))
         compose.setContent {
-            TeamCityTheme { AboutScreen(available, { opened = it }, {}, {}) }
+            TeamCityTheme { SharedAboutScreen(available, { opened = it }, {}, {}, appVersion = ABOUT_APP_VERSION) }
         }
         compose.onNodeWithText(url).assertIsDisplayed()
         compose.onNodeWithContentDescription("Server url, $url").performClick()

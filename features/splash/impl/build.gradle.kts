@@ -19,23 +19,21 @@ import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
     id("teamcityapp.android.compose")
     id("teamcityapp.android.screenshot")
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.splash.impl" }
 dependencies {
-    implementation(projects.libraries.coroutines)
-    implementation(projects.libraries.session)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.splash.api)
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
+    testImplementation(projects.libraries.coroutines)
+    testImplementation(projects.libraries.session)
+    testImplementation(projects.libraries.navigation)
+    testImplementation(projects.features.splash.api)
+    testImplementation(projects.libraries.theme)
+    testImplementation(libs.androidx.lifecycle.lifeCycleViewModel)
+    testImplementation(libs.androidx.hilt.viewModelCompose)
+    testImplementation(libs.androidx.lifecycle.runtimeCompose)
+    testImplementation(libs.coroutines.android)
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
-    ksp(libs.dagger.compiler)
 }

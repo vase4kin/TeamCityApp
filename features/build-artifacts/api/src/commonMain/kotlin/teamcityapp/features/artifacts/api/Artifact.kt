@@ -30,9 +30,3 @@ data class Artifact(
 }
 data class DownloadedArtifact(val path: String)
 data class ArtifactDownload(val name: String, val href: String)
-sealed interface ArtifactAction {
-    data class Download(val file: ArtifactDownload) : ArtifactAction
-    data class Open(val name: String, val href: String) : ArtifactAction
-    data class Browser(val href: String) : ArtifactAction
-}
-enum class ArtifactPermission { Allowed, Storage, InstallPackages }

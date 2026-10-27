@@ -17,7 +17,7 @@
 
 package teamcityapp.features.filter_builds.impl.tracker
 
-import teamcityapp.features.filter_builds.api.FilterBuildsTracker
+import teamcityapp.features.filter_builds.impl.tracker.FilterBuildsTracker
 import teamcityapp.libraries.analytics.*
 
 class FilterBuildsTrackerImpl(private val analytics: AnalyticsTracker) : FilterBuildsTracker {

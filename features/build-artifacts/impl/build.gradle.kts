@@ -37,11 +37,19 @@ kotlin.sourceSets.named("commonMain") {
         implementation(libs.multiplatform.lifecycle.viewmodel)
     }
 }
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
-
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("commonTest") {
     dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.ktor.client.mock)
+    }
+}
 
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.mockito.mockitoKotlin)
+        implementation(libs.mockito.mockitoCore)
+        implementation(libs.coroutines.test)
+        implementation(libs.robolectric)
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.libraries.navigation)
@@ -57,19 +65,8 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.coroutines.android)
     }
 }
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-
-        implementation(libs.mockito.mockitoKotlin)
-        implementation(libs.mockito.mockitoCore)
-        implementation(libs.coroutines.test)
-    }
-}
 
 roborazzi {
     outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
     separateOutputDirs.set(false)
 }
-
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.ktor.client.mock) } }
-kotlin.sourceSets.named("androidHostTest") { dependencies { implementation(libs.robolectric) } }

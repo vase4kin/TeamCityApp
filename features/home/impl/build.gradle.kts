@@ -37,8 +37,9 @@ kotlin.sourceSets.named("commonMain") {
 }
 kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
 
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("androidHostTest") {
     dependencies {
+        implementation(libs.coroutines.test)
         implementation(projects.features.home.api)
         implementation(projects.features.navigation.api)
         implementation(projects.features.favorites.api)
@@ -54,11 +55,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
         implementation(libs.compose.material3.windowSizeClass)
         implementation(libs.coroutines.android)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.coroutines.test)
     }
 }
 

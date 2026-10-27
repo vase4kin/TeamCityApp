@@ -19,8 +19,8 @@ package teamcityapp.features.create_account.impl
 import kotlin.test.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
-import teamcityapp.features.create_account.api.CreateAccountTracker
 import teamcityapp.features.create_account.impl.resources.*
+import teamcityapp.features.create_account.impl.tracker.CreateAccountTracker
 import teamcityapp.libraries.authentication.*
 
 @OptIn(ExperimentalCoroutinesApi::class)

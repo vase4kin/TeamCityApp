@@ -17,7 +17,7 @@
 
 package teamcityapp.features.create_account.impl.tracker
 
-import teamcityapp.features.create_account.api.CreateAccountTracker
+import teamcityapp.features.create_account.impl.tracker.CreateAccountTracker
 import teamcityapp.libraries.analytics.*
 import teamcityapp.libraries.authentication.AuthenticationEventTracker
 

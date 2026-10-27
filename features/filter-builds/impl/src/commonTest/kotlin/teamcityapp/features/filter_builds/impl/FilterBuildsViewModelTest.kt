@@ -15,6 +15,7 @@
  */
 
 package teamcityapp.features.filter_builds.impl
+
 import androidx.lifecycle.SavedStateHandle
 import kotlin.test.*
 import kotlinx.coroutines.*
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
 import teamcityapp.features.filter_builds.api.*
 import teamcityapp.features.filter_builds.impl.resources.*
+import teamcityapp.features.filter_builds.impl.tracker.FilterBuildsTracker
 @OptIn(ExperimentalCoroutinesApi::class)
 class FilterBuildsViewModelTest {
     private val dispatcher = StandardTestDispatcher()

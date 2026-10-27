@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
 import teamcityapp.features.login.api.*
+import teamcityapp.features.login.impl.tracker.LoginTracker
 import teamcityapp.libraries.authentication.*
 
 @OptIn(ExperimentalCoroutinesApi::class)

@@ -16,11 +16,4 @@
 
 package teamcityapp.features.build_overview.api
 
-sealed interface BuildOverviewRequest {
-    data object Refresh : BuildOverviewRequest
-    data class Branch(val name: String) : BuildOverviewRequest
-    data object Configuration : BuildOverviewRequest
-    data object Project : BuildOverviewRequest
-}
-
 enum class BuildOverviewAction { Share, Browser, Log, Stop, RemoveFromQueue, Restart, Configuration, Project }

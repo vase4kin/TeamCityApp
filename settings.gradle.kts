@@ -121,6 +121,7 @@ include(":features:build-details:impl")
 
 include(":libraries:accounts")
 include(":libraries:network")
+include(":libraries:network-testing")
 include(":libraries:authentication-shared")
 include(":libraries:list-presentation")
 include(":libraries:time")

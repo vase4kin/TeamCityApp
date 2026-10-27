@@ -50,20 +50,9 @@ kotlin.sourceSets {
 
 kotlin.sourceSets.named("androidMain") {
     dependencies {
-        implementation(projects.libraries.navigation)
-        implementation(projects.features.about.api)
-        implementation(projects.libraries.appRating)
-        implementation(projects.libraries.resources)
         implementation(projects.libraries.theme)
-        implementation(projects.libraries.chromeTabs)
-        implementation(libs.compose.material3.windowSizeClass)
         implementation(libs.androidx.appcompat)
         implementation(libs.google.openSourceLicensesLibrary)
-        implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-        implementation(libs.androidx.lifecycle.runtimeCompose)
-        implementation(libs.coroutines.android)
-        implementation(libs.kotlin.stdlib)
     }
 }
 kotlin.sourceSets.named("androidHostTest") {
@@ -71,6 +60,18 @@ kotlin.sourceSets.named("androidHostTest") {
         implementation(libs.mockito.mockitoCore)
         implementation(libs.coroutines.test)
         implementation(libs.turbine)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.about.api)
+        implementation(projects.libraries.appRating)
+        implementation(projects.libraries.resources)
+        implementation(projects.libraries.chromeTabs)
+        implementation(libs.compose.material3.windowSizeClass)
+        implementation(libs.androidx.appcompat)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+        implementation(libs.kotlin.stdlib)
     }
 }
 

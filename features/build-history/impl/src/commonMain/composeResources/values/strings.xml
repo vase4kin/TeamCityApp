@@ -33,7 +33,6 @@
     <string name="history_add_favorite_failed">Couldn’t add this configuration to favorites.</string>
     <string name="history_remove_favorite_failed">Couldn’t remove this configuration from favorites.</string>
     <string name="history_retry">Retry</string>
-    <string name="history_cancel">Cancel</string>
     <string name="history_show">Show</string>
     <string name="history_view">Open favorites</string>
     <string name="history_reset">Reset filters</string>

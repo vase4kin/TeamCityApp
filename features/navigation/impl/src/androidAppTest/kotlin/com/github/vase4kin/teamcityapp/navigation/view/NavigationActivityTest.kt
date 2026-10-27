@@ -137,12 +137,12 @@ class NavigationActivityTest {
             awaitRows()
             doSuspendableAnswer { throw RuntimeException("refresh offline") }.whenever(teamCityService) { listBuildTypes(anyString()) }
             compose.onNodeWithTag("navigation:list").performTouchInput { swipeDown() }
-            assertTextVisible(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
+            assertTextVisible("Couldn’t refresh. Try again.")
             compose.onNodeWithTag("navigation:row:project:id").assertIsDisplayed()
             doReturn(Mocks.navigationNode()).whenever(teamCityService) { listBuildTypes(anyString()) }
-            compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
+            compose.onNodeWithText("Retry").performClick()
             compose.waitUntil(10_000) {
-                compose.onAllNodesWithText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed)).fetchSemanticsNodes().isEmpty()
+                compose.onAllNodesWithText("Couldn’t refresh. Try again.").fetchSemanticsNodes().isEmpty()
             }
             compose.onNodeWithTag("navigation:row:configuration:build_type_id").assertIsDisplayed()
         }

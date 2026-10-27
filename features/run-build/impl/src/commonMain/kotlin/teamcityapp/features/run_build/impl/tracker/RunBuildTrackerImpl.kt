@@ -17,7 +17,7 @@
 
 package teamcityapp.features.run_build.impl.tracker
 
-import teamcityapp.features.run_build.api.RunBuildTracker
+import teamcityapp.features.run_build.impl.tracker.RunBuildTracker
 import teamcityapp.libraries.analytics.*
 
 class RunBuildTrackerImpl(private val analytics: AnalyticsTracker) : RunBuildTracker {

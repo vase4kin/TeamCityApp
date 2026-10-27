@@ -36,6 +36,8 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.artifacts.api.*
+import teamcityapp.features.artifacts.impl.router.ArtifactAction
+import teamcityapp.features.artifacts.impl.router.ArtifactPermission
 import teamcityapp.features.artifacts.impl.router.ArtifactsRouter
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
 import teamcityapp.libraries.builds.BuildLaunchData

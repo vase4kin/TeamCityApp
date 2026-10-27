@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.collect
 import teamcityapp.features.build_overview.api.*
+import teamcityapp.features.build_overview.impl.router.BuildOverviewRequest
 import teamcityapp.features.build_overview.impl.router.BuildOverviewRouter
 
 // Regression harness for explicit fake ViewModels; production uses shared-app routes.

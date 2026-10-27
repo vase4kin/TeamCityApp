@@ -17,7 +17,7 @@
 
 package teamcityapp.features.login.impl.tracker
 
-import teamcityapp.features.login.api.LoginTracker
+import teamcityapp.features.login.impl.tracker.LoginTracker
 import teamcityapp.libraries.analytics.*
 import teamcityapp.libraries.authentication.AuthenticationEventTracker
 

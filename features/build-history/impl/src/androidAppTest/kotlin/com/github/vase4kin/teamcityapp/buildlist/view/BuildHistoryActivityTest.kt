@@ -190,10 +190,10 @@ class BuildHistoryActivityTest {
             awaitRow("1")
             doSuspendableAnswer { throw IllegalStateException("refresh offline") }.whenever(teamCityService) { listBuilds(anyString(), anyString()) }
             pullRefresh()
-            awaitText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
+            awaitText("Couldn’t refresh. Try again.")
             compose.onNodeWithTag("history:build:1").assertIsDisplayed()
             installPage(listOf(build("2")))
-            compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
+            compose.onNodeWithText("Retry").performClick()
             awaitRow("2")
             compose.onNodeWithTag("history:build:1").assertDoesNotExist()
         }
@@ -208,7 +208,7 @@ class BuildHistoryActivityTest {
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
             doSuspendableAnswer { throw IllegalStateException("offline") }.whenever(teamCityService) { listBuilds(anyString(), anyString()) }
             compose.onRoot().performTouchInput { swipe(start = center.copy(y = height * .2f), end = center.copy(y = height * .85f), durationMillis = 600) }
-            awaitText(text(teamcityapp.libraries.list_ui.R.string.list_refresh_failed))
+            awaitText("Couldn’t refresh. Try again.")
             compose.onNodeWithText(text(HistoryR.string.history_empty)).assertIsDisplayed()
         }
     }
@@ -239,11 +239,11 @@ class BuildHistoryActivityTest {
             awaitRow("1")
             scrollTo("12")
             compose.waitUntil(10_000) { moreCalls("/next/12") == 1 }
-            compose.onNodeWithTag("history:list").performScrollToNode(hasText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)))
-            awaitText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry))
+            compose.onNodeWithTag("history:list").performScrollToNode(hasText("Retry"))
+            awaitText("Retry")
             compose.onNodeWithTag("history:build:12").assertIsDisplayed()
             failed.set(false)
-            compose.onNodeWithText(text(teamcityapp.libraries.list_ui.R.string.list_action_retry)).performClick()
+            compose.onNodeWithText("Retry").performClick()
             scrollTo("13")
             verifyBlocking(teamCityService, times(2)) { listMoreBuilds("/next/12") }
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))

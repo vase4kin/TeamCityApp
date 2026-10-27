@@ -69,7 +69,6 @@ import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_queue.impl.R as FeatureR
 import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
 import teamcityapp.libraries.data.builds.BuildLaunchMapper
-import teamcityapp.libraries.list_ui.R as ListR
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -227,11 +226,11 @@ class BuildQueueFragmentTest {
         awaitRow("1")
         doSuspendableAnswer { throw RuntimeException("offline refresh") }.whenever(teamCityService) { listQueueBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS) }
         compose.onNodeWithTag("build_queue:list").performTouchInput { swipeDown() }
-        assertTextVisible(text(ListR.string.list_refresh_failed))
+        assertTextVisible("Couldn’t refresh. Try again.")
         row("1").assertIsDisplayed()
         stubFavorite("A", listOf(build))
-        compose.onNodeWithText(text(ListR.string.list_action_retry)).performClick()
-        compose.waitUntil(10_000) { compose.onAllNodesWithText(text(ListR.string.list_refresh_failed)).fetchSemanticsNodes().isEmpty() }
+        compose.onNodeWithText("Retry").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Couldn’t refresh. Try again.").fetchSemanticsNodes().isEmpty() }
         row("1").assertIsDisplayed()
         Assert.assertEquals(listOf("A"), storage.favoriteBuildTypeIds)
     }

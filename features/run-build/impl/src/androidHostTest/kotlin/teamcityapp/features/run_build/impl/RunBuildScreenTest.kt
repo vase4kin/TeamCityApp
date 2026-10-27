@@ -36,6 +36,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.run_build.api.*
 import teamcityapp.features.run_build.impl.router.RunBuildRouter
+import teamcityapp.features.run_build.impl.tracker.RunBuildTracker
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)

@@ -81,6 +81,28 @@ class FeatureModulesTest(unittest.TestCase):
         self.write("features/about/impl/build.gradle.kts", 'id("teamcityapp.kmp.compose")\nimplementation(projects.features.login.impl)')
         self.assertTrue(any("dependencies must use APIs" in e for e in guard.validate(self.root)))
 
+    def test_feature_sources_and_tests_cannot_import_another_implementation(self):
+        for source_set in ("commonMain", "commonTest", "androidHostTest", "androidAppTest"):
+            with self.subTest(source_set=source_set):
+                self.write(f"features/about/impl/src/{source_set}/kotlin/Leak.kt", "import teamcityapp.features.login.impl.LoginViewModel")
+                self.assertTrue(any("must not import another feature" in e for e in guard.validate(self.root)))
+                (self.root / f"features/about/impl/src/{source_set}/kotlin/Leak.kt").unlink()
+
+    def test_feature_api_cannot_expose_its_own_implementation(self):
+        self.write("features/about/api/src/commonMain/kotlin/Leak.kt", "import teamcityapp.features.about.impl.AboutUiState")
+        self.assertTrue(any("APIs must not expose" in e for e in guard.validate(self.root)))
+
+    def test_application_hosted_navigation_assertions_can_read_destination_resources(self):
+        self.write("features/about/impl/src/androidAppTest/kotlin/Journey.kt", "import teamcityapp.features.login.impl.R as LoginR")
+        self.assertEqual([], guard.validate(self.root))
+
+    def test_network_fixture_cannot_enter_production_feature_code(self):
+        for source_set in ("commonMain", "androidMain", "iosMain"):
+            with self.subTest(source_set=source_set):
+                self.write(f"features/about/impl/src/{source_set}/kotlin/Leak.kt", "import teamcityapp.libraries.network.testing.AccountNetworkFixture")
+                self.assertTrue(any("test-only dependencies" in e for e in guard.validate(self.root)))
+                (self.root / f"features/about/impl/src/{source_set}/kotlin/Leak.kt").unlink()
+
     def test_android_leak_and_unmoved_sources_are_rejected(self):
         self.write("features/about/impl/src/commonMain/kotlin/About.kt", "import android.app.Activity")
         self.write("features/about/impl/src/main/kotlin/Old.kt", "class Old")

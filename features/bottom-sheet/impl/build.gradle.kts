@@ -17,7 +17,6 @@
 plugins {
     id("teamcityapp.kmp.compose")
     id("teamcityapp.android.screenshot")
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin { android { namespace = "teamcityapp.features.bottom_sheet.impl" } }
@@ -30,15 +29,14 @@ kotlin.sourceSets.named("commonMain") {
     dependencies {
         api(projects.features.bottomSheet.api)
         api(projects.libraries.designSystem)
-        implementation(libs.multiplatform.compose.backhandler)
-        implementation(libs.multiplatform.lifecycle.runtime)
-        implementation(libs.multiplatform.lifecycle.viewmodel)
     }
 }
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
 
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("androidHostTest") {
     dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+        implementation(libs.mockito.mockitoCore)
         implementation(projects.libraries.navigation)
         implementation(projects.features.bottomSheet.api)
         implementation(projects.libraries.theme)
@@ -47,13 +45,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.coroutines.test)
-        implementation(libs.turbine)
-        implementation(libs.mockito.mockitoCore)
     }
 }
 

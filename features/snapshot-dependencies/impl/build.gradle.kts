@@ -45,9 +45,9 @@ kotlin.sourceSets.named("commonTest") {
     }
 }
 
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("androidHostTest") {
     dependencies {
-
+        implementation(libs.coroutines.test)
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.features.buildHistory.api)
@@ -61,11 +61,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.coroutines.test)
     }
 }
 

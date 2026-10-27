@@ -179,7 +179,6 @@ dependencies {
     implementation(projects.features.testDetails.impl)
 
     implementation(projects.features.splash.api)
-    implementation(projects.features.splash.impl)
 
     implementation(projects.features.about.api)
     implementation(projects.features.about.impl)

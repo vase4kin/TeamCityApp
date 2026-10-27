@@ -41,6 +41,16 @@ def validate(root):
             build = (feature / module / "build.gradle.kts").read_text()
             if re.search(r'projects\.features\.[\w]+\.(?:impl|presentation)\b', build):
                 errors.append(f"{feature.name}/{module}: feature dependencies must use APIs")
+        namespace = {"build-artifacts": "artifacts"}.get(feature.name, feature.name.replace("-", "_"))
+        for source in feature.glob("*/src/**/*.kt"):
+            text = source.read_text()
+            for owner, member in re.findall(r"^import teamcityapp\.features\.(\w+)\.impl(?:\.([\w.*]+))?", text, re.MULTILINE):
+                if source.is_relative_to(feature / "api"):
+                    errors.append(f"{source.relative_to(root)}: feature APIs must not expose implementation types")
+                elif owner != namespace and not ("androidAppTest" in source.parts and (member == "R" or member.startswith("R."))):
+                    errors.append(f"{source.relative_to(root)}: feature source and tests must not import another feature implementation")
+            if any(part == "main" or part.endswith("Main") for part in source.parts) and "teamcityapp.libraries.network.testing" in text:
+                errors.append(f"{source.relative_to(root)}: network fixtures are test-only dependencies")
         impl = feature / "impl"
         if not (impl / "build.gradle.kts").exists():
             continue

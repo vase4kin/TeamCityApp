@@ -44,7 +44,7 @@ class AboutScreenTest {
     ) {
         compose.setContent {
             DeviceConfigurationOverride(DeviceConfigurationOverride.WindowSize(DpSize(width.dp, height.dp))) {
-                TeamCityTheme { AboutScreen(state, {}, onAction, onClose) }
+                TeamCityTheme { SharedAboutScreen(state, {}, onAction, onClose, appVersion = "test-version") }
             }
         }
     }

@@ -29,9 +29,6 @@
     <string name="text_show_build">Show</string>
     <string name="text_build_is_stopped">Build is stopped successfully</string>
     <string name="text_build_is_removed_from_queue">Build is removed from queue successfully</string>
-    <string name="text_stopping_build">Stopping build..</string>
-    <string name="text_removing_build_from_queue">Removing build from queue..</string>
-    <string name="text_restarting_build">Restarting build..</string>
     <string name="text_stop_the_build">You are about to stop the build. Are you sure?</string>
     <string name="text_stop_the_build_2">You are about to stop the build ran not by you. Are you sure?</string>
     <string name="text_remove_build_from_queue">You are about to remove the build from queue. Are you sure?</string>
@@ -47,7 +44,6 @@
     <string name="error_opening_build">We encountered problem opening build</string>
     <string name="navigate_up">Navigate up</string>
     <string name="action_share">Share</string>
-    <string name="title_share_build">Share build details</string>
     <string name="text_retry">Retry</string>
     <string name="action_browser">Open in browser</string>
     <string name="action_configuration">Open configuration</string>
@@ -56,7 +52,6 @@
     <string name="section_build_subtitle">#%1$s · %2$s</string>
     <string name="action_stop_build">Stop build</string>
     <string name="action_restart_build">Restart build</string>
-    <string name="build_actions">Build actions</string>
     <string name="build_element_copy_text">Text copied!</string>
     <string name="platform_action_failed">Couldn’t open this action.</string>
     <string name="continue_build_tip">Continue</string>

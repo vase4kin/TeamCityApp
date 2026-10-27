@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.*
 import org.jetbrains.compose.resources.StringResource
 import teamcityapp.features.run_build.api.*
 import teamcityapp.features.run_build.impl.resources.*
+import teamcityapp.features.run_build.impl.tracker.RunBuildTracker
 
 data class RunBuildUiState(val branches: List<String>? = null, val branchesFailed: Boolean = false, val agents: List<BuildAgent>? = null, val agentsFailed: Boolean = false, val request: BuildRequest = BuildRequest(""), val queuing: Boolean = false, val queueError: QueueBuildResult? = null, val queuedHref: String? = null, val queueErrorId: Long = 0) {
     val queueLabelRes: StringResource = if (queuing) Res.string.text_queueing_build else Res.string.title_run_build

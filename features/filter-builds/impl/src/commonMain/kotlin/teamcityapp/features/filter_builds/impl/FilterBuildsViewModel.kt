@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.*
 import org.jetbrains.compose.resources.StringResource
 import teamcityapp.features.filter_builds.api.*
 import teamcityapp.features.filter_builds.impl.resources.*
+import teamcityapp.features.filter_builds.impl.tracker.FilterBuildsTracker
 
 data class FilterBuildsUiState(val branches: List<String>? = null, val branchesFailed: Boolean = false, val filter: BuildFilter = BuildFilter()) {
     val statusOptions: List<BuildStatusOptionUiState> = listOf(

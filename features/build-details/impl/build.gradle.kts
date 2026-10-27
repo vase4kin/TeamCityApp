@@ -41,17 +41,23 @@ kotlin.sourceSets.named("commonMain") {
         implementation(libs.multiplatform.lifecycle.viewmodel)
     }
 }
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
-
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("commonTest") {
     dependencies {
+        implementation(libs.coroutines.test)
+        implementation(projects.libraries.networkTesting)
+    }
+}
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(projects.features.bottomSheet.api)
+        implementation(libs.coroutines.test)
+        implementation(libs.mockito.mockitoCore)
         implementation(projects.libraries.onboarding)
         implementation(projects.libraries.session)
-
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.libraries.navigation)
-
         implementation(projects.features.changes.api)
         implementation(projects.features.tests.api)
         implementation(projects.features.properties.api)
@@ -69,13 +75,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.hilt.viewModelCompose)
         implementation(libs.compose.material3.windowSizeClass)
         implementation(libs.coroutines.android)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(projects.features.bottomSheet.api)
-        implementation(libs.coroutines.test)
-        implementation(libs.mockito.mockitoCore)
     }
 }
 

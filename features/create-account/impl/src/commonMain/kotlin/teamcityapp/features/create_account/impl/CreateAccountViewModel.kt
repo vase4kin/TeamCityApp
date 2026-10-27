@@ -22,8 +22,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
-import teamcityapp.features.create_account.api.CreateAccountTracker
 import teamcityapp.features.create_account.impl.resources.*
+import teamcityapp.features.create_account.impl.tracker.CreateAccountTracker
 import teamcityapp.libraries.authentication.*
 import teamcityapp.libraries.design_system.SharedUiText
 

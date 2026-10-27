@@ -36,10 +36,16 @@ kotlin.sourceSets.named("commonMain") {
         implementation(libs.multiplatform.lifecycle.runtime)
     }
 }
-kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
-
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("commonTest") {
     dependencies {
+        implementation(libs.coroutines.test)
+        implementation(projects.libraries.networkTesting)
+    }
+}
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
         implementation(libs.androidx.activity.compose)
         implementation(projects.features.buildDetails.api)
         implementation(projects.features.buildHistory.api)
@@ -54,11 +60,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.coroutines.test)
     }
 }
 

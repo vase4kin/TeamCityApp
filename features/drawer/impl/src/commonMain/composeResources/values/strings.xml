@@ -34,7 +34,6 @@
 <string name="drawer_switching">Switching account</string>
 <string name="text_add_account">Add another account</string>
 <string name="text_rate_the_app">Rate the app</string>
-<string name="drawer_sign_out">Sign out</string>
 <string name="drawer_signing_out">Signing out</string>
 <string name="drawer_sign_out_error">Unable to sign out. Please try again.</string>
 </resources>

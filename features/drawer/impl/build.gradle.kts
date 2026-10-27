@@ -47,8 +47,11 @@ kotlin.sourceSets {
     }
 }
 
-kotlin.sourceSets.named("androidMain") {
+kotlin.sourceSets.named("androidHostTest") {
     dependencies {
+        implementation(libs.mockito.mockitoCore)
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.session)
         implementation(projects.features.manageAccounts.api)
@@ -63,15 +66,7 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.lifecycle.lifeCycleViewModel)
         implementation(libs.androidx.lifecycle.runtimeCompose)
         implementation(libs.coroutines.android)
-
         implementation(projects.libraries.appRating)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.mockito.mockitoCore)
-        implementation(libs.coroutines.test)
-        implementation(libs.turbine)
     }
 }
 

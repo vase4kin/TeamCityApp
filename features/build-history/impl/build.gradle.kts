@@ -49,9 +49,16 @@ kotlin.sourceSets.named("commonTest") {
 
 kotlin.sourceSets.named("androidMain") {
     dependencies {
+
+        implementation(projects.features.filterBuilds.api)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.androidx.paging.testing)
         implementation(projects.libraries.onboarding)
         implementation(projects.libraries.session)
-
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.features.buildDetails.api)
@@ -59,7 +66,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(projects.libraries.navigation)
         implementation(projects.features.buildHistory.api)
         implementation(projects.features.runBuild.api)
-        implementation(projects.features.filterBuilds.api)
         implementation(projects.libraries.buildUi)
         implementation(projects.libraries.listUi)
         implementation(projects.libraries.theme)
@@ -70,12 +76,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.androidx.paging.common)
         implementation(libs.androidx.paging.compose)
         implementation(libs.coroutines.android)
-    }
-}
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.coroutines.test)
-        implementation(libs.androidx.paging.testing)
     }
 }
 

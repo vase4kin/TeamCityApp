@@ -20,7 +20,6 @@ Copyright 2026 Andrey Tolpeev
 <string name="text_no_branches_available_to_filter">No branches available to filter</string>
 <string name="text_loading_branches">Loading branches</string>
 <string name="title_filter_builds">Filter builds</string>
-<string name="title_filter_chooser_dialog">Choose filter</string>
 <string name="text_switcher_for_pinned">Pinned</string>
 <string name="text_switcher_for_personal">Personal</string>
 <string name="text_filters">Filter</string>

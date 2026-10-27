@@ -19,7 +19,6 @@
     <string name="title_general">General</string><string name="title_theme">Theme</string>
     <string name="theme_load_error">Unable to load theme settings</string>
     <string name="theme_save_error">Unable to save theme. Please try again.</string>
-    <string name="cancel_theme">Cancel</string>
     <string name="theme_unavailable">Not set</string>
 <string name="current_theme">Current theme: %1$s</string>
     <string name="drawer_item_settings">Settings</string>

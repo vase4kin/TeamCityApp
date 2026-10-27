@@ -33,6 +33,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.build_overview.api.*
+import teamcityapp.features.build_overview.impl.router.BuildOverviewRequest
 import teamcityapp.features.build_overview.impl.router.BuildOverviewRouter
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.theme.TeamCityTheme
