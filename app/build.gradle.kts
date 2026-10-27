@@ -143,7 +143,14 @@ androidComponents {
 }
 
 dependencies {
+    if (r8VerificationEnabled) {
+        "r8VerificationImplementation"(libs.ktor.client.mock)
+    }
+    implementation(libs.gson)
     "mockImplementation"(libs.ktor.client.mock)
+    "mockImplementation"(libs.rxjava.rxJava)
+    "mockImplementation"(libs.coroutines.rx2)
+    "mockImplementation"(libs.okhttp.okhttp)
     implementation(projects.sharedApp)
     implementation(projects.libraries.sharedData)
     implementation(projects.features.home.api)
@@ -163,7 +170,6 @@ dependencies {
     implementation(projects.libraries.chromeTabs)
     implementation(projects.libraries.storage)
     implementation(projects.libraries.storageModels)
-    implementation(projects.libraries.cacheManager)
     implementation(projects.libraries.onboarding)
     implementation(projects.libraries.security)
     implementation(projects.libraries.remote)
@@ -238,12 +244,7 @@ dependencies {
     // Android support libraries
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
-    // Api third party libraries
-    implementation(libs.okhttp.okhttp)
-    implementation(libs.okhttp.loggingInterceptor)
-    implementation(libs.retrofit.retrofit)
-    implementation(libs.retrofit.gsonConverter)
-    implementation(libs.retrofit.retrofitRxjavaAdapter)
+
     // Event bus
     implementation(libs.eventBus)
     // Others
@@ -252,15 +253,10 @@ dependencies {
     implementation(libs.dagger.dagger)
     ksp(libs.dagger.compiler)
 
-    // Rx
     implementation(libs.androidx.browser)
     implementation(libs.androidx.activity.compose)
     implementation(libs.coroutines.android)
-    implementation(libs.coroutines.rx2)
-    implementation(libs.rxjava.rxJava)
-    // Rx cache
-    implementation(libs.rxcache.rxCache)
-    implementation(libs.rxcache.jolyglot)
+
     // Firebase
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
@@ -339,3 +335,26 @@ if (r8VerificationEnabled) {
         }
     }
 }
+
+val verifyProductionNetworking = tasks.register("verifyProductionNetworking") {
+    group = "verification"
+    description = "Rejects retired networking libraries in production Android runtimes."
+    doLast {
+        val retiredGroups = setOf(
+            "com.squareup.retrofit2",
+            "io.reactivex.rxjava2",
+            "com.github.VictorAlbertos.RxCache",
+            "com.github.VictorAlbertos.Jolyglot"
+        )
+        for (variant in listOf("prodDebug", "prodRelease")) {
+            val retired = configurations.getByName("${variant}RuntimeClasspath")
+                .incoming.resolutionResult.allComponents
+                .mapNotNull { it.moduleVersion }
+                .filter { it.group in retiredGroups }
+            check(retired.isEmpty()) { "$variant includes retired networking dependencies: $retired" }
+        }
+    }
+}
+
+tasks.matching { it.name in setOf("check", "assembleProdDebug", "assembleProdRelease", "assembleProdR8Verification") }
+    .configureEach { dependsOn(verifyProductionNetworking) }

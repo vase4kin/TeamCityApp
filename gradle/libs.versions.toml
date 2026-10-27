@@ -1,5 +1,6 @@
 # Dependency and plugin versions. Keep runtime versions unchanged during catalog migrations.
 [versions]
+gson = "2.13.1"
 atomicfu = "0.28.0"
 ktor = "3.6.0"
 multiplatform-navigation3 = "1.2.0-rc01"
@@ -15,7 +16,6 @@ mockito = "5.24.0"
 # Mockito Android 5.23+ requires API 28; the explicit minimum-API harness uses subclasses.
 mockitoAndroidMinimum = "5.22.0"
 okhttp = "5.4.0"
-retrofit = "3.0.0"
 dagger = "2.60.1"
 spotless = "8.10.3"
 ktlint = "1.8.0"
@@ -44,6 +44,7 @@ robolectric = "4.17"
 paging = "3.4.2"
 
 [libraries]
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 multiplatform-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
@@ -127,13 +128,7 @@ google-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-openSourceLicensesLibrary = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
 okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
-retrofit-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofit-retrofitRxjavaAdapter = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
-retrofit-gsonConverter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 rxjava-rxJava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.19" }
-rxcache-rxCache = { module = "com.github.VictorAlbertos.RxCache:runtime", version = "1.8.3-2.x" }
-rxcache-jolyglot = { module = "com.github.VictorAlbertos.Jolyglot:gson", version = "0.0.4" }
 dagger-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 mockito-mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockito" }

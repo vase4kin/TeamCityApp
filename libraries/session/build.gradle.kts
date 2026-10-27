@@ -25,10 +25,11 @@ dependencies {
     api(projects.libraries.accounts)
     api(projects.libraries.storage)
     api(projects.libraries.storageModels)
+    implementation(libs.gson)
     implementation(projects.libraries.api)
     implementation(projects.libraries.security)
     implementation(libs.androidx.annotationn)
-    implementation(libs.rxcache.jolyglot)
+
     implementation(libs.coroutines.android)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)

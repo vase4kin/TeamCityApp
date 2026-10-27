@@ -36,14 +36,12 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityTestAppModule
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.di.modules.AppModule
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_AUTH
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
@@ -55,15 +53,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
-import okhttp3.Authenticator
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
@@ -73,8 +62,6 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
@@ -111,29 +98,6 @@ class CreateAccountActivityTest {
     val activityRule: CustomIntentsTestRule<MainActivity> =
         CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.CREATE_ACCOUNT_COMPONENT)
 
-    @Captor
-    lateinit var callbackArgumentCaptor: ArgumentCaptor<Callback>
-
-    @field:Named(CLIENT_BASE)
-    @BindValue
-    @Mock
-    lateinit var clientBase: OkHttpClient
-
-    @field:Named(CLIENT_BASE_UNSAFE)
-    @BindValue
-    @Mock
-    lateinit var unsafeOkHttpClient: OkHttpClient
-
-    @field:Named(CLIENT_AUTH)
-    @BindValue
-    @Mock
-    lateinit var clientAuth: OkHttpClient
-
-    @Mock
-    lateinit var call: Call
-
-    @javax.inject.Inject lateinit var accounts: com.github.vase4kin.teamcityapp.navigation.AppAccountFlowNavigation
-
     @Spy
     val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
@@ -156,21 +120,15 @@ class CreateAccountActivityTest {
 
     @Before
     fun setUp() {
-        for (client in listOf(clientBase, unsafeOkHttpClient)) {
-            val builder = mock(OkHttpClient.Builder::class.java)
-            `when`(client.newBuilder()).thenReturn(builder)
-            `when`(builder.authenticator(any<Authenticator>())).thenReturn(builder)
-            `when`(builder.build()).thenReturn(client)
-        }
-
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive("$URL/server", false)
-        `when`(clientBase.newCall(any<Request>())).thenReturn(call)
-        `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
         activityRule.launchActivity(null)
+        compose.waitUntil(10_000) {
+            runCatching { compose.onNodeWithTag("auth:url").assertIsDisplayed() }.isSuccess
+        }
     }
 
     /**
@@ -178,21 +136,6 @@ class CreateAccountActivityTest {
      */
     @Test
     fun testUserCanCreateGuestUserAccountWithCorrectUrl() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(200)
-                    .body("".toResponseBody())
-                    .message("")
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
-
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
@@ -214,21 +157,6 @@ class CreateAccountActivityTest {
      */
     @Test
     fun testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(200)
-                    .body("".toResponseBody())
-                    .message("")
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
-
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("auth:ssl").performClick()
@@ -250,20 +178,6 @@ class CreateAccountActivityTest {
      */
     @Test
     fun testUserCanCreateUserAccountWithCorrectUrlAndCredentials() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
-
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:username").performTextInput("user")
         compose.onNodeWithTag("auth:username").performImeAction()
@@ -285,54 +199,52 @@ class CreateAccountActivityTest {
      */
     @Test
     fun testUserIsNotifiedIfServerReturnsBadResponse() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(404)
-                    .body("".toResponseBody())
-                    .message("Client Error")
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
+        org.mockito.Mockito.doReturn(io.reactivex.Single.error<teamcityapp.features.about.repository.models.ServerInfo>(com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(404))).`when`(teamCityService).serverInfo()
 
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
-        compose.onNodeWithText("Client Error", substring = true).assertIsDisplayed()
+        compose.awaitDisplayedText("404", substring = true)
     }
 
     @Test fun pendingGuestAuthenticationRetainsItsOwnerAcrossRootRecreation() {
+        val pending = io.reactivex.subjects.SingleSubject.create<teamcityapp.features.about.repository.models.ServerInfo>()
+        org.mockito.Mockito.doReturn(pending).`when`(teamCityService).serverInfo()
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
         compose.waitForIdle()
-        org.mockito.Mockito.verify(call, org.mockito.Mockito.timeout(5_000)).enqueue(capture(callbackArgumentCaptor))
+        compose.waitUntil(5_000) { pending.hasObservers() }
         InstrumentationRegistry.getInstrumentation().runOnMainSync { activityRule.activity.recreate() }
         compose.waitForIdle()
         compose.onNodeWithTag("create-account:submit").assertIsNotEnabled()
-        org.mockito.Mockito.verify(call, org.mockito.Mockito.times(1)).enqueue(any())
-        callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
+        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.times(1)).serverInfo()
+        pending.onSuccess(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
         awaitHome()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(true))
-        org.mockito.Mockito.verify(call, org.mockito.Mockito.times(1)).enqueue(any())
+        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.times(1)).serverInfo()
     }
 
     @Test fun replacingTheAccountStackCancelsPendingAuthenticationAndIgnoresLateSuccess() {
+        val pending = io.reactivex.subjects.SingleSubject.create<teamcityapp.features.about.repository.models.ServerInfo>()
+        org.mockito.Mockito.doReturn(pending).`when`(teamCityService).serverInfo()
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
         compose.waitForIdle()
-        org.mockito.Mockito.verify(call, org.mockito.Mockito.timeout(5_000)).enqueue(capture(callbackArgumentCaptor))
-        accounts.home(resetSession = true)
+        compose.waitUntil(5_000) { pending.hasObservers() }
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            activityRule.activity.startActivity(
+                android.content.Intent().setClassName(context, IncomingDestinationResolver.HOME_COMPONENT).apply {
+                    flags = android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    putExtra(com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
+                }
+            )
+        }
         awaitHome()
-        org.mockito.Mockito.verify(call, org.mockito.Mockito.timeout(5_000)).cancel()
-        callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
+        compose.waitUntil(5_000) { !pending.hasObservers() }
+        pending.onSuccess(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
         compose.waitForIdle()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(false))

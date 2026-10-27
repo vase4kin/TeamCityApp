@@ -78,7 +78,6 @@ class HomeInitialTabTest {
             clearAll()
             saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         }
-        app.appInjector.cacheManager().evictAllCache()
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE)
             .edit().putBoolean("rated", true).commit()
     }

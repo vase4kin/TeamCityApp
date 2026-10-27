@@ -105,7 +105,6 @@ class SnapshotDependenciesFragmentTest {
         androidx.test.espresso.intent.Intents.init()
         TestUtils.disableOnboarding()
         val app = context.applicationContext as TeamCityApplicationBase
-        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }

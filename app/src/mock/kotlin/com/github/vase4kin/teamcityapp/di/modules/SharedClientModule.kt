@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.di.modules
 
-import android.app.Application
-import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,16 +27,13 @@ import teamcityapp.libraries.network.TeamCityClientFactory
 @Module
 @InstallIn(SingletonComponent::class)
 object SharedClientModule {
-    @Provides fun clients(app: Application): TeamCityClientFactory = TeamCityClientFactory { identity ->
+    @Provides fun clients(fixtures: MockTeamCityService): TeamCityClientFactory = TeamCityClientFactory { identity ->
         // Mock builds remain offline for external origins. Only the task's explicit
         // loopback auth/security/HTTP fixtures use the real platform engine.
         if (Url(identity.serverUrl).host in setOf("localhost", "127.0.0.1", "::1", "[::1]", "10.0.2.2")) {
             PlatformTeamCityClientFactory.create(identity)
         } else {
-            sharedMockClient {
-                val application = app as TeamCityApplicationBase
-                if (application.appInjector.sharedUserStorage().userAccounts.isEmpty()) FakeTeamCityServiceImpl() else application.restApiInjector.teamCityService()
-            }
+            sharedMockClient { fixtures.service }
         }
     }
 }

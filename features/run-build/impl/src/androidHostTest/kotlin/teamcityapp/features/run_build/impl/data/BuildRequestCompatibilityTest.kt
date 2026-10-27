@@ -16,9 +16,12 @@
 
 package teamcityapp.features.run_build.impl.data
 
+import com.github.vase4kin.teamcityapp.agents.api.Agent
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.google.gson.Gson
 import org.junit.Assert.*
 import org.junit.Test
+import teamcityapp.features.properties.repository.models.Properties
 import teamcityapp.features.run_build.api.*
 
 /** TeamCity REST receives the same legacy wire fields and parameter ordering. */
@@ -46,4 +49,15 @@ class BuildRequestCompatibilityTest {
         assertFalse(build.isQueueAtTop)
         assertTrue(build.isCleanSources)
     }
+}
+
+/** Reference codec for the retained installed Build DTO; production requests use Ktor JSON. */
+private fun BuildRequest.toLegacyBuild() = Build().also { build ->
+    build.buildTypeId = buildTypeId
+    build.branchName = branch
+    build.isPersonal = personal
+    build.isQueueAtTop = queueAtTop
+    build.isCleanSources = cleanSources
+    agent?.let { selected -> build.agent = Agent(selected.name).also { it.id = selected.id } }
+    if (parameters.isNotEmpty()) build.properties = Properties(parameters.map { Properties.Property(it.name, it.value) })
 }

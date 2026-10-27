@@ -44,6 +44,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered
 import com.github.vase4kin.teamcityapp.buildlist.api.User
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
@@ -73,8 +74,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import retrofit2.HttpException
-import retrofit2.Response
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
@@ -113,7 +112,6 @@ class OverviewFragmentTest {
         androidx.test.espresso.intent.Intents.init()
         TestUtils.disableOnboarding()
         val app = context.applicationContext as TeamCityApplicationBase
-        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveUserAccountAndSetItAsActive(
             Mocks.URL,
@@ -492,7 +490,7 @@ class OverviewFragmentTest {
         row(field, expected)
     }
     private fun stopFailure(code: Int, message: Int) {
-        doReturn(Single.error<Build>(HttpException(Response.error<Build>(code, "offline".toResponseBody())))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
+        doReturn(Single.error<Build>(MockHttpFailure(code))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
@@ -500,7 +498,7 @@ class OverviewFragmentTest {
         row("Result", "Running current build")
     }
     private fun restartFailure(code: Int, message: Int) {
-        doReturn(Single.error<Build>(HttpException(Response.error<Build>(code, "offline".toResponseBody())))).`when`(teamCityService).queueBuild(com.github.vase4kin.teamcityapp.helper.any())
+        doReturn(Single.error<Build>(MockHttpFailure(code))).`when`(teamCityService).queueBuild(com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()

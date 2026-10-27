@@ -20,7 +20,7 @@ class R8SmokeTest {
 
     @Test fun persistedAccounts() = R8SmokeChecks.verifyAccounts(context)
 
-    @Test fun retrofitAndDiskCache() = R8SmokeChecks.verifyRetrofitAndCache(context)
+    @Test fun ktorAndDiskCache() = R8SmokeChecks.verifyKtorAndCache(context)
 
     @Test fun eventBusAndTimezoneResources() = R8SmokeChecks.verifyEventBusAndDates()
 

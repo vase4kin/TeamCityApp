@@ -37,10 +37,6 @@ import java.util.ArrayList
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-import retrofit2.http.Body
-import retrofit2.http.Path
-import retrofit2.http.Query
-import retrofit2.http.Url
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 
@@ -50,9 +46,9 @@ import teamcityapp.features.test_details.repository.models.TestOccurrence
 open class FakeTeamCityServiceImpl : TeamCityService {
 
     override fun listAgents(
-        @Query("includeDisconnected") includeDisconnected: Boolean?,
-        @Query("fields") fields: String?,
-        @Query("locator") locator: String?
+        includeDisconnected: Boolean?,
+        fields: String?,
+        locator: String?
     ): Single<Agents> = if (includeDisconnected != null && includeDisconnected) {
         Single
             .just(Mocks.disconnectedAgents())
@@ -67,11 +63,11 @@ open class FakeTeamCityServiceImpl : TeamCityService {
             .just(Agents(4, merged))
     }
 
-    override fun listBuildTypes(@Url id: String): Single<NavigationNode> = Single.just(Mocks.navigationNode())
+    override fun listBuildTypes(id: String): Single<NavigationNode> = Single.just(Mocks.navigationNode())
 
-    override fun buildType(@Path("id") id: String): Single<BuildType> = Single.just(Mocks.buildTypeMock())
+    override fun buildType(id: String): Single<BuildType> = Single.just(Mocks.buildTypeMock())
 
-    override fun build(@Url url: String): Single<Build> = when (url) {
+    override fun build(url: String): Single<Build> = when (url) {
         // queued builds
         "/guestAuth/app/rest/buildQueue/id:823050" -> Single.just(Mocks.queuedBuild1())
 
@@ -91,7 +87,7 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         else -> Observable.empty<Build>().singleOrError()
     }
 
-    override fun listBuilds(@Path("id") id: String, @Query("locator") locator: String): Single<Builds> {
+    override fun listBuilds(id: String, locator: String): Single<Builds> {
         val builds = ArrayList<Build>()
         builds.add(Mocks.runningBuild())
         builds.add(Mocks.successBuild())
@@ -99,13 +95,13 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         return Single.just(Builds(3, builds))
     }
 
-    override fun listRunningBuilds(@Query("locator") locator: String, @Query("fields") fields: String?): Single<Builds> {
+    override fun listRunningBuilds(locator: String, fields: String?): Single<Builds> {
         val builds = ArrayList<Build>()
         builds.add(Mocks.runningBuild())
         return Single.just(Builds(1, builds))
     }
 
-    override fun listQueueBuilds(@Query("locator") locator: String?, @Query("fields") fields: String?): Single<Builds> {
+    override fun listQueueBuilds(locator: String?, fields: String?): Single<Builds> {
         val builds = ArrayList<Build>()
         builds.add(Mocks.queuedBuild1())
         builds.add(Mocks.queuedBuild2())
@@ -115,16 +111,16 @@ open class FakeTeamCityServiceImpl : TeamCityService {
 
     override fun listBuilds(locator: String): Single<Builds> = listQueueBuilds(null, null)
 
-    override fun listMoreBuilds(@Url url: String): Single<Builds> = Observable.empty<Builds>().singleOrError()
+    override fun listMoreBuilds(url: String): Single<Builds> = Observable.empty<Builds>().singleOrError()
 
-    override fun listArtifacts(@Url url: String, @Query("locator") locator: String): Single<Files> = when (url) {
+    override fun listArtifacts(url: String, locator: String): Single<Files> = when (url) {
         "/guestAuth/app/rest/builds/id:92912/artifacts/children/" -> Single.just(Mocks.artifacts())
         else -> Observable.empty<Files>().singleOrError()
     }
 
-    override fun downloadFile(@Url url: String): Single<ResponseBody> = Single.just("text".toResponseBody("text/plain".toMediaType()))
+    override fun downloadFile(url: String): Single<ResponseBody> = Single.just("text".toResponseBody("text/plain".toMediaType()))
 
-    override fun listTestOccurrences(@Url url: String): Single<TestOccurrences> = when (url) {
+    override fun listTestOccurrences(url: String): Single<TestOccurrences> = when (url) {
         "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10" -> Single.just(
             Mocks.failedTests()
         )
@@ -148,7 +144,7 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         else -> Observable.empty<TestOccurrences>().singleOrError()
     }
 
-    override fun testOccurrence(@Url url: String): Single<TestOccurrence> = when (url) {
+    override fun testOccurrence(url: String): Single<TestOccurrence> = when (url) {
         "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)" -> Single.just(
             TestOccurrence("exception error")
         )
@@ -160,7 +156,7 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         else -> Observable.empty<TestOccurrence>().singleOrError()
     }
 
-    override fun listChanges(@Url url: String): Single<Changes> = when (url) {
+    override fun listChanges(url: String): Single<Changes> = when (url) {
         "/guestAuth/app/rest/changes?locator=build:(id:826073),count:10", "/guestAuth/app/rest/changes?locator=build:(id:826073),count:2147483647&fields=count" -> Single.just(
             Mocks.changes()
         )
@@ -168,16 +164,16 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         else -> Observable.empty<Changes>().singleOrError()
     }
 
-    override fun change(@Url url: String): Single<Changes.Change> = when (url) {
+    override fun change(url: String): Single<Changes.Change> = when (url) {
         "/guestAuth/app/rest/changes/id:2503722" -> Single.just(Mocks.singleChange())
         else -> Observable.empty<Changes.Change>().singleOrError()
     }
 
-    override fun listBranches(@Path("id") id: String): Single<Branches> = Single.just(Branches(listOf(Branch("master"))))
+    override fun listBranches(id: String): Single<Branches> = Single.just(Branches(listOf(Branch("master"))))
 
-    override fun queueBuild(@Body build: Build): Single<Build> = Single.just(Mocks.queuedBuild1())
+    override fun queueBuild(build: Build): Single<Build> = Single.just(Mocks.queuedBuild1())
 
-    override fun cancelBuild(@Url url: String, @Body buildCancelRequest: BuildCancelRequest): Single<Build> = Single.just(Mocks.failedBuild())
+    override fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build> = Single.just(Mocks.failedBuild())
 
     override fun serverInfo(): Single<ServerInfo> = Single.just(ServerInfo(BuildConfig.VERSION_NAME, Mocks.URL))
 }

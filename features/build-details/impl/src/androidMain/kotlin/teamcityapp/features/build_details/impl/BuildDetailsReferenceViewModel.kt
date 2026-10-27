@@ -19,7 +19,6 @@ package teamcityapp.features.build_details.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
@@ -39,7 +38,6 @@ internal sealed interface BuildDetailsReferenceState {
     data class Content(val build: BuildLaunchData) : BuildDetailsReferenceState
 }
 
-@HiltViewModel
 internal class BuildDetailsReferenceViewModel @Inject constructor(savedState: SavedStateHandle, repository: BuildDetailsRepository, tracker: BuildDetailsTracker) : ViewModel() {
     private val href = savedState.get<String>(HREF).orEmpty()
     private val trackRestart = savedState.get<Boolean>(TRACK_RESTART) == true

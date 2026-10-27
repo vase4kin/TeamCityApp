@@ -13,15 +13,6 @@
     <init>();
 }
 
-# RxCache creates this interface with a Proxy and reflects its annotated methods.
--keep interface com.github.vase4kin.teamcityapp.api.cache.CacheProviders { *; }
-# Its own disk envelope is also serialized with Gson, including generic data.
--keep class io.rx_cache2.internal.Record {
-    !static !transient <fields>;
-    <init>();
-}
--keepclassmembers enum io.rx_cache2.Source { *; }
-
 # EventBus 3.0 discovers subscribers at runtime; no generated subscriber index.
 -keepclassmembers class * {
     @org.greenrobot.eventbus.Subscribe <methods>;

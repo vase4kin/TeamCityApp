@@ -26,16 +26,14 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.di.features.splash.SplashRepositoryModule
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.SessionModule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.navigation.AppAccountFlowNavigation
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.*
 import java.util.concurrent.atomic.AtomicInteger
-import javax.inject.Inject
 import kotlinx.coroutines.CompletableDeferred
 import org.junit.Assert.*
 import org.junit.Before
@@ -43,11 +41,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.splash.api.*
-import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
+import teamcityapp.libraries.accounts.*
+import teamcityapp.libraries.network.ResponseCacheStore
 
-/** Exercises startup's destination owner and installed components on the single activity. */
+/** Installed aliases execute the production shared account restoration and Ktor root. */
 @HiltAndroidTest
-@UninstallModules(SplashRepositoryModule::class)
+@UninstallModules(SessionModule::class)
 @RunWith(AndroidJUnit4::class)
 class SplashActivityTest {
     @JvmField
@@ -61,151 +60,118 @@ class SplashActivityTest {
     @JvmField
     @Rule(order = 2)
     val compose = createEmptyComposeRule()
-    private val gate = CompletableDeferred<Boolean>()
-    private val reads = AtomicInteger()
-    private val cancellations = AtomicInteger()
-    private val completedReads = AtomicInteger()
 
-    @Inject lateinit var accounts: AppAccountFlowNavigation
+    private val gate = CompletableDeferred<Unit>()
+    private val reads = AtomicInteger()
+    private var current: AccountSecret? = null
 
     @Volatile private var fail = false
 
     @BindValue @JvmField
-    val repository: SplashRepository = object : SplashRepository {
-        override suspend fun hasAccounts(): Boolean {
+    val storage: AccountStorage = object : AccountStorage, AccountPreferencesStorage {
+        override suspend fun active(): AccountSecret? {
             reads.incrementAndGet()
-            if (fail) throw IllegalStateException("account store")
-            try {
-                return gate.await().also { completedReads.incrementAndGet() }
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                cancellations.incrementAndGet()
-                throw e
-            }
+            if (fail) error("account storage")
+            gate.await()
+            return current
+        }
+        override suspend fun accounts() = listOfNotNull(current?.identity)
+        override suspend fun secret(key: String) = current?.takeIf { it.identity.key == key }
+        override suspend fun saveAndActivate(account: AccountSecret) {
+            current = account
+        }
+        override suspend fun activate(key: String) {
+            check(current?.identity?.key == key)
+        }
+        override suspend fun remove(key: String) {
+            if (current?.identity?.key == key) current = null
+        }
+        override suspend fun signOut() {
+            current = null
+        }
+        override suspend fun preferences(key: String) = AccountPreferences(ratingHandled = true)
+        override suspend fun updatePreferences(key: String, transform: (AccountPreferences) -> AccountPreferences) = transform(preferences(key))
+    }
+
+    @BindValue @JvmField
+    val cache: ResponseCacheStore = object : ResponseCacheStore {
+        private var value: String? = null
+        override suspend fun read() = value
+        override suspend fun write(value: String) {
+            this.value = value
         }
     }
+
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
 
     @Before fun before() {
         TestUtils.disableOnboarding()
         app.appInjector.sharedUserStorage().clearAll()
-        InstrumentationRegistry.getInstrumentation().setInTouchMode(true)
     }
+
     private fun launch() = ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.SPLASH_COMPONENT))
     private fun awaitTag(tag: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
-        compose.onNodeWithTag(tag).assertIsDisplayed()
-    }
-    private fun awaitLogin() {
-        val description = app.getString(teamcityapp.features.login.impl.R.string.text_app_description)
-        compose.waitUntil(10_000) { compose.onAllNodesWithText(description).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText(description).assertIsDisplayed()
     }
 
-    @Test fun pendingLoadingSurvivesRecreationWithoutDuplicateBranding() {
+    @Test fun pendingAccountRestoreSurvivesRecreationBeforeShowingLogin() {
         launch().use { scenario ->
-            awaitTag("splash:loading")
-            compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
-            scenario.recreate()
-            awaitTag("splash:loading")
-            compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
-            assertEquals(Lifecycle.State.RESUMED, scenario.state)
-        }
-    }
-
-    @Test fun stoppingCancelsPendingReadImmediatelyAndResumeRestartsIt() {
-        launch().use { scenario ->
-            awaitTag("splash:loading")
             compose.waitUntil(10_000) { reads.get() > 0 }
-            scenario.moveToState(Lifecycle.State.CREATED)
-            compose.waitUntil(10_000) { cancellations.get() > 0 }
-            val before = reads.get()
-            scenario.moveToState(Lifecycle.State.RESUMED)
-            compose.waitUntil(10_000) { reads.get() > before }
-            awaitTag("splash:loading")
-            compose.onNodeWithTag("splash:error").assertDoesNotExist()
+            scenario.recreate()
+            compose.onNodeWithTag("login:submit").assertDoesNotExist()
+            gate.complete(Unit)
+            awaitTag("login:submit")
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
 
     @Test fun noAccountsReplacesSplashWithLoginOnceAndBackExitsTheRoot() {
-        assertNavigation(false)
-    }
-
-    @Test fun accountsReplaceSplashWithHomeOnceAndBackExitsTheRoot() {
-        assertNavigation(true)
-    }
-    private fun assertNavigation(hasAccounts: Boolean) {
-        if (hasAccounts) app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        gate.complete(Unit)
         launch().use { scenario ->
-            awaitTag("splash:loading")
-            gate.complete(hasAccounts)
-            if (hasAccounts) awaitTag("navigation:row:project:id") else awaitLogin()
-            assertEquals(Lifecycle.State.RESUMED, scenario.state)
-            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
+            awaitTag("login:submit")
             scenario.recreate()
-            if (hasAccounts) awaitTag("navigation:row:project:id") else awaitLogin()
-            assertEquals(1, reads.get())
+            awaitTag("login:submit")
             androidx.test.espresso.Espresso.pressBackUnconditionally()
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }
 
-    @Test fun completionInBackgroundWaitsForResumeBeforeRouting() {
+    @Test fun restoredAccountEntersTheSharedHomeAndSurvivesRecreation() {
+        current = AccountSecret(AccountIdentity(Mocks.URL, "Guest user", true))
+        gate.complete(Unit)
         launch().use { scenario ->
-            awaitTag("splash:loading")
-            scenario.moveToState(Lifecycle.State.STARTED)
-            gate.complete(false)
-            // A paused Android frame clock need not redraw the ready screen. Observe the
-            // completed read and account coordinator without requiring a paused UI frame.
-            compose.waitUntil(10_000) { completedReads.get() == 1 }
-            assertEquals(SplashNavigationDestination, accounts.session.value.initial)
-            assertEquals(Lifecycle.State.STARTED, scenario.state)
-            compose.onNodeWithText(app.getString(teamcityapp.features.login.impl.R.string.text_app_description)).assertDoesNotExist()
-            scenario.moveToState(Lifecycle.State.RESUMED)
-            awaitLogin()
+            awaitTag("home:tab:Projects")
             scenario.recreate()
-            awaitLogin()
-            assertEquals(1, reads.get())
+            awaitTag("home:tab:Projects")
+            compose.onNodeWithTag("login:submit").assertDoesNotExist()
+            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
 
-    @Test fun storageFailureOffersRetryAndCanRecoverToLogin() {
+    @Test fun accountStorageFailureOffersRetryAndRecoversToLogin() {
         fail = true
         launch().use { scenario ->
-            awaitTag("splash:error")
+            compose.waitUntil(10_000) { compose.onAllNodesWithText("Try again").fetchSemanticsNodes().isNotEmpty() }
             scenario.recreate()
-            awaitTag("splash:error")
-            assertEquals(1, reads.get())
+            compose.waitUntil(10_000) { compose.onAllNodesWithText("Try again").fetchSemanticsNodes().isNotEmpty() }
             fail = false
-            gate.complete(false)
+            gate.complete(Unit)
             compose.onNodeWithText("Try again").performClick()
-            awaitLogin()
-            assertEquals(2, reads.get())
-            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            awaitTag("login:submit")
         }
     }
 
-    @Test fun installedPrivateStartupComponentTargetsTheRootAndCreatesNoFragments() {
-        val component = ComponentName(app.packageName, IncomingDestinationResolver.SPLASH_COMPONENT)
-        val info = app.packageManager.getActivityInfo(component, 0)
-        assertFalse(info.exported)
-        assertEquals(MainActivity::class.java.name, info.targetActivity)
-        launch().use { scenario ->
-            awaitTag("splash:loading")
-            scenario.onActivity {
-                assertEquals(MainActivity::class.java, it.javaClass)
-                assertTrue(it.supportFragmentManager.fragments.isEmpty())
-            }
+    @Test fun installedStartupAndLauncherAliasesStillTargetTheRoot() {
+        for ((name, exported) in listOf(IncomingDestinationResolver.SPLASH_COMPONENT to false, SplashEntryPoint.LAUNCHER_ACTIVITY to true)) {
+            val info = app.packageManager.getActivityInfo(ComponentName(app.packageName, name), 0)
+            assertEquals(exported, info.exported)
+            assertEquals(MainActivity::class.java.name, info.targetActivity)
         }
-    }
-
-    @Test fun installedLauncherComponentStillResolvesAndLaunchesTheRootActivity() {
+        gate.complete(Unit)
         val component = ComponentName(app.packageName, SplashEntryPoint.LAUNCHER_ACTIVITY)
-        val info = app.packageManager.getActivityInfo(component, 0)
-        assertTrue(info.exported)
-        assertEquals(MainActivity::class.java.name, info.targetActivity)
         ActivityScenario.launch<MainActivity>(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setComponent(component)).use {
-            awaitTag("splash:loading")
-            compose.onNodeWithContentDescription("TeamCityApp").assertDoesNotExist()
+            awaitTag("login:submit")
         }
     }
 }

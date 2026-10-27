@@ -49,7 +49,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -90,10 +89,6 @@ class CreateAccountActivityValidationTest {
     @BindValue
     @Mock
     lateinit var storage: SharedUserStorage
-
-    @BindValue
-    @Mock
-    lateinit var client: OkHttpClient
 
     private val INPUT_URL = URL.replace("https://", "")
 

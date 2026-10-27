@@ -114,7 +114,6 @@ class RunningBuildsFragmentTest {
         androidx.test.espresso.intent.Intents.init()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        app.appInjector.cacheManager().evictAllCache()
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
         // Isolate Home's live count requests from the pending projected-list subjects in these tests.
         doReturn(Single.just(Builds(0, emptyList()))).whenever(teamCityService).listRunningBuilds(any(), eq("count"))

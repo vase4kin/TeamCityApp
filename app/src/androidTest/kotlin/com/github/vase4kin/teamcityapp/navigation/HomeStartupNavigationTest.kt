@@ -77,7 +77,6 @@ class HomeStartupNavigationTest {
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
@@ -97,32 +96,38 @@ class HomeStartupNavigationTest {
     }
     private fun encoded(key: androidx.navigation3.runtime.NavKey) = Intent(app, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(key))
 
+    private fun shownPrompt(name: String): Boolean = runBlocking {
+        val accounts = dagger.hilt.EntryPoints.get(app, com.github.vase4kin.teamcityapp.helper.SharedRootTestState::class.java).accounts()
+        val key = teamcityapp.libraries.accounts.AccountIdentity(storage.activeUser.teamcityUrl, storage.activeUser.userName, storage.activeUser.isGuestUser, storage.activeUser.isSslDisabled).key
+        "home.$name" in (accounts as teamcityapp.libraries.accounts.AccountPreferencesStorage).preferences(key).shownPrompts
+    }
+
     @Test fun homeCoachmarksFollowRealDrawerAndTabActionsAndPersistOnlyAfterDismissal() {
         val prefs = app.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
         val tips = listOf(HomeTab.Favorites to "AddToFavorites", HomeTab.Running to "RBFilter", HomeTab.Queue to "BQFilter", HomeTab.Agents to "AFilter")
         prefs.edit().putBoolean("NavDrawerV1", false).apply { tips.forEach { putBoolean(it.second, false) } }.commit()
         ActivityScenario.launch<MainActivity>(encoded(HomeDestination(HomeTab.Running))).use { scenario ->
             awaitTag("home:coachmark:Drawer")
-            assertFalse(prefs.getBoolean("NavDrawerV1", false))
+            assertFalse(shownPrompt("Drawer"))
             compose.onNodeWithTag("running_builds:drawer").assertDoesNotExist()
             scenario.recreate()
             awaitTag("home:coachmark:Drawer")
             compose.onNodeWithTag("home:dismiss-prompt").performClick()
-            compose.waitUntil(10_000) { prefs.getBoolean("NavDrawerV1", false) }
+            compose.waitUntil(10_000) { shownPrompt("Drawer") }
             // The initial Running tab also has its own first-use action tip.
             awaitTag("home:coachmark:Running")
             compose.onNodeWithTag("home:dismiss-prompt").performClick()
-            compose.waitUntil(10_000) { prefs.getBoolean("RBFilter", false) }
-            tips.filter { it.first != HomeTab.Running }.forEach { (tab, key) ->
+            compose.waitUntil(10_000) { shownPrompt("Running") }
+            tips.filter { it.first != HomeTab.Running }.forEach { (tab, _) ->
                 if (tab in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)) compose.onNodeWithTag("home:tab:Activity").performClick()
                 compose.onNodeWithTag("home:tab:${tab.name}").performClick()
                 awaitTag("home:coachmark:${tab.name}")
-                assertFalse(prefs.getBoolean(key, false))
+                assertFalse(shownPrompt(tab.name))
                 compose.onNodeWithTag("home:action").assertDoesNotExist()
                 scenario.recreate()
                 awaitTag("home:coachmark:${tab.name}")
                 compose.onNodeWithTag("home:dismiss-prompt").performClick()
-                compose.waitUntil(10_000) { prefs.getBoolean(key, false) }
+                compose.waitUntil(10_000) { shownPrompt(tab.name) }
                 awaitTag(if (tab == HomeTab.Favorites) "favorites:add" else "home:action")
             }
             scenario.recreate()
@@ -163,11 +168,11 @@ class HomeStartupNavigationTest {
             verify(service, times(1)).listBuildTypes("_Root")
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            verify(service, times(1)).listAgents(false, null, null)
+            verify(service, times(1)).listAgents(false, "agent(id,name),nextHref", null)
             scenario.recreate()
             awaitTag("agents:list")
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
-            verify(service, times(1)).listAgents(false, null, null)
+            verify(service, times(1)).listAgents(false, "agent(id,name),nextHref", null)
         }
     }
 
@@ -186,7 +191,7 @@ class HomeStartupNavigationTest {
             awaitRoot()
             compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
             assertEquals(Lifecycle.State.RESUMED, scenario.state)
-            verify(service, times(2)).listBuildTypes("id")
+            verify(service, times(1)).listBuildTypes("id")
         }
     }
 
@@ -212,7 +217,7 @@ class HomeStartupNavigationTest {
             awaitTag("agents:list")
             compose.onNodeWithTag("home:filter:AgentsDisconnected").performClick()
             awaitTag("agents:list")
-            compose.waitUntil(10_000) { runCatching { verify(service).listAgents(true, null, null) }.isSuccess }
+            compose.waitUntil(10_000) { runCatching { verify(service).listAgents(true, "agent(id,name),nextHref", null) }.isSuccess }
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
             compose.onNodeWithTag("quick-filter:content").assertDoesNotExist()
             scenario.recreate()
@@ -245,13 +250,14 @@ class HomeStartupNavigationTest {
             awaitTag("agents:list")
             compose.onNodeWithTag("home:account").performClick()
             awaitTag("drawer:list")
-            compose.onNodeWithTag("drawer:account:${Mocks.URL.length}:${Mocks.URL}:Guest user").performClick()
+            val guest = teamcityapp.libraries.accounts.AccountIdentity(Mocks.URL, "Guest user", true)
+            compose.onNodeWithTag("drawer:account:${guest.key}").performClick()
             awaitRoot()
             assertEquals("Guest user", storage.activeUser.userName)
             compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            verify(service, times(2)).listAgents(false, null, null)
+            verify(service, times(2)).listAgents(false, "agent(id,name),nextHref", null)
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }

@@ -19,7 +19,6 @@ package teamcityapp.features.splash.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +35,6 @@ import teamcityapp.features.splash.api.SplashDestination
 import teamcityapp.features.splash.api.SplashRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel
 class SplashViewModel @Inject constructor(private val repository: SplashRepository) : ViewModel() {
     private val snapshot = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
     private val refresh = MutableStateFlow(0)

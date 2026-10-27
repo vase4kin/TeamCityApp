@@ -41,7 +41,7 @@ kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.corou
 
 kotlin.sourceSets.named("androidMain") {
     dependencies {
-        implementation(libs.coroutines.rx2)
+
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.libraries.navigation)

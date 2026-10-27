@@ -17,41 +17,10 @@
 package com.github.vase4kin.teamcityapp
 
 import android.app.Application
-import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.di.components.AppComponent
-import com.github.vase4kin.teamcityapp.di.components.DaggerRestApiComponent
-import com.github.vase4kin.teamcityapp.di.components.RestApiComponent
-import com.github.vase4kin.teamcityapp.di.modules.RestApiModule
 import dagger.hilt.EntryPoints
-import teamcityapp.libraries.session.ApiSession
 
 open class TeamCityApplicationBase : Application() {
-
     val appInjector: AppComponent
         get() = EntryPoints.get(this, AppComponent::class.java)
-
-    private val apiSession by lazy {
-        ApiSession({ appInjector.storage() }) { baseUrl ->
-            DaggerRestApiComponent.builder()
-                .restApiModule(RestApiModule(baseUrl))
-                .appComponent(appInjector)
-                .build()
-        }
-    }
-
-    val restApiInjector: RestApiComponent
-        get() = apiSession.requireGraph()
-
-    fun buildRestApiInjectorWithBaseUrl(baseUrl: String) {
-        apiSession.rebuild(baseUrl)
-    }
-
-    fun clearApiSession() {
-        apiSession.clear()
-    }
-
-    @VisibleForTesting
-    fun setApiGraphFactoryForTesting(factory: (String) -> RestApiComponent) {
-        apiSession.setFactoryForTesting(factory)
-    }
 }

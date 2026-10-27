@@ -39,6 +39,7 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -70,8 +71,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import retrofit2.HttpException
-import retrofit2.Response
 
 private const val NAME = "name"
 
@@ -254,7 +253,7 @@ class CancelBuildTest {
     fun testUserCanSeeForbiddenErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
+        val httpException = MockHttpFailure(HTTP_FORBIDDEN)
         `when`(
             teamCityService.cancelBuild(
                 build.href,
@@ -292,7 +291,7 @@ class CancelBuildTest {
     fun testUserCanSeeServerErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val httpException = HttpException(Response.error<Build>(500, responseBody))
+        val httpException = MockHttpFailure(500)
         `when`(
             teamCityService.cancelBuild(
                 build.href,
@@ -432,7 +431,7 @@ class CancelBuildTest {
     fun testUserCanSeeForbiddenErrorWhenStoppingBuild() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
-        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
+        val httpException = MockHttpFailure(HTTP_FORBIDDEN)
         `when`(
             teamCityService.cancelBuild(
                 Mocks.runningBuild().href,
@@ -470,7 +469,7 @@ class CancelBuildTest {
     fun testUserCanSeeServerErrorWhenStoppingBuild() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
-        val httpException = HttpException(Response.error<Build>(500, responseBody))
+        val httpException = MockHttpFailure(500)
         `when`(
             teamCityService.cancelBuild(
                 Mocks.runningBuild().href,

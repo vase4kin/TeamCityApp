@@ -41,6 +41,7 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -74,8 +75,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import retrofit2.HttpException
-import retrofit2.Response
 import teamcityapp.features.properties.repository.models.Properties
 
 private const val BRANCH_NAME = "refs/heads/dev"
@@ -248,7 +247,7 @@ class RestartBuildTest {
     @Test
     fun testUserCanRestartBuildWithTheSameParametersButFailedToOpenItThen() {
         // Prepare mocks
-        val httpException = HttpException(Response.error<Build>(500, responseBody))
+        val httpException = MockHttpFailure(500)
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
             .thenReturn(Single.error(httpException))
             .thenReturn(Single.error(httpException))
@@ -311,7 +310,7 @@ class RestartBuildTest {
     fun testUserCanSeeForbiddenErrorWhenRestartingBuild() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
+        val httpException = MockHttpFailure(HTTP_FORBIDDEN)
         `when`(teamCityService.queueBuild(any())).thenReturn(
             Single.error(
                 httpException
@@ -348,7 +347,7 @@ class RestartBuildTest {
     fun testUserCanSeeServerErrorWhenRestartingBuild() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val httpException = HttpException(Response.error<Build>(500, responseBody))
+        val httpException = MockHttpFailure(500)
         `when`(teamCityService.queueBuild(any())).thenReturn(
             Single.error(
                 httpException

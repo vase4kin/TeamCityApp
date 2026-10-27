@@ -36,13 +36,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.di.modules.AppModule
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_AUTH
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.login.dagger.LoginActivityTestAppModule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
@@ -55,15 +53,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import java.io.IOException
-import javax.inject.Named
-import okhttp3.Authenticator
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
@@ -73,8 +62,6 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
@@ -104,54 +91,24 @@ class LoginActivityTest {
 
     @JvmField
     @Rule(order = 2)
-    val apiRule = HiltApiTestRule(hiltRule)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
 
     @JvmField
     @Rule(order = 3)
     val activityRule: CustomIntentsTestRule<MainActivity> =
         CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.LOGIN_COMPONENT)
 
-    @Captor
-    lateinit var callbackArgumentCaptor: ArgumentCaptor<Callback>
-
-    @field:Named(CLIENT_BASE)
-    @BindValue
-    @Mock
-    lateinit var okHttpClient: OkHttpClient
-
-    @field:Named(CLIENT_BASE_UNSAFE)
-    @BindValue
-    @Mock
-    lateinit var unsafeOkHttpClient: OkHttpClient
-
-    @field:Named(CLIENT_AUTH)
-    @BindValue
-    @Mock
-    lateinit var clientAuth: OkHttpClient
-
     @BindValue
     @Mock
     lateinit var cryptoManager: CryptoManager
 
-    @Mock
-    lateinit var call: Call
-
     @Before
     fun setUp() {
-        for (client in listOf(okHttpClient, unsafeOkHttpClient)) {
-            val builder = mock(OkHttpClient.Builder::class.java)
-            `when`(client.newBuilder()).thenReturn(builder)
-            `when`(builder.authenticator(any<Authenticator>())).thenReturn(builder)
-            `when`(builder.build()).thenReturn(client)
-        }
-
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().clearAll()
         // Authentication checks Home content; onboarding has its own root-flow tests.
         TestUtils.disableOnboarding()
-        `when`(okHttpClient.newCall(any<Request>())).thenReturn(call)
-        `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
     }
 
     private fun awaitHome() {
@@ -160,6 +117,9 @@ class LoginActivityTest {
         compose.onNodeWithTag("auth:password").assertDoesNotExist()
         org.junit.Assert.assertEquals(MainActivity::class.java, activityRule.activity.javaClass)
     }
+
+    @org.mockito.Spy
+    val teamCityService: com.github.vase4kin.teamcityapp.api.TeamCityService = com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl()
 
     private val inputUrl = URL.replace("https://", "")
     private val messageEmpty = ""
@@ -172,19 +132,6 @@ class LoginActivityTest {
     fun testUserCanCreateGuestUserAccountWithCorrectUrl() {
         val urlWithPath = "https://teamcity.com/server"
         val savedUrl = "$urlWithPath/"
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(urlWithPath).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message(messageEmpty)
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -213,19 +160,6 @@ class LoginActivityTest {
     fun testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() {
         val urlWithPath = "https://teamcity.com/server"
         val savedUrl = "$urlWithPath/"
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(urlWithPath).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message(messageEmpty)
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -253,20 +187,6 @@ class LoginActivityTest {
     @Test
     @Throws(Throwable::class)
     fun testUserCanCreateAccountWithCorrectUrlByImeButton() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message(messageEmpty)
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
-
         activityRule.launchActivity(null)
 
         compose.onNodeWithTag("auth:guest").performClick()
@@ -289,20 +209,6 @@ class LoginActivityTest {
     @Test
     @Throws(Throwable::class)
     fun testUserCanCreateAccountWithCorrectUrlWhichContainsPathByImeButton() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message(messageEmpty)
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
-
         activityRule.launchActivity(null)
 
         compose.onNodeWithTag("auth:guest").performClick()
@@ -327,19 +233,6 @@ class LoginActivityTest {
     fun testUserCanCreateUserAccountWithCorrectUrlAndCredentials() {
         `when`(cryptoManager.encrypt("pass")).thenReturn(byteArrayOf(1, 2, 3))
         `when`(cryptoManager.decrypt(any<ByteArray>())).thenReturn("pass".toByteArray())
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -365,27 +258,14 @@ class LoginActivityTest {
     @Test
     @Throws(IOException::class)
     fun testUserIsNotifiedIfServerReturnsBadResponse() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(404)
-                    .body("".toResponseBody())
-                    .message("Client Error")
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
+        org.mockito.Mockito.doReturn(io.reactivex.Single.error<teamcityapp.features.about.repository.models.ServerInfo>(com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(404))).`when`(teamCityService).serverInfo()
 
         activityRule.launchActivity(null)
 
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("login:submit").performClick()
-        compose.onNodeWithText("Client Error", substring = true).assertIsDisplayed()
+        compose.awaitDisplayedText("404", substring = true)
     }
 
     /**
@@ -394,20 +274,7 @@ class LoginActivityTest {
     @Test
     @Throws(IOException::class)
     fun testUserIsNotifiedIfServerReturns401Request() {
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(URL).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message("OK")
-                    .code(401)
-                    .body("".toResponseBody())
-                    .message("Unauthorized")
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
+        org.mockito.Mockito.doReturn(io.reactivex.Single.error<teamcityapp.features.about.repository.models.ServerInfo>(com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure(401))).`when`(teamCityService).serverInfo()
 
         activityRule.launchActivity(null)
 
@@ -425,19 +292,6 @@ class LoginActivityTest {
     fun testUserCanCreateGuestUserAccountWithNotSecureUrl() {
         val urlWithPath = "http://teamcity.com/server"
         val savedUrl = "$urlWithPath/"
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(urlWithPath).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message(messageEmpty)
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -465,10 +319,7 @@ class LoginActivityTest {
     fun testUserCanNotCreateAccountIfDataWasNotSaved() {
         `when`(cryptoManager.encrypt("pass")).thenReturn(byteArrayOf())
         `when`(cryptoManager.isFailed(any<ByteArray>())).thenReturn(true)
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
+
         activityRule.launchActivity(null)
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:username").performTextInput("user")
@@ -482,17 +333,19 @@ class LoginActivityTest {
 
     @Test
     fun pendingGuestAuthenticationSurvivesActivityRecreationWithoutAnotherRequest() {
+        val pending = io.reactivex.subjects.SingleSubject.create<teamcityapp.features.about.repository.models.ServerInfo>()
+        org.mockito.Mockito.doReturn(pending).`when`(teamCityService).serverInfo()
         activityRule.launchActivity(null)
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
         compose.onNodeWithTag("login:submit").performClick()
         compose.waitForIdle()
-        org.mockito.Mockito.verify(call).enqueue(capture(callbackArgumentCaptor))
+        compose.waitUntil(5_000) { pending.hasObservers() }
         InstrumentationRegistry.getInstrumentation().runOnMainSync { activityRule.activity.recreate() }
         compose.waitForIdle()
         compose.onNodeWithTag("login:submit").assertIsNotEnabled()
-        org.mockito.Mockito.verify(call, org.mockito.Mockito.times(1)).enqueue(any())
-        callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
+        org.mockito.Mockito.verify(teamCityService, org.mockito.Mockito.times(1)).serverInfo()
+        pending.onSuccess(teamcityapp.features.about.repository.models.ServerInfo("fixture", URL))
         compose.waitForIdle()
         compose.waitForIdle()
         awaitHome()
@@ -522,19 +375,6 @@ class LoginActivityTest {
     fun testUserCanSignInToDemoAsGuest() {
         val demoUrl = "https://teamcity.jetbrains.com"
         val savedUrl = demoUrl
-        doAnswer {
-            callbackArgumentCaptor.value.onResponse(
-                call,
-                Response.Builder()
-                    .request(Request.Builder().url(demoUrl).build())
-                    .protocol(Protocol.HTTP_1_0)
-                    .message(messageEmpty)
-                    .code(200)
-                    .body("".toResponseBody())
-                    .build()
-            )
-            null
-        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 

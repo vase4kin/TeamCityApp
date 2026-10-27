@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.di.modules.MockHttpFailure
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -60,8 +61,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import retrofit2.HttpException
-import retrofit2.Response
 
 /**
  * Tests for the RunBuild root destination
@@ -112,7 +111,7 @@ class RunBuildActivityMockTest {
     @Test
     fun testUserCanSeeErrorForbiddenSnackBarIfServerReturnsAnError() {
         // Prepare mocks
-        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
+        val httpException = MockHttpFailure(HTTP_FORBIDDEN)
         `when`(teamCityService.queueBuild(any())).thenReturn(
             Single.error(
                 httpException

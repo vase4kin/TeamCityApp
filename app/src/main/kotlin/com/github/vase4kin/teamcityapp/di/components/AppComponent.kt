@@ -16,20 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.di.components
 
-import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_AUTH
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE
-import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 import kotlinx.coroutines.CoroutineDispatcher
-import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.coroutines.IoDispatcher
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.remote.RemoteService
@@ -47,20 +40,7 @@ interface AppComponent {
 
     fun storage(): Storage
 
-    @Named(CLIENT_BASE)
-    fun baseOkHttpClient(): OkHttpClient
-
-    @Named(CLIENT_BASE_UNSAFE)
-    fun unsafeBaseOkHttpClient(): OkHttpClient
-
-    @Named(CLIENT_AUTH)
-    fun authOkHttpClient(): OkHttpClient
-
     fun eventBus(): EventBus
-
-    fun cacheManager(): CacheManager
-
-    fun providers(): CacheProviders
 
     fun firebaseAnalytics(): FirebaseAnalytics
 

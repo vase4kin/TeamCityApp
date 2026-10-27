@@ -16,13 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.di.modules
 
-import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
-import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.navigation.AccountNavigationScope
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
@@ -30,9 +25,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import teamcityapp.libraries.accounts.AccountPreferences
-import teamcityapp.libraries.accounts.AccountSessionManager
 import teamcityapp.libraries.accounts.AccountStorage
 import teamcityapp.libraries.coroutines.MainDispatcher
 import teamcityapp.libraries.onboarding.OnboardingManager
@@ -46,6 +39,7 @@ private val Context.accountPreferences by preferencesDataStore(name = "account_p
 @Module
 @InstallIn(SingletonComponent::class)
 object SessionModule {
+
     @Provides @Singleton
     fun responseCache(@dagger.hilt.android.qualifiers.ApplicationContext context: Context): teamcityapp.libraries.network.ResponseCacheStore = com.github.vase4kin.teamcityapp.navigation.AndroidResponseCacheStore(context)
 
@@ -68,13 +62,4 @@ object SessionModule {
         }
         AccountPreferences(shownPrompts = prompts, ratingHandled = storageContext.getSharedPreferences("rateTheAppPref", Context.MODE_PRIVATE).getBoolean("rated", false))
     }
-
-    @Provides @Singleton
-    fun accountSessions(storage: AccountStorage, @AccountNavigationScope scope: CoroutineScope): AccountSessionManager = AccountSessionManager(storage, scope.coroutineContext)
-
-    @Provides
-    fun repository(application: Application): Repository = (application as TeamCityApplicationBase).restApiInjector.repository()
-
-    @Provides
-    fun service(application: Application): TeamCityService = (application as TeamCityApplicationBase).restApiInjector.teamCityService()
 }

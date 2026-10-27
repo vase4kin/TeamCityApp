@@ -78,7 +78,6 @@ class MainActivityNavigationTest {
     @Before fun before() {
         com.github.vase4kin.teamcityapp.helper.TestUtils.disableOnboarding()
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
-        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         runBlocking { app.appInjector.themePreferences().setTheme(ThemeMode.Light) }

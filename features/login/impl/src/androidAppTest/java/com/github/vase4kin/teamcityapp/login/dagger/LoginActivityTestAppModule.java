@@ -20,9 +20,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
-import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
-import com.github.vase4kin.teamcityapp.api.cache.SharedRxCache;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -31,11 +28,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.android.qualifiers.ApplicationContext;
-import io.victoralbertos.jolyglot.GsonSpeaker;
-import java.io.File;
 import javax.inject.Singleton;
 import org.greenrobot.eventbus.EventBus;
-import teamcityapp.libraries.cache_manager.CacheManager;
 import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
 import teamcityapp.libraries.remote.RemoteService;
@@ -46,14 +40,6 @@ import teamcityapp.libraries.storage.Storage;
 @Module
 @dagger.hilt.migration.DisableInstallInCheck
 public class LoginActivityTestAppModule {
-
-    private static final int CONNECTION_TIMEOUT = 10;
-    private static final int READ_TIMEOUT = 30;
-    private static final int WRITE_TIMEOUT = 10;
-
-    public static final String CLIENT_BASE = "base";
-    public static final String CLIENT_BASE_UNSAFE = "base_unsafe";
-    public static final String CLIENT_AUTH = "auth";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
@@ -81,21 +67,6 @@ public class LoginActivityTestAppModule {
     @Singleton
     protected EventBus providesEventBus() {
         return EventBus.getDefault();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
-    protected CacheProviders provideCacheProviders(SharedRxCache rxCache) {
-        return rxCache.getProviders();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
-    protected SharedRxCache providesRxCache(@ApplicationContext Context context) {
-        File cacheDir = context.getCacheDir();
-        return SharedRxCache.create(cacheDir, new GsonSpeaker());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -129,12 +100,5 @@ public class LoginActivityTestAppModule {
     @Provides
     protected RemoteService provicesRemoteService(FirebaseRemoteConfig remoteConfig) {
         return new RemoteServiceImpl(remoteConfig);
-    }
-
-    @Singleton
-    @Provides
-    protected CacheManager providesCacheManager(
-            SharedRxCache rxCache, dagger.Lazy<CacheProviders> providers) {
-        return new CacheManagerImpl(rxCache, providers);
     }
 }

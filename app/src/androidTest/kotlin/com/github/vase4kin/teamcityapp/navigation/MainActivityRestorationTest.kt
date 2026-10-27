@@ -86,7 +86,6 @@ class MainActivityRestorationTest {
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         doReturn(Single.just(ServerInfo("restoration-server", "https://restoration.example"))).`when`(service).serverInfo()

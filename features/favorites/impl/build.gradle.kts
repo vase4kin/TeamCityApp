@@ -40,7 +40,7 @@ kotlin.sourceSets.named("androidMain") {
     dependencies {
         implementation(projects.libraries.data)
         implementation(projects.libraries.coroutines)
-        implementation(libs.coroutines.rx2)
+
         implementation(projects.libraries.session)
         implementation(projects.features.buildHistory.api)
         implementation(libs.androidx.activity.compose)

@@ -45,7 +45,7 @@ kotlin.sourceSets.named("androidMain") {
     dependencies {
         implementation(projects.libraries.data)
         implementation(projects.libraries.coroutines)
-        implementation(libs.coroutines.rx2)
+
         implementation(projects.features.testDetails.api)
         implementation(projects.libraries.navigation)
         implementation(projects.features.buildDetails.api)

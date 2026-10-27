@@ -41,7 +41,7 @@ kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.corou
 kotlin.sourceSets.named("androidMain") {
     dependencies {
         implementation(projects.features.filterBuilds.api)
-        implementation(libs.coroutines.rx2)
+
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.libraries.navigation)
@@ -57,8 +57,9 @@ kotlin.sourceSets.named("androidMain") {
     }
 }
 kotlin.sourceSets.named("androidHostTest") {
+    dependencies { implementation(libs.gson) }
     dependencies {
-        implementation(libs.retrofit.gsonConverter)
+
         implementation(libs.mockito.mockitoKotlin)
         implementation(libs.coroutines.test)
         implementation(libs.turbine)

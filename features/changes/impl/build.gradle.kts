@@ -47,7 +47,7 @@ kotlin.sourceSets.named("androidMain") {
     dependencies {
         implementation(projects.libraries.data)
         implementation(projects.libraries.coroutines)
-        implementation(libs.coroutines.rx2)
+
         implementation(projects.features.changeDetails.api)
         implementation(projects.libraries.navigation)
         implementation(projects.features.buildDetails.api)
@@ -66,7 +66,7 @@ kotlin.sourceSets.named("androidHostTest") {
     dependencies {
         implementation(libs.mockito.mockitoCore)
         implementation(libs.mockito.mockitoKotlin)
-        implementation(libs.retrofit.gsonConverter)
+
         implementation(libs.coroutines.test)
         implementation(libs.androidx.paging.testing)
     }

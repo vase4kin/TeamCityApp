@@ -48,7 +48,6 @@ kotlin.sourceSets {
 
 kotlin.sourceSets.named("androidMain") {
     dependencies {
-        implementation(projects.libraries.cacheManager)
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.session)
         implementation(projects.features.createAccount.api)

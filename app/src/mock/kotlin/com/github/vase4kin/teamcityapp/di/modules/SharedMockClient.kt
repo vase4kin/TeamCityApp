@@ -27,7 +27,6 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.http.*
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.rx2.await
-import retrofit2.HttpException
 
 /** Mock wire boundary only: the production common parser, guards, repositories and UI still run. */
 internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = HttpClient(
@@ -88,8 +87,8 @@ internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = Http
                 else -> return@MockEngine respond("{}", HttpStatusCode.NotFound)
             }
             respond(gson.toJson(result), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
-        } catch (failure: HttpException) {
-            respond("{}", HttpStatusCode.fromValue(failure.code()))
+        } catch (failure: MockHttpFailure) {
+            respond("{}", HttpStatusCode.fromValue(failure.status))
         }
     }
 ) {

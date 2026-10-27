@@ -77,7 +77,6 @@ class BuildWorkflowsNavigationTest {
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }

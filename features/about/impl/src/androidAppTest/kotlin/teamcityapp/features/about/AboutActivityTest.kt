@@ -81,8 +81,6 @@ class AboutActivityTest {
     private val info = ServerInfo("xxx117", "https://www.server.xxx177.com")
 
     @Before fun setUp() {
-        app.appInjector.providers()
-        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
@@ -128,7 +126,7 @@ class AboutActivityTest {
         val subscribed = CountDownLatch(1)
         `when`(teamCityService.serverInfo()).thenReturn(request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
         launch().use { scenario ->
-            assertTrue(subscribed.await(5, TimeUnit.SECONDS))
+            compose.waitUntil(10_000) { subscribed.count == 0L }
             scenario.moveToState(Lifecycle.State.CREATED)
             compose.waitUntil(5_000) { !request.hasObservers() }
             request.onSuccess(ServerInfo("late result", "https://late.example"))
@@ -143,7 +141,7 @@ class AboutActivityTest {
         val subscribed = CountDownLatch(1)
         `when`(teamCityService.serverInfo()).thenReturn(request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
         launch().use { scenario ->
-            assertTrue(subscribed.await(5, TimeUnit.SECONDS))
+            compose.waitUntil(10_000) { subscribed.count == 0L }
             scenario.recreate()
             awaitText(info.version)
             compose.waitUntil(5_000) { !request.hasObservers() }
@@ -179,15 +177,8 @@ class AboutActivityTest {
                 compose.onNodeWithText(app.getString(R.string.about_app_text_email)).performClick()
                 Intents.intended(
                     allOf(
-                        hasAction(Intent.ACTION_CHOOSER),
-                        hasExtra(
-                            Intent.EXTRA_INTENT,
-                            allOf(
-                                hasAction(Intent.ACTION_SENDTO),
-                                hasData("mailto:${app.getString(R.string.about_app_email)}"),
-                                hasExtra(Intent.EXTRA_SUBJECT, app.getString(R.string.about_app_email_title))
-                            )
-                        )
+                        hasAction(Intent.ACTION_SENDTO),
+                        hasData("mailto:${app.getString(R.string.about_app_email)}?subject=Questions%20about%20TeamCityApp")
                     )
                 )
                 scrollTo(app.getString(R.string.about_app_text_libraries))
@@ -216,12 +207,13 @@ class AboutActivityTest {
         }
     }
 
-    @Test fun toolbarBackFinishesActivity() {
+    @Test fun toolbarBackReturnsToTheSharedHome() {
         `when`(teamCityService.serverInfo()).thenReturn(Single.just(info))
         launch().use { scenario ->
             awaitText(info.version)
             compose.onNodeWithContentDescription(app.getString(R.string.action_back)).performClick()
-            compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
+            compose.waitUntil(5_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
         }
     }
 }

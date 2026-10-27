@@ -91,7 +91,6 @@ class BuildHistoryActivityTest {
 
     @Before fun setup() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()

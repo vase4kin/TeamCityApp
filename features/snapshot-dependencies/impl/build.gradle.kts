@@ -45,7 +45,7 @@ kotlin.sourceSets.named("commonTest") {
 
 kotlin.sourceSets.named("androidMain") {
     dependencies {
-        implementation(libs.coroutines.rx2)
+
         implementation(projects.libraries.coroutines)
         implementation(projects.libraries.data)
         implementation(projects.features.buildHistory.api)

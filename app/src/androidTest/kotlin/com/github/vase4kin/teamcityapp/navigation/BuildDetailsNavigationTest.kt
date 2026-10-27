@@ -80,7 +80,6 @@ class BuildDetailsNavigationTest {
 
     @Inject lateinit var launcher: RootDestinationLauncher
 
-    @Inject lateinit var accountNavigation: teamcityapp.libraries.navigation.AccountFlowNavigation
     private val mapper = BuildLaunchMapper()
     private val opened = mutableListOf<DownloadedArtifact>()
     private val browser = mutableListOf<String>()
@@ -105,7 +104,6 @@ class BuildDetailsNavigationTest {
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         val storage = app.appInjector.sharedUserStorage()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
@@ -394,7 +392,14 @@ class BuildDetailsNavigationTest {
                 compose.waitUntil(10_000) { entered.count == 0L }
                 scenario.recreate()
                 assertEquals(1L, closed.count)
-                scenario.onActivity { accountNavigation.home(true) }
+                scenario.onActivity {
+                    it.startActivity(
+                        Intent().setClassName(it, IncomingDestinationResolver.HOME_COMPONENT).apply {
+                            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            putExtra(com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
+                        }
+                    )
+                }
                 awaitTag("navigation:row:project:id")
                 compose.waitUntil(10_000) { closed.count == 0L }
                 assertEquals("completed download", completed.readText())

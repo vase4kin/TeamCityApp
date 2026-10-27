@@ -81,7 +81,6 @@ class SettingsActivityTest {
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.di.modules.Mocks.URL, false)
         runBlocking { repo.setTheme(ThemeMode.Light) }
