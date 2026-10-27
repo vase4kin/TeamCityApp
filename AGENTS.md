@@ -37,8 +37,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   including users on the same server, replaces old owners and cancels their work.
   Account preparation owns API/cache initialization; signed-out sessions return to Login.
 - `libraries/network` and `libraries/shared-data` own the common Ktor transport,
-  authentication, response cache and account repositories for both production hosts.
-  `libraries/data` retains installed wire DTOs, build/filter compatibility codecs and
+  authentication, response cache and account transport lifetime for both production hosts.
+  Feature implementations own their repositories, mappings, filters, onboarding and
+  rating policies. Libraries have no feature-module dependencies.
+  `libraries/data` retains installed wire DTOs, build compatibility codecs and
   shared build mapping; preserve their serialized names and fields. `libraries/session`
   owns encrypted Android account storage and identity guards. The retired Android
   Retrofit/RxCache graph and repository adapters have been removed. Offline mocks
@@ -107,13 +109,13 @@ to the requested behavior and the coherent migration slice needed to support it.
 - `app/`: application/framework entry points, installed Intent compatibility,
   account/navigation composition, DI bindings and UI-owned OS ports. Feature
   actions and resources stay in their implementations. Android file/cache storage
-  lives beside its contracts in `libraries/shared-data`/`libraries/network`;
+  lives beside its contracts in Artifacts and `libraries/network`;
   `libraries/session` owns installed preference migration. Host resources contain
   application identity, launch artwork/theme and FileProvider configuration. Feature and codec unit tests
   live with their owners; root/manifest/cross-feature tests and offline wire fixtures
   remain application-hosted. The retired artifact router/factory, EventBus,
   animation toggles and old root lifecycle holder are removed.
-- `libraries/data/`: installed DTO/filter codecs and shared build mapping;
+- `libraries/data/`: installed DTO/build codecs and shared build mapping;
   preserve serialized legacy packages even when source ownership moves.
 - `libraries/session/`: encrypted account storage, session identity and graph ownership
   contracts; it must not depend on the app or a concrete Dagger component.
@@ -182,8 +184,14 @@ to the requested behavior and the coherent migration slice needed to support it.
   when Hilt ownership is required. Common code cannot depend on Hilt, Java
   reflection, Android Context/Bundle, Retrofit/RxJava, or platform storage.
   `libraries/network` uses Ktor and Kotlin serialization, and `shared-data`
-  supplies the first journey's account-scoped repositories. `libraries/accounts`
-  owns portable identity, secure-storage contracts and generation-scoped lifetime;
+  supplies reusable authentication and account transport/cache construction. Each
+  feature implementation owns its account-scoped repository adapters. Filter Builds
+  retains the installed filter contract/serializer in its Android api/impl source
+  sets with unchanged JVM names and instance fields, preserving its original
+  serialization ID. Artifacts owns file-store contracts and
+  both native backends; the host supplies application-owned storage and export.
+  `libraries/accounts` owns the portable authentication contracts (with their
+  existing package names), identity, secure-storage contracts and generation-scoped lifetime;
   iOS uses Keychain and Android adapts the installed encrypted account snapshot.
   Preserve Android account/cache formats
   and existing authentication/cancellation semantics behind adapters.

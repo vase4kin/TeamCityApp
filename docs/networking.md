@@ -19,8 +19,13 @@ limitations under the License.
 Both production hosts execute `SharedAppViewModel` and its account-scoped
 `TeamCityAccountGraph`. `libraries/network` owns the Ktor transport, Basic challenge
 handling, same-origin/context guards, JSON decoding, bounded response cache and
-download streaming. `libraries/shared-data` implements feature repositories over
-that transport. Android uses Ktor's OkHttp engine; iOS uses Darwin/URLSession.
+download streaming. `libraries/shared-data` constructs the account transport/cache
+context and reusable authentication. Each feature implementation owns its repository,
+wire mapping and preference policy; `SharedAccountFeatures` only constructs and
+connects those adapters. `libraries/accounts` owns portable authentication
+contracts and errors; the authentication UI depends on those contracts, while
+`shared-data` has no Compose dependency. Libraries cannot depend on feature modules. Android uses
+Ktor's OkHttp engine; iOS uses Darwin/URLSession.
 Platform adapters own secure storage, atomic cache bytes and file export.
 
 The retired Android Retrofit services, RxJava repository adapters, RxCache runtime,
@@ -63,7 +68,8 @@ The minified R8 smoke suite exercises Ktor parsing and persisted response-cache
 restoration, alongside the retained DTO/account compatibility checks. Use the
 commands in [R8 verification](../scripts/r8-verification.md). Common networking and
 repository tests run through `:libraries:network:testAndroidHostTest`,
-`:libraries:shared-data:testAndroidHostTest` and the corresponding
+`:libraries:shared-data:testAndroidHostTest`, owning feature `testAndroidHostTest`
+tasks, `:shared-app:testAndroidHostTest` for cross-feature assertions, and the corresponding
 `iosSimulatorArm64Test` tasks. Android launch/fixture checks run with
 `:app:testMockDebugUnitTest`; integration suites compile with
 `:app:assembleMockDebugAndroidTest`.
@@ -225,3 +231,46 @@ Ownership-refactor verification: 3,853 Android host tests reported zero failures
 hosts and the mock instrumentation APK built, and all 53 selected Android
 integration tests passed with the injected analytics backend. Event names,
 parameter keys/values and screenshot golden bytes remain unchanged by this refactor.
+
+
+## Library ownership audit — 2026-10-27
+
+Feature implementations now own the common Navigation, History, Overview, About,
+Home, Favorites, Running, Queue, Agents, Changes, Tests, Test Details, Snapshot
+Dependencies, Run Build, Filter Builds, Quick Filter, Build Details and Artifacts
+repository adapters. Navigation owns local rating eligibility; each feature owns
+its onboarding decisions. Portable authentication contracts and typed errors also
+live in `libraries/accounts`, retaining their public package names. Authentication
+UI consumes them; shared transport/data no longer pulls in Compose UI. The account
+library serializes durable snapshot writes and checks activation identity; the network library shares only protocol helpers
+for paging, projections, branches and monitoring collections.
+
+Artifacts owns its file-store API, unique transfer naming and both Android/iOS
+backends, with transfer and filesystem tests beside the implementations. Existing
+cache directories, partial-file cleanup and completed files keep the same behavior.
+Filter Builds owns the installed Serializable contract and implementation with
+unchanged package names, instance fields and methods. Its explicit original
+serialVersionUID prevents Compose instrumentation from changing the descriptor; a
+frozen pre-move payload verifies persisted compatibility. The app keeps the cross-feature
+filter-to-History integration test.
+
+Remove the unconstructed custom-tab implementation, its unused color helper,
+the unused account-navigation contract, unused Android resources and duplicate
+Android build/theme labels. About and Settings own their Android compatibility
+labels. Preserve reusable UI, Hilt-discovered bindings, installed wire/account
+models and regression harness contracts that still have callers. The module guard
+rejects feature dependencies and feature adapter imports from shared libraries,
+and UI dependencies from account/transport libraries.
+
+
+Verification: the final dependency graph passes 3,995 Android/JVM test cases
+(zero failures; one existing skip), 140 selected iOS simulator tests and 111 script
+tests. The JVM and native runs include opt-in real-engine management checks
+against the local mutation fixture. Production/mock debug APKs and the mock
+instrumentation APK build; both lint variants report zero errors. Existing
+screenshot baseline bytes remain unchanged.
+The final APK also passes all 54 selected account/login/navigation/rating/About/
+artifact-export device tests. The optimized verification APK passes all six smoke
+tests, including the frozen installed filter payload. Spotless and module
+ownership checks pass. The fixture server and task-owned emulator are stopped
+after verification. The changes are saved as local checkpoints.

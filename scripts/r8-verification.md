@@ -30,7 +30,8 @@ only in this build type. Verification-only rules also preserve shared tracing an
 Kotlin runtime APIs needed by the runner; production releases omit those rules.
 This avoids instrumentation-generated rules keeping the
 app APIs under test. They cover unannotated Gson fields and inherited/generic
-models, account persistence with Keystore, Java serialization, common Ktor response
+models, account persistence with Keystore, Java serialization (including an installed
+pre-migration filter payload and its original class name/locator), common Ktor response
 decoding and response-cache disk restoration, Joda timezone
 resources, login screen startup, and the external OSS licenses screen with its
 generated raw resources. Ktor responses are supplied by its verification-only mock
