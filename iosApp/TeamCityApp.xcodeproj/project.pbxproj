@@ -1,20 +1,4 @@
 // !$*UTF8*$!
-/*
- * Copyright 2026 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 {
 	archiveVersion = 1;
 	classes = {
@@ -23,13 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A70B60000000000000000001 /* ThirdPartyNotices.plist in Resources */ = {isa = PBXBuildFile; fileRef = A70B60000000000000000002 /* ThirdPartyNotices.plist */; };
-		D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */; };
-		D2BE410BAA7F49F8B09600B1 /* PhaseSixReleaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */; };
-		D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */; };
-		B8F1B3DA8B2B4EC6A76588BB /* PhaseTwoLiveSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */; };
 		223ABC5F1CE2F71350A0598F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94FA98DCBA29E4802B265B3A /* Foundation.framework */; };
 		9E274758FA5F20AFDCB9EA54 /* AboutSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3CC2D327487C67B9BCE3A5 /* AboutSmokeTests.swift */; };
+		B8F1B3DA8B2B4EC6A76588BB /* PhaseTwoLiveSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */; };
+		D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */; };
+		D2BE410BAA7F49F8B09600B1 /* PhaseSixReleaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */; };
+		D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */; };
 		E2C896DB33FB5692CA50D24C /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0891E31688C2C0F105FC1 /* App.swift */; };
 		E635D98AF74F50EC9012455E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94FA98DCBA29E4802B265B3A /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -45,17 +28,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A70B60000000000000000002 /* ThirdPartyNotices.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ThirdPartyNotices.plist; sourceTree = "<group>"; };
-		D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
-		D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseSixReleaseTests.swift; sourceTree = "<group>"; };
-		D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhaseTwoLiveSmokeTests.swift; sourceTree = "<group>"; };
 		309D16499181FB9957B42C68 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7A0D21EE3AA64D888AC61A52 /* PhaseTwoLiveSmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhaseTwoLiveSmokeTests.swift; sourceTree = "<group>"; };
 		87FEBCB56D0FAB58EEE2291B /* TeamCityApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeamCityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94FA98DCBA29E4802B265B3A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		AD3CC2D327487C67B9BCE3A5 /* AboutSmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AboutSmokeTests.swift; sourceTree = "<group>"; };
 		C7A0891E31688C2C0F105FC1 /* App.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600B2 /* PhaseSixReleaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseSixReleaseTests.swift; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600C2 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+		D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EECE23021F5A1C04A6920C68 /* TeamCityAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TeamCityAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -130,7 +112,6 @@
 			isa = PBXGroup;
 			children = (
 				C7A0891E31688C2C0F105FC1 /* App.swift */,
-				A70B60000000000000000002 /* ThirdPartyNotices.plist */,
 				D2BE410BAA7F49F8B09600A2 /* PrivacyInfo.xcprivacy */,
 				D2BE410BAA7F49F8B09600D2 /* Assets.xcassets */,
 				309D16499181FB9957B42C68 /* Info.plist */,
@@ -220,7 +201,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A70B60000000000000000001 /* ThirdPartyNotices.plist in Resources */,
 				D2BE410BAA7F49F8B09600A1 /* PrivacyInfo.xcprivacy in Resources */,
 				D2BE410BAA7F49F8B09600D1 /* Assets.xcassets in Resources */,
 			);
@@ -300,7 +280,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -335,6 +314,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -392,6 +372,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4QVDLYL2H3;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -430,7 +411,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -465,6 +445,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
