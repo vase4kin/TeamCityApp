@@ -25,13 +25,14 @@ import platform.CoreGraphics.CGRectMake
 import platform.Foundation.*
 import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
+import teamcityapp.features.artifacts.api.ArtifactFileStore
 import teamcityapp.features.artifacts.api.DownloadedArtifact
+import teamcityapp.features.artifacts.impl.data.IosArtifactFileStore
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.analytics.IosAnalyticsTracker
 import teamcityapp.libraries.analytics.track
 import teamcityapp.libraries.app_theme.*
 import teamcityapp.libraries.network.IosResponseCacheStore
-import teamcityapp.libraries.shared_data.*
 
 /** UI objects belong to this controller; no retained ViewModel holds UIKit references. */
 internal class IosNativePlatform(private val host: () -> UIViewController, namespace: String?) : NativePlatform {

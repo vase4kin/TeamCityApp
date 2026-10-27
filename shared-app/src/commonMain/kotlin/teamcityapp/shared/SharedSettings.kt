@@ -26,9 +26,8 @@ import teamcityapp.features.settings.impl.*
 import teamcityapp.features.settings.impl.tracker.SettingsTrackerImpl
 import teamcityapp.libraries.app_theme.*
 import teamcityapp.libraries.navigation.*
-import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 
-internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> = setOf(
+internal fun sharedSettingsEntries(graph: SharedAccountFeatures?): Set<DestinationRegistration> = setOf(
     SharedEntry(SettingsDestination::class, SettingsDestination.serializer()) { _, nav, _ ->
         val platform = LocalNativePlatform.current
         val analytics = platform.analytics
@@ -42,7 +41,7 @@ internal fun sharedSettingsEntries(graph: TeamCityAccountGraph?): Set<Destinatio
         val platform = LocalNativePlatform.current
         val repository = remember(graph) {
             object : AboutRepository {
-                override suspend fun serverInfo(): AboutServerInfo = checkNotNull(graph).serverInfo()
+                override suspend fun serverInfo(): AboutServerInfo = checkNotNull(graph).about.serverInfo()
             }
         }
         SharedAboutRoute(repository, APP_VERSION, platform::browser, platform::rate, platform::openSourceLibraries, { nav.pop() })

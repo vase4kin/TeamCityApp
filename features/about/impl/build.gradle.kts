@@ -31,6 +31,7 @@ compose.resources {
 kotlin.sourceSets {
     named("commonMain") {
         dependencies {
+            implementation(projects.libraries.network)
             api(projects.features.about.api)
             api(projects.libraries.designSystem)
             implementation(libs.multiplatform.lifecycle.viewmodel)

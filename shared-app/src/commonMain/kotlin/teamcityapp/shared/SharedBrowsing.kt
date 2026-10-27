@@ -54,15 +54,14 @@ import teamcityapp.features.test_details.impl.tracker.TestDetailsTrackerImpl
 import teamcityapp.features.tests.impl.*
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.navigation.*
-import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 
 @Composable
-internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAccountGraph, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
-    val repositories = checkNotNull(graph.browsing)
+internal fun SharedHomeContent(destination: HomeDestination, graph: SharedAccountFeatures, navigator: Navigator, registry: DestinationRegistry, entryId: String) {
+    val repositories = graph
     val analytics = LocalNativePlatform.current.analytics
     val journey = LocalSharedJourneyMemory.current
     val restored = remember(entryId) { journey.homes[entryId] }
-    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, HomeTrackerImpl(analytics, QuickFilterTrackerImpl(analytics)), repositories.filters) }
+    val model = viewModel { HomeViewModel(destinationState(mapOf(HomeViewModel.SELECTED_TAB to (restored?.selected ?: destination.tab).ordinal, HomeViewModel.SELECTED_ACTIVITY_TAB to (restored?.activity ?: HomeTab.Running).ordinal)), repositories.home, HomeTrackerImpl(analytics, QuickFilterTrackerImpl(analytics)), repositories.quickFilters) }
     LifecycleResumeEffect(navigator.snapshot.results, model) {
         while (true) {
             val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break
@@ -103,9 +102,9 @@ internal fun SharedHomeContent(destination: HomeDestination, graph: TeamCityAcco
     }
 }
 
-internal fun sharedBrowsingEntries(graph: TeamCityAccountGraph?, analytics: AnalyticsTracker): Set<DestinationRegistration> {
+internal fun sharedBrowsingEntries(graph: SharedAccountFeatures?, analytics: AnalyticsTracker): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
-    val repositories = checkNotNull(graph.browsing)
+    val repositories = graph
     return setOf(
         SharedEntry(FavoritesDestination::class, FavoritesDestination.serializer()) { _, nav, _ ->
             val vm = viewModel { FavoritesViewModel(repositories.favorites) }

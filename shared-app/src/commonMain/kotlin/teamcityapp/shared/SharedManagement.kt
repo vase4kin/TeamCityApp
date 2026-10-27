@@ -51,12 +51,11 @@ import teamcityapp.features.run_build.impl.router.RunBuildRouter
 import teamcityapp.features.run_build.impl.tracker.RunBuildTrackerImpl
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.navigation.*
-import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.LocalFloatingActionClearance
 
-internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, analytics: AnalyticsTracker): Set<DestinationRegistration> {
+internal fun sharedManagementEntries(graph: SharedAccountFeatures?, analytics: AnalyticsTracker): Set<DestinationRegistration> {
     if (graph == null) return emptySet()
-    val repositories = graph.management
+    val repositories = graph
     return setOf(
         SharedEntry(RunBuildDestination::class, RunBuildDestination.serializer(), { builder ->
             builder.polymorphic(NavigationResult::class) { subclass(QueuedBuildResult::class, QueuedBuildResult.serializer()) }
@@ -91,7 +90,7 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, analytics: An
             SharedFilterBuildsRoute(router, vm)
         },
         SharedEntry(QuickFilterDestination::class, QuickFilterDestination.serializer(), presentation = DestinationPresentation.BottomSheet) { dest, nav, _ ->
-            val vm = viewModel { FilterBottomSheetViewModel(checkNotNull(graph.browsing).filters, destinationState(mapOf("arg_code" to dest.code)), QuickFilterTrackerImpl(analytics)) }
+            val vm = viewModel { FilterBottomSheetViewModel(graph.quickFilters, destinationState(mapOf("arg_code" to dest.code)), QuickFilterTrackerImpl(analytics)) }
             val router = remember(nav) {
                 object : FilterBottomSheetRouter {
                     override fun close() {
@@ -114,22 +113,22 @@ internal fun sharedManagementEntries(graph: TeamCityAccountGraph?, analytics: An
 }
 
 @Composable
-private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: TeamCityAccountGraph, nav: Navigator, entryId: String) {
+private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: SharedAccountFeatures, nav: Navigator, entryId: String) {
     val platform = LocalNativePlatform.current
     val tracker = remember(platform.analytics) { BuildOverviewTrackerImpl(platform.analytics) }
     val server = graph.account.identity.serverUrl
-    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.management.details, BuildDetailsTrackerImpl(platform.analytics)) }
+    val model = viewModel { BuildDetailsViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build), BuildDetailsViewModel.NAME to destination.configurationName, BuildDetailsViewModel.COMPLETION to destination.completion?.name)), graph.details, BuildDetailsTrackerImpl(platform.analytics)) }
     val overview = viewModel {
         BuildReferenceViewModel(
             destination.build.href,
             object : BuildOverviewRepository {
-                override suspend fun build(href: String, forceRefresh: Boolean) = graph.build(href, forceRefresh || destination.forceOverviewRefresh)
+                override suspend fun build(href: String, forceRefresh: Boolean) = graph.overview.build(href, forceRefresh || destination.forceOverviewRefresh)
             },
             BuildReferenceTracker.None,
-            checkNotNull(graph.browsing).metadata
+            graph.metadata
         )
     }
-    val education = viewModel { BuildDetailsMetadataViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build))), checkNotNull(graph.browsing).metadata, includeCounts = false) }
+    val education = viewModel { BuildDetailsMetadataViewModel(destinationState(mapOf(BuildDetailsViewModel.BUILD to Json.encodeToString(destination.build))), graph.metadata, includeCounts = false) }
     val content by overview.state.collectAsStateWithLifecycle()
     val actions = remember(tracker, server, platform) {
         BuildOverviewActions(tracker, server, graph.account.identity.guest, platform::browser, platform::share) {
@@ -153,7 +152,7 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Team
         onPauseOrDispose {}
     }
     SharedBuildDetailsRoute(
-        model, education, content.build, { graph.browsing?.buildViewed(it.id) }, overview::refresh,
+        model, education, content.build, { graph.rating.buildViewed(it.id) }, overview::refresh,
         actions::perform, { nav.pop() },
         { href, title -> nav.push(BuildDetailsReferenceDestination(href, title, fromRestart = true)) },
         { replacement, title ->

@@ -22,4 +22,5 @@
     <string name="cancel_theme">Cancel</string>
     <string name="theme_unavailable">Not set</string>
 <string name="current_theme">Current theme: %1$s</string>
+    <string name="drawer_item_settings">Settings</string>
 </resources>

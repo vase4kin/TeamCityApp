@@ -93,7 +93,7 @@ class AboutScreenTest {
         val initialBounds = back.fetchSemanticsNode().boundsInRoot
         val grid = compose.onNode(hasScrollToIndexAction())
         grid.performTouchInput { swipeUp() }
-        val privacy = text(teamcityapp.libraries.resources.R.string.about_app_text_privacy)
+        val privacy = text(teamcityapp.features.about.impl.R.string.about_app_text_privacy)
         grid.performScrollToNode(hasText(privacy))
         compose.onNodeWithText(privacy).assertIsDisplayed()
         back.assertIsDisplayed()

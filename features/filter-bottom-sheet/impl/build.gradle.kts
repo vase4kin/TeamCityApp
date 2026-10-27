@@ -28,6 +28,7 @@ compose.resources {
 }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        implementation(projects.libraries.accounts)
         implementation(projects.libraries.analytics)
         api(projects.features.filterBottomSheet.api)
         api(projects.libraries.designSystem)

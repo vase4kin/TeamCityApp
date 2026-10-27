@@ -119,3 +119,8 @@ tasks.register("exportIosReleaseDependencies") {
         }
     }
 }
+
+// Real-engine repository verification remains explicitly local and opt-in.
+if (providers.gradleProperty("teamcityPlatformFixture").isPresent) {
+    kotlin.sourceSets.named("commonTest") { kotlin.srcDir("src/platformTest/kotlin") }
+}

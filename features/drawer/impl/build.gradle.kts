@@ -65,7 +65,6 @@ kotlin.sourceSets.named("androidMain") {
         implementation(libs.coroutines.android)
 
         implementation(projects.libraries.appRating)
-        implementation(projects.libraries.chromeTabs)
     }
 }
 kotlin.sourceSets.named("androidHostTest") {

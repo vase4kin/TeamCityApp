@@ -58,6 +58,17 @@ def validate(root):
             for source in (impl / "src/commonMain").rglob("*.kt"):
                 if re.search(r"^import (?:android\.|dagger\.|javax\.inject\.|retrofit2\.|io\.reactivex\.)", source.read_text(), re.MULTILINE):
                     errors.append(f"{source.relative_to(root)}: platform dependency in commonMain")
+    # Libraries provide reusable functionality; feature adapters depend on them.
+    for build in (root / "libraries").glob("*/build.gradle.kts"):
+        if re.search(r"projects\.features\.", build.read_text()):
+            errors.append(f"{build.relative_to(root)}: libraries must not depend on feature modules")
+    for module in ("accounts", "network", "shared-data"):
+        build = root / "libraries" / module / "build.gradle.kts"
+        if build.exists() and re.search(r'projects\.libraries\.(?:authenticationShared|authentication|designSystem|theme|buildUi|buildPresentation|listUi|listPresentation)\b|teamcityapp\.kmp\.compose', build.read_text()):
+            errors.append(f"{build.relative_to(root)}: account and transport libraries must not depend on UI modules")
+    for source in (root / "libraries").glob("*/src/*Main/**/*.kt"):
+        if re.search(r"^import teamcityapp\.features\.", source.read_text(), re.MULTILINE):
+            errors.append(f"{source.relative_to(root)}: feature adapters belong in their owning feature")
     # Event decisions belong to each feature; the root only composes implementations.
     for source in (root / "shared-app/src/commonMain").rglob("*.kt"):
         text = source.read_text()

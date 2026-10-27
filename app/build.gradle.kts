@@ -169,7 +169,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.chromeTabs)
+
     implementation(projects.libraries.storage)
     implementation(projects.libraries.storageModels)
     implementation(projects.libraries.onboarding)

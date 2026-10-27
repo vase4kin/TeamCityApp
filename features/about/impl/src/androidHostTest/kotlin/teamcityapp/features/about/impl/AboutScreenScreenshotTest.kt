@@ -104,7 +104,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
         compose.onRoot().captureRoboImage("$name.png")
         if (state != AboutUiState.Loading && variant.width < 600) {
             // A top-of-screen golden alone would miss the lower actions in the lazy grid.
-            val privacy = context.getString(teamcityapp.libraries.resources.R.string.about_app_text_privacy)
+            val privacy = context.getString(teamcityapp.features.about.impl.R.string.about_app_text_privacy)
             compose.onNode(hasScrollToIndexAction()).performTouchInput { swipeUp() }
             compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(privacy))
             compose.onNodeWithText(privacy).assertIsDisplayed()

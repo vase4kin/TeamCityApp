@@ -133,6 +133,28 @@ class FeatureModulesTest(unittest.TestCase):
         self.write("app/src/main/kotlin/Host.kt", "class HostModel @Inject constructor(cache: ResponseCacheStore) : SharedAppViewModel(); val cache = AndroidResponseCacheStore(context); openSourceLibraries(activity)")
         self.assertEqual([], guard.validate(self.root))
 
+    def test_libraries_cannot_depend_on_feature_apis_or_implementations(self):
+        for module in ("api", "impl"):
+            with self.subTest(module=module):
+                self.write("libraries/shared-data/build.gradle.kts", f"implementation(projects.features.about.{module})")
+                self.assertTrue(any("libraries must not depend" in e for e in guard.validate(self.root)))
+
+    def test_account_and_transport_libraries_cannot_pull_in_authentication_ui(self):
+        self.write("libraries/shared-data/build.gradle.kts", "api(projects.libraries.authenticationShared)")
+        self.assertTrue(any("must not depend on UI modules" in e for e in guard.validate(self.root)))
+        self.write("libraries/shared-data/build.gradle.kts", "api(projects.libraries.network)")
+        self.write("libraries/authentication-shared/build.gradle.kts", "api(projects.libraries.accounts)")
+        self.assertEqual([], guard.validate(self.root))
+
+    def test_libraries_cannot_implement_feature_repositories(self):
+        self.write("libraries/shared-data/src/commonMain/kotlin/FeatureRepository.kt", "import teamcityapp.features.about.api.AboutRepository")
+        self.assertTrue(any("feature adapters belong" in e for e in guard.validate(self.root)))
+
+    def test_libraries_can_keep_legacy_wire_model_packages(self):
+        self.write("libraries/data/src/main/java/teamcityapp/features/about/repository/models/ServerInfo.java", "package teamcityapp.features.about.repository.models; class ServerInfo {}")
+        self.write("libraries/network/src/commonMain/kotlin/Protocol.kt", "import teamcityapp.libraries.accounts.AccountScope")
+        self.assertEqual([], guard.validate(self.root))
+
     def test_obsolete_root_dependency_is_rejected(self):
         self.write("shared-app/build.gradle.kts", "implementation(projects.features.about.presentation)")
         self.assertTrue(any("obsolete presentation" in e for e in guard.validate(self.root)))

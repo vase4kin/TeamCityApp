@@ -157,6 +157,9 @@ class Handler(BaseHTTPRequestHandler):
                 if number == "3": value["state"] = "running"
                 if number == "4": value["state"] = "queued"
                 value.update(managed.get(number, {}))
+                value["href"] = prefix + "/app/rest/builds/id:" + number
+                for collection in ("artifacts", "changes", "testOccurrences", "snapshot-dependencies"):
+                    value[collection]["href"] = value[collection]["href"].replace("/context/", prefix + "/", 1)
             return value
         configuration = {"id": "Demo_Build", "name": "Verify", "projectId": "Demo", "projectName": "Demonstration"}
         if "/artifacts/" in rest:

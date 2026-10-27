@@ -28,7 +28,6 @@ import teamcityapp.libraries.accounts.*
 import teamcityapp.libraries.authentication.AccountCredentials
 import teamcityapp.libraries.authentication.AuthenticationResult
 import teamcityapp.libraries.network.TeamCityClientFactory
-import teamcityapp.libraries.shared_data.ArtifactFileStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SharedGraphOwnershipTest {
@@ -67,10 +66,7 @@ class SharedGraphOwnershipTest {
             runCurrent()
             assertEquals(AuthenticationResult.Success, root.authentication.signIn(AccountCredentials("https://example.test/context", "", "", true), true, false))
             val account = (root.sessions.state.value as AccountSessionState.Active).scope
-            val files = object : ArtifactFileStore {
-                override fun create(target: teamcityapp.libraries.shared_data.ArtifactTarget) = error("No transfer")
-            }
-            assertEquals("shared-fixture", root.graph(account, files).serverInfo().version)
+            assertEquals("shared-fixture", root.graph(account).api.server().version)
             assertEquals(2, created.size)
             assertEquals(created.first(), created.last())
             assertEquals(listOf("/context/guestAuth/app/rest/server", "/context/guestAuth/app/rest/server"), requested)
@@ -109,20 +105,17 @@ class SharedGraphOwnershipTest {
             runCurrent()
             vm.sessions.saveAndActivate(AccountSecret(AccountIdentity("https://example.test", "Guest user", true)))
             val original = (vm.sessions.state.value as AccountSessionState.Active).scope
-            val files = object : ArtifactFileStore {
-                override fun create(target: teamcityapp.libraries.shared_data.ArtifactTarget) = error("No transfer expected")
-            }
-            val graph = vm.graph(original, files)
-            assertSame(graph, vm.graph(original, files))
+            val graph = vm.graph(original)
+            assertSame(graph, vm.graph(original))
             vm.synchronizeSession()
-            assertSame(graph, vm.graph(original, files))
+            assertSame(graph, vm.graph(original))
             cache.content = "old authenticated response"
             vm.synchronizeSession(force = true)
             assertEquals("{}", cache.content)
             val replacement = (vm.sessions.state.value as AccountSessionState.Active).scope
             assertNotEquals(original.generation, replacement.generation)
-            assertNotSame(graph, vm.graph(replacement, files))
-            assertFailsWith<kotlinx.coroutines.CancellationException> { vm.graph(original, files) }
+            assertNotSame(graph, vm.graph(replacement))
+            assertFailsWith<kotlinx.coroutines.CancellationException> { vm.graph(original) }
             models.clear()
             assertEquals(AccountSessionState.SignedOut, vm.sessions.state.value)
         } finally {

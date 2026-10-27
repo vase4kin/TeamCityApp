@@ -144,6 +144,9 @@ class PlatformFixtureTest(unittest.TestCase):
         self.assertEqual("queued", build["state"])
         self.assertEqual("Verify", build["buildType"]["name"])
         self.assertEqual("release", build["branchName"])
+        self.assertEqual(result["href"], build["href"])
+        for collection in ("artifacts", "changes", "testOccurrences", "snapshot-dependencies"):
+            self.assertTrue(build[collection]["href"].startswith("/context/manage/app/rest/"))
         self.request("POST", prefix + "builds/id:41", {"readdIntoQueue": False})
         _, removed = self.request("GET", result["href"])
         self.assertEqual("finished", removed["state"])

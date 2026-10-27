@@ -27,9 +27,8 @@ import teamcityapp.features.artifacts.impl.tracker.ArtifactsTrackerImpl
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.api.navigation.*
 import teamcityapp.libraries.navigation.*
-import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 
-internal fun sharedArtifactEntries(graph: TeamCityAccountGraph?): Set<DestinationRegistration> {
+internal fun sharedArtifactEntries(graph: SharedAccountFeatures?): Set<DestinationRegistration> {
     val repository = graph?.artifacts ?: return emptySet()
     return setOf(
         SharedEntry(ArtifactsDestination::class, ArtifactsDestination.serializer()) { destination, nav, id ->

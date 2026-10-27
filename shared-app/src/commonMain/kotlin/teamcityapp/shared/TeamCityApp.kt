@@ -47,7 +47,6 @@ import teamcityapp.features.navigation.impl.*
 import teamcityapp.features.navigation.impl.tracker.NavigationTrackerImpl
 import teamcityapp.libraries.accounts.*
 import teamcityapp.libraries.navigation.*
-import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.theme.*
 import teamcityapp.shared.resources.*
 
@@ -128,10 +127,10 @@ private fun SharedJourney(model: SharedAppViewModel, account: AccountScope?, lau
     val platform = LocalNativePlatform.current
     var graphFailure by remember(account) { mutableStateOf(false) }
     var graphRevision by remember(account) { mutableIntStateOf(0) }
-    val graph by produceState<TeamCityAccountGraph?>(null, account, graphRevision) {
+    val graph by produceState<SharedAccountFeatures?>(null, account, graphRevision) {
         graphFailure = false
         try {
-            if (account != null) value = model.graph(account, platform.files, platform.responseCache)
+            if (account != null) value = SharedAccountFeatures(model.graph(account, platform.responseCache), platform.files, model.appLaunchId)
         } catch (c: CancellationException) {
             throw c
         } catch (_: Exception) {
@@ -239,7 +238,7 @@ private fun LoginContent(model: SharedAppViewModel) {
 }
 
 @Composable
-private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAccountGraph, navigator: Navigator) {
+private fun ProjectsContent(destination: ProjectDestination, graph: SharedAccountFeatures, navigator: Navigator) {
     val analytics = LocalNativePlatform.current.analytics
     val vm = viewModel {
         NavigationViewModel(
@@ -250,8 +249,8 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
                     NavigationViewModel.ROOT_SCREEN to destination.root
                 )
             ),
-            graph,
-            checkNotNull(graph.browsing).rating,
+            graph.navigation,
+            graph.rating,
             NavigationTrackerImpl(analytics)
         )
     }
@@ -271,7 +270,7 @@ private fun ProjectsContent(destination: ProjectDestination, graph: TeamCityAcco
 }
 
 @Composable
-private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
+private fun HistoryContent(destination: BuildHistoryDestination, graph: SharedAccountFeatures, navigator: Navigator, entryId: String) {
     val analytics = LocalNativePlatform.current.analytics
     val vm = viewModel {
         BuildHistoryViewModel(
@@ -282,8 +281,8 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
                     BuildHistoryViewModel.EXTRA_LOCATOR to destination.locator
                 )
             ),
-            graph,
-            checkNotNull(graph.browsing).historyOnboarding,
+            graph.history,
+            graph.historyOnboarding,
             BuildHistoryTrackerImpl(analytics)
         )
     }
@@ -311,16 +310,16 @@ private fun HistoryContent(destination: BuildHistoryDestination, graph: TeamCity
 }
 
 @Composable
-private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph: TeamCityAccountGraph, navigator: Navigator, entryId: String) {
+private fun OverviewContent(destination: BuildDetailsReferenceDestination, graph: SharedAccountFeatures, navigator: Navigator, entryId: String) {
     val analytics = LocalNativePlatform.current.analytics
     val vm = viewModel {
         BuildReferenceViewModel(
             destination.href,
             object : teamcityapp.features.build_overview.api.BuildOverviewRepository {
-                override suspend fun build(href: String, forceRefresh: Boolean) = graph.build(href, true)
+                override suspend fun build(href: String, forceRefresh: Boolean) = graph.overview.build(href, true)
             },
             BuildDetailsReferenceTrackerImpl(analytics, destination.fromRestart),
-            checkNotNull(graph.browsing).metadata
+            graph.metadata
         )
     }
     val state by vm.state.collectAsStateWithLifecycle()

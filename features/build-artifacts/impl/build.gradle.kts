@@ -70,3 +70,6 @@ roborazzi {
     outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
     separateOutputDirs.set(false)
 }
+
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.ktor.client.mock) } }
+kotlin.sourceSets.named("androidHostTest") { dependencies { implementation(libs.robolectric) } }

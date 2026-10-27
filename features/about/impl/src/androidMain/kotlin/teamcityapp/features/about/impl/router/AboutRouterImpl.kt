@@ -26,7 +26,6 @@ import teamcityapp.features.about.impl.AboutAction
 import teamcityapp.features.about.impl.R
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
-import teamcityapp.libraries.resources.R as SharedR
 
 class AboutRouterImpl(
     private val activity: Activity,
@@ -49,7 +48,7 @@ class AboutRouterImpl(
 
             AboutAction.Website -> chromeTabs.launchUrl(activity.getString(R.string.about_app_url_web))
 
-            AboutAction.Privacy -> chromeTabs.launchUrl(activity.getString(SharedR.string.about_app_url_privacy))
+            AboutAction.Privacy -> chromeTabs.launchUrl(activity.getString(R.string.about_app_url_privacy))
 
             AboutAction.Libraries -> {
                 OssLicensesMenuActivity.setActivityTitle(activity.getString(R.string.about_app_text_libraries))

@@ -31,12 +31,12 @@ import java.io.File
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import teamcityapp.features.about.impl.router.openSourceLibraries
+import teamcityapp.features.artifacts.api.ArtifactFileStore
+import teamcityapp.features.artifacts.impl.data.AndroidArtifactFileStore
 import teamcityapp.libraries.analytics.AnalyticsTracker
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.app_theme.ThemePreferencesRepository
 import teamcityapp.libraries.network.AndroidResponseCacheStore
-import teamcityapp.libraries.shared_data.AndroidArtifactFileStore
-import teamcityapp.libraries.shared_data.ArtifactFileStore
 import teamcityapp.shared.*
 
 /** UI-owned OS launchers only. Feature rules live in feature modules; repositories live in shared-data. */

@@ -22,11 +22,11 @@ import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.builds.*
 
-internal fun JsonObject.text(key: String): String? = (this[key] as? JsonPrimitive)?.takeUnless { it is JsonNull }?.content
+fun JsonObject.text(key: String): String? = (this[key] as? JsonPrimitive)?.takeUnless { it is JsonNull }?.content
 internal fun JsonObject.number(key: String): Int? = text(key)?.toIntOrNull()
 internal fun JsonObject.flag(key: String): Boolean = text(key)?.toBooleanStrictOrNull() ?: false
-internal fun JsonObject.obj(key: String): JsonObject? = this[key] as? JsonObject
-internal fun JsonObject.items(key: String): List<JsonObject> = (this[key] as? JsonArray)?.map { it.jsonObject }.orEmpty()
+fun JsonObject.obj(key: String): JsonObject? = this[key] as? JsonObject
+fun JsonObject.items(key: String): List<JsonObject> = (this[key] as? JsonArray)?.map { it.jsonObject }.orEmpty()
 
 fun JsonObject.toProjectReference() = ProjectReference(requireNotNull(text("id")), text("name").orEmpty())
 fun JsonObject.toConfigurationSummary() = BuildConfigurationSummary(

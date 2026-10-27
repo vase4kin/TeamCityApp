@@ -154,9 +154,9 @@ class TeamCityAuthenticationTest {
         val alice = AccountIdentity("https://teamcity.example", "alice", false)
         sessions.saveAndActivate(AccountSecret(alice, "a"))
         val old = (sessions.state.value as AccountSessionState.Active).scope
-        val graph = TeamCityAccountGraph(old, TeamCityApi(TeamCityTransport(client { respond("""{"projects":{"project":[{"id":"A","name":"Alice project"}]}}""", HttpStatusCode.OK) }, AccountSecret(alice, "a"))))
-        assertEquals(1, graph.entries("_Root", false).size)
+        val graph = TeamCityAccountGraph(old, TeamCityApi(TeamCityTransport(client { respond("""{"projects":{"project":[{"id":"A","name":"Alice project"}]}}""", HttpStatusCode.OK) }, AccountSecret(alice, "a"))), AccountPreferenceState(old, AccountPreferences()) { sessions.updatePreferences(old, it) })
+        assertEquals(1, old.run { graph.api.entries("_Root", false).projects.size })
         sessions.saveAndActivate(AccountSecret(alice.copy(userName = "bob"), "b"))
-        assertFailsWith<CancellationException> { graph.entries("_Root", false) }
+        assertFailsWith<CancellationException> { old.run { graph.api.entries("_Root", false) } }
     }
 }

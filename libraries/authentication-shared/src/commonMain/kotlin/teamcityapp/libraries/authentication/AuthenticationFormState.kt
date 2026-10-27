@@ -54,17 +54,6 @@ data class AuthenticationFormState(
         }
     }
 }
-sealed interface AuthenticationError {
-    data object EmptyUrl : AuthenticationError
-    data object EmptyUserName : AuthenticationError
-    data object EmptyPassword : AuthenticationError
-    data object SaveFailed : AuthenticationError
-    data object DuplicateAccount : AuthenticationError
-    data object InvalidUrl : AuthenticationError
-    data object Connection : AuthenticationError
-    data class Http(val status: Int) : AuthenticationError
-    data class Server(val message: String) : AuthenticationError
-}
 
 enum class AuthenticationWarningText(val message: StringResource, val styled: Boolean) {
     Http(Res.string.server_not_secure_http, false),

@@ -26,7 +26,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import teamcityapp.libraries.accounts.*
 import teamcityapp.libraries.authentication.AuthenticationRepository
-import teamcityapp.libraries.shared_data.ArtifactFileStore
 import teamcityapp.libraries.shared_data.TeamCityAccountGraph
 import teamcityapp.libraries.shared_data.TeamCityAuthentication
 
@@ -46,6 +45,7 @@ internal sealed interface NavigationRestoration {
 private val currentAppLaunchId = kotlin.uuid.Uuid.random().toString()
 
 open class SharedAppViewModel(private val storage: AccountStorage, val navigationStore: SavedNavigationStore, private val responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null, private val clients: teamcityapp.libraries.network.TeamCityClientFactory = teamcityapp.libraries.network.PlatformTeamCityClientFactory) : ViewModel() {
+    val appLaunchId: String = currentAppLaunchId
     val sessions = AccountSessionManager(storage, viewModelScope.coroutineContext) { clearResponseCache() }
     val authentication: AuthenticationRepository = TeamCityAuthentication(sessions, clients)
     private val failure = MutableStateFlow(false)
@@ -63,11 +63,11 @@ open class SharedAppViewModel(private val storage: AccountStorage, val navigatio
         } catch (_: Exception) { /* A disposable cache cannot undo a committed account mutation. */ }
     }
 
-    /** Account resources survive host recreation; the file port must be application-owned. */
-    suspend fun graph(account: AccountScope, files: ArtifactFileStore, responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null): TeamCityAccountGraph = graphLock.withLock {
+    /** Account transport and preference state survive host recreation. */
+    suspend fun graph(account: AccountScope, responseCache: teamcityapp.libraries.network.ResponseCacheStore? = null): TeamCityAccountGraph = graphLock.withLock {
         account.requireCurrent()
         currentGraph?.takeIf { it.account.generation == account.generation }?.let { return@withLock it }
-        TeamCityAccountGraph.create(sessions, account, files, responseCache, clients, currentAppLaunchId).also {
+        TeamCityAccountGraph.create(sessions, account, responseCache, clients).also {
             account.requireCurrent()
             currentGraph = it
         }

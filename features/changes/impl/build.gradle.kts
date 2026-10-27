@@ -27,6 +27,9 @@ compose.resources {
 }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
+        api(projects.features.changeDetails.api)
+        implementation(projects.libraries.time)
+        implementation(projects.libraries.network)
         api(projects.features.changes.api)
         api(projects.libraries.designSystem)
         api(projects.libraries.listPresentation)
@@ -39,8 +42,6 @@ kotlin.sourceSets.named("commonTest") {
         implementation(libs.androidx.paging.testing)
     }
 }
-
-kotlin.sourceSets.named("commonMain") { dependencies { api(projects.features.changeDetails.api) } }
 
 kotlin.sourceSets.named("androidMain") {
     dependencies {

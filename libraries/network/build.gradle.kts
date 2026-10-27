@@ -22,7 +22,7 @@ kotlin.sourceSets {
             api(projects.libraries.builds)
             api(projects.libraries.buildConfigurations)
             api(libs.ktor.client.core)
-            implementation(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.serialization.json)
         }
     }
     named("androidMain") { dependencies { implementation(libs.ktor.client.okhttp) } }

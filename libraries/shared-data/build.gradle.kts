@@ -17,38 +17,12 @@
 plugins { id("teamcityapp.kmp.library") }
 kotlin.sourceSets.named("commonMain") {
     dependencies {
-        api(projects.features.buildArtifacts.api)
-        api(projects.features.about.api)
-        api(projects.features.runBuild.api)
-        api(projects.features.filterBuilds.api)
         api(projects.libraries.network)
-        implementation(projects.libraries.time)
-        api(projects.features.buildDetails.api)
-        api(projects.features.home.api)
-        api(projects.features.filterBottomSheet.api)
-        api(projects.features.favorites.api)
-        api(projects.features.runningBuilds.api)
-        api(projects.features.buildQueue.api)
-        api(projects.features.agents.api)
-        api(projects.features.changes.api)
-        api(projects.features.tests.api)
-        api(projects.features.testDetails.api)
-        api(projects.features.snapshotDependencies.api)
-        api(projects.libraries.authenticationShared)
-        api(projects.features.navigation.api)
-        api(projects.features.buildHistory.api)
-        api(projects.features.buildOverview.api)
     }
 }
 kotlin.sourceSets.named("commonTest") {
     dependencies {
         implementation(libs.ktor.client.mock)
         implementation(libs.coroutines.test)
-    }
-}
-
-kotlin.sourceSets.named("androidHostTest") {
-    dependencies {
-        implementation(libs.robolectric)
     }
 }

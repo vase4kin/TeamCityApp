@@ -26,9 +26,7 @@ dependencies {
     implementation(libs.gson)
     api(projects.libraries.api)
     api(projects.libraries.builds)
-    api(projects.features.testDetails.api)
 
-    implementation(projects.features.filterBuilds.api)
     implementation(libs.androidx.annotationn)
 
     implementation(libs.jodaTime)

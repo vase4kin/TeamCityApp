@@ -43,6 +43,11 @@ object R8SmokeChecks {
         ObjectOutputStream(bytes).use { it.writeObject(builds) }
         val restored = ObjectInputStream(ByteArrayInputStream(bytes.toByteArray())).use { it.readObject() as Builds }
         check(restored.objects.single().id == "42")
+        // Decode an installed pre-migration filter inside the optimized target APK.
+        val filterBytes = android.util.Base64.decode("rO0ABXNyAERjb20uZ2l0aHViLnZhc2U0a2luLnRlYW1jaXR5YXBwLmJ1aWxkbGlzdC5maWx0ZXIuQnVpbGRMaXN0RmlsdGVySW1wbLFKSsCtgmGCAgAESQAKZmlsdGVyVHlwZVoACmlzUGVyc29uYWxaAAhpc1Bpbm5lZEwABmJyYW5jaHQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwAAAABwEBdAAXZmVhdHVyZS9zcGFjZSAmIHN5bWJvbHM=", android.util.Base64.DEFAULT)
+        val filter = ObjectInputStream(ByteArrayInputStream(filterBytes)).use { it.readObject() } as com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
+        check(filter.javaClass.name == "com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl")
+        check(filter.toLocator() == "state:any,canceled:any,failedToStart:any,branch:name:feature/space & symbols,personal:true,pinned:true,count:10")
     }
 
     @JvmStatic
