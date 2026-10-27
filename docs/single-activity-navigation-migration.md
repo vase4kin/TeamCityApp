@@ -799,3 +799,49 @@ Validation: 722 local Android cases passed, including 372 screenshot cases;
 Mock app/test APKs, production Kotlin compilation, mock-debug lint and formatting
 checks passed. Lint ran separately after kapt compilation to avoid its generated
 stub analysis race.
+
+
+## Shared composition-root ownership audit
+
+The portable root registers destinations, constructs dependencies, owns account
+and journey restoration, retains child stacks, and delivers results to exact live
+originating visits. Feature implementations own their `Shared*Route` containers:
+
+- Login owns SSL/demo dialogs and demo-server policy; About owns action links.
+- Home owns responsive presentation and selection callbacks; Projects owns rating
+  presentation. Favorites, Running, Queue, Agents and Snapshot Dependencies own
+  state collection and screen lifecycle behavior.
+- History owns Paging collection, refresh claims, append states and notices.
+  Changes/Tests keep their existing feature containers; Change Details owns diff
+  links and view/action telemetry; Test Details owns search/wrap/match state.
+- Build Details owns loaded-build education, confirmations, notices, management
+  command dispatch and replacement presentation. Overview owns row actions,
+  browser/share/log policy and reference-loading presentation. The root composes
+  them through callbacks and a content slot, without cross-feature implementation
+  dependencies. Section count/result delivery remains in the root.
+- Artifacts owns download lifetime, action-sheet consumption policy, one-shot
+  export claims and retries. The root supplies typed-result access, native ports
+  and whether the visit is covered by a sheet or has been left.
+- Settings owns state collection and view telemetry. Drawer and Manage Accounts
+  own their public-account mappings over the session-manager contract; account
+  generation changes and root replacement remain application orchestration.
+
+Reusable TeamCity web-link validation lives in `libraries/network`. Native theme
+preferences, artifact file writes and response-cache bytes live in
+`libraries/theme-preferences`, `libraries/shared-data` and `libraries/network`.
+The host still owns UIKit presentation and app/scene callbacks. Preference keys,
+file locations, serialized navigation and installed compatibility routes remain
+unchanged. Feature tests move with their behavior; cross-feature account and
+navigation integration coverage stays in `shared-app`.
+
+The boundary check rejects feature resources, feature UI-state/paging code and
+screen lifecycle hooks in common production root sources, in addition to the
+existing tracker/SDK and implementation-dependency checks.
+
+Verification: final Android host reports contain 3,862 cases with zero failures
+and one existing skip; 74 app unit tests, 474 iOS simulator tests and 103 repository
+script tests pass. Root, Login and Artifacts Roborazzi verification passes with
+unchanged golden bytes. Production/mock debug APKs and the mock instrumentation
+APK build, and all 53 selected account/login/navigation/rating/test-details device
+integration cases pass. The reserved-character diff-link regression found during
+the move is fixed and covered in Change Details on both platforms.

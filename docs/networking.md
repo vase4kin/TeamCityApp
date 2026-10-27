@@ -197,8 +197,8 @@ Each feature implementation owns its dedicated `<Feature>TrackerImpl` in
 `src/commonMain/kotlin/.../impl/tracker/`, together with its event-mapping tests
 in `commonTest`. Favorites, Snapshot Dependencies and Artifacts each have their
 own tracker; they do not share a browsing tracker. `shared-app` contains constructor
-wiring and generic visibility orchestration, with no feature event names or
-tracker implementations.
+wiring, with no feature event names or tracker implementations. Feature routes
+own their visibility callbacks as well as their screen presentation.
 
 `libraries/analytics` contains the portable `AnalyticsTracker`, `AnalyticsEvent`
 and `AnalyticsValue` contracts. Its `androidMain` owns `AndroidAnalyticsTracker`

@@ -161,7 +161,14 @@ to the requested behavior and the coherent migration slice needed to support it.
   portable behavioral tests and `iosMain`/`iosTest` only for feature-specific native
   needs. Cross-feature implementation dependencies remain prohibited. Do not
   duplicate shared layouts in platform adapters. `shared-app` is the composition
-  root and consumes feature implementations. `features/splash` retains its Android
+  root and consumes feature implementations. Feature-owned `Shared*Route` containers
+  collect UI state and own screen lifecycle/analytics, paging, dialogs, notices,
+  search controls and download/export policy. The root constructs dependencies,
+  wires native ports and coordinates navigation/results/session ownership. Build
+  Details and Overview compose through content callbacks without implementation
+  dependencies. Account-picker repository adapters live in Drawer and Manage
+  Accounts; native theme, artifact-file and response-cache persistence belong to
+  their owning libraries. `features/splash` retains its Android
   launch-compatibility api/impl pair; new shared features use KMP.
 - Shared ViewModels use plain constructor injection and lifecycle-owned factories.
   Hilt remains the Android composition mechanism, with thin Android ViewModels
