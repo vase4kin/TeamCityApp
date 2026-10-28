@@ -78,6 +78,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   Downloads retain ViewModel state through recreation, but cancel on screen departure
   or app backgrounding, closing blocked reads and removing temporary files without
   overwriting completed files. Their inline card explains that screen-owned lifetime.
+  Artifacts owns the transfer lifetime policy; UI-owned platform/router ports expose
+  host recreation state. Android background callbacks must distinguish a configuration
+  change from actual backgrounding, including when the old composition is disposed.
 - Lists share immutable models and rows in `libraries/build-configurations`,
   `libraries/builds` and `libraries/build-ui`, plus `libraries/list-ui` and
   `libraries/list-state`. History, Changes and Tests use Paging with opaque TeamCity
@@ -125,6 +128,13 @@ to the requested behavior and the coherent migration slice needed to support it.
 - `libraries/network-testing/`: test-only account/vault/HTTP fixtures shared by
   feature-owned repository tests, with no feature dependencies or UI. Add it only
   to test source sets. Keep cross-feature composition/result assertions in the root.
+  The Android custom test application and its Hilt entry point live in
+  `app/src/androidTest`. Production hosts consume shared feature implementations
+  through `shared-app`, with direct implementation dependencies only for native
+  adapters and installed codecs. Application-hosted suites declare their feature
+  dependencies in `androidTestImplementation`. Runtime verification rejects
+  compatibility UI harnesses and coroutine test libraries in production; the mock
+  flavor alone may include Ktor's mock engine.
 - `libraries/`: shared API, storage, models, resources, theme, networking helpers,
   security, utilities, and other reusable components.
 - `build-logic/src/main/kotlin/Config.kt`: SDK/JVM settings and application version.

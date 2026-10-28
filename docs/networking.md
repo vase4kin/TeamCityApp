@@ -31,7 +31,10 @@ Platform adapters own secure storage, atomic cache bytes and file export.
 The retired Android Retrofit services, RxJava repository adapters, RxCache runtime,
 Jolyglot dependency, Dagger REST component and `ApiSession` have been removed.
 The app's `verifyProductionNetworking` task checks production and mock runtime
-classpaths and runs with app assembly and `check`. OkHttp remains as Ktor's
+classpaths and runs with app assembly and `check`. It also rejects legacy Android
+UI harness modules in both runtime graphs, and Ktor MockEngine/coroutine test
+libraries in the production flavors. Generic network fixtures are test-only
+across the hosts, libraries and features. OkHttp remains as Ktor's
 Android engine. Gson remains at the previously resolved version for installed
 account and launch formats.
 
