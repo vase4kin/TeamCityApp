@@ -20,12 +20,15 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.http.*
 import io.ktor.http.content.TextContent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runInterruptible
 
 /** Mock wire boundary only: the production common parser, guards, repositories and UI still run. */
 internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = HttpClient(
@@ -35,7 +38,11 @@ internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = Http
         val path = request.url.encodedPath
         val endpoint = path.substringAfter("/app/rest/")
         val query = request.url.parameters
-        fun link() = path + request.url.encodedQuery.takeIf { it.isNotEmpty() }?.let { "?$it" }.orEmpty()
+
+        // Legacy fixtures key their responses by decoded query values. Keep that
+        // translation here; the common transport still sends encoded wire URLs.
+        fun link() = path + query.entries().flatMap { (key, values) -> values.map { "$key=$it" } }
+            .joinToString("&").takeIf(String::isNotEmpty)?.let { "?$it" }.orEmpty()
         fun id() = endpoint.substringAfter("id:").substringBefore('/')
         try {
             val result: Any = when {
@@ -44,7 +51,8 @@ internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = Http
                     if (endpoint == "buildQueue") {
                         api.queueBuild(gson.fromJson(body, Build::class.java))
                     } else {
-                        api.cancelBuild(path, gson.fromJson(body, BuildCancelRequest::class.java))
+                        val reAdd = JsonParser.parseString(body).asJsonObject["readdIntoQueue"]?.asBoolean ?: false
+                        api.cancelBuild(path, BuildCancelRequest(reAdd))
                     }
                 }
 
@@ -59,7 +67,7 @@ internal fun sharedMockClient(service: () -> TeamCityService): HttpClient = Http
                 endpoint.startsWith("buildTypes/") -> api.buildType(id())
 
                 "/artifacts/content/" in endpoint -> {
-                    val bytes = api.downloadFile(path).use { it.bytes() }
+                    val bytes = api.downloadFile(path).use { body -> runInterruptible(Dispatchers.IO) { body.bytes() } }
                     return@MockEngine respond(bytes, HttpStatusCode.OK, headersOf(HttpHeaders.ContentLength, bytes.size.toString()))
                 }
 

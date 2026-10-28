@@ -42,6 +42,14 @@ import teamcityapp.libraries.accounts.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamCityTransportTest {
+    @Test fun rejectsServerUrlsWithoutAnExplicitHttpAuthority() {
+        for (value in listOf("teamcity.example", "/context", "//teamcity.example", "https:", "https://", "https:///context", "http:teamcity.example")) {
+            assertFailsWith<IllegalArgumentException>(value) { normalizeServerUrl(value) }
+        }
+        assertEquals("https://teamcity.example/context/", normalizeServerUrl("  https://teamcity.example/context  "))
+        assertTrue(normalizeServerUrl("HTTPS://teamcity.example").startsWith("https://", ignoreCase = true))
+    }
+
     private fun secret(guest: Boolean = false, url: String = "https://teamcity.example/context/") = AccountSecret(AccountIdentity(url, if (guest) "Guest user" else "alice", guest), "password")
     private fun mockEngine(handler: MockRequestHandler) = MockEngine(
         MockEngineConfig().apply {

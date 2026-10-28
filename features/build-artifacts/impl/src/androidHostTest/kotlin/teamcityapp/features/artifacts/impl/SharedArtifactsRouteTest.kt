@@ -143,6 +143,43 @@ class SharedArtifactsRouteTest {
         assertTrue(router.files.isEmpty())
     }
 
+    @Test fun unfinishedTransferSurvivesHostRecreationButCancelsOnRealBackgrounding() {
+        var starts = 0
+        var cancellations = 0
+        val vm = mount {
+            starts++
+            try {
+                awaitCancellation()
+            } finally {
+                cancellations++
+            }
+        }
+        compose.runOnIdle { vm.download(ArtifactDownload("report.txt", "/download")) }
+        compose.waitUntil(5_000) {
+            compose.waitForIdle()
+            starts == 1
+        }
+        compose.runOnIdle {
+            router.recreating = true
+            owner.registry.currentState = Lifecycle.State.CREATED
+            recreation.intValue++
+        }
+        compose.waitForIdle()
+        assertEquals(0, cancellations)
+        compose.runOnIdle {
+            owner.registry.currentState = Lifecycle.State.RESUMED
+            router.recreating = false
+        }
+        compose.waitForIdle()
+        assertEquals(1, starts)
+        compose.runOnIdle { owner.registry.currentState = Lifecycle.State.CREATED }
+        compose.waitUntil(5_000) {
+            compose.waitForIdle()
+            cancellations == 1
+        }
+        assertTrue(router.files.isEmpty())
+    }
+
     @Test fun sheetResultsWaitForResumeAndFolderNavigationCancelsTheTransferFirst() {
         var started = false
         var cancelled = false
@@ -184,6 +221,8 @@ class SharedArtifactsRouteTest {
         override val lifecycle: Lifecycle get() = registry
     }
     private class Router : SharedArtifactsRouter {
+        var recreating = false
+        override fun isRecreatingHost() = recreating
         var background: (() -> Unit)? = null
         var acceptsFile = true
         val files = mutableListOf<String>()

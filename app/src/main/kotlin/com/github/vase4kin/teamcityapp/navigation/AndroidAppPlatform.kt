@@ -72,10 +72,11 @@ class AndroidAppPlatform(
         failure.value = action
     }
     override fun onBackground(cancel: () -> Unit): () -> Unit {
-        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_STOP) cancel() }
+        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_STOP && !isRecreatingHost()) cancel() }
         lifecycle.addObserver(observer)
         return { lifecycle.removeObserver(observer) }
     }
+    override fun isRecreatingHost() = activity.isChangingConfigurations
     private fun perform(action: NativePlatformFailure, block: () -> Unit) {
         try {
             block()

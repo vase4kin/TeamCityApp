@@ -26,5 +26,6 @@ interface SharedArtifactsRouter {
     fun openBrowser(href: String)
     fun openFile(file: DownloadedArtifact): Boolean
     fun onBackground(cancel: () -> Unit): () -> Unit
+    fun isRecreatingHost(): Boolean = false
     fun consumeAction(): SheetItem?
 }

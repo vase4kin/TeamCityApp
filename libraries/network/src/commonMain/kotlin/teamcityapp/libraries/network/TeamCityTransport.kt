@@ -44,9 +44,14 @@ import teamcityapp.libraries.accounts.AccountSecret
 class HttpConsentRequired : IllegalArgumentException("HTTP requires explicit consent")
 class TeamCityHttpFailure(val status: Int) : Exception("TeamCity returned HTTP $status")
 
+private val explicitServerAuthority = Regex("^https?://[^/?#]+", RegexOption.IGNORE_CASE)
+
 /** Canonical storage format follows Android's existing root/context trailing-slash convention. */
 fun normalizeServerUrl(value: String): String {
     val text = value.trim()
+    // Ktor also parses relative references against a default base. User-entered
+    // server addresses must supply their own protocol and non-empty authority.
+    require(explicitServerAuthority.containsMatchIn(text)) { "Provide an absolute HTTP or HTTPS server URL" }
     val url = Url(text)
     require(url.protocol == URLProtocol.HTTP || url.protocol == URLProtocol.HTTPS) { "A TeamCity URL must use HTTP or HTTPS" }
     require(url.host.isNotBlank() && url.user.isNullOrEmpty() && url.password.isNullOrEmpty() && url.parameters.isEmpty() && url.fragment.isEmpty()) { "Provide a server URL without credentials, query or fragment" }

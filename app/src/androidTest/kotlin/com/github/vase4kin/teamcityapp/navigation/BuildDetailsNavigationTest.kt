@@ -124,7 +124,7 @@ class BuildDetailsNavigationTest {
         compose.tapBuildDetailsSection(name)
     }
 
-    @Test fun incomingTabsAndParametersRemainStableWhenOverviewLoadsADifferentSnapshot() {
+    @Test fun loadedSnapshotOwnsParametersAndSectionAvailabilityAcrossRecreation() {
         val incoming = mapper.toLaunchData(Mocks.failedBuild()).copy(number = "incoming", properties = BuildProperties(listOf(BuildProperty("initial.parameter", "initial-value"))), snapshotDependencies = BuildCollectionLink(null))
         val loaded = incoming.copy(number = "latest", changes = null, tests = null, artifacts = null, snapshotDependencies = null, properties = BuildProperties(listOf(BuildProperty("loaded.parameter", "loaded-value"))))
         doReturn(mapper.toLegacyBuild(loaded)).whenever(service) { build(incoming.href) }
@@ -133,21 +133,17 @@ class BuildDetailsNavigationTest {
             awaitText("#latest")
             tab("Parameters")
             awaitTag("properties:list")
-            compose.onNodeWithText("initial.parameter").assertIsDisplayed()
-            compose.onNodeWithText("loaded.parameter").assertDoesNotExist()
+            compose.onNodeWithText("loaded.parameter").assertIsDisplayed()
+            compose.onNodeWithText("initial.parameter").assertDoesNotExist()
             scenario.recreate()
             awaitTag("properties:list")
-            compose.onNodeWithTag("details:section:Parameters").assertIsDisplayed()
-            tab("Changes")
-            awaitTag("changes:list")
-            tab("Tests")
-            awaitTag("tests:list")
-            tab("Artifacts")
-            awaitTag("artifacts:list")
-            tab("Snapshots")
-            awaitTag("snapshot:screen")
+            assertEquals(BuildDetailsSection.Parameters, (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as BuildDetailsSectionDestination).section)
+            compose.onNodeWithText("loaded.parameter").assertIsDisplayed()
             tab("Overview")
             awaitTag("overview:list")
+            listOf("Changes", "Tests", "Artifacts", "Snapshots").forEach {
+                compose.onNodeWithTag("overview:section:$it").assertDoesNotExist()
+            }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
             pressBack()
             awaitTag("navigation:row:project:id")
@@ -277,7 +273,7 @@ class BuildDetailsNavigationTest {
             awaitTag("overview:list")
             pressBack()
             awaitTag("tests:list")
-            compose.onNodeWithTag("details:section:Tests").assertIsDisplayed()
+            assertEquals(BuildDetailsSection.Tests, (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as BuildDetailsSectionDestination).section)
             pressBack()
             awaitTag("overview:list")
             pressBack()
@@ -287,7 +283,7 @@ class BuildDetailsNavigationTest {
 
     @Test fun hubCountsRetainTheirResultsAndRetryOnlyTheFailedSection() {
         val build = mapper.toLaunchData(Mocks.failedBuild())
-        val testsHref = "${build.tests?.href},count:2147483647&fields=count"
+        val testsHref = "${build.tests?.href},count:2147483647&fields=count,passed,failed,ignored"
         val changesHref = "${build.changes?.href},count:2147483647&fields=count"
         var failed = true
         doSuspendableAnswer { if (failed) throw IllegalStateException("offline count") else com.github.vase4kin.teamcityapp.tests.api.TestOccurrences(16) }.whenever(service) { listTestOccurrences(testsHref) }
@@ -310,47 +306,41 @@ class BuildDetailsNavigationTest {
     }
 
     @Test fun eachActionTipSurvivesRecreationAndPersistsItsOwnPreferenceOnDismissal() {
-        val prefs = app.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("StopBuilds", true).putBoolean("RemoveBuildsFromQueue", true).putBoolean("RestartBuilds", true).commit()
-        val manager = teamcityapp.libraries.onboarding.OnboardingManagerImpl(app)
-        kotlinx.coroutines.runBlocking {
-            manager.saveShareBuildPromptShown()
-            manager.saveOpenBuildInBrowserPromptShown()
-        }
-        fun shown(preference: String): Boolean = kotlinx.coroutines.runBlocking {
-            when (preference) {
-                "ShareBuild" -> manager.isShareBuildPromptShown()
-                "OpenBuildInBrowser" -> manager.isOpenBuildInBrowserPromptShown()
-                else -> prefs.getBoolean(preference, false)
-            }
+        val rootState = dagger.hilt.EntryPoints.get(app, com.github.vase4kin.teamcityapp.helper.SharedRootTestState::class.java)
+        val accounts = rootState.accounts() as teamcityapp.libraries.accounts.AccountPreferencesStorage
+        val active = app.appInjector.sharedUserStorage().activeUser
+        val key = teamcityapp.libraries.accounts.AccountIdentity(active.teamcityUrl, active.userName, active.isGuestUser, active.isSslDisabled).key
+        fun shown(prompt: BuildDetailsPrompt): Boolean = kotlinx.coroutines.runBlocking {
+            "details.${prompt.name}" in accounts.preferences(key).shownPrompts
         }
         val cases = listOf(
-            Triple(Mocks.runningBuild(), "StopBuilds", "Stop this running build. You can also add it back to the queue."),
-            Triple(Mocks.queuedBuild1(), "RemoveBuildsFromQueue", "Remove this build from the queue before it starts."),
-            Triple(Mocks.successBuild(), "RestartBuilds", "Run this build again with the same parameters."),
-            Triple(Mocks.successBuild(), "ShareBuild", "Share a link to this build with others."),
-            Triple(Mocks.successBuild(), "OpenBuildInBrowser", "Open this build’s page in a browser.")
+            Triple(Mocks.runningBuild(), BuildDetailsPrompt.Stop, "Stop this running build. You can also add it back to the queue."),
+            Triple(Mocks.queuedBuild1(), BuildDetailsPrompt.Remove, "Remove this build from the queue before it starts."),
+            Triple(Mocks.successBuild(), BuildDetailsPrompt.Restart, "Run this build again with the same parameters."),
+            Triple(Mocks.successBuild(), BuildDetailsPrompt.Share, "Share a link to this build with others."),
+            Triple(Mocks.successBuild(), BuildDetailsPrompt.Browser, "Open this build’s page in a browser.")
         )
-        launch().use { scenario ->
-            cases.forEach { (legacy, preference, copy) ->
-                kotlinx.coroutines.runBlocking {
-                    when (preference) {
-                        "ShareBuild" -> manager.saveShareBuildPromptShown(false)
-                        "OpenBuildInBrowser" -> manager.saveOpenBuildInBrowserPromptShown(false)
-                        else -> prefs.edit().putBoolean(preference, false).commit()
-                    }
+        cases.forEach { (legacy, prompt, copy) ->
+            // Each activation reads its durable account-scoped preferences once.
+            // Host recreation below must retain that live preference state.
+            kotlinx.coroutines.runBlocking {
+                rootState.navigation().write("")
+                accounts.updatePreferences(key) {
+                    it.copy(shownPrompts = it.shownPrompts + BuildDetailsPrompt.entries.map { "details.${it.name}" } - "details.${prompt.name}")
                 }
+            }
+            launch().use { scenario ->
                 val build = mapper.toLaunchData(legacy)
                 awaitTag("navigation:row:project:id")
                 scenario.onActivity { launcher.open(it, BuildDetailsDestination(build)) }
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
-                assertFalse(shown(preference))
+                assertFalse(shown(prompt))
                 scenario.recreate()
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
                 compose.onNodeWithTag("details:dismiss-prompt").performClick()
-                compose.waitUntil(10_000) { shown(preference) }
+                compose.waitUntil(10_000) { shown(prompt) }
                 awaitTag("overview:list")
                 pressBack()
                 awaitTag("navigation:row:project:id")
@@ -358,6 +348,7 @@ class BuildDetailsNavigationTest {
                 awaitTag("overview:list")
                 compose.onNodeWithTag("details:dismiss-prompt").assertDoesNotExist()
                 pressBack()
+                awaitTag("navigation:row:project:id")
             }
         }
     }

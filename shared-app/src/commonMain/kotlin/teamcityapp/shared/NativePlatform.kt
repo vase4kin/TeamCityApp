@@ -36,6 +36,7 @@ interface NativePlatform {
 
     /** Returns an unsubscribe function; the destination owns this registration. */
     fun onBackground(cancel: () -> Unit): () -> Unit
+    fun isRecreatingHost(): Boolean = false
     fun browser(url: String)
     fun share(text: String)
     fun copy(text: String)

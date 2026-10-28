@@ -32,7 +32,7 @@ fun SharedArtifactsRoute(vm: ArtifactsViewModel, router: SharedArtifactsRouter, 
         val unsubscribe = router.onBackground(vm::cancelUnfinishedDownload)
         onDispose { unsubscribe() }
     }
-    ArtifactDownloadLifetime(lifecycle, screenActive, { false }, vm::cancelUnfinishedDownload)
+    ArtifactDownloadLifetime(lifecycle, screenActive, router::isRecreatingHost, vm::cancelUnfinishedDownload)
     LifecycleResumeEffect(vm) {
         vm.onResumed()
         onPauseOrDispose {}

@@ -143,7 +143,7 @@ private fun SharedManagedBuild(destination: BuildDetailsDestination, graph: Shar
         while (true) {
             val result = nav.consumeResult(entryId, ActionSheetResult::class) ?: break
             if (result.consumerId == "overview" && result.item.action == SheetAction.Branch) {
-                destination.build.buildTypeId?.let {
+                model.state.value.current.buildTypeId?.let {
                     actions.configuration(result.item.description)
                     nav.push(BuildHistoryDestination(it, model.state.value.subtitle, BuildFilter(branch = result.item.description).toTeamCityLocator()))
                 }

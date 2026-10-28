@@ -17,11 +17,21 @@
 package com.github.vase4kin.teamcityapp.di.modules
 
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
+import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import okhttp3.ResponseBody
+import okio.Buffer
+import okio.Source
+import okio.Timeout
+import okio.buffer
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -87,6 +97,69 @@ class SharedMockClientTest {
             request.join()
             withTimeout(5_000) { disposed.await() }
         } finally {
+            api.close()
+        }
+    }
+
+    @Test fun encodedCollectionQueriesReachTheLegacyFixtureWithDecodedValues() = runBlocking<Unit> {
+        val href = "/context/guestAuth/app/rest/testOccurrences?locator=build:(id:1),count:2147483647&fields=count,passed,failed,ignored"
+        doReturn(TestOccurrences(16)).whenever(service) { listTestOccurrences(href) }
+        val api = api()
+        try {
+            assertEquals(16, api.document(href).count())
+            verifyBlocking(service, times(1)) { listTestOccurrences(href) }
+        } finally {
+            api.close()
+        }
+    }
+
+    @Test fun cancellationPayloadMapsTheWireFlagToTheLegacyFixtureContract() = runBlocking<Unit> {
+        val path = "/context/guestAuth/app/rest/builds/id:1"
+        val api = api()
+        try {
+            for (reAdd in listOf(true, false)) {
+                doReturn(Build()).whenever(service) { cancelBuild(path, BuildCancelRequest(reAdd)) }
+                api.mutate(path, buildJsonObject { put("readdIntoQueue", reAdd) })
+                verifyBlocking(service, times(1)) { cancelBuild(path, BuildCancelRequest(reAdd)) }
+            }
+        } finally {
+            api.close()
+        }
+    }
+
+    @Test fun cancellingABlockedDownloadClosesItsFixtureBody() = runBlocking<Unit> {
+        val entered = CompletableDeferred<Unit>()
+        val closed = CompletableDeferred<Unit>()
+        val release = java.util.concurrent.CountDownLatch(1)
+        val body = object : ResponseBody() {
+            private val source = object : Source {
+                override fun timeout() = Timeout.NONE
+                override fun read(sink: Buffer, byteCount: Long): Long {
+                    entered.complete(Unit)
+                    check(release.await(10, java.util.concurrent.TimeUnit.SECONDS))
+                    return -1L
+                }
+                override fun close() {
+                    closed.complete(Unit)
+                    release.countDown()
+                }
+            }.buffer()
+            override fun contentType(): okhttp3.MediaType? = null
+            override fun contentLength() = -1L
+            override fun source() = source
+        }
+        doReturn(body).whenever(service) { downloadFile(any()) }
+        val api = api()
+        try {
+            val request = async(Dispatchers.Default) { api.stream("/context/guestAuth/app/rest/builds/id:1/artifacts/content/file.txt", { _, _ -> }, { _, _ -> }) }
+            withTimeout(5_000) { entered.await() }
+            request.cancel()
+            withTimeout(5_000) {
+                closed.await()
+                request.join()
+            }
+        } finally {
+            release.countDown()
             api.close()
         }
     }

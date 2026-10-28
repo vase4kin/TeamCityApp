@@ -59,6 +59,7 @@ internal fun sharedArtifactEntries(graph: SharedAccountFeatures?): Set<Destinati
                     }
                     override fun openFile(file: DownloadedArtifact) = platform.openFile(file.path)
                     override fun onBackground(cancel: () -> Unit) = platform.onBackground(cancel)
+                    override fun isRecreatingHost() = platform.isRecreatingHost()
                     override fun consumeAction() = nav.consumeResult(id, ActionSheetResult::class) { it.consumerId == id }?.item
                 }
             }
