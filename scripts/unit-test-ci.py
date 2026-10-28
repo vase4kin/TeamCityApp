@@ -25,6 +25,12 @@ import zipfile
 SHARD_COUNT = 4
 
 
+def has_production_sources(directory):
+    return any(path.suffix in {".kt", ".java"}
+               for source_set in ("main", "commonMain", "androidMain", "mock", "prod", "debug")
+               for path in (directory / f"src/{source_set}").rglob("*"))
+
+
 def modules(root):
     """Follow explicit includes and schedule Android and KMP host checks."""
     included = re.findall(r'^include\("(:[\w:-]+)"\)', (root / "settings.gradle.kts").read_text(), re.MULTILINE)
@@ -41,7 +47,8 @@ def modules(root):
             startups = sum(len(re.findall(r"@RunWith\([^\n]*Robolectric", p.read_text())) for p in sources)
             images = sum(1 for _ in (directory / "src/test/screenshots").rglob("*.png"))
             result[module] = {"tasks": tasks,
-                              "weight": max(1, 20 * min(startups, 2) + images * .15 + len(sources) * .1), "has_tests": bool(sources)}
+                              "weight": max(1, 20 * min(startups, 2) + images * .15 + len(sources) * .1), "has_tests": bool(sources),
+                              "has_production_sources": has_production_sources(directory)}
             continue
         if not re.search(r'id\("teamcityapp\.android\.(?:application|library(?:\.java)?)"\)', build):
             raise ValueError(f"Unrecognized test convention for {module}; update unit-test-ci.py")
@@ -56,7 +63,8 @@ def modules(root):
         # PNG counts estimate render work; the cap avoids overweighting the app.
         startups = sum(len(re.findall(r"@RunWith\([^\n]*Robolectric", p.read_text())) for p in sources)
         images = sum(1 for _ in (directory / "src/test/screenshots").rglob("*.png"))
-        result[module] = {"tasks": tasks, "weight": max(1, 20 * min(startups, 2) + images * .15 + len(sources) * .1), "has_tests": bool(sources)}
+        result[module] = {"tasks": tasks, "weight": max(1, 20 * min(startups, 2) + images * .15 + len(sources) * .1), "has_tests": bool(sources),
+                          "has_production_sources": has_production_sources(directory)}
     if not result:
         raise ValueError("No Android modules discovered")
     return result
@@ -98,7 +106,9 @@ def validate_execution(root, shard, entries):
         if entries[module]["has_tests"]:
             if not any(p.stat().st_size for p in execution_paths(root, module)):
                 raise ValueError(f"Missing unit coverage execution data for {module}")
-            if not any(coverage_paths(root, module)):
+            # A resource/re-export module may retain tests without owning any
+            # production bytecode. Its execution data still covers dependencies.
+            if entries[module]["has_production_sources"] and not any(coverage_paths(root, module)):
                 raise ValueError(f"Missing compiled coverage classes for {module}")
 
 

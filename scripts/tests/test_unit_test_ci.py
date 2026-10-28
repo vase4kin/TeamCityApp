@@ -38,6 +38,7 @@ class UnitTestCiTest(unittest.TestCase):
             module = name[1:].replace(":", "/")
             kind = "application" if name == ":app" else "library"
             self.write(self.root, f"{module}/build.gradle.kts", f'plugins {{ id("teamcityapp.android.{kind}") }}\nid("teamcityapp.android.screenshot")')
+            self.write(self.root, f"{module}/src/main/kotlin/Screen.kt", "class Screen")
             if name != ":libraries:shared":
                 self.write(self.root, f"{module}/src/test/kotlin/ScreenTest.kt", "@RunWith(RobolectricTestRunner::class) class ScreenTest")
             variant = "mockDebug" if name == ":app" else "debug"
@@ -144,6 +145,45 @@ class UnitTestCiTest(unittest.TestCase):
         for name in self.names:
             self.assertEqual([p.read_bytes() for p in ci.coverage_paths(consumer, name)], [p.read_bytes() for p in ci.coverage_paths(self.root, name)])
             self.assertEqual([p.read_bytes() for p in ci.execution_paths(consumer, name)], [p.read_bytes() for p in ci.execution_paths(self.root, name)])
+
+    def harness_only_module(self, convention, test_source_set):
+        module = "libraries/shared"
+        self.write(self.root, f"{module}/build.gradle.kts", f'id("{convention}")')
+        (self.root / f"{module}/src/main/kotlin/Screen.kt").unlink()
+        (self.root / f"{module}/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/Screen.class").unlink()
+        self.write(self.root, f"{module}/src/{test_source_set}/kotlin/ScreenTest.kt", "class ScreenTest")
+
+    def assert_harness_only_round_trip(self):
+        self.pack_all()
+        consumer = self.consumer()
+        ci.restore(consumer, self.inputs)
+        self.assertEqual([], list(ci.coverage_paths(consumer, ":libraries:shared")))
+        self.assertEqual([b":libraries:shared coverage"], [p.read_bytes() for p in ci.execution_paths(consumer, ":libraries:shared")])
+
+    def test_android_harness_only_module_keeps_tests_and_execution_without_production_classes(self):
+        self.harness_only_module("teamcityapp.android.library", "test")
+        self.assert_harness_only_round_trip()
+
+    def test_kmp_harness_only_module_keeps_tests_and_execution_without_production_classes(self):
+        self.harness_only_module("teamcityapp.kmp.library", "androidHostTest")
+        self.assert_harness_only_round_trip()
+
+    def test_harness_only_module_still_requires_execution_data(self):
+        self.harness_only_module("teamcityapp.android.library", "test")
+        (self.root / "libraries/shared/build/jacoco/test.exec").unlink()
+        shard = next(s["shard"] for s in ci.plan(self.root)["include"] if ":libraries:shared" in s["modules"])
+        with self.assertRaisesRegex(ValueError, "Missing unit coverage execution"):
+            ci.pack(self.root, shard, self.inputs / "shared.zip")
+
+    def test_kmp_production_sources_still_require_compiled_classes(self):
+        self.harness_only_module("teamcityapp.kmp.library", "androidHostTest")
+        shard = next(s["shard"] for s in ci.plan(self.root)["include"] if ":libraries:shared" in s["modules"])
+        for source in ("commonMain/kotlin/Shared.kt", "androidMain/java/Shared.java"):
+            with self.subTest(source=source):
+                path = self.write(self.root, f"libraries/shared/src/{source}", "class Shared {}")
+                with self.assertRaisesRegex(ValueError, "Missing compiled coverage"):
+                    ci.pack(self.root, shard, self.inputs / "shared.zip")
+                path.unlink()
 
     def test_compiled_dependencies_are_included_without_unowned_test_data(self):
         ci.pack(self.root, 0, self.inputs / "shard-0.zip")
