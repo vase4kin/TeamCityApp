@@ -1,4 +1,5 @@
 /*
+ * Copyright 2026 Andrey Tolpeev
  * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,33 +15,51 @@
  * limitations under the License.
  */
 
-/* Updated for Compose in 2026. */
-
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
     id("teamcityapp.android.screenshot")
 }
 
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.test_details.impl" }
+kotlin { android { namespace = "teamcityapp.features.test_details.impl" } }
 
-dependencies {
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.testDetails.api)
-    implementation(projects.libraries.resources)
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.turbine)
-    testImplementation(libs.mockito.mockitoCore)
-    ksp(libs.dagger.compiler)
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.test_details.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        implementation(projects.libraries.network)
+        implementation(projects.libraries.analytics)
+        api(projects.features.testDetails.api)
+        api(projects.libraries.designSystem)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+        implementation(libs.multiplatform.lifecycle.runtime)
+    }
+}
+kotlin.sourceSets.named("commonTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+    }
+}
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+        implementation(libs.mockito.mockitoCore)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.testDetails.api)
+        implementation(projects.libraries.resources)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

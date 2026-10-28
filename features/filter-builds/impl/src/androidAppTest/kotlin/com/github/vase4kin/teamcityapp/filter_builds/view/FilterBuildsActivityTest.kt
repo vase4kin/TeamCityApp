@@ -1,0 +1,397 @@
+/*
+ * Copyright 2019 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.filter_builds.view
+
+import android.view.View
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.test.espresso.Espresso.onData
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.buildlist.api.Builds
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.eq
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
+import com.github.vase4kin.teamcityapp.runbuild.api.Branch
+import com.github.vase4kin.teamcityapp.runbuild.api.Branches
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import java.util.ArrayList
+import org.hamcrest.Matchers.instanceOf
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.not
+import org.hamcrest.core.AllOf.allOf
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.timeout
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
+import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
+
+/**
+ * Tests for typed Filter Builds results delivered to History
+ */
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class FilterBuildsActivityTest {
+    @get:Rule(order = 99)
+    val phaseFourEvidence = com.github.vase4kin.teamcityapp.helper.PhaseFourEvidenceRule()
+
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
+    private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
+
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
+    val activityRule: CustomIntentsTestRule<MainActivity> =
+        CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
+
+    @Spy
+    private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun disableOnboarding() {
+            TestUtils.disableOnboarding()
+        }
+    }
+
+    @Before
+    fun setUp() {
+        val app =
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
+        app.appInjector.sharedUserStorage().clearAll()
+        app.appInjector.sharedUserStorage()
+            .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        doReturn(Builds(0, emptyList())).whenever(teamCityService) {
+            listBuilds(
+                anyString(),
+                anyString()
+            )
+        }
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithDefaultFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:default:any,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsByPinned() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Click on pin switcher
+        compose.onNodeWithTag("filter-builds:pinned").performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:default:any,personal:false,pinned:true,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsByPersonal() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Click on pin switcher
+        compose.onNodeWithTag("filter-builds:personal").performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:default:any,personal:true,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsByBranch() {
+        // Prepare mocks
+        val branches = ArrayList<Branch>()
+        branches.add(Branch("dev1"))
+        branches.add(Branch("dev2"))
+        doReturn(Branches(branches)).whenever(teamCityService) { listBranches(anyString()) }
+
+        // Starting the activity
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Choose branch from autocomplete and verify it is appeared
+        compose.onNodeWithTag("branches:input")
+            .performTextInput("dev")
+        compose.onNodeWithText("dev1").performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:name:dev1,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testPinnedSwitchIsGoneWhenQueuedFilterIsChosen() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Check switchers are shown
+        compose.onNodeWithTag("filter-builds:pinned").assertIsDisplayed()
+        compose.onNodeWithTag("filter-builds:personal").assertIsDisplayed()
+
+        // Filter by queued
+        compose.onNodeWithTag("filter-builds:status:Queued").performScrollTo().performClick()
+
+        // Check switchers
+        compose.onNodeWithTag("filter-builds:pinned").assertDoesNotExist()
+        compose.onNodeWithTag("filter-builds:pinned").assertDoesNotExist()
+        compose.onNodeWithTag("filter-builds:personal").assertIsDisplayed()
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithSuccessFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:Success").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("status:SUCCESS,branch:default:any,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithFailedFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:Failed").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("status:FAILURE,branch:default:any,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithFailedServerErrorFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:Error").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("status:ERROR,branch:default:any,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithCancelledFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:Cancelled").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("canceled:true,branch:default:any,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithFailedToStartFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:FailedToStart").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("failedToStart:true,branch:default:any,personal:false,pinned:false,count:10")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithRunningFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:Running").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("running:true,branch:default:any,personal:false,pinned:false")
+    }
+
+    @Test
+    fun testUserCanFilterBuildsWithQueuedFilter() {
+        activityRule.launchActivity(null)
+
+        // Open build type
+        openHistoryConfiguration()
+
+        // Pressing filter builds toolbar item
+        openHistoryFilters()
+
+        // Filter by success
+        compose.onNodeWithTag("filter-builds:status:Queued").performScrollTo().performClick()
+
+        // Click on filter fab
+        compose.onNodeWithTag("filter-builds:apply").performClick()
+
+        // Check data was loaded with new filter
+        assertBuildQuery("state:queued,branch:default:any,personal:false,pinned:any")
+    }
+    private fun assertBuildQuery(locator: String) {
+        // Pump Compose's dispatcher so the returned filter resumes History's Paging presenter.
+        compose.waitUntil(10_000) {
+            org.mockito.Mockito.mockingDetails(teamCityService).invocations.any { invocation ->
+                invocation.method.name == "listBuilds" && invocation.arguments.getOrNull(1) == locator
+            }
+        }
+        verifyBlocking(teamCityService) { listBuilds(anyString(), eq(locator)) }
+    }
+
+    private fun openHistoryConfiguration() {
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithTag("navigation:row:configuration:build_type_id").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithTag("navigation:row:configuration:build_type_id").performClick()
+    }
+
+    private fun openHistoryFilters() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:filter").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:filter").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("filter-builds:apply").fetchSemanticsNodes().isNotEmpty() }
+    }
+}

@@ -14,39 +14,72 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.hilt")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_history.impl" }
-dependencies {
-    implementation(projects.libraries.onboarding)
-    implementation(projects.libraries.session)
-    implementation(libs.coroutines.rx2)
-    implementation(projects.libraries.coroutines)
-    implementation(projects.libraries.data)
-    implementation(projects.features.buildDetails.api)
-    implementation(projects.features.home.api)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.buildHistory.api)
-    implementation(projects.features.runBuild.api)
-    implementation(projects.features.filterBuilds.api)
-    implementation(projects.libraries.buildUi)
-    implementation(projects.libraries.listUi)
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.paging.common)
-    implementation(libs.androidx.paging.compose)
-    implementation(libs.coroutines.android)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.androidx.paging.testing)
-    ksp(libs.dagger.compiler)
+
+kotlin { android { namespace = "teamcityapp.features.build_history.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.build_history.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        implementation(projects.libraries.network)
+        implementation(projects.libraries.analytics)
+        api(projects.features.buildHistory.api)
+        api(projects.libraries.buildPresentation)
+        api(projects.libraries.designSystem)
+        implementation(projects.libraries.time)
+        implementation(libs.androidx.paging.compose)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+        implementation(libs.multiplatform.lifecycle.runtime)
+    }
+}
+
+kotlin.sourceSets.named("commonTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.androidx.paging.testing)
+    }
+}
+
+kotlin.sourceSets.named("androidMain") {
+    dependencies {
+
+        implementation(projects.features.filterBuilds.api)
+    }
+}
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.androidx.paging.testing)
+        implementation(projects.libraries.onboarding)
+        implementation(projects.libraries.session)
+        implementation(projects.libraries.coroutines)
+        implementation(projects.libraries.data)
+        implementation(projects.features.buildDetails.api)
+        implementation(projects.features.home.api)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.buildHistory.api)
+        implementation(projects.features.runBuild.api)
+        implementation(projects.libraries.buildUi)
+        implementation(projects.libraries.listUi)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.androidx.paging.common)
+        implementation(libs.androidx.paging.compose)
+        implementation(libs.coroutines.android)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

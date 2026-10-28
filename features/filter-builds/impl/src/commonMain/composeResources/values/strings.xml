@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 Andrey Tolpeev
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+<string name="text_build_branch">Build branch</string>
+<string name="text_no_branches_available_to_filter">No branches available to filter</string>
+<string name="text_loading_branches">Loading branches</string>
+<string name="title_filter_builds">Filter builds</string>
+<string name="text_switcher_for_pinned">Pinned</string>
+<string name="text_switcher_for_personal">Personal</string>
+<string name="text_filters">Filter</string>
+<string name="text_filters_none">All builds</string>
+<string name="hint_default_filter_branch">Any</string>
+<string name="text_apply_filters_button">Apply filters</string>
+<string name="filter_status_success">Success</string>
+<string name="filter_status_failed">Failed</string>
+<string name="filter_status_server_error">Server error</string>
+<string name="filter_status_cancelled">Cancelled</string>
+<string name="filter_status_failed_to_start">Failed to start</string>
+<string name="filter_status_running">Running</string>
+<string name="filter_status_queued">Queued</string>
+<string name="branches_unavailable">Unable to load branches. The branch filter is unchanged.</string>
+</resources>

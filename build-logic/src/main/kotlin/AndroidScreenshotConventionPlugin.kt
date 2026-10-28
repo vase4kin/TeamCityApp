@@ -17,20 +17,29 @@
 package teamcityapp.buildlogic
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import io.github.takahirom.roborazzi.RoborazziExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.tasks.testing.Test
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /** Opt-in local Compose golden tests for the module that owns the UI. */
 @OptIn(ExperimentalRoborazziApi::class)
 class AndroidScreenshotConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("io.github.takahirom.roborazzi")
-        extensions.configure(CommonExtension::class.java) {
-            testOptions.unitTests.isIncludeAndroidResources = true
+        val multiplatform = pluginManager.hasPlugin("com.android.kotlin.multiplatform.library")
+        if (multiplatform) {
+            val android = extensions.getByType(KotlinMultiplatformExtension::class.java).targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+            (android.compilations.getByName("hostTest") as KotlinMultiplatformAndroidHostTestCompilation).isIncludeAndroidResources = true
+        } else {
+            extensions.configure(CommonExtension::class.java) {
+                testOptions.unitTests.isIncludeAndroidResources = true
+            }
         }
         extensions.configure(RoborazziExtension::class.java) {
             outputDir.set(layout.projectDirectory.dir("src/test/screenshots"))
@@ -38,11 +47,12 @@ class AndroidScreenshotConventionPlugin : Plugin<Project> {
             compare.outputDir.set(layout.buildDirectory.dir("outputs/roborazzi"))
         }
         val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
-        dependencies.add("testImplementation", dependencies.platform(libs.findLibrary("compose-bom").get()))
+        val testConfiguration = if (multiplatform) "androidHostTestImplementation" else "testImplementation"
+        dependencies.add(testConfiguration, dependencies.platform(libs.findLibrary("compose-bom").get()))
         listOf("junit", "robolectric", "roborazzi-core", "compose-ui-testJunit4").forEach {
-            dependencies.add("testImplementation", libs.findLibrary(it).get())
+            dependencies.add(testConfiguration, libs.findLibrary(it).get())
         }
-        dependencies.add("debugImplementation", libs.findLibrary("compose-ui-testManifest").get())
+        dependencies.add(if (multiplatform) testConfiguration else "debugImplementation", libs.findLibrary("compose-ui-testManifest").get())
         tasks.withType(Test::class.java).configureEach {
             // Stable resource loading without relying on Robolectric's repo1 default.
             systemProperty("robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2")

@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright 2019 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="preview_action_unavailable">This action is not available in this preview.</string>
+<string name="platform_action_failed">Couldn’t complete action</string>
+<string name="platform_browser_failed">No browser or mail app could open this link. You can try again.</string>
+<string name="platform_share_failed">The share sheet is unavailable. Please try again.</string>
+<string name="platform_copy_failed">Couldn’t copy this text. Please try again.</string>
+<string name="platform_file_failed">This file is unavailable. Download it again, then choose an app or Save to Files.</string>
+<string name="platform_rating_failed">Rating is unavailable right now. Please try again from an active app window.</string>
+<string name="platform_ok">OK</string>
+    <string name="navigation_save_failed">Unable to save your place in the app. Try again.</string>
+</resources>

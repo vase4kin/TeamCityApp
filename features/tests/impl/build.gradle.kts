@@ -14,35 +14,57 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.tests.impl" }
-dependencies {
-    implementation(projects.libraries.data)
-    implementation(projects.libraries.coroutines)
-    implementation(libs.coroutines.rx2)
 
-    implementation(projects.features.testDetails.api)
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.buildDetails.api)
-    implementation(projects.features.tests.api)
-    implementation(projects.libraries.listUi)
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.paging.common)
-    implementation(libs.androidx.paging.compose)
-    implementation(libs.coroutines.android)
-    testImplementation(libs.mockito.mockitoCore)
-    testImplementation(libs.mockito.mockitoKotlin)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.androidx.paging.testing)
-    ksp(libs.dagger.compiler)
+kotlin { android { namespace = "teamcityapp.features.tests.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.tests.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        implementation(projects.libraries.network)
+        api(projects.features.tests.api)
+        api(projects.libraries.designSystem)
+        api(projects.libraries.listPresentation)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+    }
+}
+kotlin.sourceSets.named("commonTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.androidx.paging.testing)
+        implementation(projects.libraries.networkTesting)
+    }
+}
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.mockito.mockitoCore)
+        implementation(libs.mockito.mockitoKotlin)
+        implementation(libs.coroutines.test)
+        implementation(libs.androidx.paging.testing)
+        implementation(projects.libraries.data)
+        implementation(projects.libraries.coroutines)
+        implementation(projects.features.testDetails.api)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.buildDetails.api)
+        implementation(projects.features.tests.api)
+        implementation(projects.libraries.listUi)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.androidx.paging.common)
+        implementation(libs.androidx.paging.compose)
+        implementation(libs.coroutines.android)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

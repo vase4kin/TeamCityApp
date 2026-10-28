@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -41,6 +40,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.settings.api.navigation.SettingsDestination
@@ -76,11 +78,12 @@ class MainActivityNavigationTest {
     private val info = ServerInfo("navigation-server", "https://navigation.example")
 
     @Before fun before() {
-        app.appInjector.cacheManager().evictAllCache()
+        com.github.vase4kin.teamcityapp.helper.TestUtils.disableOnboarding()
+        app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         runBlocking { app.appInjector.themePreferences().setTheme(ThemeMode.Light) }
-        `when`(service.serverInfo()).thenReturn(Single.just(info))
+        doReturn(info).whenever(service) { serverInfo() }
     }
 
     private fun await(text: String) {
@@ -100,7 +103,7 @@ class MainActivityNavigationTest {
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
             compose.onNodeWithContentDescription("Back").performClick()
             await(info.version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
             assertEquals(Lifecycle.State.RESUMED, scenario.state)
         }
     }
@@ -114,7 +117,7 @@ class MainActivityNavigationTest {
             await("Light theme")
             compose.onNodeWithContentDescription("Back").performClick()
             await(info.version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
         }
     }
 
@@ -146,7 +149,7 @@ class MainActivityNavigationTest {
             await("Light theme")
             compose.onNodeWithContentDescription("Back").performClick()
             await(info.version)
-            verify(service, times(1)).serverInfo()
+            verifyBlocking(service, times(1)) { serverInfo() }
         }
     }
 
@@ -159,11 +162,135 @@ class MainActivityNavigationTest {
         }
     }
 
-    @Test fun toolbarBackAtRootClosesTheHost() {
+    @Test fun toolbarBackReturnsToSharedHomeBeforeRootExit() {
         launchAbout().use { scenario ->
             await(info.version)
             compose.onNodeWithContentDescription("Back").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            androidx.test.espresso.Espresso.pressBackUnconditionally()
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+        }
+    }
+
+    private fun captureDisplay(scenario: ActivityScenario<MainActivity>, name: String) {
+        compose.mainClock.advanceTimeBy(1000)
+        compose.waitForIdle()
+        val frame = java.util.concurrent.CountDownLatch(1)
+        scenario.onActivity { activity -> activity.window.decorView.postOnAnimation { activity.window.decorView.postOnAnimation { frame.countDown() } } }
+        check(frame.await(5, java.util.concurrent.TimeUnit.SECONDS)) { "Display did not render the settled route" }
+        val bitmap = androidx.test.runner.screenshot.Screenshot.capture().bitmap
+        val file = java.io.File(app.getExternalFilesDir(null), "shared-production-$name.png")
+        file.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    @Test fun refreshedBuildSectionsAndCompletedExportSurviveRecreation() {
+        androidx.test.espresso.intent.Intents.init()
+        try {
+            androidx.test.espresso.intent.Intents.intending(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER)).respondWith(android.app.Instrumentation.ActivityResult(android.app.Activity.RESULT_CANCELED, null))
+            val complete = teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(Mocks.successBuild())
+            val incoming = complete.copy(state = "running", properties = null, artifacts = null, changes = null, tests = null)
+            ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java)).use { scenario ->
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+                scenario.onActivity { launcher.open(it, teamcityapp.features.build_details.api.BuildDetailsDestination(incoming, "Refreshed build")) }
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:section:Artifacts").fetchSemanticsNodes().isNotEmpty() }
+                captureDisplay(scenario, "phase7-refreshed-overview")
+                compose.onNodeWithTag("overview:section:Parameters").performScrollTo().performClick()
+                await("Murdock")
+                captureDisplay(scenario, "phase7-refreshed-parameters")
+                scenario.recreate()
+                await("Murdock")
+                androidx.test.espresso.Espresso.pressBack()
+                compose.onNodeWithTag("overview:section:Artifacts").performScrollTo().performClick()
+                await("AndroidManifest.xml")
+                captureDisplay(scenario, "phase7-artifacts")
+                compose.onNodeWithText("AndroidManifest.xml").performClick()
+                compose.onNodeWithTag("sheet:ArtifactDownload").performClick()
+                await("Open or share")
+                captureDisplay(scenario, "phase7-download-complete")
+                scenario.recreate()
+                await("Open or share")
+                compose.onNodeWithTag("artifacts:open-downloaded").performClick()
+                await("Open or share")
+                verifyBlocking(service, times(1)) { downloadFile(org.mockito.kotlin.any()) }
+                androidx.test.espresso.intent.Intents.intended(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER), androidx.test.espresso.intent.VerificationModes.times(2))
+            }
+        } finally {
+            androidx.test.espresso.intent.Intents.release()
+        }
+    }
+
+    @Test fun packagedAndroidNoticesUseTheSharedReaderAndAllThemeChoices() {
+        launchAbout().use { scenario ->
+            await(info.version)
+            captureDisplay(scenario, "about-consolidated")
+            compose.onNodeWithText("Open sources libraries").performScrollTo().performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("licenses:android_0").fetchSemanticsNodes().isNotEmpty() }
+            captureDisplay(scenario, "licenses")
+            compose.onNodeWithTag("licenses:android_0").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("license:text").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("license:text").assertIsDisplayed()
+            captureDisplay(scenario, "license-text")
+            scenario.onActivity { launcher.open(it, SettingsDestination) }
+            await("Light theme")
+            listOf("Light", "Dark", "AutoBattery", "System").forEach { compose.onNodeWithTag("settings:option:$it").assertExists() }
+            captureDisplay(scenario, "settings")
+        }
+    }
+
+    @Test fun aboutLibrariesLaunchesTheAndroidOssPlugin() {
+        androidx.test.espresso.intent.Intents.init()
+        try {
+            val target = androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent(com.google.android.gms.oss.licenses.OssLicensesMenuActivity::class.java.name)
+            launchAbout().use {
+                await("navigation-server")
+                compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Open sources libraries"))
+                compose.onNodeWithText("Open sources libraries").performClick()
+                androidx.test.espresso.intent.Intents.intended(target)
+                InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+                var pluginVisible = false
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    pluginVisible = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                        .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
+                        .any { it is com.google.android.gms.oss.licenses.OssLicensesMenuActivity }
+                }
+                assertTrue("The Android plugin owns the visible licenses screen", pluginVisible)
+                val file = java.io.File(app.getExternalFilesDir(null), "android-oss-licenses-plugin.png")
+                file.outputStream().use { stream -> androidx.test.runner.screenshot.Screenshot.capture().bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream) }
+                androidx.test.espresso.Espresso.pressBack()
+                await("navigation-server")
+            }
+        } finally {
+            androidx.test.espresso.intent.Intents.release()
+        }
+    }
+
+    @Test fun sharedAccountManageAddAndLastRemovalUseOneRoot() {
+        ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java)).use { scenario ->
+            fun click(tag: String) {
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
+                if (tag == "drawer:manage") compose.onNodeWithTag(tag).performScrollTo().performClick() else compose.onNodeWithTag(tag).performClick()
+            }
+            click("home:account")
+            compose.onNodeWithTag("drawer:manage").assertExists()
+            compose.onNodeWithTag("accounts:sign-out").assertDoesNotExist()
+            captureDisplay(scenario, "account")
+            click("drawer:manage")
+            compose.onNodeWithTag("accounts:list").assertExists()
+            captureDisplay(scenario, "manage")
+            click("accounts:add")
+            compose.onNodeWithTag("create-account:form").assertExists()
+            captureDisplay(scenario, "add")
+            androidx.test.espresso.Espresso.pressBack()
+            compose.onNodeWithText("Discard").performClick()
+            compose.onNode(hasContentDescription("Remove", substring = true)).performScrollTo().performClick()
+            compose.onNodeWithText("Remove").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("login:submit").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("login:accounts").assertDoesNotExist()
+            captureDisplay(scenario, "last-account-removed")
+            scenario.recreate()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("login:submit").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("login:accounts").assertDoesNotExist()
         }
     }
 }

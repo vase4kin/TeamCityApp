@@ -17,25 +17,9 @@
 
 package teamcityapp.libraries.session
 
-import com.google.gson.JsonArray
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
-import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 
 /** Identifies accounts without putting passwords into UI queries; encoding avoids separator collisions. */
-fun UserAccount.homeBuildAccountKey(): String = JsonArray().apply {
-    add(teamcityUrl)
-    add(userName)
-    add(isGuestUser)
-    add(isSslDisabled)
-}.toString()
+fun UserAccount.sharedAccountIdentity() = teamcityapp.libraries.accounts.AccountIdentity(teamcityUrl, userName, isGuestUser || userName == "Guest user", isSslDisabled)
 
-suspend fun requireCurrentHomeBuildAccount(storage: Storage, expectedKey: String) {
-    currentCoroutineContext().ensureActive()
-    val account = storage.activeUser
-    if (account.teamcityUrl.isBlank() || account.homeBuildAccountKey() != expectedKey) {
-        throw CancellationException("The Home build query belongs to a different account")
-    }
-}
+fun UserAccount.homeBuildAccountKey(): String = sharedAccountIdentity().key

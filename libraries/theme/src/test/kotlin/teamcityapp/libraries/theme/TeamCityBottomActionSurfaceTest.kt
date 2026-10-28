@@ -48,6 +48,24 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-w360dp-h800dp-notnight-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class TeamCityBottomActionSurfaceTest {
+    @Test fun labeledToolbarKeepsEachActionIndependentlyUsable() {
+        var filters = 0
+        var favorites = 0
+        compose.setContent {
+            TeamCityTheme {
+                TeamCityFloatingToolbar {
+                    Button({ filters++ }) { Text("Filter") }
+                    Button({ favorites++ }) { Text("Favorite") }
+                }
+            }
+        }
+        compose.onNodeWithContentDescription("Actions").assertExists()
+        compose.onNodeWithText("Filter").performClick()
+        compose.onNodeWithText("Favorite").performClick()
+        assertEquals(1, filters)
+        assertEquals(1, favorites)
+    }
+
     @get:Rule val compose = createComposeRule()
 
     @Test fun scrollRemainderChangesToneAtBottomAndBackWithoutMovingActions() = scrollTransitions(false)
@@ -166,7 +184,7 @@ class TeamCityBottomActionSurfaceTest {
         assertTone(dark, true)
         assertEquals(initial, compose.onNodeWithTag("action").fetchSemanticsNode().boundsInRoot)
         val pixels = compose.onNodeWithTag("bar").captureToImage().toPixelMap()
-        val expected = (if (dark) DarkColorScheme else LightColorScheme).surfaceContainer
+        val expected = teamCityColorScheme(dark).surfaceContainer
         assertEquals(expected, pixels[8, pixels.height - 8])
         assertEquals(expected, pixels[pixels.width - 8, 8])
 
@@ -188,7 +206,7 @@ class TeamCityBottomActionSurfaceTest {
     private fun assertTone(dark: Boolean, raised: Boolean) {
         compose.mainClock.advanceTimeBy(1_000)
         compose.waitForIdle()
-        val colors = if (dark) DarkColorScheme else LightColorScheme
+        val colors = teamCityColorScheme(dark)
         val expected = if (raised) colors.surfaceContainer else colors.surface
         val pixels = compose.onNodeWithTag("bar").captureToImage().toPixelMap()
         assertEquals(expected, pixels[8, 8])

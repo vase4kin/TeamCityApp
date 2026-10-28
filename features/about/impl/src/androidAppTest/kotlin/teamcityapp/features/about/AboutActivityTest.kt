@@ -1,0 +1,248 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.about
+
+import android.content.Intent
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import org.hamcrest.Matchers.allOf
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito.*
+import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
+import teamcityapp.features.about.repository.models.ServerInfo
+import teamcityapp.features.settings.api.navigation.SettingsDestination
+
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class AboutActivityTest {
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule()
+        .strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
+    val compose = createEmptyComposeRule()
+
+    @Inject lateinit var launcher: RootDestinationLauncher
+
+    @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+    private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+    private val info = ServerInfo("xxx117", "https://www.server.xxx177.com")
+
+    @Before fun setUp() {
+        app.appInjector.sharedUserStorage().clearAll()
+        app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+    }
+
+    private fun launch() = ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.ABOUT_COMPONENT))
+    private fun awaitText(text: String) {
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(text).assertIsDisplayed()
+    }
+    private fun scrollTo(text: String) {
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(text))
+        compose.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test fun contentSurvivesRecreationWithoutFragmentsOrAnotherRequest() {
+        doReturn(info).whenever(teamCityService) { serverInfo() }
+        launch().use { scenario ->
+            awaitText(info.version)
+            compose.onNodeWithText(info.webUrl).assertIsDisplayed()
+            compose.onNodeWithText(app.getString(R.string.drawer_item_about)).assertIsDisplayed()
+            com.github.vase4kin.teamcityapp.helper.DeviceEvidence.capture("android_about_content", phase = 6)
+            scenario.recreate()
+            awaitText(info.version)
+            compose.onNodeWithText(info.webUrl).assertIsDisplayed()
+            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
+            verifyBlocking(teamCityService, times(1)) { serverInfo() }
+        }
+    }
+
+    @Test fun serverFailureStillShowsApplicationAndContactDetails() {
+        doSuspendableAnswer { throw IllegalStateException("offline") }.whenever(teamCityService) { serverInfo() }
+        launch().use {
+            awaitText(app.getString(R.string.about_app_text_app))
+            compose.onNodeWithText(app.getString(R.string.about_app_text_server_info)).assertIsDisplayed()
+            compose.onNodeWithTag("about:server-unavailable").assertIsDisplayed()
+            scrollTo(app.getString(R.string.about_app_email))
+            scrollTo(app.getString(R.string.about_app_text_privacy))
+        }
+    }
+
+    @Test fun stoppingCancelsAndReturningLoadsFreshContent() {
+        val request = PendingFixture<ServerInfo>()
+        val subscribed = CountDownLatch(1)
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        subscribed.countDown()
+                        request.await()
+                    }
+
+                    else -> {
+                        info
+                    }
+                }
+            }.whenever(teamCityService) { serverInfo() }
+        }
+        launch().use { scenario ->
+            compose.waitUntil(10_000) { subscribed.count == 0L }
+            scenario.moveToState(Lifecycle.State.CREATED)
+            compose.waitUntil(5_000) { !request.isAwaiting }
+            request.complete(ServerInfo("late result", "https://late.example"))
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            awaitText(info.version)
+            compose.onNodeWithText("late result").assertDoesNotExist()
+        }
+    }
+
+    @Test fun recreatingWhileLoadingCancelsAndRestartsRequest() {
+        val request = PendingFixture<ServerInfo>()
+        val subscribed = CountDownLatch(1)
+        java.util.concurrent.atomic.AtomicInteger().let { responseIndex ->
+            doSuspendableAnswer { invocation ->
+                when (responseIndex.getAndIncrement()) {
+                    0 -> {
+                        subscribed.countDown()
+                        request.await()
+                    }
+
+                    else -> {
+                        info
+                    }
+                }
+            }.whenever(teamCityService) { serverInfo() }
+        }
+        launch().use { scenario ->
+            compose.waitUntil(10_000) { subscribed.count == 0L }
+            scenario.recreate()
+            awaitText(info.version)
+            compose.waitUntil(5_000) { !request.isAwaiting }
+            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
+        }
+    }
+
+    @Test fun linksEmailRateAndLicensesKeepTheirDestinations() {
+        doReturn(info).whenever(teamCityService) { serverInfo() }
+        launch().use {
+            awaitText(info.version)
+            Intents.init()
+            try {
+                Intents.intending(org.hamcrest.Matchers.any(Intent::class.java))
+                    .respondWith(android.app.Instrumentation.ActivityResult(android.app.Activity.RESULT_OK, null))
+                compose.onNodeWithText(info.webUrl).performClick()
+                Intents.intended(hasData(info.webUrl))
+                scrollTo(app.getString(R.string.about_app_text_rate_app))
+                compose.onNodeWithText(app.getString(R.string.about_app_text_rate_app)).performClick()
+                Intents.intended(hasData("market://details?id=${app.packageName}"))
+                val links = listOf(
+                    R.string.about_app_text_found_issue to R.string.about_app_url_found_issue,
+                    R.string.about_app_text_source_code to R.string.about_app_url_source_code,
+                    R.string.about_app_text_web to R.string.about_app_url_web,
+                    R.string.about_app_text_privacy to R.string.about_app_url_privacy
+                )
+                links.forEach { (label, url) ->
+                    scrollTo(app.getString(label))
+                    compose.onNodeWithText(app.getString(label)).performClick()
+                    Intents.intended(hasData(app.getString(url)))
+                }
+                scrollTo(app.getString(R.string.about_app_text_email))
+                compose.onNodeWithText(app.getString(R.string.about_app_text_email)).performClick()
+                Intents.intended(
+                    allOf(
+                        hasAction(Intent.ACTION_SENDTO),
+                        hasData("mailto:${app.getString(R.string.about_app_email)}?subject=Questions%20about%20TeamCityApp")
+                    )
+                )
+                scrollTo(app.getString(R.string.about_app_text_libraries))
+                compose.onNodeWithText(app.getString(R.string.about_app_text_libraries)).performClick()
+                Intents.intended(hasComponent(OssLicensesMenuActivity::class.java.name))
+            } finally {
+                Intents.release()
+            }
+        }
+    }
+
+    @Test fun typedRequestReusesAnAliasLaunchedHostAndRecreationRetainsItsBackStack() {
+        kotlinx.coroutines.runBlocking { app.appInjector.themePreferences().setTheme(teamcityapp.libraries.app_theme.ThemeMode.Light) }
+        doReturn(info).whenever(teamCityService) { serverInfo() }
+        launch().use { scenario ->
+            awaitText(info.version)
+            scenario.onActivity { launcher.open(it, SettingsDestination) }
+            awaitText("Light theme")
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            scenario.onActivity { assertEquals(IncomingDestinationResolver.ABOUT_COMPONENT, it.intent.component?.className) }
+            scenario.recreate()
+            awaitText("Light theme")
+            compose.onNodeWithContentDescription("Back").performClick()
+            awaitText(info.version)
+            verifyBlocking(teamCityService, times(1)) { serverInfo() }
+        }
+    }
+
+    @Test fun toolbarBackReturnsToTheSharedHome() {
+        doReturn(info).whenever(teamCityService) { serverInfo() }
+        launch().use { scenario ->
+            awaitText(info.version)
+            compose.onNodeWithContentDescription(app.getString(R.string.action_back)).performClick()
+            compose.waitUntil(5_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+        }
+    }
+}

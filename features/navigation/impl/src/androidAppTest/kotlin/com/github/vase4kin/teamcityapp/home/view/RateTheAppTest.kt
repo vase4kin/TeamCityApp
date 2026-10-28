@@ -1,0 +1,198 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.home.view
+
+import android.app.Activity
+import android.app.Instrumentation.ActivityResult
+import android.content.Context
+import android.content.Intent
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.intent.Intents.getIntents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
+import com.github.vase4kin.teamcityapp.navigation.api.*
+import dagger.hilt.android.testing.*
+import org.hamcrest.core.AllOf.allOf
+import org.junit.*
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.*
+import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
+import teamcityapp.features.navigation.impl.R as NavigationR
+import teamcityapp.libraries.session.homeBuildAccountKey
+
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class RateTheAppTest {
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
+    val activityRule = CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
+
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
+
+    @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+
+    private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
+    private val app get() = context.applicationContext as TeamCityApplicationBase
+    private fun preferences(): teamcityapp.libraries.accounts.AccountPreferences = kotlinx.coroutines.runBlocking {
+        preferenceStorage().preferences(app.appInjector.sharedUserStorage().activeUser.homeBuildAccountKey())
+    }
+    private fun updatePreferences(transform: (teamcityapp.libraries.accounts.AccountPreferences) -> teamcityapp.libraries.accounts.AccountPreferences) = kotlinx.coroutines.runBlocking {
+        preferenceStorage().updatePreferences(app.appInjector.sharedUserStorage().activeUser.homeBuildAccountKey(), transform)
+    }
+    private fun preferenceStorage() = dagger.hilt.EntryPoints.get(app, com.github.vase4kin.teamcityapp.helper.SharedRootTestState::class.java).accounts() as teamcityapp.libraries.accounts.AccountPreferencesStorage
+
+    companion object {
+        @JvmStatic @BeforeClass
+        fun disableOnboarding() = TestUtils.disableOnboarding()
+    }
+
+    @Before fun setUp() {
+        val app = context.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().apply {
+            clearAll()
+            saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        }
+        context.getSharedPreferences("rateTheAppPref", Context.MODE_PRIVATE).edit().clear().commit()
+        updatePreferences { it.copy(ratingHandled = false, ratingViewedBuildIds = setOf("one", "two", "three"), ratingQualifiedLaunch = "previous-process-launch") }
+    }
+
+    @Test fun eligibleRatingAppearsBetweenFirstAndSecondEntries() {
+        activityRule.launchActivity(null)
+        awaitRating()
+        compose.onNodeWithText(text(NavigationR.string.navigation_rate_title)).assertIsDisplayed()
+        compose.onNodeWithText(text(NavigationR.string.navigation_rate_description)).assertIsDisplayed()
+        val first = row("project:id").fetchSemanticsNode().boundsInRoot
+        val card = compose.onNodeWithTag("navigation:rating").fetchSemanticsNode().boundsInRoot
+        val second = row("configuration:build_type_id").fetchSemanticsNode().boundsInRoot
+        Assert.assertTrue(first.bottom <= card.top)
+        Assert.assertTrue(card.bottom <= second.top)
+    }
+
+    @Test fun cancelPersistsChoiceAndLeavesEntriesUsable() {
+        activityRule.launchActivity(null)
+        awaitRating()
+        compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
+        awaitHandled()
+        row("project:id").assertTextContains("Description")
+        row("configuration:build_type_id").assertIsDisplayed()
+        row("project:id").performClick()
+        awaitRows()
+        compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
+        Assert.assertEquals(ProjectDestination("id", "Project", false), currentRootSnapshot().entries.last().destination)
+    }
+
+    @Test fun ratePersistsChoiceAndLaunchesTheStore() {
+        activityRule.launchActivity(null)
+        awaitRating()
+        intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
+        compose.onNodeWithText(text(NavigationR.string.navigation_rate_now)).performClick()
+        awaitHandled()
+        compose.waitUntil(10_000) { getIntents().any { it.action == Intent.ACTION_VIEW && it.dataString == "market://details?id=${context.packageName}" } }
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData("market://details?id=${context.packageName}")))
+        row("project:id").assertIsDisplayed()
+    }
+
+    @Test fun cancelledRatingDoesNotBreakConfigurationNavigation() {
+        activityRule.launchActivity(null)
+        awaitRating()
+        compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
+        awaitHandled()
+        row("configuration:build_type_id").performClick()
+        Assert.assertTrue(currentRootSnapshot().entries.last().destination is BuildHistoryDestination)
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test fun emptyProjectDoesNotShowRating() {
+        doReturn(NavigationNode(Projects(emptyList()), BuildTypes(emptyList()))).whenever(teamCityService) { listBuildTypes(anyString()) }
+        activityRule.launchActivity(null)
+        compose.waitUntil(10_000) { compose.onAllNodesWithText(text(NavigationR.string.navigation_empty)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
+    }
+
+    @Test fun ineligibleUserDoesNotSeeRating() {
+        updatePreferences { it.copy(ratingViewedBuildIds = emptySet(), ratingQualifiedLaunch = null) }
+        activityRule.launchActivity(null)
+        awaitRows()
+        compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
+        Assert.assertFalse(preferences().ratingHandled)
+    }
+
+    @Test fun cancelledChoiceSurvivesRecreationWithoutReloadingEntries() {
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
+            awaitRating()
+            compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
+            awaitHandled()
+            scenario.recreate()
+            awaitRows()
+            compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
+            Assert.assertTrue(preferences().ratingHandled)
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
+        }
+    }
+
+    private fun row(identity: String) = compose.onNodeWithTag("navigation:row:$identity")
+    private fun awaitRows() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:row:project:id").fetchSemanticsNodes().isNotEmpty() }
+    }
+    private fun awaitRating() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:rating").fetchSemanticsNodes().isNotEmpty() }
+    }
+    private fun awaitHandled() {
+        compose.waitUntil(10_000) {
+            preferences().ratingHandled && compose.onAllNodesWithTag("navigation:rating").fetchSemanticsNodes().isEmpty()
+        }
+    }
+    private fun text(id: Int) = context.getString(id)
+}

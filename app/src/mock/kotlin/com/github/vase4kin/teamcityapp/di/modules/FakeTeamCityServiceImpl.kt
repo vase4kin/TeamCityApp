@@ -31,16 +31,10 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.google.gson.Gson
-import io.reactivex.Observable
-import io.reactivex.Single
 import java.util.ArrayList
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-import retrofit2.http.Body
-import retrofit2.http.Path
-import retrofit2.http.Query
-import retrofit2.http.Url
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 
@@ -49,135 +43,125 @@ import teamcityapp.features.test_details.repository.models.TestOccurrence
  */
 open class FakeTeamCityServiceImpl : TeamCityService {
 
-    override fun listAgents(
-        @Query("includeDisconnected") includeDisconnected: Boolean?,
-        @Query("fields") fields: String?,
-        @Query("locator") locator: String?
-    ): Single<Agents> = if (includeDisconnected != null && includeDisconnected) {
-        Single
-            .just(Mocks.disconnectedAgents())
+    override suspend fun listAgents(
+        includeDisconnected: Boolean?,
+        fields: String?,
+        locator: String?
+    ): Agents = if (includeDisconnected != null && includeDisconnected) {
+        Mocks.disconnectedAgents()
     } else if (includeDisconnected != null && !includeDisconnected) {
-        Single
-            .just(Mocks.connectedAgents())
+        Mocks.connectedAgents()
     } else {
         val merged = ArrayList<Agent>()
         merged.addAll(Mocks.connectedAgents().objects)
         merged.addAll(Mocks.disconnectedAgents().objects)
-        Single
-            .just(Agents(4, merged))
+        Agents(4, merged)
     }
 
-    override fun listBuildTypes(@Url id: String): Single<NavigationNode> = Single.just(Mocks.navigationNode())
+    override suspend fun listBuildTypes(id: String): NavigationNode = Mocks.navigationNode()
 
-    override fun buildType(@Path("id") id: String): Single<BuildType> = Single.just(Mocks.buildTypeMock())
+    override suspend fun buildType(id: String): BuildType = Mocks.buildTypeMock()
 
-    override fun build(@Url url: String): Single<Build> = when (url) {
+    override suspend fun build(url: String): Build = when (url) {
         // queued builds
-        "/guestAuth/app/rest/buildQueue/id:823050" -> Single.just(Mocks.queuedBuild1())
+        "/guestAuth/app/rest/buildQueue/id:823050" -> Mocks.queuedBuild1()
 
-        "/guestAuth/app/rest/buildQueue/id:823051" -> Single.just(Mocks.queuedBuild2())
+        "/guestAuth/app/rest/buildQueue/id:823051" -> Mocks.queuedBuild2()
 
-        "/guestAuth/app/rest/buildQueue/id:823052" -> Single.just(Mocks.queuedBuild3())
+        "/guestAuth/app/rest/buildQueue/id:823052" -> Mocks.queuedBuild3()
 
         // running build
-        "/guestAuth/app/rest/builds/id:783911" -> Single.just(Mocks.runningBuild())
+        "/guestAuth/app/rest/builds/id:783911" -> Mocks.runningBuild()
 
-        "/guestAuth/app/rest/builds/id:7839123" -> Single.just(Mocks.runningBuild2())
+        "/guestAuth/app/rest/builds/id:7839123" -> Mocks.runningBuild2()
 
-        "/guestAuth/app/rest/builds/id:783912" -> Single.just(Mocks.successBuild())
+        "/guestAuth/app/rest/builds/id:783912" -> Mocks.successBuild()
 
-        "/guestAuth/app/rest/builds/id:783913" -> Single.just(Mocks.failedBuild())
+        "/guestAuth/app/rest/builds/id:783913" -> Mocks.failedBuild()
 
-        else -> Observable.empty<Build>().singleOrError()
+        else -> throw NoSuchElementException("No matching offline fixture")
     }
 
-    override fun listBuilds(@Path("id") id: String, @Query("locator") locator: String): Single<Builds> {
+    override suspend fun listBuilds(id: String, locator: String): Builds {
         val builds = ArrayList<Build>()
         builds.add(Mocks.runningBuild())
         builds.add(Mocks.successBuild())
         builds.add(Mocks.failedBuild())
-        return Single.just(Builds(3, builds))
+        return Builds(3, builds)
     }
 
-    override fun listRunningBuilds(@Query("locator") locator: String, @Query("fields") fields: String?): Single<Builds> {
+    override suspend fun listRunningBuilds(locator: String, fields: String?): Builds {
         val builds = ArrayList<Build>()
         builds.add(Mocks.runningBuild())
-        return Single.just(Builds(1, builds))
+        return Builds(1, builds)
     }
 
-    override fun listQueueBuilds(@Query("locator") locator: String?, @Query("fields") fields: String?): Single<Builds> {
+    override suspend fun listQueueBuilds(locator: String?, fields: String?): Builds {
         val builds = ArrayList<Build>()
         builds.add(Mocks.queuedBuild1())
         builds.add(Mocks.queuedBuild2())
         builds.add(Mocks.queuedBuild3())
-        return Single.just(Builds(3, builds))
+        return Builds(3, builds)
     }
 
-    override fun listBuilds(locator: String): Single<Builds> = listQueueBuilds(null, null)
+    override suspend fun listBuilds(locator: String): Builds = listQueueBuilds(null, null)
 
-    override fun listMoreBuilds(@Url url: String): Single<Builds> = Observable.empty<Builds>().singleOrError()
+    override suspend fun listMoreBuilds(url: String): Builds = throw NoSuchElementException("No matching offline fixture")
 
-    override fun listArtifacts(@Url url: String, @Query("locator") locator: String): Single<Files> = when (url) {
-        "/guestAuth/app/rest/builds/id:92912/artifacts/children/" -> Single.just(Mocks.artifacts())
-        else -> Observable.empty<Files>().singleOrError()
+    override suspend fun listArtifacts(url: String, locator: String): Files = when (url) {
+        "/guestAuth/app/rest/builds/id:92912/artifacts/children/" -> Mocks.artifacts()
+        else -> throw NoSuchElementException("No matching offline fixture")
     }
 
-    override fun downloadFile(@Url url: String): Single<ResponseBody> = Single.just("text".toResponseBody("text/plain".toMediaType()))
+    override suspend fun downloadFile(url: String): ResponseBody = "text".toResponseBody("text/plain".toMediaType())
 
-    override fun listTestOccurrences(@Url url: String): Single<TestOccurrences> = when (url) {
-        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10" -> Single.just(
+    override suspend fun listTestOccurrences(url: String): TestOccurrences = when (url) {
+        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10" ->
             Mocks.failedTests()
-        )
 
-        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:SUCCESS,count:10" -> Single.just(
+        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:SUCCESS,count:10" ->
             Mocks.passedTests()
-        )
 
-        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:UNKNOWN,count:10" -> Single.just(
+        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:UNKNOWN,count:10" ->
             Mocks.ignoredTests()
-        )
 
-        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count" -> Single.just(
+        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count" ->
             TestOccurrences(16)
-        )
 
-        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count,passed,failed,ignored" -> Single.just(
+        "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count,passed,failed,ignored" ->
             Gson().fromJson("""{"count":16,"passed":10,"failed":2,"ignored":4}""", TestOccurrences::class.java)
-        )
 
-        else -> Observable.empty<TestOccurrences>().singleOrError()
+        else -> throw NoSuchElementException("No matching offline fixture")
     }
 
-    override fun testOccurrence(@Url url: String): Single<TestOccurrence> = when (url) {
-        "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)" -> Single.just(
+    override suspend fun testOccurrence(url: String): TestOccurrence = when (url) {
+        "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)" ->
             TestOccurrence("exception error")
-        )
 
-        "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)" -> Single.error(
+        "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)" ->
+            throw
             RuntimeException("Something bad happens!")
-        )
 
-        else -> Observable.empty<TestOccurrence>().singleOrError()
+        else -> throw NoSuchElementException("No matching offline fixture")
     }
 
-    override fun listChanges(@Url url: String): Single<Changes> = when (url) {
-        "/guestAuth/app/rest/changes?locator=build:(id:826073),count:10", "/guestAuth/app/rest/changes?locator=build:(id:826073),count:2147483647&fields=count" -> Single.just(
+    override suspend fun listChanges(url: String): Changes = when (url) {
+        "/guestAuth/app/rest/changes?locator=build:(id:826073),count:10", "/guestAuth/app/rest/changes?locator=build:(id:826073),count:2147483647&fields=count" ->
             Mocks.changes()
-        )
 
-        else -> Observable.empty<Changes>().singleOrError()
+        else -> throw NoSuchElementException("No matching offline fixture")
     }
 
-    override fun change(@Url url: String): Single<Changes.Change> = when (url) {
-        "/guestAuth/app/rest/changes/id:2503722" -> Single.just(Mocks.singleChange())
-        else -> Observable.empty<Changes.Change>().singleOrError()
+    override suspend fun change(url: String): Changes.Change = when (url) {
+        "/guestAuth/app/rest/changes/id:2503722" -> Mocks.singleChange()
+        else -> throw NoSuchElementException("No matching offline fixture")
     }
 
-    override fun listBranches(@Path("id") id: String): Single<Branches> = Single.just(Branches(listOf(Branch("master"))))
+    override suspend fun listBranches(id: String): Branches = Branches(listOf(Branch("master")))
 
-    override fun queueBuild(@Body build: Build): Single<Build> = Single.just(Mocks.queuedBuild1())
+    override suspend fun queueBuild(build: Build): Build = Mocks.queuedBuild1()
 
-    override fun cancelBuild(@Url url: String, @Body buildCancelRequest: BuildCancelRequest): Single<Build> = Single.just(Mocks.failedBuild())
+    override suspend fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Build = Mocks.failedBuild()
 
-    override fun serverInfo(): Single<ServerInfo> = Single.just(ServerInfo(BuildConfig.VERSION_NAME, Mocks.URL))
+    override suspend fun serverInfo(): ServerInfo = ServerInfo(BuildConfig.VERSION_NAME, Mocks.URL)
 }

@@ -23,12 +23,3 @@ plugins {
 extensions.configure<LibraryExtension> {
     namespace = "teamcityapp.libraries.chrome_tabs"
 }
-
-dependencies {
-    implementation(projects.libraries.resources)
-    implementation(projects.libraries.theme)
-
-    implementation(libs.google.material)
-    implementation(libs.androidx.browser)
-    implementation(libs.kotlin.stdlib)
-}

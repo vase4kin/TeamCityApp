@@ -1,0 +1,57 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.build_overview.impl
+
+import io.ktor.http.Url
+import kotlin.test.*
+import teamcityapp.libraries.builds.BuildLaunchData
+
+class BuildLogUrlTest {
+    private val server = "https://teamcity.example/context/"
+    private val build = BuildLaunchData("1", "/context/app/rest/builds/id:1", buildTypeId = "Demo_Build")
+
+    @Test fun runningSuccessfulAndFailedBuildsOpenTheLogViewer() {
+        for ((state, status) in listOf("running" to "SUCCESS", "finished" to "SUCCESS", "finished" to "FAILURE")) {
+            val current = build.copy(state = state, status = status, webUrl = "https://other.example/downloadBuildLog.html?buildId=stale")
+            assertEquals("https://teamcity.example/context/viewLog.html?buildId=1&tab=buildLog", buildLogUrl(server, current, false))
+        }
+    }
+
+    @Test fun logViewerEncodesTheBuildIdWithoutChangingItsTabOrGuestMode() {
+        for (id in listOf("42&tab=other&guest=1", "42#download", "a b+c?next=/other")) {
+            for (guest in listOf(false, true)) {
+                val url = Url(buildLogUrl(server, build.copy(id = id), guest))
+                assertEquals("/context/viewLog.html", url.encodedPath)
+                assertEquals(listOf(id), url.parameters.getAll("buildId"))
+                assertEquals(listOf("buildLog"), url.parameters.getAll("tab"))
+                assertEquals(if (guest) listOf("1") else null, url.parameters.getAll("guest"))
+                assertTrue(url.fragment.isEmpty())
+                assertTrue(url.user.isNullOrEmpty())
+                assertTrue(url.password.isNullOrEmpty())
+            }
+        }
+    }
+
+    @Test fun logViewerUsesTheActiveServerRoot() {
+        assertEquals("https://other.example/viewLog.html?buildId=1&tab=buildLog", buildLogUrl("https://other.example/", build, false))
+    }
+
+    @Test fun guestModeIsPreservedWithoutApiCredentials() {
+        assertEquals("https://teamcity.example/context/viewLog.html?buildId=1&tab=buildLog&guest=1", buildLogUrl(server, build, true))
+        assertFalse(buildLogUrl(server, build, false).contains("guest"))
+    }
+}

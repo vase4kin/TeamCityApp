@@ -16,13 +16,14 @@
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import teamcityapp.buildlogic.Config
 import teamcityapp.buildlogic.verifyR8SmokeTestReports
 
 plugins {
     id("teamcityapp.android.application")
+    id("teamcityapp.android.app-tests")
     id("teamcityapp.android.compose")
-    id("org.jetbrains.kotlin.plugin.parcelize")
     id("teamcityapp.android.hilt")
     id("teamcityapp.android.coverage")
     alias(libs.plugins.firebase.crashlytics)
@@ -32,6 +33,7 @@ plugins {
 }
 
 val r8VerificationEnabled = providers.gradleProperty("r8Verification").isPresent
+val minimumAndroidInstrumentation = providers.gradleProperty("minimumAndroidInstrumentation").isPresent
 
 extensions.configure<ApplicationExtension> {
     namespace = "com.github.vase4kin.teamcityapp"
@@ -141,10 +143,21 @@ androidComponents {
 }
 
 dependencies {
+    if (r8VerificationEnabled) {
+        "r8VerificationImplementation"(libs.ktor.client.mock)
+        "r8VerificationImplementation"(libs.jodaTime)
+        "r8VerificationImplementation"(libs.gson)
+    }
+    "mockImplementation"(libs.gson)
+    androidTestImplementation(libs.gson)
+    androidTestImplementation(libs.google.openSourceLicensesLibrary)
+    "mockImplementation"(libs.ktor.client.mock)
+    "mockImplementation"(libs.okhttp.okhttp)
+    implementation(projects.libraries.analytics)
+    implementation(projects.sharedApp)
+    implementation(projects.libraries.sharedData)
     implementation(projects.features.home.api)
-    implementation(projects.features.home.impl)
     implementation(projects.features.buildDetails.api)
-    implementation(projects.features.buildDetails.impl)
     implementation(projects.libraries.navigation)
     implementation(libs.androidx.core.splashscreen)
 
@@ -152,114 +165,101 @@ dependencies {
     implementation(projects.libraries.api)
     implementation(projects.libraries.data)
     implementation(projects.libraries.session)
-    implementation(projects.libraries.resources)
+    implementation(libs.androidx.datastore.preferences)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.chromeTabs)
-    implementation(projects.libraries.storage)
+
     implementation(projects.libraries.storageModels)
-    implementation(projects.libraries.cacheManager)
     implementation(projects.libraries.onboarding)
     implementation(projects.libraries.security)
-    implementation(projects.libraries.remote)
 
     implementation(projects.features.testDetails.api)
-    implementation(projects.features.testDetails.impl)
 
     implementation(projects.features.splash.api)
-    implementation(projects.features.splash.impl)
 
     implementation(projects.features.about.api)
     implementation(projects.features.about.impl)
     implementation(projects.libraries.appRating)
 
     implementation(projects.features.manageAccounts.api)
-    implementation(projects.features.manageAccounts.impl)
 
     implementation(projects.features.drawer.api)
-    implementation(projects.features.drawer.impl)
 
     implementation(projects.features.settings.api)
-    implementation(projects.features.settings.impl)
     implementation(projects.libraries.appTheme)
 
     implementation(projects.features.changeDetails.api)
-    implementation(projects.features.changeDetails.impl)
 
     implementation(projects.features.properties.api)
-    implementation(projects.features.properties.impl)
     implementation(projects.features.agents.api)
-    implementation(projects.features.agents.impl)
     implementation(projects.features.changes.api)
-    implementation(projects.features.changes.impl)
     implementation(projects.features.tests.api)
-    implementation(projects.features.tests.impl)
     implementation(projects.libraries.buildConfigurations)
     implementation(projects.features.navigation.api)
-    implementation(projects.features.navigation.impl)
     implementation(projects.features.favorites.api)
-    implementation(projects.features.favorites.impl)
     implementation(projects.libraries.builds)
     implementation(projects.features.buildHistory.api)
     implementation(projects.features.buildHistory.impl)
     implementation(projects.features.runningBuilds.api)
-    implementation(projects.features.runningBuilds.impl)
     implementation(projects.features.buildQueue.api)
-    implementation(projects.features.buildQueue.impl)
     implementation(projects.features.snapshotDependencies.api)
-    implementation(projects.features.snapshotDependencies.impl)
     implementation(projects.features.buildArtifacts.api)
     implementation(projects.features.buildArtifacts.impl)
     implementation(projects.features.buildOverview.api)
-    implementation(projects.features.buildOverview.impl)
     implementation(projects.features.bottomSheet.api)
-    implementation(projects.features.bottomSheet.impl)
 
     implementation(projects.features.filterBottomSheet.api)
-    implementation(projects.features.filterBottomSheet.impl)
 
     implementation(projects.features.filterBuilds.api)
     implementation(projects.features.filterBuilds.impl)
 
     implementation(projects.features.runBuild.api)
-    implementation(projects.features.runBuild.impl)
 
-    implementation(projects.libraries.authentication)
     implementation(projects.features.login.api)
-    implementation(projects.features.login.impl)
     implementation(projects.features.createAccount.api)
-    implementation(projects.features.createAccount.impl)
 
     // Android support libraries
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
-    // Api third party libraries
-    implementation(libs.okhttp.okhttp)
-    implementation(libs.okhttp.loggingInterceptor)
-    implementation(libs.retrofit.retrofit)
-    implementation(libs.retrofit.gsonConverter)
-    implementation(libs.retrofit.retrofitRxjavaAdapter)
-    // Event bus
-    implementation(libs.eventBus)
+
     // Others
-    implementation(libs.jodaTime)
     // Dagger
     implementation(libs.dagger.dagger)
     ksp(libs.dagger.compiler)
 
-    // Rx
+    implementation(libs.androidx.browser)
     implementation(libs.androidx.activity.compose)
     implementation(libs.coroutines.android)
-    implementation(libs.coroutines.rx2)
-    implementation(libs.rxjava.rxJava)
-    // Rx cache
-    implementation(libs.rxcache.rxCache)
-    implementation(libs.rxcache.jolyglot)
+
     // Firebase
     implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    implementation(libs.google.firebaseConfig)
     implementation(libs.google.firebasePerf)
-    implementation(libs.google.openSourceLicensesLibrary)
+    // Feature-owned suites are compiled by the application test host.
+    androidTestImplementation(projects.features.agents.impl)
+    androidTestImplementation(projects.features.bottomSheet.impl)
+    androidTestImplementation(projects.features.buildDetails.impl)
+    androidTestImplementation(projects.features.buildOverview.impl)
+    androidTestImplementation(projects.features.buildQueue.impl)
+    androidTestImplementation(projects.features.changeDetails.impl)
+    androidTestImplementation(projects.features.changes.impl)
+    androidTestImplementation(projects.features.createAccount.impl)
+    androidTestImplementation(projects.features.drawer.impl)
+    androidTestImplementation(projects.features.favorites.impl)
+    androidTestImplementation(projects.features.filterBottomSheet.impl)
+    androidTestImplementation(projects.features.home.impl)
+    androidTestImplementation(projects.features.login.impl)
+    androidTestImplementation(projects.features.manageAccounts.impl)
+    androidTestImplementation(projects.features.navigation.impl)
+    androidTestImplementation(projects.features.properties.impl)
+    androidTestImplementation(projects.features.runBuild.impl)
+    androidTestImplementation(projects.features.runningBuilds.impl)
+    androidTestImplementation(projects.features.settings.impl)
+    androidTestImplementation(projects.features.snapshotDependencies.impl)
+    androidTestImplementation(projects.features.testDetails.impl)
+    androidTestImplementation(projects.features.tests.impl)
+    androidTestImplementation(projects.libraries.authentication)
+    androidTestImplementation(projects.libraries.resources)
+    androidTestImplementation(projects.libraries.storage)
+
     // Unit tests
     testImplementation(libs.robolectric)
     testImplementation(libs.coroutines.test)
@@ -291,8 +291,17 @@ dependencies {
         // Use its shim on both classpaths so Kotlin cannot call removed 1.3 overloads.
         androidTestImplementation(libs.hamcrestLibrary)
         // Mockito
-        androidTestImplementation(libs.mockito.mockitoAndroid)
-        androidTestImplementation(libs.mockito.mockitoKotlin)
+        if (minimumAndroidInstrumentation) {
+            // The modern inline engine requires API 28. Keep minimum-API runs
+            // on the last subclass engine without changing normal CI/JVM tests.
+            androidTestImplementation(libs.mockito.mockitoAndroidMinimum)
+            androidTestImplementation(libs.mockito.mockitoKotlin) {
+                exclude(group = "org.mockito", module = "mockito-core")
+            }
+        } else {
+            androidTestImplementation(libs.mockito.mockitoAndroid)
+            androidTestImplementation(libs.mockito.mockitoKotlin)
+        }
         // Dagger mock
         androidTestImplementation(platform(libs.compose.bom))
         androidTestImplementation(libs.compose.ui.testJunit4)
@@ -323,3 +332,47 @@ if (r8VerificationEnabled) {
         }
     }
 }
+
+val verifyProductionNetworking = tasks.register("verifyProductionNetworking") {
+    group = "verification"
+    description = "Rejects retired libraries and test harnesses in application runtimes."
+    doLast {
+        val retiredGroups = setOf(
+            "com.squareup.retrofit2",
+            "io.reactivex.rxjava2",
+            "com.github.VictorAlbertos.RxCache",
+            "com.github.VictorAlbertos.Jolyglot",
+            "org.greenrobot"
+        )
+        for (variant in listOf("prodDebug", "prodRelease", "mockDebug")) {
+            val components = configurations.getByName("${variant}RuntimeClasspath")
+                .incoming.resolutionResult.allComponents
+            val retired = components
+                .mapNotNull { it.moduleVersion }
+                .filter { it.group in retiredGroups }
+            check(retired.isEmpty()) { "$variant includes retired networking dependencies: $retired" }
+            val harnessProjects = setOf(
+                ":libraries:authentication",
+                ":libraries:build-ui",
+                ":libraries:list-ui",
+                ":libraries:chrome-tabs",
+                ":libraries:clipboard",
+                ":libraries:network-testing",
+                ":features:splash:impl"
+            )
+            val harnesses = components.mapNotNull { it.id as? ProjectComponentIdentifier }
+                .filter { it.projectPath in harnessProjects }
+            check(harnesses.isEmpty()) { "$variant includes test-only compatibility harnesses: $harnesses" }
+            if (variant.startsWith("prod")) {
+                val testLibraries = components.mapNotNull { it.moduleVersion }.filter {
+                    (it.group == "io.ktor" && it.name.startsWith("ktor-client-mock")) ||
+                        (it.group == "org.jetbrains.kotlinx" && it.name.startsWith("kotlinx-coroutines-test"))
+                }
+                check(testLibraries.isEmpty()) { "$variant includes test-only libraries: $testLibraries" }
+            }
+        }
+    }
+}
+
+tasks.matching { it.name in setOf("check", "assembleProdDebug", "assembleProdRelease", "assembleProdR8Verification", "assembleMockDebug") }
+    .configureEach { dependsOn(verifyProductionNetworking) }

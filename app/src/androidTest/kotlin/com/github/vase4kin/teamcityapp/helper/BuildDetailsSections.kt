@@ -41,9 +41,9 @@ fun ComposeTestRule.tapBuildDetailsSection(title: String) {
 }
 
 /** Waits for real visibility, including asynchronous dialog/snackbar entrance. */
-fun ComposeTestRule.awaitDisplayedText(value: String) {
+fun ComposeTestRule.awaitDisplayedText(value: String, substring: Boolean = false) {
     waitUntil(10_000) {
-        val matches = onAllNodesWithText(value)
+        val matches = onAllNodesWithText(value, substring = substring)
         matches.fetchSemanticsNodes(atLeastOneRootRequired = false).indices.any { index ->
             runCatching { matches[index].assertIsDisplayed() }.isSuccess
         }

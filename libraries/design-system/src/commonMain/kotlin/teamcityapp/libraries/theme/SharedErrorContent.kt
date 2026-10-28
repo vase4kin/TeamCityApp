@@ -1,0 +1,169 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.libraries.theme
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import teamcityapp.libraries.design_system.resources.*
+
+/** One full-screen failure presentation; the owner supplies the recovery action and specific copy. */
+@Composable
+fun SharedErrorContent(
+    modifier: Modifier = Modifier,
+    onRetry: () -> Unit,
+    title: String? = null,
+    message: String? = null,
+    actionLabel: String? = null
+) {
+    Box(modifier.testTag("error:content"), contentAlignment = Alignment.Center) {
+        Column(
+            Modifier.widthIn(max = TeamCityDimensions.messageMaxWidth).fillMaxWidth().verticalScroll(rememberScrollState()).padding(TeamCityDimensions.sectionSpacing),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Surface(
+                shape = RoundedCornerShape(topStart = TeamCityDimensions.largeCornerRadius, topEnd = TeamCityDimensions.errorIllustrationCornerRadius, bottomEnd = TeamCityDimensions.largeCornerRadius, bottomStart = TeamCityDimensions.errorIllustrationCornerRadius),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Box(Modifier.size(TeamCityDimensions.errorIllustrationSize), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(Res.drawable.ic_cloud_off_24dp), null, Modifier.size(TeamCityDimensions.errorIllustrationIconSize))
+                }
+            }
+            Text(
+                title ?: stringResource(Res.string.error_load_title),
+                Modifier.padding(top = TeamCityDimensions.sectionSpacing).semantics { liveRegion = LiveRegionMode.Polite },
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                message ?: stringResource(Res.string.error_load_message),
+                Modifier.padding(top = TeamCityDimensions.smallSpacing),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+            Button(onClick = onRetry, modifier = Modifier.padding(top = TeamCityDimensions.sectionSpacing).heightIn(min = TeamCityDimensions.controlMinHeight)) {
+                if (actionLabel == null) {
+                    Icon(painterResource(Res.drawable.ic_refresh_24dp), null, Modifier.size(TeamCityDimensions.compactIconSize))
+                    Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
+                }
+                Text(actionLabel ?: stringResource(Res.string.action_retry), textAlign = TextAlign.Center)
+            }
+        }
+    }
+}
+
+/** Optional failures stay beside retained content rather than replacing the whole screen. */
+@Composable
+fun SharedErrorNotice(
+    message: String,
+    onRetry: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    actionLabel: String? = null,
+    enabled: Boolean = true,
+    onDismiss: (() -> Unit)? = null,
+    tonal: Boolean = false,
+    leadingIcon: Painter = painterResource(Res.drawable.ic_error_outline_24dp)
+) {
+    val colors = MaterialTheme.colorScheme
+    val iconTint = if (tonal) colors.onPrimaryContainer else colors.onSurfaceVariant
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        color = if (tonal) colors.primaryContainer else colors.surfaceContainerHigh,
+        contentColor = if (tonal) colors.onPrimaryContainer else colors.onSurface
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val scroll = if (constraints.hasBoundedHeight) Modifier.verticalScroll(rememberScrollState()) else Modifier
+            val stacked = maxWidth < TeamCityDimensions.errorNoticeInlineMinWidth || LocalDensity.current.fontScale >= 1.3f
+            Box(scroll.padding(TeamCityDimensions.mediumSpacing)) {
+                if (stacked) {
+                    Column {
+                        ErrorNoticeMessage(message, Modifier.fillMaxWidth(), leadingIcon, iconTint)
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { ErrorNoticeActions(onRetry, enabled, actionLabel, onDismiss) }
+                    }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+                        ErrorNoticeMessage(message, Modifier.weight(1f), leadingIcon, iconTint)
+                        ErrorNoticeActions(onRetry, enabled, actionLabel, onDismiss)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorNoticeActions(onRetry: (() -> Unit)?, enabled: Boolean, actionLabel: String?, onDismiss: (() -> Unit)?) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        ErrorNoticeAction(onRetry, enabled, actionLabel)
+        if (onDismiss != null) {
+            TeamCityTooltip(stringResource(Res.string.action_close)) {
+                IconButton(onDismiss) {
+                    Icon(painterResource(Res.drawable.ic_close_black_24dp), stringResource(Res.string.action_close))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorNoticeMessage(message: String, modifier: Modifier, leadingIcon: Painter, iconTint: Color) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
+        Icon(leadingIcon, null, Modifier.size(TeamCityDimensions.iconSize), tint = iconTint)
+        Text(message, Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite }, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+private fun ErrorNoticeAction(onRetry: (() -> Unit)?, enabled: Boolean, actionLabel: String?) {
+    if (onRetry != null) {
+        TextButton(onClick = onRetry, enabled = enabled, modifier = Modifier.widthIn(max = TeamCityDimensions.retryActionMaxWidth).heightIn(min = TeamCityDimensions.minimumTouchTarget)) {
+            Text(actionLabel ?: stringResource(Res.string.action_retry), textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ErrorPreview() {
+    TeamCityTheme { SharedErrorContent(Modifier.fillMaxSize(), {}) }
+}
+
+@Preview
+@Composable
+private fun ErrorNoticePreview() {
+    TeamCityTheme { SharedErrorNotice("Couldn’t refresh. Showing previously loaded data.", {}) }
+}

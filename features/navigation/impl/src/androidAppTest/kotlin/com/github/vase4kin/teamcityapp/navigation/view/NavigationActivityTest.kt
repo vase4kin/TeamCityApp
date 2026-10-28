@@ -1,0 +1,164 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.navigation.view
+
+import android.content.Intent
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ActivityScenario
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.*
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.*
+import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
+import teamcityapp.features.navigation.impl.R as NavigationR
+
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class NavigationActivityTest {
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
+    val compose = createEmptyComposeRule()
+
+    @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+    private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
+
+    companion object {
+        @JvmStatic @BeforeClass
+        fun disableOnboarding() = TestUtils.disableOnboarding()
+    }
+
+    @Before fun setUp() {
+        val app = context.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().apply {
+            clearAll()
+            saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        }
+        app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
+    }
+
+    @Test fun implementationComponentAliasAlsoRetainsProjectArgumentsAcrossRecreation() {
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(context.packageName, "teamcityapp.features.navigation.impl.NavigationActivity").putExtra("id", "selected-project").putExtra("name", "Selected project")).use { scenario ->
+            awaitRows()
+            scenario.recreate()
+            awaitRows()
+            scenario.onActivity { Assert.assertEquals(MainActivity::class.java, it.javaClass) }
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes("selected-project") }
+        }
+    }
+
+    @Test fun legacyActivityAliasAcceptsTheExistingProjectArguments() {
+        launch().use { scenario ->
+            awaitRows()
+            compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
+            verifyBlocking(teamCityService) { listBuildTypes("selected-project") }
+            scenario.onActivity {
+                Assert.assertEquals(LegacyProjectEntry.LEGACY_ACTIVITY, it.intent.component?.className)
+                Assert.assertEquals("selected-project", it.intent.getStringExtra("id"))
+                Assert.assertEquals("Selected project", it.intent.getStringExtra("name"))
+            }
+        }
+    }
+
+    @Test fun aliasArgumentsAndCompletedRowsSurviveRecreationWithoutReload() {
+        launch().use { scenario ->
+            awaitRows()
+            scenario.recreate()
+            awaitRows()
+            compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes("selected-project") }
+        }
+    }
+
+    @Test fun navigateUpFinishesTheRecursiveActivity() {
+        launch().use { scenario ->
+            awaitRows()
+            compose.onNodeWithContentDescription(text(NavigationR.string.navigation_back)).performClick()
+            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+        }
+    }
+
+    @Test fun initialErrorRetainsProjectTitleAndCanBeRetried() {
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listBuildTypes(anyString()) }
+        launch().use {
+            assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
+            compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
+            doReturn(Mocks.navigationNode()).whenever(teamCityService) { listBuildTypes(anyString()) }
+            compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
+            awaitRows()
+        }
+    }
+
+    @Test fun refreshFailureKeepsRowsAndAllowsAnotherRefresh() {
+        launch().use {
+            awaitRows()
+            doSuspendableAnswer { throw RuntimeException("refresh offline") }.whenever(teamCityService) { listBuildTypes(anyString()) }
+            compose.onNodeWithTag("navigation:list").performTouchInput { swipeDown() }
+            assertTextVisible("Couldn’t refresh. Try again.")
+            compose.onNodeWithTag("navigation:row:project:id").assertIsDisplayed()
+            doReturn(Mocks.navigationNode()).whenever(teamCityService) { listBuildTypes(anyString()) }
+            compose.onNodeWithText("Retry").performClick()
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithText("Couldn’t refresh. Try again.").fetchSemanticsNodes().isEmpty()
+            }
+            compose.onNodeWithTag("navigation:row:configuration:build_type_id").assertIsDisplayed()
+        }
+    }
+
+    private fun launch(): ActivityScenario<MainActivity> = ActivityScenario.launch(
+        Intent().setClassName(context.packageName, LegacyProjectEntry.LEGACY_ACTIVITY)
+            .putExtra(LegacyProjectEntry.PROJECT_ID, "selected-project")
+            .putExtra(LegacyProjectEntry.PROJECT_NAME, "Selected project")
+    )
+    private fun awaitRows() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:row:project:id").fetchSemanticsNodes().isNotEmpty() }
+    }
+    private fun assertTextVisible(value: String) {
+        compose.waitUntil(10_000) { compose.onAllNodesWithText(value, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(value, useUnmergedTree = true).assertIsDisplayed()
+    }
+    private fun text(id: Int) = context.getString(id)
+}

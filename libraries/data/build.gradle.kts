@@ -23,25 +23,14 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.data" }
 dependencies {
+    implementation(libs.gson)
     api(projects.libraries.api)
     api(projects.libraries.builds)
-    api(projects.features.about.api)
-    api(projects.features.testDetails.api)
-    api(libs.rxjava.rxJava)
-    api(libs.okhttp.okhttp)
-    api(libs.retrofit.retrofit)
-    api(libs.rxcache.rxCache)
-    implementation(projects.features.filterBuilds.api)
-    implementation(projects.libraries.coroutines)
-    implementation(projects.libraries.cacheManager)
-    implementation(projects.libraries.remote)
-    implementation(projects.libraries.storage)
-    implementation(projects.libraries.storageModels)
+
     implementation(libs.androidx.annotationn)
-    implementation(libs.retrofit.gsonConverter)
-    implementation(libs.rxcache.jolyglot)
+
     implementation(libs.jodaTime)
-    implementation(libs.coroutines.rx2)
+
     implementation(libs.dagger.dagger)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)

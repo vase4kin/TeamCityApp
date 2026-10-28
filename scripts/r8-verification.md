@@ -6,7 +6,7 @@ resource fields are non-final. Use `if`/`when` comparisons rather than Java
 `switch` labels or Kotlin `const val` definitions for resource IDs.
 
 The OSS licenses SDK loads its layouts and generated license files by name.
-`app/src/main/res/raw/teamcityapp_oss_licenses_keep.xml` preserves those dynamic
+`features/about/impl/src/androidMain/res/raw/teamcityapp_oss_licenses_keep.xml` preserves those dynamic
 resources through optimization; the minified smoke suite checks their presence
 and opens the external licenses screen.
 
@@ -30,11 +30,13 @@ only in this build type. Verification-only rules also preserve shared tracing an
 Kotlin runtime APIs needed by the runner; production releases omit those rules.
 This avoids instrumentation-generated rules keeping the
 app APIs under test. They cover unannotated Gson fields and inherited/generic
-models, account persistence with Keystore, Java serialization, Retrofit service
-reflection/decoding, RxCache disk restoration, EventBus subscribers, Joda timezone
+models, account persistence with Keystore, Java serialization (including an installed
+pre-migration filter payload and its original class name/locator), common Ktor response
+decoding and response-cache disk restoration, Joda timezone
 resources, login screen startup, and the external OSS licenses screen with its
-generated raw resources. Retrofit responses are supplied by a local interceptor;
-no TeamCity server is needed.
+generated raw resources. Ktor responses are supplied by its verification-only mock
+engine; no TeamCity server is needed. The cache check creates a fresh client/cache
+with an unavailable upstream and requires the saved response to be restored.
 
 CI always builds the minified verification application. It also builds the R8
 test APK and runs it on an ARM64 Android OS version 17 emulator when the full UI
@@ -50,9 +52,10 @@ APKs. R8 smoke tests do not collect coverage.
 Mappings and R8 diagnostics are uploaded as `r8-diagnostics`.
 
 Keep JSON field names stable for existing server payloads and saved accounts.
-RxCache stores fully qualified DTO class names, so model class names must also
-remain stable across updates. Model modules export their own consumer rules;
-application-specific models, cache providers, and EventBus rules live in
+Installed launch payloads and historical cache files contain fully qualified DTO
+class names, so those names remain stable. The retired RxCache engine is absent
+from production runtimes; historical cache files remain untouched. Model modules
+export their own consumer rules; application-specific model rules live in
 `app/proguard-rules.pro`. New reflected models must receive equivalent rules.
 
 Inspect `app/build/outputs/mapping/prodR8Verification/` for `mapping.txt`,

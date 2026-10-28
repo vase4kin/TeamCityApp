@@ -28,13 +28,13 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -46,8 +46,6 @@ import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.Single
-import io.reactivex.subjects.SingleSubject
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.core.AllOf.allOf
@@ -60,6 +58,10 @@ import org.mockito.ArgumentMatchers.eq
 import org.mockito.ArgumentMatchers.nullable
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.favorites.impl.R as FavoritesR
 import teamcityapp.features.home.impl.R as HomeR
@@ -69,6 +71,9 @@ import teamcityapp.features.navigation.impl.R as NavigationR
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class HomeActivityTest {
+    @get:org.junit.Rule(order = 6)
+    val phaseThreeEvidence = com.github.vase4kin.teamcityapp.helper.PhaseThreeEvidenceRule()
+
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -126,7 +131,7 @@ class HomeActivityTest {
                 )
             )
         )
-        `when`(teamCityService.listBuildTypes("id")).thenReturn(Single.just(child))
+        doReturn(child).whenever(teamCityService) { listBuildTypes("id") }
         activityRule.launchActivity(null)
         assertTextVisible(text(NavigationR.string.navigation_projects_title))
         awaitRow("project:id")
@@ -137,13 +142,13 @@ class HomeActivityTest {
         row("project:child").assertTextContains("Contains a lot of projects")
         row("configuration:child-build").assertTextContains("Build and run tests")
         org.junit.Assert.assertEquals(ProjectDestination("id", "Project", false), currentRootSnapshot().entries.last().destination)
-        verify(teamCityService).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
-        verify(teamCityService).listBuildTypes("id")
+        verifyBlocking(teamCityService) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
+        verifyBlocking(teamCityService) { listBuildTypes("id") }
         row("project:child").performClick()
         assertTextVisible("New project")
         assertTextVisible("Description")
         assertEquals(ProjectDestination("child", "New project", false), currentRootSnapshot().entries.last().destination)
-        verify(teamCityService).listBuildTypes("child")
+        verifyBlocking(teamCityService) { listBuildTypes("child") }
     }
 
     @Test fun configurationRetainsBuildListArguments() {
@@ -164,17 +169,17 @@ class HomeActivityTest {
     }
 
     @Test fun initialErrorCanBeRetried() {
-        `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        doSuspendableAnswer { throw RuntimeException("offline") }.whenever(teamCityService) { listBuildTypes(anyString()) }
         activityRule.launchActivity(null)
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
-        `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(Mocks.navigationNode()))
+        doReturn(Mocks.navigationNode()).whenever(teamCityService) { listBuildTypes(anyString()) }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         awaitRow("project:id")
         row("configuration:build_type_id").assertIsDisplayed()
     }
 
     @Test fun emptyProjectsShowTheComposeEmptyState() {
-        `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(NavigationNode(Projects(emptyList()), BuildTypes(emptyList()))))
+        doReturn(NavigationNode(Projects(emptyList()), BuildTypes(emptyList()))).whenever(teamCityService) { listBuildTypes(anyString()) }
         activityRule.launchActivity(null)
         assertTextVisible(text(NavigationR.string.navigation_empty))
         compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
@@ -186,7 +191,7 @@ class HomeActivityTest {
             scenario.recreate()
             awaitRow("project:id")
             row("configuration:build_type_id").assertIsDisplayed()
-            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
+            verifyBlocking(teamCityService, times(1)) { listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID) }
         }
     }
 
@@ -205,8 +210,8 @@ class HomeActivityTest {
 
     @Test fun failedRunningCountStaysQuietOnFavoritesAndRetriesOnlyOnActivity() {
         (context.applicationContext as TeamCityApplicationBase).appInjector.sharedUserStorage().addBuildTypeToFavorites("build_type_id")
-        val runningCount = SingleSubject.create<Builds>()
-        doReturn(runningCount).`when`(teamCityService).listRunningBuilds(anyString(), eq("count"))
+        val runningCount = PendingFixture<Builds>()
+        doSuspendableAnswer { runningCount.await() }.whenever(teamCityService) { listRunningBuilds(anyString(), eq("count")) }
         activityRule.launchActivity(null)
         awaitRow("project:id")
         compose.onNodeWithTag("home:tab:Favorites").performClick()
@@ -218,7 +223,7 @@ class HomeActivityTest {
             statusInset = ViewCompat.getRootWindowInsets(activityRule.activity.window.decorView)?.getInsets(WindowInsetsCompat.Type.statusBars())?.top ?: 0
         }
         assertThat(beforeFailure.top.toInt(), greaterThanOrEqualTo(statusInset))
-        runningCount.onError(RuntimeException("count unavailable"))
+        runningCount.fail(RuntimeException("count unavailable"))
         compose.waitForIdle()
         compose.onNodeWithTag("home:snackbar").assertDoesNotExist()
         assertEquals(beforeFailure, titleBounds())
@@ -227,7 +232,7 @@ class HomeActivityTest {
         compose.onNodeWithTag("home:tab:Running").performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithText(text(HomeR.string.home_running_count_failed)).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("home:snackbar").assertIsDisplayed()
-        doReturn(Single.just(Builds(3, emptyList()))).`when`(teamCityService).listRunningBuilds(anyString(), eq("count"))
+        doReturn(Builds(3, emptyList())).whenever(teamCityService) { listRunningBuilds(anyString(), eq("count")) }
         compose.onNode(hasText(text(HomeR.string.home_retry)) and hasAnyAncestor(hasTestTag("retry:snackbar"))).performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("home:snackbar").fetchSemanticsNodes().isEmpty() }
         compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals("3")
@@ -240,10 +245,10 @@ class HomeActivityTest {
         storage.addBuildTypeToFavorites("build_type_id")
         val successful = Mocks.successBuild().apply { id = "history-build" }
         val running = Mocks.runningBuild().apply { id = "running-build" }
-        doReturn(Single.just(Builds(1, listOf(successful)))).`when`(teamCityService).listBuilds(anyString(), anyString())
-        doReturn(Single.just(Builds(1, listOf(running)))).`when`(teamCityService).listRunningBuilds(anyString(), nullable(String::class.java))
-        doReturn(Single.just(successful)).`when`(teamCityService).build(successful.href)
-        doReturn(Single.just(running)).`when`(teamCityService).build(running.href)
+        doReturn(Builds(1, listOf(successful))).whenever(teamCityService) { listBuilds(anyString(), anyString()) }
+        doReturn(Builds(1, listOf(running))).whenever(teamCityService) { listRunningBuilds(anyString(), nullable(String::class.java)) }
+        doReturn(successful).whenever(teamCityService) { build(successful.href) }
+        doReturn(running).whenever(teamCityService) { build(running.href) }
         ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             fun await(tag: String) {
                 compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
@@ -312,8 +317,8 @@ class HomeActivityTest {
         val storage = (context.applicationContext as TeamCityApplicationBase).appInjector.sharedUserStorage()
         storage.addBuildTypeToFavorites("build_type_id")
         val running = Mocks.runningBuild().apply { id = "running-transition" }
-        doReturn(Single.just(Builds(1, listOf(running)))).`when`(teamCityService).listRunningBuilds(anyString(), nullable(String::class.java))
-        doReturn(Single.just(running)).`when`(teamCityService).build(running.href)
+        doReturn(Builds(1, listOf(running))).whenever(teamCityService) { listRunningBuilds(anyString(), nullable(String::class.java)) }
+        doReturn(running).whenever(teamCityService) { build(running.href) }
         ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use {
             awaitRow("project:id")
             compose.onNodeWithTag("home:tab:Activity").performClick()

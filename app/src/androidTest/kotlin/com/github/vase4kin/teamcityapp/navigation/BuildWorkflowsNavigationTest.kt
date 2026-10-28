@@ -29,12 +29,12 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.di.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.PendingFixture
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.reactivex.subjects.SingleSubject
 import javax.inject.Inject
 import org.junit.Assert.*
 import org.junit.Before
@@ -43,6 +43,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
@@ -72,13 +75,11 @@ class BuildWorkflowsNavigationTest {
 
     @Inject lateinit var launcher: RootDestinationLauncher
 
-    @Inject lateinit var accounts: AppAccountFlowNavigation
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
@@ -106,7 +107,7 @@ class BuildWorkflowsNavigationTest {
             compose.onNodeWithTag("filter-builds:apply").performClick()
             awaitTag("history:list")
             val locator = BuildListFilterImpl().apply { setFilter(0) }.toLocator()
-            compose.waitUntil(10_000) { runCatching { verify(service).listBuilds("build_type_id", locator) }.isSuccess }
+            compose.waitUntil(10_000) { runCatching { verifyBlocking(service) { listBuilds("build_type_id", locator) } }.isSuccess }
             scenario.recreate()
             awaitTag("history:list")
             pressBack()
@@ -122,7 +123,7 @@ class BuildWorkflowsNavigationTest {
             awaitTag("run-build:submit")
             pressBack()
             awaitTag("history:list")
-            verify(service, never()).queueBuild(org.mockito.kotlin.any())
+            verifyBlocking(service, never()) { queueBuild(org.mockito.kotlin.any()) }
         }
     }
 
@@ -138,14 +139,14 @@ class BuildWorkflowsNavigationTest {
             compose.waitUntil(10_000) { compose.onAllNodesWithText("Build is added to build queue").fetchSemanticsNodes().isNotEmpty() }
             scenario.recreate()
             awaitTag("history:list")
-            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            verifyBlocking(service, times(1)) { queueBuild(org.mockito.kotlin.any()) }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
 
     @Test fun pendingRunRetainsItsRequestAcrossRecreationAndDeliversOnlyOneTypedResult() {
-        val pending = SingleSubject.create<Build>()
-        doReturn(pending).`when`(service).queueBuild(org.mockito.kotlin.any())
+        val pending = PendingFixture<Build>()
+        doSuspendableAnswer { pending.await() }.whenever(service) { queueBuild(org.mockito.kotlin.any()) }
         launch().use { scenario ->
             openHistory()
             var historyVisit: String? = null
@@ -153,13 +154,13 @@ class BuildWorkflowsNavigationTest {
             compose.onNodeWithTag("history:run").performClick()
             awaitTag("run-build:submit")
             compose.onNodeWithTag("run-build:submit").performClick()
-            compose.waitUntil(10_000) { pending.hasObservers() }
+            compose.waitUntil(10_000) { pending.isAwaiting }
             scenario.recreate()
             awaitTag("run-build:submit")
             compose.onNodeWithTag("run-build:submit").assertIsNotEnabled()
-            assertTrue(pending.hasObservers())
-            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
-            pending.onSuccess(Mocks.queuedBuild1())
+            assertTrue(pending.isAwaiting)
+            verifyBlocking(service, times(1)) { queueBuild(org.mockito.kotlin.any()) }
+            pending.complete(Mocks.queuedBuild1())
             awaitTag("history:list")
             compose.waitUntil(10_000) { compose.onAllNodesWithText("Build is added to build queue").fetchSemanticsNodes().isNotEmpty() }
             scenario.recreate()
@@ -168,23 +169,25 @@ class BuildWorkflowsNavigationTest {
                 assertEquals(historyVisit, it.navigationSnapshot!!.entries.last().id)
                 assertTrue(it.navigationSnapshot!!.results.isEmpty())
             }
-            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            verifyBlocking(service, times(1)) { queueBuild(org.mockito.kotlin.any()) }
         }
     }
 
     @Test fun replacingTheAccountStackCancelsAPendingRunAndIgnoresItsLateResult() {
-        val pending = SingleSubject.create<Build>()
-        doReturn(pending).`when`(service).queueBuild(org.mockito.kotlin.any())
+        val pending = PendingFixture<Build>()
+        doSuspendableAnswer { pending.await() }.whenever(service) { queueBuild(org.mockito.kotlin.any()) }
         launch().use { scenario ->
             openHistory()
             compose.onNodeWithTag("history:run").performClick()
             awaitTag("run-build:submit")
             compose.onNodeWithTag("run-build:submit").performClick()
-            compose.waitUntil(10_000) { pending.hasObservers() }
-            scenario.onActivity { accounts.home(false) }
+            compose.waitUntil(10_000) { pending.isAwaiting }
+            scenario.onActivity { activity ->
+                activity.startActivity(android.content.Intent().setClassName(activity, IncomingDestinationResolver.HOME_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true).addFlags(android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            }
             awaitRoot()
-            compose.waitUntil(10_000) { !pending.hasObservers() }
-            pending.onSuccess(Mocks.queuedBuild1())
+            compose.waitUntil(10_000) { !pending.isAwaiting }
+            pending.complete(Mocks.queuedBuild1())
             compose.waitForIdle()
             scenario.onActivity {
                 assertEquals(1, it.navigationSnapshot!!.entries.size)
@@ -192,7 +195,7 @@ class BuildWorkflowsNavigationTest {
                 assertTrue(it.navigationSnapshot!!.results.isEmpty())
             }
             compose.onNodeWithText("Build is added to build queue").assertDoesNotExist()
-            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            verifyBlocking(service, times(1)) { queueBuild(org.mockito.kotlin.any()) }
         }
     }
 

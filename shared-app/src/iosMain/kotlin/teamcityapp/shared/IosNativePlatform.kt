@@ -1,0 +1,134 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
+package teamcityapp.shared
+
+import kotlinx.cinterop.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.MutableStateFlow
+import platform.CoreGraphics.CGRectMake
+import platform.Foundation.*
+import platform.StoreKit.SKStoreReviewController
+import platform.UIKit.*
+import teamcityapp.features.artifacts.api.ArtifactFileStore
+import teamcityapp.features.artifacts.api.DownloadedArtifact
+import teamcityapp.features.artifacts.impl.data.IosArtifactFileStore
+import teamcityapp.libraries.analytics.AnalyticsTracker
+import teamcityapp.libraries.analytics.IosAnalyticsTracker
+import teamcityapp.libraries.analytics.track
+import teamcityapp.libraries.app_theme.*
+import teamcityapp.libraries.network.IosResponseCacheStore
+
+/** UI objects belong to this controller; no retained ViewModel holds UIKit references. */
+internal class IosNativePlatform(private val host: () -> UIViewController, namespace: String?) : NativePlatform {
+    override val responseCache = IosResponseCacheStore()
+    override val powerSaving = kotlinx.coroutines.flow.callbackFlow {
+        val process = NSProcessInfo.processInfo
+        trySend(process.lowPowerModeEnabled)
+        val center = NSNotificationCenter.defaultCenter
+        val observer = center.addObserverForName(NSProcessInfoPowerStateDidChangeNotification, null, NSOperationQueue.mainQueue) { trySend(process.lowPowerModeEnabled) }
+        awaitClose { center.removeObserver(observer) }
+    }
+    override val analytics: AnalyticsTracker = IosAnalyticsTracker()
+    override val files: ArtifactFileStore = IosArtifactFileStore(NSHomeDirectory() + "/Library/Caches/TeamCityArtifacts")
+    override val theme = IosThemePreferences(namespace?.let { "theme.uitest.$it" } ?: "theme.mode.v1")
+    override val failure = MutableStateFlow<NativePlatformFailure?>(null)
+    override fun clearFailure() {
+        failure.value = null
+    }
+    override fun rejected(action: NativePlatformFailure) = failed(action)
+    private fun failed(action: NativePlatformFailure) {
+        failure.value = action
+        analytics.track("platform_failure_${action.name.lowercase()}")
+    }
+    private fun present(controller: UIViewController, action: NativePlatformFailure, reportFailure: Boolean = true): Boolean {
+        try {
+            var owner = host()
+            while (owner.presentedViewController != null) owner = checkNotNull(owner.presentedViewController)
+            check(owner.view.window != null)
+            controller.popoverPresentationController?.let { popover ->
+                popover.sourceView = owner.view
+                popover.sourceRect = CGRectMake(0.0, 0.0, 1.0, 1.0)
+            }
+            owner.presentViewController(controller, true, null)
+            analytics.track("platform_${action.name.lowercase()}")
+            return true
+        } catch (_: Exception) {
+            if (reportFailure) failed(action) else analytics.track("platform_failure_${action.name.lowercase()}")
+            return false
+        }
+    }
+    override fun onBackground(cancel: () -> Unit): () -> Unit {
+        val center = NSNotificationCenter.defaultCenter
+        val scene = runCatching { host().view.window?.windowScene }.getOrNull()
+        val observers = listOf(
+            center.addObserverForName(UIApplicationDidEnterBackgroundNotification, null, NSOperationQueue.mainQueue) {
+                analytics.track("platform_background")
+                cancel()
+            },
+            // SwiftUI uses scene lifecycle callbacks; application callbacks alone miss this transition.
+            center.addObserverForName(UISceneDidEnterBackgroundNotification, scene, NSOperationQueue.mainQueue) {
+                analytics.track("platform_background")
+                cancel()
+            }
+        )
+        return { observers.forEach(center::removeObserver) }
+    }
+    override fun browser(url: String) {
+        try {
+            val parsed = checkNotNull(NSURL.URLWithString(url))
+            require(parsed.scheme in listOf("https", "http", "mailto") && parsed.user == null && parsed.password == null)
+            UIApplication.sharedApplication.openURL(parsed, emptyMap<Any?, Any?>()) { accepted -> if (!accepted) failed(NativePlatformFailure.Browser) }
+            analytics.track("platform_browser")
+        } catch (_: Exception) {
+            failed(NativePlatformFailure.Browser)
+        }
+    }
+    override fun share(text: String) {
+        present(UIActivityViewController(listOf(text), null), NativePlatformFailure.Share)
+    }
+    override fun copy(text: String) {
+        try {
+            UIPasteboard.generalPasteboard.string = text
+            analytics.track("platform_clipboard")
+        } catch (_: Exception) {
+            failed(NativePlatformFailure.Clipboard)
+        }
+    }
+    override fun openFile(path: String): Boolean {
+        val root = NSHomeDirectory() + "/Library/Caches/TeamCityArtifacts/"
+        if (!path.startsWith(root) || path.split('/').any { it == ".." } || !NSFileManager.defaultManager.fileExistsAtPath(path)) {
+            analytics.track("platform_failure_file")
+            return false
+        }
+        return present(UIActivityViewController(listOf(NSURL.fileURLWithPath(path)), null), NativePlatformFailure.File, reportFailure = false)
+    }
+    override fun rate() {
+        try {
+            val scene = host().view.window?.windowScene
+            if (scene == null) {
+                failed(NativePlatformFailure.Rating)
+            } else {
+                SKStoreReviewController.requestReviewInScene(scene)
+                analytics.track("platform_rating_requested")
+            }
+        } catch (_: Exception) {
+            failed(NativePlatformFailure.Rating)
+        }
+    }
+}

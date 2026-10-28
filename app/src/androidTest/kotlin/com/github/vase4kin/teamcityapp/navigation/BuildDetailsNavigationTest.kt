@@ -34,9 +34,7 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
-import com.github.vase4kin.teamcityapp.integration.platform.artifacts.ComposeArtifactsPlatformModule
 import dagger.hilt.android.testing.*
-import io.reactivex.Single
 import java.io.File
 import javax.inject.Inject
 import okio.buffer
@@ -47,6 +45,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.*
@@ -54,9 +56,11 @@ import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalTestApi::class)
 @HiltAndroidTest
-@UninstallModules(ComposeArtifactsPlatformModule::class)
 @RunWith(AndroidJUnit4::class)
 class BuildDetailsNavigationTest {
+    @get:Rule(order = 99)
+    val phaseFourEvidence = com.github.vase4kin.teamcityapp.helper.PhaseFourEvidenceRule()
+
     @JvmField
     @Rule(order = 0)
     val hilt = HiltAndroidRule(this)
@@ -77,32 +81,28 @@ class BuildDetailsNavigationTest {
 
     @Inject lateinit var launcher: RootDestinationLauncher
 
-    @Inject lateinit var accountNavigation: teamcityapp.libraries.navigation.AccountFlowNavigation
     private val mapper = BuildLaunchMapper()
-    private val opened = mutableListOf<DownloadedArtifact>()
-    private val browser = mutableListOf<String>()
 
-    @BindValue @JvmField
-    val platforms: ArtifactsPlatformRouterFactory = object : ArtifactsPlatformRouterFactory {
-        override fun create(activity: Activity): ArtifactsAppRouter = object : ArtifactsAppRouter {
-            override fun permission(activity: Activity, file: ArtifactDownload) = ArtifactPermission.Allowed
-            override fun openDownloadedFile(activity: Activity, file: DownloadedArtifact) {
-                assertTrue(activity is MainActivity)
-                assertTrue(File(file.path).isFile)
-                opened += file
-            }
-            override fun openBrowser(activity: Activity, build: BuildLaunchData, href: String) {
-                assertTrue(activity is MainActivity)
-                browser += href
-            }
-            override fun dispose(activity: Activity) {}
+    @get:Rule(order = 4)
+    val exportIntents = object : org.junit.rules.ExternalResource() {
+        override fun before() {
+            androidx.test.espresso.intent.Intents.init()
+            androidx.test.espresso.intent.Intents.intending(androidx.test.espresso.intent.matcher.IntentMatchers.hasAction(Intent.ACTION_CHOOSER))
+                .respondWith(android.app.Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         }
+        override fun after() {
+            androidx.test.espresso.intent.Intents.release()
+        }
+    }
+    private fun exportedFiles(): List<android.net.Uri> = androidx.test.espresso.intent.Intents.getIntents().mapNotNull { chooser ->
+        if (chooser.action != Intent.ACTION_CHOOSER) return@mapNotNull null
+        val send = androidx.core.content.IntentCompat.getParcelableExtra(chooser, Intent.EXTRA_INTENT, Intent::class.java) ?: return@mapNotNull null
+        androidx.core.content.IntentCompat.getParcelableExtra(send, Intent.EXTRA_STREAM, android.net.Uri::class.java)
     }
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
 
     @Before fun before() {
         TestUtils.disableOnboarding()
-        app.appInjector.cacheManager().evictAllCache()
         val storage = app.appInjector.sharedUserStorage()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
@@ -124,30 +124,26 @@ class BuildDetailsNavigationTest {
         compose.tapBuildDetailsSection(name)
     }
 
-    @Test fun incomingTabsAndParametersRemainStableWhenOverviewLoadsADifferentSnapshot() {
+    @Test fun loadedSnapshotOwnsParametersAndSectionAvailabilityAcrossRecreation() {
         val incoming = mapper.toLaunchData(Mocks.failedBuild()).copy(number = "incoming", properties = BuildProperties(listOf(BuildProperty("initial.parameter", "initial-value"))), snapshotDependencies = BuildCollectionLink(null))
         val loaded = incoming.copy(number = "latest", changes = null, tests = null, artifacts = null, snapshotDependencies = null, properties = BuildProperties(listOf(BuildProperty("loaded.parameter", "loaded-value"))))
-        doReturn(Single.just(mapper.toLegacyBuild(loaded))).`when`(service).build(incoming.href)
+        doReturn(mapper.toLegacyBuild(loaded)).whenever(service) { build(incoming.href) }
         launch().use { scenario ->
             open(scenario, incoming)
             awaitText("#latest")
             tab("Parameters")
             awaitTag("properties:list")
-            compose.onNodeWithText("initial.parameter").assertIsDisplayed()
-            compose.onNodeWithText("loaded.parameter").assertDoesNotExist()
+            compose.onNodeWithText("loaded.parameter").assertIsDisplayed()
+            compose.onNodeWithText("initial.parameter").assertDoesNotExist()
             scenario.recreate()
             awaitTag("properties:list")
-            compose.onNodeWithTag("details:section:Parameters").assertIsDisplayed()
-            tab("Changes")
-            awaitTag("changes:list")
-            tab("Tests")
-            awaitTag("tests:list")
-            tab("Artifacts")
-            awaitTag("artifacts:list")
-            tab("Snapshots")
-            awaitTag("snapshot:screen")
+            assertEquals(BuildDetailsSection.Parameters, (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as BuildDetailsSectionDestination).section)
+            compose.onNodeWithText("loaded.parameter").assertIsDisplayed()
             tab("Overview")
             awaitTag("overview:list")
+            listOf("Changes", "Tests", "Artifacts", "Snapshots").forEach {
+                compose.onNodeWithTag("overview:section:$it").assertDoesNotExist()
+            }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
             pressBack()
             awaitTag("navigation:row:project:id")
@@ -157,7 +153,7 @@ class BuildDetailsNavigationTest {
     @Test fun branchSheetRestoresAndNavigatesUsingTheLoadedConfigurationAndExactBranch() {
         val incoming = mapper.toLaunchData(Mocks.successBuild())
         val loaded = incoming.copy(buildTypeId = "latest-configuration", branchName = "refs/heads/opaque:branch", configuration = incoming.configuration?.copy(name = "Latest configuration"))
-        doReturn(Single.just(mapper.toLegacyBuild(loaded))).`when`(service).build(incoming.href)
+        doReturn(mapper.toLegacyBuild(loaded)).whenever(service) { build(incoming.href) }
         launch().use { scenario ->
             open(scenario, incoming)
             compose.onNodeWithTag("overview:row:Branch").performClick()
@@ -167,7 +163,7 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("sheet:Branch").performClick()
             awaitTag("history:list")
             val locator = BuildListFilterImpl().apply { setBranch(loaded.branchName.orEmpty()) }.toLocator()
-            compose.waitUntil(10_000) { runCatching { verify(service).listBuilds("latest-configuration", locator) }.isSuccess }
+            compose.waitUntil(10_000) { runCatching { verifyBlocking(service) { listBuilds("latest-configuration", locator) } }.isSuccess }
             pressBack()
             awaitTag("overview:list")
             compose.onNodeWithTag("sheet:content").assertDoesNotExist()
@@ -179,11 +175,13 @@ class BuildDetailsNavigationTest {
         val build = mapper.toLaunchData(Mocks.successBuild())
         val folderHref = "/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"
         val fileHref = "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/AndroidManifest.xml"
-        doReturn(Single.just(Mocks.artifacts())).`when`(service).listArtifacts(folderHref, "browseArchives:true")
+        doReturn(Mocks.artifacts()).whenever(service) { listArtifacts(folderHref, "browseArchives:true") }
         launch().use { scenario ->
             open(scenario, build)
             tab("Artifacts")
             awaitTag("artifacts:list")
+            var originVisit: String? = null
+            scenario.onActivity { originVisit = it.navigationSnapshot?.entries?.last()?.id }
             compose.onNodeWithTag("artifacts:row:/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res").performClick()
             awaitTag("artifacts:list")
             awaitText("res")
@@ -194,14 +192,18 @@ class BuildDetailsNavigationTest {
             scenario.recreate()
             awaitTag("sheet:ArtifactDownload")
             compose.onNodeWithTag("sheet:ArtifactDownload").performClick()
-            compose.waitUntil(15_000) { opened.size == 1 }
+            compose.waitUntil(15_000) { exportedFiles().size == 1 }
+            val exported = exportedFiles().single()
+            assertEquals("text", app.contentResolver.openInputStream(exported)!!.bufferedReader().use { it.readText() })
             scenario.recreate()
             awaitTag("artifacts:list")
-            assertEquals(1, opened.size)
+            assertEquals(1, exportedFiles().size)
             pressBack()
             awaitTag("artifacts:list")
-            compose.onNodeWithTag("details:section:Artifacts").assertIsDisplayed()
-            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
+            scenario.onActivity {
+                assertEquals(originVisit, it.navigationSnapshot?.entries?.last()?.id)
+                assertTrue(it.supportFragmentManager.fragments.isEmpty())
+            }
         }
     }
 
@@ -209,11 +211,11 @@ class BuildDetailsNavigationTest {
         val running = mapper.toLaunchData(Mocks.runningBuild())
         val cancelled = running.copy(state = "finished", number = "cancelled", artifacts = BuildCollectionLink("/guestAuth/app/rest/builds/id:92912/artifacts/children/"))
         var current = running
-        doAnswer { Single.just(mapper.toLegacyBuild(current)) }.`when`(service).build(running.href)
-        doAnswer {
+        doSuspendableAnswer { mapper.toLegacyBuild(current) }.whenever(service) { build(running.href) }
+        doSuspendableAnswer {
             current = cancelled
-            Single.just(mapper.toLegacyBuild(cancelled))
-        }.`when`(service).cancelBuild(running.href, BuildCancelRequest(true))
+            mapper.toLegacyBuild(cancelled)
+        }.whenever(service) { cancelBuild(running.href, BuildCancelRequest(true)) }
         launch().use { scenario ->
             open(scenario, running)
             compose.onNodeWithTag("details:action:Cancel").performClick()
@@ -226,7 +228,7 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("overview:screen").assertIsDisplayed()
             tab("Artifacts")
             awaitTag("artifacts:list")
-            verify(service, times(1)).cancelBuild(running.href, BuildCancelRequest(true))
+            verifyBlocking(service, times(1)) { cancelBuild(running.href, BuildCancelRequest(true)) }
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
@@ -247,7 +249,7 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("overview:section:Artifacts").assertDoesNotExist()
             scenario.recreate()
             awaitTag("overview:row:WaitReason")
-            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            verifyBlocking(service, times(1)) { queueBuild(org.mockito.kotlin.any()) }
             pressBack()
             compose.waitUntil(10_000) {
                 (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as? BuildDetailsDestination)?.build?.id == build.id
@@ -271,7 +273,7 @@ class BuildDetailsNavigationTest {
             awaitTag("overview:list")
             pressBack()
             awaitTag("tests:list")
-            compose.onNodeWithTag("details:section:Tests").assertIsDisplayed()
+            assertEquals(BuildDetailsSection.Tests, (com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries.last().destination as BuildDetailsSectionDestination).section)
             pressBack()
             awaitTag("overview:list")
             pressBack()
@@ -281,15 +283,15 @@ class BuildDetailsNavigationTest {
 
     @Test fun hubCountsRetainTheirResultsAndRetryOnlyTheFailedSection() {
         val build = mapper.toLaunchData(Mocks.failedBuild())
-        val testsHref = "${build.tests?.href},count:2147483647&fields=count"
+        val testsHref = "${build.tests?.href},count:2147483647&fields=count,passed,failed,ignored"
         val changesHref = "${build.changes?.href},count:2147483647&fields=count"
         var failed = true
-        doAnswer { if (failed) Single.error<com.github.vase4kin.teamcityapp.tests.api.TestOccurrences>(IllegalStateException("offline count")) else Single.just(com.github.vase4kin.teamcityapp.tests.api.TestOccurrences(16)) }.`when`(service).listTestOccurrences(testsHref)
+        doSuspendableAnswer { if (failed) throw IllegalStateException("offline count") else com.github.vase4kin.teamcityapp.tests.api.TestOccurrences(16) }.whenever(service) { listTestOccurrences(testsHref) }
         launch().use { scenario ->
             open(scenario, build)
             awaitTag("overview:retry-count:Tests")
-            verify(service, times(1)).listTestOccurrences(testsHref)
-            verify(service, times(1)).listChanges(changesHref)
+            verifyBlocking(service, times(1)) { listTestOccurrences(testsHref) }
+            verifyBlocking(service, times(1)) { listChanges(changesHref) }
             scenario.recreate()
             awaitTag("overview:retry-count:Tests")
             failed = false
@@ -298,53 +300,47 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithTag("overview:section:Tests").assertTextContains("16")
             scenario.recreate()
             compose.onNodeWithTag("overview:section:Tests").assertTextContains("16")
-            verify(service, times(2)).listTestOccurrences(testsHref)
-            verify(service, times(1)).listChanges(changesHref)
+            verifyBlocking(service, times(2)) { listTestOccurrences(testsHref) }
+            verifyBlocking(service, times(1)) { listChanges(changesHref) }
         }
     }
 
     @Test fun eachActionTipSurvivesRecreationAndPersistsItsOwnPreferenceOnDismissal() {
-        val prefs = app.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("StopBuilds", true).putBoolean("RemoveBuildsFromQueue", true).putBoolean("RestartBuilds", true).commit()
-        val manager = teamcityapp.libraries.onboarding.OnboardingManagerImpl(app)
-        kotlinx.coroutines.runBlocking {
-            manager.saveShareBuildPromptShown()
-            manager.saveOpenBuildInBrowserPromptShown()
-        }
-        fun shown(preference: String): Boolean = kotlinx.coroutines.runBlocking {
-            when (preference) {
-                "ShareBuild" -> manager.isShareBuildPromptShown()
-                "OpenBuildInBrowser" -> manager.isOpenBuildInBrowserPromptShown()
-                else -> prefs.getBoolean(preference, false)
-            }
+        val rootState = dagger.hilt.EntryPoints.get(app, com.github.vase4kin.teamcityapp.helper.SharedRootTestState::class.java)
+        val accounts = rootState.accounts() as teamcityapp.libraries.accounts.AccountPreferencesStorage
+        val active = app.appInjector.sharedUserStorage().activeUser
+        val key = teamcityapp.libraries.accounts.AccountIdentity(active.teamcityUrl, active.userName, active.isGuestUser, active.isSslDisabled).key
+        fun shown(prompt: BuildDetailsPrompt): Boolean = kotlinx.coroutines.runBlocking {
+            "details.${prompt.name}" in accounts.preferences(key).shownPrompts
         }
         val cases = listOf(
-            Triple(Mocks.runningBuild(), "StopBuilds", "Stop this running build. You can also add it back to the queue."),
-            Triple(Mocks.queuedBuild1(), "RemoveBuildsFromQueue", "Remove this build from the queue before it starts."),
-            Triple(Mocks.successBuild(), "RestartBuilds", "Run this build again with the same parameters."),
-            Triple(Mocks.successBuild(), "ShareBuild", "Share a link to this build with others."),
-            Triple(Mocks.successBuild(), "OpenBuildInBrowser", "Open this build’s page in a browser.")
+            Triple(Mocks.runningBuild(), BuildDetailsPrompt.Stop, "Stop this running build. You can also add it back to the queue."),
+            Triple(Mocks.queuedBuild1(), BuildDetailsPrompt.Remove, "Remove this build from the queue before it starts."),
+            Triple(Mocks.successBuild(), BuildDetailsPrompt.Restart, "Run this build again with the same parameters."),
+            Triple(Mocks.successBuild(), BuildDetailsPrompt.Share, "Share a link to this build with others."),
+            Triple(Mocks.successBuild(), BuildDetailsPrompt.Browser, "Open this build’s page in a browser.")
         )
-        launch().use { scenario ->
-            cases.forEach { (legacy, preference, copy) ->
-                kotlinx.coroutines.runBlocking {
-                    when (preference) {
-                        "ShareBuild" -> manager.saveShareBuildPromptShown(false)
-                        "OpenBuildInBrowser" -> manager.saveOpenBuildInBrowserPromptShown(false)
-                        else -> prefs.edit().putBoolean(preference, false).commit()
-                    }
+        cases.forEach { (legacy, prompt, copy) ->
+            // Each activation reads its durable account-scoped preferences once.
+            // Host recreation below must retain that live preference state.
+            kotlinx.coroutines.runBlocking {
+                rootState.navigation().write("")
+                accounts.updatePreferences(key) {
+                    it.copy(shownPrompts = it.shownPrompts + BuildDetailsPrompt.entries.map { "details.${it.name}" } - "details.${prompt.name}")
                 }
+            }
+            launch().use { scenario ->
                 val build = mapper.toLaunchData(legacy)
                 awaitTag("navigation:row:project:id")
                 scenario.onActivity { launcher.open(it, BuildDetailsDestination(build)) }
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
-                assertFalse(shown(preference))
+                assertFalse(shown(prompt))
                 scenario.recreate()
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
                 compose.onNodeWithTag("details:dismiss-prompt").performClick()
-                compose.waitUntil(10_000) { shown(preference) }
+                compose.waitUntil(10_000) { shown(prompt) }
                 awaitTag("overview:list")
                 pressBack()
                 awaitTag("navigation:row:project:id")
@@ -352,6 +348,7 @@ class BuildDetailsNavigationTest {
                 awaitTag("overview:list")
                 compose.onNodeWithTag("details:dismiss-prompt").assertDoesNotExist()
                 pressBack()
+                awaitTag("navigation:row:project:id")
             }
         }
     }
@@ -376,7 +373,7 @@ class BuildDetailsNavigationTest {
             override fun contentLength() = -1L
             override fun source() = buffered
         }
-        doReturn(Single.just(body)).`when`(service).downloadFile(org.mockito.kotlin.any())
+        doReturn(body).whenever(service) { downloadFile(org.mockito.kotlin.any()) }
         val directory = app.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS) ?: app.filesDir
         directory.mkdirs()
         val completed = File(directory, "AndroidManifest.xml").apply { writeText("completed download") }
@@ -391,12 +388,19 @@ class BuildDetailsNavigationTest {
                 compose.waitUntil(10_000) { entered.count == 0L }
                 scenario.recreate()
                 assertEquals(1L, closed.count)
-                scenario.onActivity { accountNavigation.home(true) }
+                scenario.onActivity {
+                    it.startActivity(
+                        Intent().setClassName(it, IncomingDestinationResolver.HOME_COMPONENT).apply {
+                            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            putExtra(com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
+                        }
+                    )
+                }
                 awaitTag("navigation:row:project:id")
                 compose.waitUntil(10_000) { closed.count == 0L }
                 assertEquals("completed download", completed.readText())
-                assertTrue(opened.isEmpty())
-                verify(service, times(1)).downloadFile(org.mockito.kotlin.any())
+                assertTrue(exportedFiles().isEmpty())
+                verifyBlocking(service, times(1)) { downloadFile(org.mockito.kotlin.any()) }
             }
         } finally {
             closed.countDown()

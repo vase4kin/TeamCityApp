@@ -16,22 +16,39 @@
 
 package com.github.vase4kin.teamcityapp.di.modules
 
-import android.app.Application
-import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.api.TeamCityService
+import android.content.Context
+import androidx.datastore.preferences.preferencesDataStore
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import teamcityapp.libraries.accounts.AccountStorage
+import teamcityapp.libraries.coroutines.MainDispatcher
+import teamcityapp.libraries.onboarding.OnboardingManager
+import teamcityapp.libraries.security.CryptoManager
+import teamcityapp.libraries.session.AndroidAccountPreferencesStorage
+import teamcityapp.libraries.session.LegacyAccountPreferencesMigration
+import teamcityapp.libraries.session.LegacyAndroidAccountStorage
 
-/** Resolves API dependencies from the current account graph when a new screen is injected. */
+private val Context.accountPreferences by preferencesDataStore(name = "account_preferences_v1")
+
+/** Binds account persistence and the common response cache; storage libraries own migration behavior. */
 @Module
 @InstallIn(SingletonComponent::class)
 object SessionModule {
-    @Provides
-    fun repository(application: Application): Repository = (application as TeamCityApplicationBase).restApiInjector.repository()
 
-    @Provides
-    fun service(application: Application): TeamCityService = (application as TeamCityApplicationBase).restApiInjector.teamCityService()
+    @Provides @Singleton
+    fun responseCache(@dagger.hilt.android.qualifiers.ApplicationContext context: Context): teamcityapp.libraries.network.ResponseCacheStore = teamcityapp.libraries.network.AndroidResponseCacheStore(context)
+
+    @Provides @Singleton
+    fun accountStorage(storage: SharedUserStorage, crypto: CryptoManager, @dagger.hilt.android.qualifiers.ApplicationContext storageContext: Context, @MainDispatcher dispatcher: CoroutineDispatcher, onboarding: OnboardingManager): AccountStorage = AndroidAccountPreferencesStorage(
+        LegacyAndroidAccountStorage(storage, crypto, dispatcher),
+        storage,
+        storageContext.accountPreferences,
+        dispatcher,
+        LegacyAccountPreferencesMigration(storageContext, onboarding)::read
+    )
 }

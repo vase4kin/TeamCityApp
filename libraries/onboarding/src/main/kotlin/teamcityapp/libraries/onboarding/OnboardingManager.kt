@@ -136,11 +136,4 @@ interface OnboardingManager {
     suspend fun isOpenBuildInBrowserPromptShown(): Boolean
     suspend fun saveShareBuildPromptShown(shown: Boolean = true)
     suspend fun saveOpenBuildInBrowserPromptShown(shown: Boolean = true)
-
-    interface OnPromptShownListener {
-        /**
-         * when prompt is shown
-         */
-        fun onPromptShown()
-    }
 }

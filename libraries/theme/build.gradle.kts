@@ -28,6 +28,7 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
+    api(projects.libraries.designSystem)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.compose.ui.testJunit4)

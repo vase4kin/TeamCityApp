@@ -25,6 +25,7 @@ extensions.configure<LibraryExtension> {
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 dependencies {
+    api(projects.libraries.themePreferences)
     api(projects.libraries.coroutines)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.datastore.preferences)

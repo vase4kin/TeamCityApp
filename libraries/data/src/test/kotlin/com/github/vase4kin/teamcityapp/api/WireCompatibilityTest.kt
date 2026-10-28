@@ -17,10 +17,7 @@
 package com.github.vase4kin.teamcityapp.api
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.google.gson.Gson
-import java.io.*
 import org.junit.Assert.*
 import org.junit.Test
 import teamcityapp.features.about.repository.models.ServerInfo
@@ -40,18 +37,5 @@ class WireCompatibilityTest {
         assertEquals("/builds/42", wire["href"].asString)
         assertEquals("2459", wire["number"].asString)
         assertEquals("android", wire["buildType"].asJsonObject["id"].asString)
-    }
-
-    @Test fun legacyFilterSerializablePayloadKeepsItsClassAndEffectiveLocator() {
-        val original = BuildListFilterImpl().apply {
-            setBranch("feature/space & symbols")
-            setPersonal(true)
-            setPinned(true)
-        }
-        val bytes = ByteArrayOutputStream().also { buffer -> ObjectOutputStream(buffer).use { it.writeObject(original) } }.toByteArray()
-        val restored = ObjectInputStream(ByteArrayInputStream(bytes)).use { it.readObject() } as BuildListFilter
-        assertEquals("com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl", restored.javaClass.name)
-        assertEquals(original.toLocator(), restored.toLocator())
-        assertTrue(restored.toLocator().contains("branch:name:feature/space & symbols"))
     }
 }

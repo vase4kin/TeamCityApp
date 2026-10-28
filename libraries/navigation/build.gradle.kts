@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
 
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
     alias(libs.plugins.kotlin.serialization)
 }
-
-extensions.configure<LibraryExtension> {
-    namespace = "teamcityapp.libraries.navigation"
-    testOptions.unitTests.isIncludeAndroidResources = true
-}
-
-dependencies {
-    api(libs.androidx.navigation3.runtime)
-    api(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.lifecycle.viewModelNavigation3)
-    implementation(libs.androidx.lifecycle.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.activity.compose)
-    testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.compose.ui.testJunit4)
-    debugImplementation(libs.compose.ui.testManifest)
+kotlin {
+    android {
+        compilations.named("hostTest") {
+            (this as KotlinMultiplatformAndroidHostTestCompilation).isIncludeAndroidResources = true
+        }
+    }
+    sourceSets {
+        named("commonMain") {
+            dependencies {
+                api(libs.androidx.navigation3.runtime)
+                api(libs.kotlinx.serialization.json)
+                implementation(libs.multiplatform.navigation3.ui)
+                implementation(libs.multiplatform.lifecycle.viewModelNavigation3)
+                implementation(libs.multiplatform.lifecycle.viewmodel)
+                implementation(libs.multiplatform.lifecycle.runtime)
+            }
+        }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.robolectric)
+                implementation(libs.compose.ui.testJunit4)
+                implementation(libs.compose.ui.testManifest)
+            }
+        }
+    }
 }

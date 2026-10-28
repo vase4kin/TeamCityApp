@@ -19,45 +19,21 @@ package teamcityapp.libraries.authentication
 import androidx.annotation.StringRes
 import teamcityapp.libraries.theme.UiText
 
-data class AuthenticationFormState(
-    val serverUrl: String = "https://",
-    val userName: String = "",
-    val password: String = "",
-    val guest: Boolean = false,
-    val sslDisabled: Boolean = false,
-    val busy: Boolean = false,
-    val error: AuthenticationError? = null
-) {
-    val errorMessage: UiText? = when (val value = error) {
-        AuthenticationError.EmptyUrl -> UiText.Resource(R.string.server_cannot_be_empty)
-        AuthenticationError.EmptyUserName -> UiText.Resource(R.string.server_user_name_cannot_be_empty)
-        AuthenticationError.EmptyPassword -> UiText.Resource(R.string.server_password_cannot_be_empty)
-        AuthenticationError.SaveFailed -> UiText.Resource(R.string.error_save_account)
-        AuthenticationError.DuplicateAccount -> UiText.Dynamic("")
-        is AuthenticationError.Server -> UiText.Dynamic(value.message)
-        null -> null
-    }
-    fun credentials() = AccountCredentials(serverUrl.trim { it <= ' ' }, userName.trim { it <= ' ' }, password.trim { it <= ' ' }, guest, sslDisabled)
-    fun validationError(): AuthenticationError? {
-        val input = credentials()
-        return when {
-            input.serverUrl.isEmpty() -> AuthenticationError.EmptyUrl
-            !guest && input.userName.isEmpty() -> AuthenticationError.EmptyUserName
-            !guest && input.password.isEmpty() -> AuthenticationError.EmptyPassword
-            else -> null
-        }
-    }
-}
-sealed interface AuthenticationError {
-    data object EmptyUrl : AuthenticationError
-    data object EmptyUserName : AuthenticationError
-    data object EmptyPassword : AuthenticationError
-    data object SaveFailed : AuthenticationError
-    data object DuplicateAccount : AuthenticationError
-    data class Server(val message: String) : AuthenticationError
+val AuthenticationFormState.errorMessage: UiText? get() = when (val value = this.error) {
+    AuthenticationError.EmptyUrl -> UiText.Resource(R.string.server_cannot_be_empty)
+    AuthenticationError.EmptyUserName -> UiText.Resource(R.string.server_user_name_cannot_be_empty)
+    AuthenticationError.EmptyPassword -> UiText.Resource(R.string.server_password_cannot_be_empty)
+    AuthenticationError.SaveFailed -> UiText.Resource(R.string.error_save_account)
+    AuthenticationError.DuplicateAccount -> UiText.Dynamic("")
+    AuthenticationError.InvalidUrl -> UiText.Resource(R.string.authentication_invalid_url)
+    AuthenticationError.Connection -> UiText.Resource(R.string.authentication_connection_failed)
+    is AuthenticationError.Http -> UiText.Resource(R.string.authentication_http_error, listOf(value.status))
+    is AuthenticationError.Server -> UiText.Dynamic(value.message)
+    null -> null
 }
 
-enum class AuthenticationWarningText(@get:StringRes val messageRes: Int, val styled: Boolean) {
-    Http(R.string.server_not_secure_http, false),
-    Ssl(R.string.warning_ssl_dialog_content, true)
+@get:StringRes
+val AuthenticationWarningText.messageRes: Int get() = when (this) {
+    AuthenticationWarningText.Http -> R.string.server_not_secure_http
+    AuthenticationWarningText.Ssl -> R.string.warning_ssl_dialog_content
 }

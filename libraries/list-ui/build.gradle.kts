@@ -27,6 +27,7 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
+    api(projects.libraries.listPresentation)
     api(projects.libraries.listState)
     api(libs.androidx.paging.compose)
     implementation(libs.androidx.activity.compose)

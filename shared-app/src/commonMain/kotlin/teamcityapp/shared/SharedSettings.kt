@@ -1,0 +1,56 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.shared
+
+import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import teamcityapp.features.about.api.*
+import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.about.impl.*
+import teamcityapp.features.settings.api.navigation.SettingsDestination
+import teamcityapp.features.settings.impl.*
+import teamcityapp.features.settings.impl.tracker.SettingsTrackerImpl
+import teamcityapp.libraries.app_theme.*
+import teamcityapp.libraries.navigation.*
+
+internal fun sharedSettingsEntries(graph: SharedAccountFeatures?): Set<DestinationRegistration> = setOf(
+    SharedEntry(SettingsDestination::class, SettingsDestination.serializer()) { _, nav, _ ->
+        val platform = LocalNativePlatform.current
+        val analytics = platform.analytics
+        val tracker = remember(analytics) {
+            SettingsTrackerImpl(analytics)
+        }
+        val vm = viewModel { SettingsViewModel(platform.theme, ThemeOptions.Shared, tracker) }
+        SharedSettingsRoute(vm, { nav.pop() })
+    },
+    SharedEntry(AboutDestination::class, AboutDestination.serializer()) { _, nav, _ ->
+        val platform = LocalNativePlatform.current
+        val repository = remember(graph) {
+            object : AboutRepository {
+                override suspend fun serverInfo(): AboutServerInfo = checkNotNull(graph).about.serverInfo()
+            }
+        }
+        SharedAboutRoute(repository, APP_VERSION, platform::browser, platform::rate, platform::openSourceLibraries, { nav.pop() })
+    },
+    // Persisted reader visits from earlier builds close back to their live About owner.
+    SharedEntry(NativeLicensesDestination::class, NativeLicensesDestination.serializer()) { _, nav, entryId ->
+        LaunchedEffect(entryId) { nav.closeRetiredLicenseScreens(entryId) }
+    },
+    SharedEntry(NativeLicenseDestination::class, NativeLicenseDestination.serializer()) { _, nav, entryId ->
+        LaunchedEffect(entryId) { nav.closeRetiredLicenseScreens(entryId) }
+    }
+)

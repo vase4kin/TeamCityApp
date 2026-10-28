@@ -14,30 +14,49 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
     id("teamcityapp.android.screenshot")
+    alias(libs.plugins.kotlin.serialization)
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.filter_builds.impl" }
-dependencies {
-    implementation(projects.libraries.data)
-    implementation(projects.libraries.navigation)
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    implementation(projects.features.filterBuilds.api)
-    implementation(libs.androidx.activity.compose)
 
-    implementation(projects.libraries.theme)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.turbine)
-    testImplementation(libs.mockito.mockitoCore)
-    ksp(libs.dagger.compiler)
+kotlin { android { namespace = "teamcityapp.features.filter_builds.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.filter_builds.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        implementation(projects.libraries.network)
+        implementation(projects.libraries.analytics)
+        api(projects.features.filterBuilds.api)
+        api(projects.libraries.designSystem)
+        implementation(libs.multiplatform.compose.backhandler)
+        implementation(libs.multiplatform.lifecycle.runtime)
+        implementation(libs.multiplatform.lifecycle.viewmodel)
+    }
+}
+kotlin.sourceSets.named("commonTest") { dependencies { implementation(libs.coroutines.test) } }
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+        implementation(libs.mockito.mockitoCore)
+        implementation(projects.libraries.data)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.filterBuilds.api)
+        implementation(libs.androidx.activity.compose)
+        implementation(projects.libraries.theme)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.hilt.viewModelCompose)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

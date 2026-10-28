@@ -17,7 +17,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   OSS licenses activities remain platform integrations. Java and Kotlin coexist.
 - The Compose features and the Home/Build Details shells use `api`/`impl`
   modules. APIs expose serializable destination keys, small contracts and immutable
-  public models. Implementations register existing route composables through Hilt,
+  public models. Implementations expose shared composables hosted by the common root,
   own their UI, ViewModels, trackers and destination/platform routers, and have no
   implementation-to-implementation feature dependencies. Kotlin sources and tests
   use the corresponding `kotlin` roots.
@@ -36,22 +36,23 @@ to the requested behavior and the coherent migration slice needed to support it.
   are validated against account identity before restoring content. Switching users,
   including users on the same server, replaces old owners and cancels their work.
   Account preparation owns API/cache initialization; signed-out sessions return to Login.
-- `libraries/data` owns existing wire DTOs, Retrofit/Gson service/repository contracts,
-  RxJava/RxCache integration and shared build mapping. `libraries/session` owns encrypted
-  account storage, account identity/guards and opaque API-graph lifetime/clear contracts.
-  Independent suspend/Flow adapters belong to their feature implementations; app-dependent
-  filter/auth/platform bridges remain in `app/integration`. The concrete Dagger account
-  graph and Hilt composition remain in `app/di` until the separate graph migration.
-  Preserve wire DTOs and their serialized class names for cache compatibility.
-  Cancelling coroutine repository calls must dispose their Rx subscriptions.
-  Room, broader DataStore migration and WorkManager remain target technologies.
-- About maps the legacy server DTO into its plain API model. Settings uses the
+- `libraries/network` and `libraries/shared-data` own the common Ktor transport,
+  authentication, response cache and account transport lifetime for both production hosts.
+  Feature implementations own their repositories, mappings, filters, onboarding and
+  rating policies. Libraries have no feature-module dependencies.
+  `libraries/data` retains installed wire DTOs, build compatibility codecs and
+  shared build mapping; preserve their serialized names and fields. `libraries/session`
+  owns encrypted Android account storage and identity guards. The retired Android
+  Retrofit/RxCache graph and repository adapters have been removed. Offline mocks
+  use suspend fixture methods and coroutine gates; neither flavor depends on RxJava.
+  See `docs/networking.md`.
+- About maps the common server response into its plain API model. Settings uses the
   shared `libraries/app-theme` DataStore contract, migrating the old theme preference
   without changing other preferences. Google's licenses screen remains external.
-- Login and Create Account share stateless controls and authentication analytics
-  in `libraries/authentication`; server URL formatting belongs to `libraries/remote`.
-  App adapters preserve challenge-based Basic authentication, explicit HTTP/SSL
-  consent, encrypted persistence, duplicate detection and API initialization.
+- Login and Create Account share stateless controls and authentication analytics.
+  Common Ktor authentication owns production URL validation and Basic challenges;
+  shared repositories preserve explicit HTTP/SSL consent, encrypted persistence,
+  duplicate detection and API initialization.
   Pending submissions survive recreation without duplicate requests; passwords
   stay in memory and are cleared after successful persistence.
 - Sheet content must not draw its own handle; the Navigation 3 Material sheet host owns
@@ -59,10 +60,12 @@ to the requested behavior and the coherent migration slice needed to support it.
   Account destination, preserving account switching and existing account/app actions.
   Filters are inline actions; only Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
   Filter Builds deliver typed results to History's originating visit. Legacy filter
-  serialization remains behind app adapters to preserve existing request semantics.
+  serialization remains behind feature-owned compatibility adapters to preserve existing request semantics.
 - Build Details is an Overview hub with a prominent status card, Results,
   Execution, Build setup, and Configuration/project groups. Available section
-  destinations use the complete incoming launch snapshot; floating Share/Browser
+  destinations in the common production root use the same complete, same-build snapshot
+  that backs the visible Overview (including refreshed sections/properties). Older Android
+  compatibility hosts keep their incoming-snapshot contract. Floating Share/Browser
   actions and Stop/Remove/Restart use loaded build data and retain confirmation,
   retry and account isolation behavior. Changes, Tests, Parameters, Artifacts and
   Snapshot Dependencies open separate saved visits with their own screen headers.
@@ -75,6 +78,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   Downloads retain ViewModel state through recreation, but cancel on screen departure
   or app backgrounding, closing blocked reads and removing temporary files without
   overwriting completed files. Their inline card explains that screen-owned lifetime.
+  Artifacts owns the transfer lifetime policy; UI-owned platform/router ports expose
+  host recreation state. Android background callbacks must distinguish a configuration
+  change from actual backgrounding, including when the old composition is disposed.
 - Lists share immutable models and rows in `libraries/build-configurations`,
   `libraries/builds` and `libraries/build-ui`, plus `libraries/list-ui` and
   `libraries/list-state`. History, Changes and Tests use Paging with opaque TeamCity
@@ -89,7 +95,12 @@ to the requested behavior and the coherent migration slice needed to support it.
   the earlier list migration.
 - Feature implementations own behavioral tests and Roborazzi PNG baselines for
   distinct states in both themes, compact/expanded layouts and enlarged text.
-  App-level Compose/Espresso integration tests remain in the Marathon APK.
+  Feature/library application-hosted device tests live in their owning module's
+  `src/androidAppTest/kotlin` (Java Hilt modules use `java`). The app's
+  `teamcityapp.android.app-tests` convention compiles them into the existing
+  Marathon APK; they are not independently runnable feature device targets.
+  Root/manifest/cross-feature integration suites and shared test infrastructure
+  remain in `app/src/androidTest`. See `docs/android-instrumentation-tests.md`.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
   an included `build-logic` build for conventions and SDK/application settings,
   and JDK 17.
@@ -98,15 +109,32 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 ## Repository layout
 
-- `app/`: application/framework entry points, root navigation/account composition,
-  `di` bindings and app-dependent authentication/filter/platform `integration` adapters.
-- `libraries/data/`: network DTOs/contracts/cache integration and shared build mapping;
+- `app/`: application/framework entry points, installed Intent compatibility,
+  account/navigation composition, DI bindings and UI-owned OS ports. Feature
+  actions and resources stay in their implementations. Android file/cache storage
+  lives beside its contracts in Artifacts and `libraries/network`;
+  `libraries/session` owns installed preference migration. Host resources contain
+  application identity, launch artwork/theme and FileProvider configuration. Feature and codec unit tests
+  live with their owners; root/manifest/cross-feature tests and offline wire fixtures
+  remain application-hosted. The retired artifact router/factory, EventBus,
+  animation toggles and old root lifecycle holder are removed.
+- `libraries/data/`: installed DTO/build codecs and shared build mapping;
   preserve serialized legacy packages even when source ownership moves.
 - `libraries/session/`: encrypted account storage, session identity and graph ownership
   contracts; it must not depend on the app or a concrete Dagger component.
 - `features/`: feature `api`/`impl` modules. APIs own small contracts and plain
   public models; implementations own Compose UI, ViewModels, UI-scoped routers,
   private resources, behavioral tests, and screenshot baselines.
+- `libraries/network-testing/`: test-only account/vault/HTTP fixtures shared by
+  feature-owned repository tests, with no feature dependencies or UI. Add it only
+  to test source sets. Keep cross-feature composition/result assertions in the root.
+  The Android custom test application and its Hilt entry point live in
+  `app/src/androidTest`. Production hosts consume shared feature implementations
+  through `shared-app`, with direct implementation dependencies only for native
+  adapters and installed codecs. Application-hosted suites declare their feature
+  dependencies in `androidTestImplementation`. Runtime verification rejects
+  compatibility UI harnesses and coroutine test libraries in production; the mock
+  flavor alone may include Ktor's mock engine.
 - `libraries/`: shared API, storage, models, resources, theme, networking helpers,
   security, utilities, and other reusable components.
 - `build-logic/src/main/kotlin/Config.kt`: SDK/JVM settings and application version.
@@ -121,6 +149,157 @@ to the requested behavior and the coherent migration slice needed to support it.
   verification preparation/documentation.
 
 ## Target architecture
+
+### Kotlin Multiplatform migration
+
+- Follow `docs/kmp-migration.md` as the migration checklist and phase contract.
+  Start only the phase the user authorizes. Each phase has its own goal, verified
+  completion gates, checkpoint commits, actual UI evidence, and a detailed private
+  Sites report linked from the checklist. Do not mark a phase complete while a
+  required check or report remains unfinished. Starting the next phase requires
+  a new user instruction.
+- See `docs/ios-release.md` for candidate archive, native notice inventory,
+  privacy/icon/version audits and signing/TestFlight preparation. Optimized Xcode
+  framework builds use the release-scoped heap in `scripts/build-ios-framework.sh`.
+  Keep physical-device/manual VoiceOver qualification distinct from simulator
+  results; an unsigned archive does not authorize upload or distribution.
+- Shared modules use `teamcityapp.kmp.library` or `teamcityapp.kmp.compose`, the
+  Android KMP library plugin, and `src/commonMain`, `src/commonTest`,
+  `src/androidMain`, and `src/iosMain` Kotlin roots. Keep flavors in Android hosts.
+  The current scope targets Android API 24+ and iOS 17+ on Apple Silicon simulators and arm64
+  devices, including compact and expanded layouts.
+- Shared UI uses Compose Multiplatform resources and typed `SharedUiText`;
+  Android resource IDs and the existing `UiText` remain in unmigrated Android
+  code. Share portable theme definitions through `libraries/design-system`.
+- Feature APIs expose portable models and repository contracts in common code;
+  Android destination registrations may remain in `androidMain` during migration.
+  About, Login, Add Account, Account (drawer), Manage Accounts, Navigation, Build History, Build Overview, Home, Favorites,
+  Running Builds, Queue, Agents, Changes, Change Details, Tests, Test Details,
+  Parameters, Snapshot Dependencies, Run Build, Filter Builds, Quick Filter,
+  Action Bottom Sheet, Build Details, Artifacts and Settings `impl` modules own their common UI
+  and ViewModels. Production `androidMain` contains OS actuals/actions and installed
+  codec adapters; superseded Android screens/routers and native-shell ViewModels
+  live only in the owning feature's test source sets. Robolectric/Roborazzi tests
+  live in `androidHostTest`. Every feature has only `api` and `impl`;
+  do not create a separate feature `presentation` module. Use `commonTest` for
+  portable behavioral tests and `iosMain`/`iosTest` only for feature-specific native
+  needs. Cross-feature implementation dependencies remain prohibited. Do not
+  duplicate shared layouts in platform adapters. `shared-app` is the composition
+  root and consumes feature implementations. Owner-only tracker interfaces live
+  beside their implementation; only tracking contracts actually consumed across
+  features remain in feature APIs. Feature-owned `Shared*Route` containers
+  collect UI state and own screen lifecycle/analytics, paging, dialogs, notices,
+  search controls and download/export policy. The root constructs dependencies,
+  wires native ports and coordinates navigation/results/session ownership. Build
+  Details and Overview compose through content callbacks without implementation
+  dependencies. Account-picker repository adapters live in Drawer and Manage
+  Accounts; native theme and response-cache persistence belong to their libraries,
+  while Artifacts owns its file ports and native backends. `features/splash` retains its Android
+  launch-compatibility api/impl pair; new shared features use KMP.
+- Shared ViewModels use plain constructor injection and lifecycle-owned factories.
+  Hilt remains the Android composition mechanism, with thin Android ViewModels
+  when Hilt ownership is required. Common code cannot depend on Hilt, Java
+  reflection, Android Context/Bundle, Retrofit/RxJava, or platform storage.
+  `libraries/network` uses Ktor and Kotlin serialization, and `shared-data`
+  supplies reusable authentication and account transport/cache construction. Each
+  feature implementation owns its account-scoped repository adapters. Filter Builds
+  retains the installed filter contract/serializer in its Android api/impl source
+  sets with unchanged JVM names and instance fields, preserving its original
+  serialization ID. Artifacts owns file-store contracts and
+  both native backends; the host supplies application-owned storage and export.
+  `libraries/accounts` owns the portable authentication contracts (with their
+  existing package names), identity, secure-storage contracts and generation-scoped lifetime;
+  iOS uses Keychain and Android adapts the installed encrypted account snapshot.
+  Preserve Android account/cache formats
+  and existing authentication/cancellation semantics behind adapters.
+- Run common behavioral tests on Android and the iOS simulator, retaining Android
+  Roborazzi coverage of shared composables. Inspect actual before/after/comparison
+  images before changing goldens. iOS begins with an explicitly labeled first
+  baseline. Keep generated screenshots and build logs under `build/`; commit only
+  intentional golden fixtures and reproducible source/configuration.
+- Both production hosts execute `shared-app`'s single `TeamCityApp` root,
+  `SharedAppViewModel`, account/session policy, Ktor repositories, destination/result
+  orchestration and shared presentation. Android `MainActivity` decodes installed
+  Intents and supplies UI-owned OS adapters; iOS supplies the UIKit/Keychain host.
+  Common orchestration files use `Shared` names. `NativePlatform` is the shared
+  contract for OS services; persisted `NativeLicense*Destination` names remain
+  compatibility identifiers, not independent iOS implementations.
+- The normal application runs Login → Home with Projects, Favorites and
+  Activity (Running, Queue, Agents), plus History → Build Overview and read-only
+  Changes/Change Details, Tests/Test Details, Parameters and Snapshot Dependencies.
+  The deterministic About preview remains an explicit regression-test launch mode.
+  Home uses retained independent stacks, account-scoped persisted favorites/filters,
+  and validated saved public navigation. Native History supports Run/Filter and
+  typed live-origin results; the shared Build Details shell supports confirmed
+  Stop/Remove/Restart and queued-reference loading. Effective History locators
+  survive public navigation restoration without replacing the live visit owner.
+  Native artifacts support folders, archive actions and byte-progress downloads.
+  Downloads belong to the screen, survive recreation/sheets, and cancel on departure,
+  app/scene backgrounding or account replacement; close blocked reads and remove
+  partial files. Common `ArtifactTarget` gives every transfer a unique cache directory;
+  repeated names retain both completed files on both platforms. The latest completed
+  download keeps an Open or share / Retry export card without refetching. Explicit
+  requests are consumed once; native presentation acceptance is distinct from a user
+  completing export, and dismiss/recreation must not replay a sheet. System export uses
+  UIKit or Android's installed FileProvider. Prior Android downloads remain intact.
+  Native browser/log/diff, sharing and clipboard actions stay in UI-owned adapters;
+  API credentials never enter browser links. Settings shares presentation over the
+  portable theme-preference contract, retaining Android DataStore and native
+  UserDefaults. About links native account actions and Apple rating requests. Its Open Source
+  Libraries action is enabled by the About feature's Android capability and uses
+  Google's OSS Licenses screen; iOS hides it. iOS redistribution notices are a
+  packaging-only `ThirdPartyNotices.plist`, with no in-app catalog or reader. Native diagnostics use fixed OS event labels and Apple's
+  crash reports; hosted iOS analytics/crash upload is unconfigured. Each feature owns
+  its dedicated tracker implementation and event mappings in commonMain/tracker,
+  with portable behavioral tests in commonTest. `libraries/analytics` owns the
+  `AnalyticsTracker` interface and typed event values, plus Android Firebase and
+  iOS label-only implementations in their platform source sets. SDKs stay out of
+  features and navigation; the app host binds the backend and `shared-app` only
+  wires feature trackers. Reusable authentication tracking belongs to the shared
+  authentication library. Cross-feature tracking capabilities use API contracts,
+  never another feature's implementation. Android encodes flags as supported
+  numeric values; iOS discards every parameter.
+  Native interactive list rows keep clipped fragments below the standard touch
+  target out of VoiceOver until scrolling reveals them. Preserve each action and
+  label after reveal; keep Android semantics unchanged and retain strict audits.
+  Capability-gate unavailable actions. Keep the native root responsible for top/horizontal safe areas. Return
+  section counts once to their exact live originating build visit. Both production
+  hosts execute the common network/authentication/response-cache stack. Android's
+  retired Retrofit/RxCache/authentication graph is removed. Installed DTO/account
+  codecs remain, and old Android route regression harnesses live in `androidHostTest`
+  with explicit fake ViewModels. Preserve serialized formats and old cache files. Old RxCache
+  entries are not imported into the new bounded cache; its first read refetches.
+  Shared onboarding/rating state is account scoped. Rating uses the common local
+  eligibility rule rather than the retired Android Firebase Remote Config gate:
+  three distinct successfully loaded build Overviews qualify an account, and the
+  automatic prompt becomes available only after a later process launch. Host
+  recreation/account switching do not count as another launch. Manual rating stays
+  immediately available; Home coachmarks suppress the inline rating card.
+  Both platforms offer all four shared theme choices. Open Source Libraries is
+  Android-only; keep its capability actuals in the About implementation source sets.
+  Retired `NativeLicense*Destination` keys remain decode-only compatibility routes
+  that close to About, without restoring the removed reader.
+- KMP feature `impl` modules apply `teamcityapp.kmp.compose`, optional
+  `teamcityapp.kmp.hilt` for Android-only KSP/Dagger/Hilt processing, and
+  `teamcityapp.android.screenshot`. Keep framework AndroidEntryPoints and the
+  Hilt Gradle plugin in Android hosts; shared constructors stay plain Kotlin.
+  Existing feature goldens retain their `src/test/screenshots/debug` paths and
+  unchanged bytes. Run `python3 scripts/check-feature-modules.py` to verify
+  module/source boundaries; CI runs it before planning tests. KMP UI harnesses
+  verify with
+  `:shared-app:verifyRoborazziAndroidHostTest`. Shared native account tests and
+  signed XCTest UI runs must not concurrently control the same simulator.
+- Management transport writes are account-generation scoped and use the same
+  origin/context/authentication guards as reads. Never automatically retry an
+  uncertain mutation. Only an explicit initial Basic challenge may replay it.
+  Keep technical parameter editing text/selection/composition in UI-owned
+  TextFieldState and read final field values at confirmation.
+  Verify management writes against `scripts/kmp-platform-fixture.py
+  --enable-mutations` and its local `/context/manage` contexts; public TeamCity
+  verification remains read-only. Keep fixture writes disabled by default.
+
+The following Android architecture rules continue to apply to unmigrated modules;
+the scoped shared-code rules above apply to migrated KMP modules.
 
 - New features and substantive refactors must use this architecture whenever
   feasible. Existing legacy patterns are compatibility constraints, not the
@@ -167,9 +346,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   in a named shared module with an explicit contract, such as `libraries/app-rating`,
   rather than a miscellaneous utility extension or another feature implementation.
 - Data: expose suspend functions and flows through repositories. UI and ViewModels
-  must not call Retrofit, Room, DataStore, or other storage APIs directly. Put
-  shared or nontrivial cross-repository operations in use cases. Existing Rx APIs
-  and caches may be reused behind coroutine adapters with cancellation support.
+  must not call Ktor, Room, DataStore, or other storage APIs directly. Put shared
+  or nontrivial cross-repository operations in use cases. Preserve cancellation
+  and cache behavior behind repository boundaries.
 - DI: use Hilt for new and refactored dependency-injection infrastructure across
   the app, features, data, storage, background work, and tests that need injection.
   Use `@HiltViewModel` for ViewModels. Inject dispatchers, repositories, services,
@@ -182,9 +361,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   persistence entities, domain models, and UI-specific models distinct at layer
   boundaries, with explicit mappings. Keep domain models independent of Android,
   network serialization, and persistence implementation details.
-- Network: use Retrofit/OkHttp and Kotlin serialization for new or migrated network
-  contracts. Keep existing Retrofit/Gson services behind repository adapters until
-  their owning contracts are migrated; preserve server and authentication behavior.
+- Network: use the shared Ktor/Kotlin serialization stack for new and migrated
+  contracts on both platforms. Android uses Ktor's OkHttp engine and iOS its Darwin
+  engine. Preserve server, authentication, account isolation and cancellation behavior.
 - Storage and background work: use Room for new structured local storage,
   DataStore for new preferences, and WorkManager for deferrable background work.
   When replacing existing storage, preserve persisted data, provide migrations,
@@ -215,23 +394,21 @@ to the requested behavior and the coherent migration slice needed to support it.
   feature-to-feature coupling.
 - Keep network and persistence access behind existing repository, data manager,
   or storage interfaces while old implementations remain. Do not add direct
-  Retrofit or SharedPreferences access to UI code.
+  Ktor or SharedPreferences access to UI code.
 - Screens use Compose and ViewModels; do not add native hosts, presenters or
-  callback-holding state holders. Existing RxJava, cache and encrypted account
-  implementations remain behind explicit repository adapters. Keep those boundaries
-  working until their owning data/storage contracts are migrated.
+  callback-holding state holders. Keep networking and caching in the common Ktor
+  repositories, and encrypted account storage behind its portable contract.
 - Destination and platform routers are UI-scoped. Obtain retained state with
   `@HiltViewModel` and `hiltViewModel()` inside registered entries; keep Activities,
   Fragments, adapters and callbacks out of ViewModels. Use the root destination
   owner and retained child-pane contracts rather than creating native screen hosts.
-- The app's `Repository` may extend migrated feature repository API contracts.
-  Its production and mock implementations own their corresponding suspend/Flow
-  behavior, including Rx bridges and DTO mappings when needed. Expose these
-  interfaces through small DI providers rather than putting adapter classes in
-  DI module files. Preserve caching and cancellation semantics.
-- API dependencies come from `ApiSession`, which initializes lazily and rebuilds
-  on account/authentication changes. Clear the session when logging out. Access
-  account storage through Hilt rather than through the account API graph.
+- Common repositories implement feature API contracts with suspend/Flow behavior.
+  Keep transport behavior and DTO mapping out of DI modules. Mock builds supply
+  responses through Ktor's mock engine and execute the same repositories.
+- Production API dependencies come from the account-generation-scoped common
+  `TeamCityAccountGraph` owned by `SharedAppViewModel`. Account replacement closes
+  old work and invalidates its cache. Access Android account storage through Hilt;
+  do not recreate the retired `ApiSession` or Dagger REST graph.
 - Match resource acquisition and cleanup to visible composition and destination
   ownership. Reinitialize AndroidView resources when revisiting their content and
   dispose pending callbacks and platform resources when that content leaves.
@@ -310,13 +487,18 @@ to the requested behavior and the coherent migration slice needed to support it.
   the original, actual, and comparison images first.
 - Normal unit tests verify goldens by default (`roborazzi.test.verify=true`). CI also
   runs `verifyRoborazziDebug` and uploads reports/comparisons. For About, use
-  `./gradlew :features:about:impl:verifyRoborazziDebug`; deliberately refresh with
-  `./gradlew :features:about:impl:recordRoborazziDebug --tests '*AboutScreenScreenshotTest'`,
+  `./gradlew :features:about:impl:verifyRoborazziAndroidHostTest`; deliberately refresh with
+  `./gradlew :features:about:impl:recordRoborazziAndroidHostTest --tests '*AboutScreenScreenshotTest'`,
   review the PNG changes, then verify again. Use the corresponding variant task
   for flavored modules. Keep comparison images and HTML reports under `build/`.
 - Retain Espresso coverage for platform views/WebViews and the existing app-level
   Compose/instrumentation suite for end-to-end behavior. Verify lifecycle cancellation,
   state retention, and old/new integration boundaries when those behaviors change.
+- Android API 24 instrumentation uses `-PminimumAndroidInstrumentation` for its
+  compatible subclass mock engine; default CI/JVM Mockito remains unchanged.
+  See `docs/kmp-phase-6.md` for verified scope and commands. Older display captures
+  must wait for exact rendered theme colors and distinguish tooltip/window roots;
+  navigation-bar light appearance is only supported from API 26.
 - Run the narrowest relevant test first, then broader checks for changes that
   cross module boundaries. Report checks that cannot run and why.
 - Prepare debug Google Services files as CI does before local app builds if they

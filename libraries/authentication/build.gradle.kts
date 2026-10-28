@@ -20,13 +20,10 @@ plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.compose")
     id("teamcityapp.android.screenshot")
-    id("teamcityapp.android.hilt")
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.authentication" }
 dependencies {
-    implementation(platform(libs.google.firebaseBom))
-    implementation(libs.google.analytics)
-    ksp(libs.dagger.compiler)
+    api(projects.libraries.authenticationShared)
 
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)

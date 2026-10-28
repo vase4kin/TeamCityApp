@@ -1,0 +1,304 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.build_queue.impl
+
+import androidx.lifecycle.ViewModelStore
+import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.*
+import kotlinx.serialization.json.Json
+import teamcityapp.features.build_queue.api.*
+import teamcityapp.features.build_queue.impl.resources.*
+import teamcityapp.libraries.builds.BuildLaunchData
+import teamcityapp.libraries.builds.BuildTests
+import teamcityapp.libraries.list_state.ListUiState
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class BuildQueueViewModelTest {
+    private val dispatcher = StandardTestDispatcher()
+    private val store = ViewModelStore()
+    private val rows = listOf(buildRow(), buildRow("2"))
+    private val repository = FakeRepository()
+
+    @BeforeTest fun setUp() {
+        Dispatchers.setMain(dispatcher)
+    }
+
+    @AfterTest fun tearDown() {
+        store.clear()
+        Dispatchers.resetMain()
+    }
+    private fun vm() = BuildQueueViewModel(repository).also { store.put("builds", it) }
+    private fun TestScope.observe(vm: BuildQueueViewModel) = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.state.collect {} }
+
+    @Test fun firstLoadIsCollectionDrivenAndInitialResumeDoesNotDuplicateIt() = runTest(dispatcher) {
+        val vm = vm()
+        runCurrent()
+        assertTrue(repository.calls.isEmpty())
+        observe(vm)
+        runCurrent()
+        assertEquals(listOf(repository.query.value to false), repository.calls)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
+    }
+
+    @Test fun allFilterIgnoresFavoriteChangesAndUsesEmptyIds() = runTest(dispatcher) {
+        repository.query.value = BuildQueueQuery("account", BuildQueueFilter.All, listOf("irrelevant"))
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        assertTrue(repository.calls.single().first.favoriteConfigurationIds.isEmpty())
+        repository.query.value = repository.query.value.copy(favoriteConfigurationIds = listOf("changed"))
+        runCurrent()
+        assertEquals(1, repository.calls.size)
+    }
+
+    @Test fun emptyFavoritesMakesNoRepositoryRequest() = runTest(dispatcher) {
+        repository.query.value = BuildQueueQuery("account")
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        assertEquals(ListUiState.Empty(), vm.state.value.list)
+        assertEquals(Res.string.build_queue_empty_favorites, vm.state.value.emptyMessageRes)
+        vm.refresh()
+        runCurrent()
+        assertTrue(repository.calls.isEmpty())
+    }
+
+    @Test fun favoriteIdChangesReloadTheirOwnQuery() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.query.value = repository.query.value.copy(favoriteConfigurationIds = listOf("other"))
+        runCurrent()
+        assertEquals(listOf("other"), repository.calls.last().first.favoriteConfigurationIds)
+        assertEquals(2, repository.calls.size)
+    }
+
+    @Test fun accountChangeNeverEmitsOldRowsUnderNewAccount() = runTest(dispatcher) {
+        val vm = vm()
+        val emissions = mutableListOf<BuildQueueUiState>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.state.collect { emissions += it } }
+        runCurrent()
+        val deferred = CompletableDeferred<List<BuildLaunchData>>()
+        repository.load = { _, _ -> deferred.await() }
+        repository.query.value = repository.query.value.copy(accountKey = "other-account")
+        runCurrent()
+        assertEquals(ListUiState.Loading, vm.state.value.list)
+        val changed = listOf(buildRow("new"))
+        deferred.complete(changed)
+        runCurrent()
+        assertFalse(emissions.any { it.query.accountKey == "other-account" && (it.list as? ListUiState.Content)?.items == rows })
+        assertEquals(ListUiState.Content(changed), vm.state.value.list)
+    }
+
+    @Test fun filterChangeCancelsOldRequestAndEmitsMatchingEmptyState() = runTest(dispatcher) {
+        var cancelled = false
+        repository.load = { query, _ ->
+            if (query.filter == BuildQueueFilter.Favorites) {
+                try {
+                    awaitCancellation()
+                } finally {
+                    cancelled = true
+                }
+            } else {
+                emptyList()
+            }
+        }
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.query.value = repository.query.value.copy(filter = BuildQueueFilter.All)
+        runCurrent()
+        assertTrue(cancelled)
+        assertEquals(BuildQueueFilter.All, vm.state.value.query.filter)
+        assertEquals(ListUiState.Empty(), vm.state.value.list)
+        assertEquals(Res.string.build_queue_empty_all, vm.state.value.emptyMessageRes)
+    }
+
+    @Test fun sortsConfigurationIdsIgnoringCaseAndKeepsEqualIdQueueOrder() = runTest(dispatcher) {
+        val ordered = listOf(buildRow("z").copy(buildTypeId = "z"), buildRow("first").copy(buildTypeId = "a"), buildRow("second").copy(buildTypeId = "A"), buildRow("third").copy(buildTypeId = "b"))
+        repository.load = { _, _ -> ordered }
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        assertEquals(listOf("first", "second", "third", "z"), (vm.state.value.list as ListUiState.Content).items.map { it.id })
+    }
+
+    @Test fun refreshForcesListAndRetainsCompletedRows() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        val deferred = CompletableDeferred<List<BuildLaunchData>>()
+        repository.load = { _, _ -> deferred.await() }
+        vm.refresh()
+        runCurrent()
+        assertEquals(ListUiState.Content(rows, isRefreshing = true), vm.state.value.list)
+        assertTrue(repository.calls.last().second)
+        deferred.complete(emptyList())
+        runCurrent()
+        assertEquals(ListUiState.Empty(), vm.state.value.list)
+    }
+
+    @Test fun failedRefreshRetainsRowsAndRetryForcesData() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.load = { _, _ -> error("offline") }
+        vm.refresh()
+        runCurrent()
+        assertEquals(ListUiState.Content(rows, refreshFailed = true), vm.state.value.list)
+        repository.load = { _, _ -> rows }
+        vm.retry()
+        runCurrent()
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
+        assertTrue(repository.calls.last().second)
+    }
+
+    @Test fun lastCollectorCancelsPendingRequestWithoutError() = runTest(dispatcher) {
+        var cancelled = false
+        repository.load = { _, _ ->
+            try {
+                awaitCancellation()
+            } finally {
+                cancelled = true
+            }
+        }
+        val vm = vm()
+        val collector = observe(vm)
+        runCurrent()
+        collector.cancel()
+        runCurrent()
+        assertTrue(cancelled)
+        assertEquals(ListUiState.Loading, vm.state.value.list)
+        repository.load = { _, _ -> rows }
+        observe(vm)
+        runCurrent()
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
+    }
+
+    @Test fun configurationRecreationKeepsCompletedRowsWithoutReload() = runTest(dispatcher) {
+        val vm = vm()
+        val collector = observe(vm)
+        runCurrent()
+        collector.cancel()
+        runCurrent()
+        observe(vm)
+        runCurrent()
+        assertEquals(1, repository.calls.size)
+    }
+
+    @Test fun realReturnRetainsContentWithoutReload() = runTest(dispatcher) {
+        val vm = vm()
+        val collector = observe(vm)
+        runCurrent()
+        collector.cancel()
+        runCurrent()
+        observe(vm)
+        runCurrent()
+        assertEquals(listOf(false), repository.calls.map { it.second })
+    }
+
+    @Test fun hiddenConfigurationRecreationRetainsContentOnReturn() = runTest(dispatcher) {
+        val vm = vm()
+        val collector = observe(vm)
+        runCurrent()
+        collector.cancel()
+        runCurrent()
+        observe(vm)
+        runCurrent()
+        assertEquals(1, repository.calls.size)
+    }
+
+    @Test fun pollingOffersChangesWithoutReplacingRowsUntilUpdate() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        val original = vm.state.value.list
+        val updated = rows.map { it.copy(number = "updated") }
+        repository.load = { _, _ -> updated }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertEquals(original, vm.state.value.list)
+        assertTrue(vm.state.value.updatesAvailable)
+        vm.applyUpdates()
+        runCurrent()
+        assertEquals(ListUiState.Content(updated), vm.state.value.list)
+        assertFalse(vm.state.value.updatesAvailable)
+        assertEquals(2, repository.calls.size)
+    }
+
+    @Test fun identicalDeserializedPollsDoNotOfferUpdatesButChangedResultsDo() = runTest(dispatcher) {
+        val original = rows.map { it.copy(tests = BuildTests("/tests", count = 3, passed = 2, failed = 1)) }
+        repository.load = { _, _ -> original }
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.load = { _, _ -> original.map { Json.decodeFromString<BuildLaunchData>(Json.encodeToString(it)) } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertFalse(vm.state.value.updatesAvailable)
+        assertEquals(ListUiState.Content(original), vm.state.value.list)
+        val changed = original.map { it.copy(tests = it.tests!!.copy(count = 4, passed = 3)) }
+        repository.load = { _, _ -> changed }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertTrue(vm.state.value.updatesAvailable)
+        assertEquals(ListUiState.Content(original), vm.state.value.list)
+        vm.applyUpdates()
+        runCurrent()
+        assertEquals(ListUiState.Content(changed), vm.state.value.list)
+        assertFalse(vm.state.value.updatesAvailable)
+        assertEquals(3, repository.calls.size)
+    }
+
+    @Test fun changedStatusOrMembershipOffersUpdatesAndReversionClearsTheCard() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.load = { _, _ -> rows.map { it.copy(state = "finished", status = "FAILURE") } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertTrue(vm.state.value.updatesAvailable)
+        repository.load = { _, _ -> rows.map { it.copy() } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertFalse(vm.state.value.updatesAvailable)
+        repository.load = { _, _ -> rows.dropLast(1) }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertTrue(vm.state.value.updatesAvailable)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
+    }
+
+    private inner class FakeRepository : BuildQueueRepository {
+        override val query = MutableStateFlow(BuildQueueQuery("account", favoriteConfigurationIds = listOf("Android_Debug")))
+        val calls = mutableListOf<Pair<BuildQueueQuery, Boolean>>()
+        var load: suspend (BuildQueueQuery, Boolean) -> List<BuildLaunchData> = { _, _ -> rows }
+        override suspend fun builds(query: BuildQueueQuery, forceRefresh: Boolean): List<BuildLaunchData> {
+            calls += query to forceRefresh
+            return load(query, forceRefresh)
+        }
+    }
+}

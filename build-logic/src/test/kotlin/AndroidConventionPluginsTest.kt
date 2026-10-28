@@ -65,6 +65,7 @@ class AndroidConventionPluginsTest {
         )
         listOf(
             "app/build/intermediates/javac/mockDebug/classes/OriginalApp.class",
+            "library/build/classes/kotlin/android/main/teamcityapp/shared/Shared.class",
             "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/com/github/vase4kin/teamcityapp/App.class",
             "library/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/teamcityapp/sample/Library.class",
             "library/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/R.class",
@@ -114,7 +115,7 @@ class AndroidConventionPluginsTest {
                     check(agent.excludes == listOf("jdk.internal.*"))
                     check(project.extensions.getByType<JacocoPluginExtension>().toolVersion == "0.8.14")
                     val report = tasks.named<JacocoReport>("generateCodeCoverageReport").get()
-                    check(report.classDirectories.files.map { it.name }.toSet() == setOf("App.class", "Library.class"))
+                    check(report.classDirectories.files.map { it.name }.toSet() == setOf("App.class", "Library.class", "Shared.class"))
                     val orderedTasks = report.mustRunAfter.getDependencies(report).map { it.path }
                     check(orderedTasks.contains(":app:sampleTest"))
                     check(orderedTasks.contains(":app:transformMockDebugClassesWithAsm"))
@@ -136,6 +137,8 @@ class AndroidConventionPluginsTest {
                         check(archive.getInputStream(runtimeClass).reader().readText() == "runtime bytecode")
                     }
                     check(report.sourceDirectories.files.contains(rootProject.file("library/src/main/java")))
+                    check(report.sourceDirectories.files.contains(rootProject.file("library/src/commonMain/kotlin")))
+                    check(report.sourceDirectories.files.contains(rootProject.file("library/src/androidMain/kotlin")))
                     check(report.reports.xml.outputLocation.get().asFile == layout.buildDirectory.file(
                         "coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml"
                     ).get().asFile)
@@ -171,6 +174,47 @@ class AndroidConventionPluginsTest {
         )
         verify(projectDir)
         verify(projectDir, "verifyConventions", "-PinstrumentationCoverage")
+    }
+
+    @Test
+    fun `app test convention includes owned Kotlin and Java suites but isolates R8`() {
+        val projectDir = createProject("app-tests", "app", "features:about:impl", "libraries:session")
+        val roots = listOf(
+            "features/about/impl/src/androidAppTest",
+            "libraries/session/src/androidAppTest"
+        )
+        (roots + "features/about/api/src/androidAppTest").forEach {
+            File(projectDir, "$it/kotlin").mkdirs()
+            File(projectDir, "$it/java").mkdirs()
+        }
+        File(projectDir, "features/about/impl/build.gradle.kts").writeText("")
+        File(projectDir, "libraries/session/build.gradle.kts").writeText("")
+        val appDir = File(projectDir, "app").apply { mkdirs() }
+        File(appDir, "build.gradle.kts").writeText(
+            """
+            plugins { id("teamcityapp.android.app-tests") }
+            android { namespace = "teamcityapp.conventiontest" }
+            val r8 = providers.gradleProperty("r8Verification").isPresent
+            if (r8) {
+                android.sourceSets.getByName("androidTest").setRoot("src/r8VerificationTest")
+            }
+            tasks.register("verifyConventions") {
+                doLast {
+                    val sources = android.sourceSets.getByName("androidTest")
+                    val kotlin = sources.kotlin.directories.map { project.file(it).canonicalFile }.toSet()
+                    val java = sources.java.directories.map { project.file(it).canonicalFile }.toSet()
+                    for (owner in listOf("features/about/impl", "libraries/session")) {
+                        check(kotlin.contains(rootProject.file("${'$'}owner/src/androidAppTest/kotlin")) == !r8)
+                        check(java.contains(rootProject.file("${'$'}owner/src/androidAppTest/java")) == !r8)
+                    }
+                    check(kotlin.none { it.path.contains("/api/") })
+                    check(java.none { it.path.contains("/api/") })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir, ":app:verifyConventions")
+        verify(projectDir, ":app:verifyConventions", "-Pr8Verification")
     }
 
     private fun verifyConventions(kind: String) {
@@ -297,6 +341,106 @@ class AndroidConventionPluginsTest {
                     check(configurations.getByName("debugImplementation").dependencies.any {
                         it.name == "ui-test-manifest"
                     })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
+    @Test
+    fun `KMP conventions configure portable targets host tests and shared resources`() {
+        val projectDir = createProject("kmp-compose")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+            import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+            plugins { id("teamcityapp.kmp.compose") }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(kotlin.targets.names.containsAll(listOf("android", "iosArm64", "iosSimulatorArm64")))
+                    val androidTarget = kotlin.targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+                    check(androidTarget.minSdk == 24)
+                    check(androidTarget.compileSdk == 37)
+                    check(androidTarget.androidResources.enable)
+                    check(tasks.findByName("testAndroidHostTest") != null)
+                    check(plugins.hasPlugin("jacoco"))
+                    check(plugins.hasPlugin("org.jetbrains.compose"))
+                    check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
+                    check(!plugins.hasPlugin("com.google.dagger.hilt.android"))
+                    check(!plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(configurations.getByName("commonMainApi").dependencies.any {
+                        it.group == "org.jetbrains.compose.material3" && it.name == "material3"
+                    })
+                    val sharedMaterial = configurations.getByName("commonMainApi").dependencies
+                        .filterIsInstance<org.gradle.api.artifacts.ModuleDependency>()
+                        .single { it.group == "org.jetbrains.compose.material3" && it.name == "material3" }
+                    check(sharedMaterial.excludeRules.any { it.group == "androidx.graphics" && it.module == "graphics-shapes" })
+                    val nativeMaterial = configurations.getByName("nativeMainApi").dependencies
+                        .filterIsInstance<org.gradle.api.artifacts.ModuleDependency>()
+                        .single { it.group == "org.jetbrains.compose.material3" && it.name == "material3" }
+                    check(nativeMaterial.excludeRules.isEmpty())
+                    check(kotlin.targets.withType<KotlinNativeTarget>().toList().all { target ->
+                        target.compilations.toList().all {
+                            it.compileTaskProvider.get().compilerOptions.freeCompilerArgs.get().any { arg -> arg.endsWith("osVersionMin.ios=17.0") }
+                        }
+                    })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
+    @Test
+    fun `screenshot convention supports KMP Android host tests`() {
+        val projectDir = createProject("kmp-screenshot")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+            import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
+            plugins {
+                id("teamcityapp.kmp.compose")
+                id("teamcityapp.android.screenshot")
+            }
+            tasks.register("verifyConventions") {
+                doLast {
+                    val target = kotlin.targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+                    val hostTest = target.compilations.getByName("hostTest") as KotlinMultiplatformAndroidHostTestCompilation
+                    check(hostTest.isIncludeAndroidResources)
+                    check(tasks.findByName("verifyRoborazziAndroidHostTest") != null)
+                    check(tasks.findByName("recordRoborazziAndroidHostTest") != null)
+                    val dependencies = configurations.getByName("androidHostTestImplementation").dependencies
+                    check(dependencies.any { it.name == "robolectric" })
+                    check(dependencies.any { it.name == "roborazzi" })
+                    check(dependencies.any { it.name == "ui-test-manifest" })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
+    @Test
+    fun `KMP feature injection processes Android without exposing Hilt to native or common code`() {
+        val projectDir = createProject("kmp-hilt")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            plugins {
+                id("teamcityapp.kmp.compose")
+                id("teamcityapp.kmp.hilt")
+            }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(plugins.hasPlugin("com.google.devtools.ksp"))
+                    check(!plugins.hasPlugin("com.google.dagger.hilt.android"))
+                    check(tasks.findByName("compileAndroidMainJavaWithJavac") != null)
+                    check(configurations.getByName("androidMainImplementation").dependencies.any { it.name == "hilt-android" })
+                    check(configurations.getByName("kspAndroid").dependencies.map { it.name }.toSet() == setOf("hilt-compiler", "dagger-compiler"))
+                    for (name in listOf("kspIosArm64", "kspIosSimulatorArm64", "kspCommonMainMetadata")) {
+                        check(configurations.findByName(name)?.dependencies.orEmpty().isEmpty())
+                    }
+                    check(configurations.getByName("commonMainImplementation").dependencies.none { it.group == "com.google.dagger" })
                 }
             }
             """.trimIndent()

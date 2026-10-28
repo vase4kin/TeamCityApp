@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
+    id("teamcityapp.kmp.library")
     alias(libs.plugins.kotlin.serialization)
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.drawer.api" }
-dependencies {
-    api(projects.libraries.navigation)
-}
+kotlin.sourceSets.named("commonMain") { dependencies { api(projects.libraries.navigation) } }

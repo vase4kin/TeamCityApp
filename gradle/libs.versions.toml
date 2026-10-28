@@ -1,5 +1,9 @@
 # Dependency and plugin versions. Keep runtime versions unchanged during catalog migrations.
 [versions]
+gson = "2.13.1"
+atomicfu = "0.28.0"
+ktor = "3.6.0"
+multiplatform-navigation3 = "1.2.0-rc01"
 navigation3 = "1.2.0"
 serialization = "1.11.0"
 datastore = "1.2.1"
@@ -9,15 +13,19 @@ androidx-test = "1.7.0"
 espresso = "3.7.0"
 hamcrest = "2.2"
 mockito = "5.24.0"
+# Mockito Android 5.23+ requires API 28; the explicit minimum-API harness uses subclasses.
+mockitoAndroidMinimum = "5.22.0"
 okhttp = "5.4.0"
-retrofit = "3.0.0"
 dagger = "2.60.1"
 spotless = "8.10.3"
 ktlint = "1.8.0"
 google-java-format = "1.24.0"
 kotlin = "2.4.20"
 ksp = "2.3.12"
-android-gradle = "9.4.1"
+android-gradle = "9.3.2"
+compose-multiplatform = "1.12.2"
+# Expressive APIs require this port; Android retains its existing graphics renderer.
+multiplatform-material3 = "1.12.0-alpha03"
 google-services = "4.5.0"
 firebase-bom = "34.19.0"
 firebase-perf-plugin = "2.0.2"
@@ -25,6 +33,7 @@ crashlytics-plugin = "3.0.6"
 oss-licenses-plugin = "0.13.0"
 compose-bom = "2026.09.00"
 compose-material3 = "1.5.0-beta01"
+androidx-graphics-shapes = "1.0.1"
 androidx-activity = "1.12.3"
 androidx-splashscreen = "1.2.0"
 coroutines = "1.10.2"
@@ -35,12 +44,33 @@ robolectric = "4.17"
 paging = "3.4.2"
 
 [libraries]
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+multiplatform-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
+androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+multiplatform-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-navigation3" }
+multiplatform-lifecycle-viewModelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
+
+compose-multiplatform-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
+multiplatform-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+multiplatform-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+multiplatform-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+multiplatform-compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+multiplatform-compose-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+multiplatform-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "multiplatform-material3" }
+multiplatform-compose-windowSizeClass = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "multiplatform-material3" }
+multiplatform-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+multiplatform-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splashscreen" }
 ksp-gradlePlugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
-androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
-androidx-lifecycle-viewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewModelNavigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
@@ -49,7 +79,6 @@ androidx-paging-testing = { module = "androidx.paging:paging-testing", version.r
 roborazzi-gradlePlugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
@@ -64,14 +93,12 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-lifecycle-runtimeCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "dagger" }
 hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
-eventBus = { module = "org.greenrobot:eventbus", version = "3.0.0" }
 jodaTime = { module = "joda-time:joda-time", version = "2.8.1" }
 junit = { module = "junit:junit", version = "4.13.2" }
 hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
@@ -89,22 +116,15 @@ androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core",
 androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso" }
 google-material = { module = "com.google.android.material:material", version = "1.14.0" }
 google-firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
-google-firebaseConfig = { module = "com.google.firebase:firebase-config" }
 google-firebasePerf = { module = "com.google.firebase:firebase-perf" }
 google-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-openSourceLicensesLibrary = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
 okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
-retrofit-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofit-retrofitRxjavaAdapter = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
-retrofit-gsonConverter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-rxjava-rxJava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.19" }
-rxcache-rxCache = { module = "com.github.VictorAlbertos.RxCache:runtime", version = "1.8.3-2.x" }
-rxcache-jolyglot = { module = "com.github.VictorAlbertos.Jolyglot:gson", version = "0.0.4" }
 dagger-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 mockito-mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockito" }
+mockito-mockitoAndroidMinimum = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidMinimum" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-tools-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 tools-gradleAndroid = { module = "com.android.tools.build:gradle", version.ref = "android-gradle" }
@@ -114,9 +134,6 @@ mockito-mockitoCore = { module = "org.mockito:mockito-core", version.ref = "mock
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-android-application = { id = "com.android.application", version.ref = "android-gradle" }
-android-library = { id = "com.android.library", version.ref = "android-gradle" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 firebase-performance = { id = "com.google.firebase.firebase-perf", version.ref = "firebase-perf-plugin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics-plugin" }

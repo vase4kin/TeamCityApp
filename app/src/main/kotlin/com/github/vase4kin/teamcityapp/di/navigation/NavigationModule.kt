@@ -16,17 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.di.navigation
 
+import com.github.vase4kin.teamcityapp.navigation.androidLaunchRegistry
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import teamcityapp.libraries.navigation.DestinationRegistration
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NavigationModule {
     @Provides @Singleton
-    fun registry(destinations: Set<@JvmSuppressWildcards DestinationRegistration>): DestinationRegistry = DestinationRegistry(destinations)
+    fun codec(mapper: teamcityapp.libraries.data.builds.LegacyBuildLaunchCodec): teamcityapp.libraries.builds.compatibility.BuildLaunchCodec = mapper
+
+    @Provides @Singleton
+    fun historyFilter(adapter: teamcityapp.features.build_history.impl.data.LegacyBuildHistoryFilterAdapter): teamcityapp.features.build_history.api.BuildHistoryFilterAdapter = adapter
+
+    @Provides @Singleton
+    fun registry(): DestinationRegistry = androidLaunchRegistry()
 }

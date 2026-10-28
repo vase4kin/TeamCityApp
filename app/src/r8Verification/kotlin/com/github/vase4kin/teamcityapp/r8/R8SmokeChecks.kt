@@ -2,35 +2,20 @@ package com.github.vase4kin.teamcityapp.r8
 
 import android.content.Context
 import androidx.annotation.Keep
-import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UsersContainer
 import com.google.gson.Gson
-import io.reactivex.Single
-import io.rx_cache2.internal.RxCache
-import io.victoralbertos.jolyglot.GsonSpeaker
+import io.ktor.client.engine.mock.respond
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormat
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
-import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.properties.repository.models.Properties
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 import teamcityapp.libraries.security.CryptoManagerImpl
@@ -58,6 +43,11 @@ object R8SmokeChecks {
         ObjectOutputStream(bytes).use { it.writeObject(builds) }
         val restored = ObjectInputStream(ByteArrayInputStream(bytes.toByteArray())).use { it.readObject() as Builds }
         check(restored.objects.single().id == "42")
+        // Decode an installed pre-migration filter inside the optimized target APK.
+        val filterBytes = android.util.Base64.decode("rO0ABXNyAERjb20uZ2l0aHViLnZhc2U0a2luLnRlYW1jaXR5YXBwLmJ1aWxkbGlzdC5maWx0ZXIuQnVpbGRMaXN0RmlsdGVySW1wbLFKSsCtgmGCAgAESQAKZmlsdGVyVHlwZVoACmlzUGVyc29uYWxaAAhpc1Bpbm5lZEwABmJyYW5jaHQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwAAAABwEBdAAXZmVhdHVyZS9zcGFjZSAmIHN5bWJvbHM=", android.util.Base64.DEFAULT)
+        val filter = ObjectInputStream(ByteArrayInputStream(filterBytes)).use { it.readObject() } as com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
+        check(filter.javaClass.name == "com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl")
+        check(filter.toLocator() == "state:any,canceled:any,failedToStart:any,branch:name:feature/space & symbols,personal:true,pinned:true,count:10")
     }
 
     @JvmStatic
@@ -104,64 +94,59 @@ object R8SmokeChecks {
     }
 
     @JvmStatic
-    fun verifyRetrofitAndCache(context: Context) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            Response.Builder().request(chain.request()).protocol(Protocol.HTTP_1_1)
-                .code(200).message("OK")
-                .body("""{"count":1,"agent":[{"id":"agent","name":"worker"}]}""".toResponseBody("application/json".toMediaType()))
-                .build()
-        }.build()
-        try {
-            val service = Retrofit.Builder().baseUrl("https://server.example/").client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .validateEagerly(true).build().create(TeamCityService::class.java)
-            val agents = service.listAgents(null, null, null).blockingGet()
-            check(agents.count == 1 && agents.agent.single().name == "worker")
-            check(agents.agent.single().id == "agent")
-            val directory = File(context.cacheDir, "r8-smoke-cache")
-            directory.deleteRecursively()
-            check(directory.mkdirs())
-            try {
-                fun providers() = RxCache.Builder().persistence(directory, GsonSpeaker()).using(CacheProviders::class.java)
-                val info = ServerInfo("2026.1", "https://server.example")
-                check(providers().serverInfo(Single.just(info)).blockingGet() == info)
-                check(directory.listFiles()!!.any { it.readText().contains("teamcityapp.features.about.repository.models.ServerInfo") })
-                // A fresh instance forces a disk read, with an unavailable upstream.
-                val restored = providers().serverInfo(Single.error(IllegalStateException("offline"))).blockingGet()
-                check(restored == info)
-            } finally {
-                directory.deleteRecursively()
+    fun verifyKtorAndCache(context: Context) = kotlinx.coroutines.runBlocking {
+        val directory = File(context.cacheDir, "r8-smoke-ktor-cache")
+        directory.deleteRecursively()
+        check(directory.mkdirs())
+        val file = File(directory, "responses.json")
+        val store = object : teamcityapp.libraries.network.ResponseCacheStore {
+            override suspend fun read(): String? = file.takeIf { it.exists() }?.readText()
+            override suspend fun write(value: String) {
+                file.writeText(value)
             }
+        }
+        val identity = teamcityapp.libraries.accounts.AccountIdentity("https://server.example", "Guest user", true)
+        var requests = 0
+        fun api(offline: Boolean): Pair<io.ktor.client.HttpClient, teamcityapp.libraries.network.TeamCityApi> {
+            val client = io.ktor.client.HttpClient(
+                io.ktor.client.engine.mock.MockEngine {
+                    check(!offline) { "Expected a persisted response without networking" }
+                    requests++
+                    respond(
+                        """{"version":"2026.1","webUrl":"https://server.example"}""",
+                        io.ktor.http.HttpStatusCode.OK,
+                        io.ktor.http.headersOf(io.ktor.http.HttpHeaders.ContentType, "application/json")
+                    )
+                }
+            )
+            val cache = teamcityapp.libraries.network.TeamCityResponseCache(identity.key, store)
+            val transport = teamcityapp.libraries.network.TeamCityTransport(client, teamcityapp.libraries.accounts.AccountSecret(identity), cache = cache)
+            return client to teamcityapp.libraries.network.TeamCityApi(transport)
+        }
+        try {
+            val (online, first) = api(false)
+            try {
+                check(first.server().version == "2026.1")
+            } finally {
+                online.close()
+            }
+            check(requests == 1 && file.exists())
+            val (offline, restored) = api(true)
+            try {
+                check(restored.server().version == "2026.1")
+            } finally {
+                offline.close()
+            }
+            check(requests == 1)
         } finally {
-            client.connectionPool.evictAll()
-            client.dispatcher.executorService.shutdown()
+            directory.deleteRecursively()
         }
     }
 
     @JvmStatic
-    fun verifyEventBusAndDates() {
-        val bus = EventBus.builder().build()
-        val subscriber = SmokeSubscriber()
-        bus.register(subscriber)
-        try {
-            bus.post(SmokeEvent("delivered"))
-            check(subscriber.received == "delivered")
-        } finally {
-            bus.unregister(subscriber)
-        }
+    fun verifyDates() {
         val zone = DateTimeZone.forID("Europe/Berlin")
         val date = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(zone).parseDateTime("2026-01-01 12:00")
         check(zone.getOffset(date.millis) == 3_600_000)
-    }
-}
-
-class SmokeEvent(val message: String)
-class SmokeSubscriber {
-    var received: String? = null
-
-    @Subscribe
-    fun onEvent(event: SmokeEvent) {
-        received = event.message
     }
 }

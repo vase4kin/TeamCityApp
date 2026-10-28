@@ -14,28 +14,41 @@
  * limitations under the License.
  */
 
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
-    id("teamcityapp.android.library")
-    id("teamcityapp.android.hilt")
-    id("teamcityapp.android.compose")
+    id("teamcityapp.kmp.compose")
     id("teamcityapp.android.screenshot")
 }
-extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.bottom_sheet.impl" }
-dependencies {
-    implementation(projects.libraries.navigation)
-    implementation(projects.features.bottomSheet.api)
 
-    implementation(projects.libraries.theme)
-    implementation(projects.libraries.clipboard)
-    implementation(projects.libraries.resources)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.hilt.viewModelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coroutines.android)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.turbine)
-    testImplementation(libs.mockito.mockitoCore)
-    ksp(libs.dagger.compiler)
+kotlin { android { namespace = "teamcityapp.features.bottom_sheet.impl" } }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "teamcityapp.features.bottom_sheet.impl.resources"
+}
+kotlin.sourceSets.named("commonMain") {
+    dependencies {
+        api(projects.features.bottomSheet.api)
+        api(projects.libraries.designSystem)
+    }
+}
+
+kotlin.sourceSets.named("androidHostTest") {
+    dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.turbine)
+        implementation(libs.mockito.mockitoCore)
+        implementation(projects.libraries.navigation)
+        implementation(projects.features.bottomSheet.api)
+        implementation(projects.libraries.theme)
+        implementation(projects.libraries.clipboard)
+        implementation(projects.libraries.resources)
+        implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+        implementation(libs.androidx.lifecycle.runtimeCompose)
+        implementation(libs.coroutines.android)
+    }
+}
+
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots/debug"))
+    separateOutputDirs.set(false)
 }

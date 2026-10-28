@@ -799,3 +799,228 @@ Validation: 722 local Android cases passed, including 372 screenshot cases;
 Mock app/test APKs, production Kotlin compilation, mock-debug lint and formatting
 checks passed. Lint ran separately after kapt compilation to avoid its generated
 stub analysis race.
+
+
+## Shared composition-root ownership audit
+
+The portable root registers destinations, constructs dependencies, owns account
+and journey restoration, retains child stacks, and delivers results to exact live
+originating visits. Feature implementations own their `Shared*Route` containers:
+
+- Login owns SSL/demo dialogs and demo-server policy; About owns action links.
+- Home owns responsive presentation and selection callbacks; Projects owns rating
+  presentation. Favorites, Running, Queue, Agents and Snapshot Dependencies own
+  state collection and screen lifecycle behavior.
+- History owns Paging collection, refresh claims, append states and notices.
+  Changes/Tests keep their existing feature containers; Change Details owns diff
+  links and view/action telemetry; Test Details owns search/wrap/match state.
+- Build Details owns loaded-build education, confirmations, notices, management
+  command dispatch and replacement presentation. Overview owns row actions,
+  browser/share/log policy and reference-loading presentation. The root composes
+  them through callbacks and a content slot, without cross-feature implementation
+  dependencies. Section count/result delivery remains in the root.
+- Artifacts owns download lifetime, action-sheet consumption policy, one-shot
+  export claims and retries. The root supplies typed-result access, native ports
+  and whether the visit is covered by a sheet or has been left.
+- Settings owns state collection and view telemetry. Drawer and Manage Accounts
+  own their public-account mappings over the session-manager contract; account
+  generation changes and root replacement remain application orchestration.
+
+Reusable TeamCity web-link validation lives in `libraries/network`. Native theme
+preferences, artifact file writes and response-cache bytes live in
+`libraries/theme-preferences`, `libraries/shared-data` and `libraries/network`.
+The host still owns UIKit presentation and app/scene callbacks. Preference keys,
+file locations, serialized navigation and installed compatibility routes remain
+unchanged. Feature tests move with their behavior; cross-feature account and
+navigation integration coverage stays in `shared-app`.
+
+The boundary check rejects feature resources, feature UI-state/paging code and
+screen lifecycle hooks in common production root sources, in addition to the
+existing tracker/SDK and implementation-dependency checks.
+
+Verification: final Android host reports contain 3,862 cases with zero failures
+and one existing skip; 74 app unit tests, 474 iOS simulator tests and 103 repository
+script tests pass. Root, Login and Artifacts Roborazzi verification passes with
+unchanged golden bytes. Production/mock debug APKs and the mock instrumentation
+APK build, and all 53 selected account/login/navigation/rating/test-details device
+integration cases pass. The reserved-character diff-link regression found during
+the move is fixed and covered in Change Details on both platforms.
+
+
+## Android application-module ownership audit
+
+`app` retains the framework application/activity, installed component/extra
+compatibility, root saved-state and launch coordination, DI wiring, native OS
+ports, and the Android test host. Alias names and argument/serialized payload
+formats remain unchanged.
+
+- Android artifact file writes and the bounded response-cache file store now live
+  beside their contracts in `libraries/shared-data` and `libraries/network`, with
+  their persistence tests. Cache names, artifact paths, atomic writes and partial
+  cleanup behavior remain intact.
+- `libraries/session` owns legacy onboarding/rating preference conversion. DI only
+  supplies its dependencies. Tests cover all thirteen prompt identities, partial
+  completion, the installed rating key and preservation of existing preference data.
+- About owns the Android OSS licenses launcher, localized title, SDK activity
+  declarations and resource-keep declaration. The host supplies the action and
+  retains application packaging and FileProvider wiring.
+- Codec/DTO compatibility tests move to `libraries/data`; account-key tests move
+  to Session; Splash and filter adapter tests move to their feature implementations.
+  Cross-feature navigation/account tests and offline Ktor wire fixtures stay in app.
+- Remove the unconsumed artifact platform factory/router and its API contracts.
+  The export integration case observes the real chooser/FileProvider bytes and
+  checks that recreation neither replays export nor changes the originating visit.
+- Remove EventBus, its DI providers/accessors, dependency, keep rules and artificial
+  self-only smoke subscriber. Keep timezone/serialization/network/OSS checks in the
+  six-case minified smoke suite. Remove unused animation toggles, the unused root
+  lifecycle holder, obsolete fixtures/View matchers and the retired activation test
+  that referenced deleted registrations. Active launch/restoration tests remain.
+- Remove retired feature strings, vectors, IDs, array, style and unused launcher
+  foreground rasters from app resources;
+  feature-hosted tests resolve their owning modules' resources. Keep application
+  name, active launcher artwork, splash theme and FileProvider configuration in the host.
+
+The ownership check rejects Android-host feature resource references/copy,
+feature presentation state, file/cache implementations and preference conversion.
+The dependency check also prevents the retired EventBus dependency from returning.
+
+Verification: 3,989 final JVM/Android host cases report zero failures (one existing
+skip), including the moved codec and account/Splash suites; 107 repository script
+tests pass. Both production and mock debug builds and lint pass with no unused
+app-resource findings. The mock instrumentation APK builds; all 54 selected device
+cases pass, including real exported bytes and visit ownership through recreation.
+The optimized verification app and its test APK build, and all six R8 smoke cases
+pass, covering data reflection/serialization, Keystore, the common cache, dates,
+startup and dynamic licenses resources/activity launch. Effective OSS activity
+attributes/themes match the declarations before their ownership move. Screenshot
+golden files remain unchanged.
+
+
+## Feature-module ownership audit — 2026-10-27
+
+Audit all 27 feature api/impl pairs. Production Android feature code retains OS
+actuals, artifact file IO, the licenses launcher and installed filter adapters.
+Move superseded native screen wrappers, routers, response mappers, reference
+ViewModels and Splash UI/storage fixtures into their owning test source sets,
+with their regression coverage. Keep the shared artifact-menu decision in common
+production code; its retired request/permission router types belong only in the
+Android harness. Replace the unused raw-argument Action Sheet ViewModel with
+state tests over the typed menu used in production. The About device/screenshot
+harness renders the common screen directly.
+
+Login, Create Account, Run Build and Filter Builds own their tracker contracts
+inside implementation modules. Preserve every event label and parameter. Keep
+Quick Filter selection and Overview-reference tracking contracts public because
+other features consume those workflows through APIs.
+
+Move 16 single-feature repository/locator tests from the shared root into
+Navigation, Favorites, Running Builds, Changes, Tests, Run Build, Build Details
+and Filter Builds. `libraries/network-testing` provides only generic account,
+vault and MockEngine ports; features construct their own repositories. The root
+retains cross-feature query/preferences and production-composition integration
+assertions. Rating device tests live with Navigation. Multi-feature Home,
+Favorites/History and Overview/management journeys remain application-hosted in
+the app integration suite. Existing test packages and golden paths stay stable.
+
+Remove 33 unused resource declarations/files and move dependencies used only by
+legacy harnesses out of production source sets. Installed activity aliases,
+serialized filter names/fields/UID, live typed results and OS actions retain
+their existing contracts. Module checks reject implementation imports across
+feature source/tests, implementation types in APIs and network fixtures in
+production feature sources. Application-hosted navigation tests may read the
+private resources of the destinations they assert.
+
+
+Verification: 3,953 selected Android/JVM cases (zero failures; one existing skip),
+301 selected iOS simulator cases and 115 script cases pass. Both app flavors and
+the mock instrumentation APK build successfully, lint reports zero errors, and
+formatting/module ownership checks pass. Existing screenshot baseline paths and
+PNG bytes remain unchanged.
+The final APK passes 54 selected device cases covering authentication, installed
+startup aliases, account replacement, rating, About actions and real artifact
+export. The optimized APK passes all six smoke cases, including installed
+Serializable filter decoding and dynamic OSS-license resources. The task-owned
+emulator is stopped after verification; checkpoints remain local.
+
+
+## Final repository ownership audit — 2026-10-28
+
+Review the Android and iOS hosts, shared root, all feature pairs, libraries,
+build conventions, dependency catalog, resource references and verification
+scripts together. Remove the unused Build Details composition-local host/count
+interfaces and keep its action enum in the implementation. Its API now needs
+only the KMP library convention. Remove the unused Overview action UI projection,
+Android selection-chip wrapper, old test-status constants, onboarding listener,
+duplicated authentication analytics constants and four unreferenced dimensions.
+Active tracker event names/parameters and every wire/serialized model stay intact.
+
+Move seven screen-specific dimensions from the design system into About, Login,
+Drawer, Run Build and Parameters, retaining their exact values. The shared design
+system keeps reusable geometry. Move the custom Android test application and Hilt
+entry point into the app's instrumentation sources; the production application
+extends `Application` directly and retains theme startup. Remove unused Context
+and Storage bindings from the production and replacement test modules. Build
+Details and Filter Builds no longer apply Android Hilt processing solely for
+retired harnesses; their tests use plain constructors.
+
+Narrow 22 direct feature implementation dependencies to the application test
+configuration. The common production root continues to include every shared
+feature; Android directly binds About/Artifacts OS ports and installed History/
+Filter codecs. Authentication UI compatibility resources become a test dependency.
+The runtime check rejects old Android harness modules in both app flavors and
+MockEngine/coroutine test libraries in production. Source ownership checks cover
+network fixture imports in both hosts and every library/feature source set, with
+regression cases for production leaks and legitimate test consumers.
+
+Remove 73 unused resource declarations/files, including obsolete account-screen
+copy in the shared root, old Android resource duplicates, native list styles/IDs,
+unused custom status attributes and their colors. Retain current Compose copy,
+installed native themes, dynamic licenses resources, existing golden paths and PNG
+bytes. Remove 32 empty/comment-only ProGuard files left by retired modules and
+three unused plugin catalog aliases. Active DTO/account/filter reflection rules,
+Serializable field names/UIDs, saved destinations and activity aliases remain.
+
+Expand device coverage beyond the earlier selected smoke cases. Refresh obsolete
+Build Details assertions to use loaded section snapshots, typed section destinations
+and account-scoped prompt persistence. Authentication validation uses current URL
+errors, real stored-account snapshots for duplicate detection, explicit text-field
+semantics and test-context fixture resources. Remove unused Espresso imports from
+those Compose suites.
+
+The expanded coverage exposes two runtime migration gaps: a branch action was
+opening History with the incoming configuration ID, and Android recreation was
+being treated as download departure/backgrounding. Use the loaded build for the
+branch destination. Pass the UI-owned host recreation capability through the
+platform/router ports so Artifacts retains its cancellation policy and transfers
+survive recreation while still cancelling on real backgrounding/departure.
+Keep this behavior covered in the Artifacts route suite and the app's cross-feature
+device journeys.
+
+The mock wire adapter also needs explicit translation into legacy fixtures: decode
+collection query values, map the common `readdIntoQueue` payload into the installed
+DTO constructor, and interrupt/close blocking fixture reads on cancellation.
+Three focused mock-flavor tests cover those seams without changing production
+transport, authentication or persisted DTO formats.
+
+The same validation audit reproduces acceptance of relative/authority-less server
+addresses by Ktor's default-base parsing. Require an explicit HTTP/HTTPS authority
+before parsing, preserving accepted root/context slash formats and case-insensitive
+schemes. Portable transport tests cover relative paths, scheme-relative references,
+missing hosts and ordinary absolute URLs; both account validation screens retain
+their original no-scheme input regression case against the current error copy.
+
+Verification: 4,257 JVM/Android host cases pass with zero failures and one existing
+skip; 623 iOS simulator cases pass. The full 86-case device batch passes, including
+all Build Details navigation/lifetime cases, account validation and Hilt startup.
+After adding the absolute-URL guard, both original no-scheme account-screen cases
+pass again on device, and the transport/authentication suites pass on Android and
+iOS. Both debug app flavors, the mock instrumentation APK and the iOS application
+framework build successfully. Lint reports zero errors; formatting and module/runtime
+ownership checks pass. All 117 repository script cases pass.
+
+The final optimized app/test APKs build and pass all six R8 smoke cases, covering
+frozen Serializable/JSON models, persisted accounts, the Ktor disk cache, dates,
+installed startup aliases and dynamic OSS-license resources/activity launch. Existing
+golden paths and PNG bytes remain unchanged. Stop the audit-owned Android emulator
+and dedicated native-test simulator after verification; leave the user's other
+simulator running. Checkpoints remain local.

@@ -2,6 +2,7 @@
 bin/
 gen/
 out/
+*.hprof
 
 # Gradle files
 .gradle/
@@ -36,3 +37,9 @@ app/prod/release
 
 # Python verification scripts
 __pycache__/
+
+# Xcode per-user state and local native build products.
+**/xcuserdata/
+**/*.xcuserstate
+**/DerivedData/
+**/*.xcresult/

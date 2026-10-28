@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.ksp.gradlePlugin)
     implementation(libs.kotlin.tools.gradlePlugin)
     implementation(libs.kotlin.compose.gradlePlugin)
+    implementation(libs.compose.multiplatform.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)
     implementation(libs.roborazzi.gradlePlugin)
     testImplementation(gradleTestKit())
@@ -26,6 +27,10 @@ gradlePlugin {
         register("androidApplication") {
             id = "teamcityapp.android.application"
             implementationClass = "teamcityapp.buildlogic.AndroidApplicationConventionPlugin"
+        }
+        register("androidAppTests") {
+            id = "teamcityapp.android.app-tests"
+            implementationClass = "teamcityapp.buildlogic.AndroidAppTestsConventionPlugin"
         }
         register("androidLibrary") {
             id = "teamcityapp.android.library"

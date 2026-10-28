@@ -18,6 +18,30 @@ spec.loader.exec_module(ci)
 
 
 class MarathonPolicyTest(unittest.TestCase):
+    def test_pause_skips_selection_and_coverage_for_every_ci_trigger(self):
+        events = [
+            ("push", "refs/heads/dev", {"before": "old-tip", "after": "new-tip"}),
+            ("pull_request", "refs/pull/1/merge", {"pull_request": {"title": "feat: add screen"}}),
+            ("workflow_dispatch", "refs/heads/dev", {}),
+            *[("workflow_dispatch", "refs/heads/dev", {"inputs": {"run_ui_tests": "true", "suite": suite}})
+              for suite in ("full", "smoke", "single", "random")],
+        ]
+        for name, ref, event in events:
+            with self.subTest(name=name, event=event), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "event.json").write_text(json.dumps(event))
+                env = dict(os.environ, GITHUB_EVENT_PATH=str(root / "event.json"), GITHUB_EVENT_NAME=name,
+                           GITHUB_REF=ref, GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+                with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--paused", "--selection-dir", str(root / "selection")]), patch.object(ci, "policy") as normal_policy, patch.object(ci, "source_test_index") as discover, patch.object(ci, "changed_paths") as compare, patch("sys.stdout", new_callable=io.StringIO):
+                    ci.main()
+                normal_policy.assert_not_called()
+                discover.assert_not_called()
+                compare.assert_not_called()
+                outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+                self.assertEqual(outputs, {"run_ui_tests": "false", "suite": "none", "collect_coverage": "false", "matrix": '{"include": []}'})
+                self.assertFalse((root / "selection").exists())
+                self.assertIn("Marathon execution is temporarily paused in CI", (root / "summary").read_text())
+
     def test_chore_pr_titles_skip_automatic_ui_tests(self):
         for title in ("chore: update docs", "chore(ci): tune CI", "chore(build): update Android tooling"):
             for action in ("opened", "synchronize", "reopened", "edited"):
@@ -127,6 +151,24 @@ class MarathonSelectionTest(unittest.TestCase):
             (source / "Active.kt").write_text('package example\nclass Active {\n@Test\n@Throws(Exception::class)\nfun active() {}\n@Ignore("https://example.com/issue")\n@Test fun skipped() {}\n}')
             self.assertEqual(ci.source_tests(root), {"example.Active#active"})
 
+    def test_source_preflight_discovers_owned_suites_and_excludes_other_runners(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for source, clazz in (
+                ("app/src/androidTest/kotlin", "App"),
+                ("features/about/impl/src/androidAppTest/kotlin", "About"),
+                ("libraries/session/src/androidAppTest/kotlin", "Session"),
+                ("features/about/impl/src/androidHostTest/kotlin", "Host"),
+                ("features/about/impl/src/androidDeviceTest/kotlin", "Device"),
+                ("libraries/security/src/androidTest/kotlin", "Library"),
+                ("features/about/api/src/androidAppTest/kotlin", "Api"),
+                ("features/about/impl/build/src/androidAppTest/kotlin", "Generated"),
+            ):
+                path = root / source / f"{clazz}.kt"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"package example\nclass {clazz} {{\n@Test fun runs() {{}}\n}}")
+            self.assertEqual(ci.source_tests(root), {f"example.{name}#runs" for name in ("App", "About", "Session")})
+
     def test_policy_command_records_filter_seed_and_matrix(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -215,6 +257,8 @@ class ChangedSelectionTest(unittest.TestCase):
     def test_build_log_sources_resources_and_mock_data_select_custom_tab_contract(self):
         expected = self.smoke | {
             "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#viewLogOpensTheActiveServersLogInACustomTab",
+            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#runningBuildLogOpensTheViewerInACustomTab",
+            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#failedBuildLogOpensTheViewerInACustomTab",
         }
         for path in ("app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt", "app/src/main/res/layout/fragment_build_log.xml", "app/src/mock/assets/fake_build_log.html"):
             with self.subTest(path=path):
@@ -223,7 +267,7 @@ class ChangedSelectionTest(unittest.TestCase):
                 self.assertEqual(result["fallback_paths"], [])
 
     def test_changed_test_file_selects_every_active_method_in_that_class(self):
-        path = "app/src/androidTest/kotlin/com/github/vase4kin/teamcityapp/buildlist/view/BuildHistoryActivityTest.kt"
+        path = "features/build-history/impl/src/androidAppTest/kotlin/com/github/vase4kin/teamcityapp/buildlist/view/BuildHistoryActivityTest.kt"
         self.assertEqual(set(self.select(path)["tests"]), self.smoke | self.index[path])
 
     def test_new_methods_enter_changed_selection_without_catalog_updates(self):
@@ -237,6 +281,13 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertIn("com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#aboutInjectsAndRecreates", result["tests"])
         self.assertTrue(any("AboutActivityTest#" in test for test in result["tests"]))
         self.assertEqual(result["fallback_paths"], [])
+
+    def test_module_ownership_selects_legacy_packages_without_running_every_suite(self):
+        path = "features/build-history/impl/src/commonMain/kotlin/History.kt"
+        result = self.select(path)
+        self.assertEqual(result["fallback_paths"], [])
+        self.assertIn("com.github.vase4kin.teamcityapp.buildlist.view.BuildHistoryActivityTest#actualFilterBuildsScreenSerializesQueuedSelectionBackToHistory", result["tests"])
+        self.assertNotIn("teamcityapp.features.about.impl.AboutScreenTest#wideWindowUsesCenteredColumns", result["tests"])
 
     def test_shared_unmapped_and_helper_changes_broaden_mock_selection(self):
         for path in ("libraries/storage/src/main/java/Store.kt", "app/src/main/java/com/github/vase4kin/teamcityapp/storage/SharedUserStorage.kt", "app/src/main/res/values/strings.xml", "app/src/main/java/com/github/vase4kin/teamcityapp/new_feature/View.kt", "app/src/androidTest/java/com/github/vase4kin/teamcityapp/helper/HiltApiTestRule.kt", "build-logic/src/main/kotlin/AndroidBaseConventionPlugin.kt", "gradle/libs.versions.toml", "gradle/wrapper/gradle-wrapper.properties", "build.gradle.kts", "settings.gradle.kts", "gradle.properties", "gradlew", "gradlew.bat", "mock-mockDebug-google-services.json", "mock-prodDebug-google-services.json"):
