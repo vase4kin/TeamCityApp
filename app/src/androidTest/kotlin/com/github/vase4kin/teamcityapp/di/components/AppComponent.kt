@@ -27,6 +27,7 @@ interface AppComponent {
 
     fun themePreferencesStore(): teamcityapp.libraries.app_theme.ThemePreferencesStore
     fun themeController(): teamcityapp.libraries.app_theme.AppThemeController
+
     fun themePreferences(): teamcityapp.libraries.app_theme.ThemePreferencesRepository
 
     fun sharedUserStorage(): SharedUserStorage

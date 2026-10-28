@@ -19,7 +19,6 @@ Copyright 2026 Andrey Tolpeev
 <string name="add_new_account_dialog_create_account_button_text">Add</string>
 <string name="add_new_account_dialog_title">Add user account</string>
 <string name="connecting">Connecting…</string>
-<string name="dialog_ok">OK</string>
 <string name="discard_dialog_content">Discard user account?</string>
 <string name="discard_dialog_negative_button_text">Cancel</string>
 <string name="discard_dialog_positive_button_text">Discard</string>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.api
+package teamcityapp.features.build_details.impl
 
-/**
- * Test success status
- */
-const val TEST_STATUS_SUCCESS = "SUCCESS"
-
-/**
- * Test failure status
- */
-const val TEST_STATUS_FAILURE = "FAILURE"
-
-/**
- * Test error status
- */
-const val TEST_STATUS_ERROR = "ERROR"
-
-/**
- * Test unknown status
- */
-const val TEST_STATUS_UNKNOWN = "UNKNOWN"
+enum class BuildDetailsCommand { Share, Browser, Log, Cancel, Restart, Configuration, Project }

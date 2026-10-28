@@ -19,7 +19,6 @@ Copyright 2026 Andrey Tolpeev
 <string name="title_run_build">Run build</string>
 <string name="text_build_branch">Build branch</string>
 <string name="text_no_branches_available">No branches available</string>
-<string name="text_no_branches_available_to_filter">No branches available to filter</string>
 <string name="text_loading_branches">Loading branches</string>
 <string name="hint_default_build_branch">Default branch</string>
 <string name="error_base_error">Unable to run the build. Please try again.</string>
@@ -41,8 +40,6 @@ Copyright 2026 Andrey Tolpeev
 <string name="text_error_parameter_name">Name cannot be empty</string>
 <string name="hint_parameter_name">Name</string>
 <string name="hint_parameter_value">Value</string>
-<string name="text_filters_none">None</string>
-<string name="hint_default_filter_branch">Any</string>
 <string name="quick_setup">Quick setup</string>
 <string name="run_options">Run options</string>
 <string name="edit_options">Edit</string>

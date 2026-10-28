@@ -16,10 +16,11 @@
 
 package com.github.vase4kin.teamcityapp
 
+import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class TeamCityApplication : TeamCityApplicationBase() {
+class TeamCityApplication : Application() {
     @javax.inject.Inject lateinit var themeController: teamcityapp.libraries.app_theme.AppThemeController
     override fun onCreate() {
         super.onCreate()

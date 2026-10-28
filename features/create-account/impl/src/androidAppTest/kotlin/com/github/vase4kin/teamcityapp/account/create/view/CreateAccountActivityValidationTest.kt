@@ -18,18 +18,6 @@ package com.github.vase4kin.teamcityapp.account.create.view
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.test.espresso.action.ViewActions.clearText
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.pressBack
-import androidx.test.espresso.action.ViewActions.pressImeActionButton
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
@@ -48,7 +36,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -95,68 +82,68 @@ class CreateAccountActivityValidationTest {
     fun setUp() {
         // Match installed storage: a signed-out account is an empty sentinel, never null.
         `when`(storage.activeUser).thenReturn(teamcityapp.libraries.storage.models.UserAccount("", "", byteArrayOf(), true, true))
-        `when`(storage.hasGuestAccountWithUrl(URL)).thenReturn(true)
-        `when`(storage.hasAccountWithUrl(URL, "user")).thenReturn(true)
         activityRule.launchActivity(null)
     }
 
     @Test
     fun testUserCanNotCreateGuestUserAccountWithEmptyUrl() {
-        compose.onNodeWithTag("auth:url").performTextClearance()
-        compose.onNodeWithTag("auth:guest").performClick()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextClearance()
+        compose.onNodeWithTag("auth:guest").performScrollTo().performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_cannot_be_empty)).assertIsDisplayed()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.server_cannot_be_empty)).assertIsDisplayed()
     }
 
     @Test
     fun testUserCanNotCreateUserAccountWithEmptyUrl() {
-        compose.onNodeWithTag("auth:url").performTextClearance()
-        compose.onNodeWithTag("auth:url").performImeAction()
-        compose.onNodeWithTag("auth:username").performTextInput("user")
-        compose.onNodeWithTag("auth:username").performImeAction()
-        compose.onNodeWithTag("auth:password").performTextInput("password")
-        compose.onNodeWithTag("auth:password").performImeAction()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_cannot_be_empty)).assertIsDisplayed()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextClearance()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performTextInput("user")
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).performScrollTo().performTextInput("password")
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.server_cannot_be_empty)).assertIsDisplayed()
     }
 
     @Test
     fun testUserCanNotCreateAccountWithIncorrectProvidedUrl() {
-        compose.onNodeWithTag("auth:url").performTextClearance()
-        compose.onNodeWithTag("auth:url").performTextInput("google.com")
-        compose.onNodeWithTag("auth:guest").performClick()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextClearance()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextInput("google.com")
+        compose.onNodeWithTag("auth:guest").performScrollTo().performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_correct_url)).assertIsDisplayed()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.authentication_invalid_url)).performScrollTo().assertIsDisplayed()
     }
 
     @Test
     fun testUserCanNotCreateGuestUserAccountIfTheSameAccountExist() {
-        compose.onNodeWithTag("auth:url").performTextInput(INPUT_URL)
-        compose.onNodeWithTag("auth:guest").performClick()
+        `when`(storage.userAccounts).thenReturn(listOf(teamcityapp.libraries.storage.models.UserAccount(URL, "Guest user", byteArrayOf(), true, false)))
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextInput(INPUT_URL)
+        compose.onNodeWithTag("auth:guest").performScrollTo().performClick()
         compose.onNodeWithTag("create-account:submit").performClick()
         compose.onNodeWithText(context.getString(teamcityapp.features.create_account.impl.R.string.add_new_account_dialog_account_exist_error_message)).assertIsDisplayed()
     }
 
     @Test
     fun testUserCanNotCreateUserAccountIfTheSameAccountExist() {
-        compose.onNodeWithTag("auth:url").performTextInput(INPUT_URL)
-        compose.onNodeWithTag("auth:url").performImeAction()
-        compose.onNodeWithTag("auth:username").performTextInput("user")
-        compose.onNodeWithTag("auth:username").performImeAction()
-        compose.onNodeWithTag("auth:password").performTextInput("pass")
-        compose.onNodeWithTag("auth:password").performImeAction()
+        `when`(storage.userAccounts).thenReturn(listOf(teamcityapp.libraries.storage.models.UserAccount(URL, "user", byteArrayOf(), false, false)))
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextInput(INPUT_URL)
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performTextInput("user")
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).performScrollTo().performTextInput("pass")
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).performScrollTo().performImeAction()
         compose.onNodeWithText(context.getString(teamcityapp.features.create_account.impl.R.string.add_new_account_dialog_account_exist_error_message)).assertIsDisplayed()
     }
 
     @Test
     fun testUserSeesDiscardDialogOnCloseNavigationButtonClick() {
-        compose.onNodeWithTag("auth:url").performTextInput("not empty")
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextInput("not empty")
         compose.onNodeWithContentDescription("Back").performClick()
         compose.onNodeWithText(context.getString(teamcityapp.features.create_account.impl.R.string.discard_dialog_content)).assertIsDisplayed()
     }
 
     @Test
     fun testUserSeesDiscardDialogOnBackButtonPressed() {
-        compose.onNodeWithTag("auth:url").performTextInput("not empty")
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextInput("not empty")
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         androidx.test.espresso.Espresso.pressBack()
         compose.onNodeWithText(context.getString(teamcityapp.features.create_account.impl.R.string.discard_dialog_content)).assertIsDisplayed()
@@ -165,46 +152,46 @@ class CreateAccountActivityValidationTest {
     @Test
     fun testUserCanSubmitDataByClickOnActionDone() {
         compose.onNodeWithTag("auth:guest").performScrollTo()
-        compose.onNodeWithTag("auth:guest").performClick()
-        compose.onNodeWithTag("auth:url").performScrollTo()
-        compose.onNodeWithTag("auth:url").performTextClearance()
-        compose.onNodeWithTag("auth:url").performImeAction()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_cannot_be_empty)).assertIsDisplayed()
+        compose.onNodeWithTag("auth:guest").performScrollTo().performClick()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performTextClearance()
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.server_cannot_be_empty)).assertIsDisplayed()
     }
 
     @Test
     fun testUserSeeProtocolInUrlField() {
-        compose.onNodeWithTag("auth:url").assert(hasText("https://"))
+        compose.onNodeWithTag("auth:url", useUnmergedTree = true).assert(hasText("https://"))
     }
 
     @Test
     fun testUserCanNotCreateAccountWithEmptyUserName() {
         compose.onNodeWithTag("create-account:submit").performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_user_name_cannot_be_empty)).assertIsDisplayed()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.server_user_name_cannot_be_empty)).assertIsDisplayed()
     }
 
     @Test
     fun testUserCanNotCreateAccountWithEmptyPasswordName() {
-        compose.onNodeWithTag("auth:username").performTextInput("user")
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performTextInput("user")
         compose.onNodeWithTag("create-account:submit").performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_password_cannot_be_empty)).assertIsDisplayed()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.server_password_cannot_be_empty)).assertIsDisplayed()
     }
 
     @Test
     fun testUserWillNotSeeUserAndPasswordFieldsWhenGuestAccountIsOn() {
-        compose.onNodeWithTag("auth:username").performTextInput("user")
-        compose.onNodeWithTag("auth:username").performImeAction()
-        compose.onNodeWithTag("auth:password").performTextInput("pass")
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performTextInput("user")
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).performScrollTo().performImeAction()
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).performScrollTo().performTextInput("pass")
         // Enabling guest mode
-        compose.onNodeWithTag("auth:guest").performClick()
+        compose.onNodeWithTag("auth:guest").performScrollTo().performClick()
         // Check input text layouts are not visible
-        compose.onNodeWithTag("auth:username").assertDoesNotExist()
-        compose.onNodeWithTag("auth:password").assertDoesNotExist()
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).assertDoesNotExist()
         // Enabling user mode
-        compose.onNodeWithTag("auth:guest").performClick()
+        compose.onNodeWithTag("auth:guest").performScrollTo().performClick()
         // Check input text layouts are visible
-        compose.onNodeWithTag("auth:username").assertIsDisplayed()
-        compose.onNodeWithTag("auth:password").assertIsDisplayed()
+        compose.onNodeWithTag("auth:username", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithTag("auth:password", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Module(includes = [CreateAccountActivityValidationTestAppModule::class])

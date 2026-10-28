@@ -28,11 +28,7 @@ data class BuildOverviewUiState(
     val actions: List<BuildOverviewAction> = emptyList(),
     val sections: List<OverviewSectionUiState> = emptyList(),
     val statusLabel: StringResource = Res.string.overview_result
-) {
-    val actionItems: List<OverviewActionUiState> = actions.map { OverviewActionUiState(it, it.label()) }
-}
-
-data class OverviewActionUiState(val action: BuildOverviewAction, val labelRes: StringResource)
+)
 fun buildOverviewState(state: ListUiState<BuildLaunchData>, incoming: BuildLaunchData? = null, counts: Map<BuildDetailsSection, BuildDetailsCount> = emptyMap()): BuildOverviewUiState = when (state) {
     ListUiState.Loading -> BuildOverviewUiState()
 

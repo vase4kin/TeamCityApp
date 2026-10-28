@@ -49,11 +49,8 @@
     <string name="action_configuration">Open configuration</string>
     <string name="action_project">Open project</string>
     <string name="action_view_log">View log</string>
-    <string name="section_build_subtitle">#%1$s · %2$s</string>
     <string name="action_stop_build">Stop build</string>
     <string name="action_restart_build">Restart build</string>
-    <string name="build_element_copy_text">Text copied!</string>
-    <string name="platform_action_failed">Couldn’t open this action.</string>
     <string name="continue_build_tip">Continue</string>
     <string name="title_onboarding_stop_build">Stop build</string>
     <string name="title_onboarding_restart_build">Restart build</string>
@@ -66,7 +63,6 @@
     <string name="text_onboarding_share_build">Share a link to this build with others.</string>
     <string name="text_onboarding_browser">Open this build’s page in a browser.</string>
     <string name="build_tip_save_failed">Couldn’t save this tip. Try Continue again.</string>
-    <string name="build_details_title">Build details</string>
     <string name="preparing_confirmation">Preparing…</string>
     <string name="loading_stop">Stopping…</string>
     <string name="loading_remove">Removing…</string>

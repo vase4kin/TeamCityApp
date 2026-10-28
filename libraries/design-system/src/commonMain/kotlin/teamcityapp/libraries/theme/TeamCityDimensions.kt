@@ -40,19 +40,15 @@ object TeamCityDimensions {
     val minimumTouchTarget = 48.dp
     val controlMinHeight = 56.dp
     val selectionChipBorderWidth = 1.dp
-    val leadingContentWidth = 56.dp
     val smallIconSize = 16.dp
     val statusIconSize = 18.dp
     val compactIconSize = 20.dp
     val iconSize = 24.dp
     val largeIconSize = 32.dp
-    val messageIconSize = 64.dp
-    val emptyStateIconSize = 124.dp
     val compactProgressIndicatorSize = 24.dp
     val progressIndicatorSize = 40.dp
     val modalProgressIndicatorSize = 48.dp
     val lowElevation = 1.dp
-    val loginLogoSize = 96.dp
     val floatingActionLaneHeight = 112.dp
 
     // Width limits and responsive layout thresholds.
@@ -60,11 +56,8 @@ object TeamCityDimensions {
     val formMaxWidth = 560.dp
     val paneMaxWidth = 640.dp
     val screenContentMaxWidth = 720.dp
-    val aboutContentMaxWidth = 840.dp
     val errorNoticeInlineMinWidth = 324.dp
-    val historyInlineActionMinWidth = 480.dp
     val retryActionMaxWidth = 200.dp
-    val parameterListMaxHeight = 360.dp
 
     // Shapes and list geometry.
     val extraSmallCornerRadius = 8.dp
@@ -76,7 +69,6 @@ object TeamCityDimensions {
     val selectionRowMinHeight = 64.dp
     val listRowVerticalPadding = 14.dp
     val listRowVerticalSpacing = 1.dp
-    val drawerRowSpacing = 2.dp
     val listPressedCornerRadius = 16.dp
     val listOuterCornerRadius = 24.dp
     val listInnerCornerRadius = 4.dp
@@ -84,9 +76,6 @@ object TeamCityDimensions {
     val listLeadingCornerRadius = 14.dp
     val skeletonTitleHeight = 16.dp
     val skeletonBodyHeight = 12.dp
-    val propertyRowSpacing = 3.dp
-    val propertyRowVerticalPadding = 18.dp
-    val propertyContentSpacing = 14.dp
 
     // Sheet headers, error illustrations, and coachmarks.
     val sheetHeaderMinHeight = 76.dp

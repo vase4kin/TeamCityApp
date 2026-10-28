@@ -18,10 +18,9 @@ package teamcityapp.features.build_details.impl.router
 
 import android.net.Uri
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import javax.inject.Inject
 
 /** Reads the active account only at launch; browser authentication stays in the browser. */
-class BuildDetailsLogLink @Inject constructor(private val storage: SharedUserStorage) {
+class BuildDetailsLogLink constructor(private val storage: SharedUserStorage) {
     fun url(buildId: String): String {
         val account = storage.activeUser
         return Uri.parse(account.teamcityUrl.trimEnd('/') + "/viewLog.html").buildUpon()

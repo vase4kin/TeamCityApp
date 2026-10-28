@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -45,7 +46,7 @@ fun SharedLoginScreen(state: LoginUiState, onChange: (AuthenticationFormState) -
     Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             Column(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth).fillMaxSize().safeDrawingPadding().imePadding().verticalScroll(rememberScrollState()).testTag("login:scroll").padding(top = TeamCityDimensions.sectionSpacing), horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(painterResource(Res.drawable.ic_launcher), null, Modifier.size(TeamCityDimensions.loginLogoSize))
+                Image(painterResource(Res.drawable.ic_launcher), null, Modifier.size(LoginLogoSize))
                 Text(stringResource(Res.string.app_name), Modifier.padding(top = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.headlineLarge)
                 Text(stringResource(Res.string.text_app_description), Modifier.padding(top = TeamCityDimensions.smallSpacing), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SharedAuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.fillMaxWidth().padding(top = TeamCityDimensions.sectionSpacing).testTag("login:form"), horizontalPadding = TeamCityDimensions.sectionSpacing)
@@ -75,3 +76,5 @@ fun SharedLoginScreen(state: LoginUiState, onChange: (AuthenticationFormState) -
 private fun LoginPreview() {
     TeamCityTheme { SharedLoginScreen(LoginUiState(demoLoading = false), {}, {}, {}, {}) }
 }
+
+private val LoginLogoSize = 96.dp

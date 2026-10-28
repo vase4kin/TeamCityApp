@@ -30,11 +30,6 @@
  <string name="overview_personal">Personal of</string>
  <string name="overview_configuration">Configuration</string>
  <string name="overview_project">Project</string>
- <string name="overview_share">Share</string>
- <string name="overview_browser">Open in browser</string>
- <string name="overview_stop">Stop</string>
- <string name="overview_remove">Remove from queue</string>
- <string name="overview_restart">Restart</string>
  <string name="overview_deleted_user">Deleted user</string>
  <string name="overview_deleted_configuration">Deleted configuration</string>
  <string name="overview_unknown_trigger">Unknown trigger type!</string>

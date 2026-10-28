@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.*
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.CancellationException
 import org.jetbrains.compose.resources.stringResource
-import teamcityapp.features.build_details.api.BuildDetailsCommand
 import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.libraries.builds.BuildLaunchData
 

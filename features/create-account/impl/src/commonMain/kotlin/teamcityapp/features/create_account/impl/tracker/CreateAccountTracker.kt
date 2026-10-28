@@ -56,21 +56,6 @@ interface CreateAccountTracker {
     companion object {
 
         /**
-         * Error login attribute
-         */
-        const val ATTRIBUTE_NAME_ERROR = "errorMessage"
-
-        /**
-         * Ssl enabled attribute
-         */
-        const val ATTRIBUTE_NAME_SSL_ENABLED = "sslEnabled"
-
-        /**
-         * Error message if data is failed to save
-         */
-        const val MESSAGE_ERROR_SAVE_DATE = "Failed to save user data!"
-
-        /**
          * Create account screen name
          */
         const val SCREEN_NAME = "screen_create_account"

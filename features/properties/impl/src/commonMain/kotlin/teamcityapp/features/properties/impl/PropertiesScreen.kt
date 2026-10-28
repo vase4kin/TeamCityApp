@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import teamcityapp.features.properties.api.Property
@@ -66,7 +67,7 @@ fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modif
             )
 
             is PropertiesUiState.Content -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(PropertyRowSpacing)) {
                     // Duplicate parameter names are valid; preserve their order and identities by index.
                     itemsIndexed(state.rows) { index, row ->
                         PropertyRow(row, { onCopy(row.property) }, index, state.rows.lastIndex, copyAvailable)
@@ -97,9 +98,9 @@ private fun PropertyRow(row: PropertyRowUiState, onCopy: () -> Unit, index: Int,
             Row(
                 Modifier.fillMaxWidth().testTag("properties:row:$index").then(
                     if (empty || !copyAvailable) Modifier else Modifier.clickable(role = Role.Button, onClickLabel = copyLabel, onClick = onCopy)
-                ).padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.propertyRowVerticalPadding),
+                ).padding(horizontal = TeamCityDimensions.contentPadding, vertical = PropertyRowVerticalPadding),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyContentSpacing)
+                horizontalArrangement = Arrangement.spacedBy(PropertyContentSpacing)
             ) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
                     Text(property.name, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
@@ -168,3 +169,7 @@ private fun PropertiesPreview() {
 private fun EmptyPropertiesPreview() {
     TeamCityTheme { PropertiesScreen(PropertiesUiState.Empty, {}) }
 }
+
+private val PropertyRowSpacing = 3.dp
+private val PropertyRowVerticalPadding = 18.dp
+private val PropertyContentSpacing = 14.dp

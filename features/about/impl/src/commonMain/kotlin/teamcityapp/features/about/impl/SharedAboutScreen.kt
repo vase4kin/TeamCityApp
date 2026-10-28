@@ -61,14 +61,14 @@ fun SharedAboutScreen(
     val versionDescription = stringResource(Res.string.about_application_version_description, appVersion)
     val size = LocalWindowInfo.current.containerSize
     val window = with(LocalDensity.current) { WindowSizeClass.calculateFromSize(DpSize(size.width.toDp(), size.height.toDp())) }
-    SharedTeamCityScreen(stringResource(Res.string.drawer_item_about), onClose, contentMaxWidth = TeamCityDimensions.aboutContentMaxWidth) { modifier ->
+    SharedTeamCityScreen(stringResource(Res.string.drawer_item_about), onClose, contentMaxWidth = AboutContentMaxWidth) { modifier ->
         when (state) {
             AboutUiState.Loading -> LoadingContent(modifier)
 
             is AboutUiState.Content -> Box(modifier, contentAlignment = Alignment.TopCenter) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(if (window.widthSizeClass == WindowWidthSizeClass.Expanded) 2 else 1),
-                    modifier = Modifier.widthIn(max = TeamCityDimensions.aboutContentMaxWidth).fillMaxWidth().fillMaxHeight(),
+                    modifier = Modifier.widthIn(max = AboutContentMaxWidth).fillMaxWidth().fillMaxHeight(),
                     contentPadding = PaddingValues(TeamCityDimensions.contentPadding),
                     horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding),
                     verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)
@@ -163,3 +163,5 @@ private fun AboutRow(text: String, icon: DrawableResource, detail: String? = nul
         }
     )
 }
+
+private val AboutContentMaxWidth = 840.dp

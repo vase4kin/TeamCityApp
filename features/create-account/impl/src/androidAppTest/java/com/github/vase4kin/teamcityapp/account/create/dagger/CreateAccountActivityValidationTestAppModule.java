@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.account.create.dagger;
 
 import android.content.Context;
 import androidx.annotation.VisibleForTesting;
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -27,25 +26,11 @@ import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
 import teamcityapp.libraries.security.CryptoManager;
 import teamcityapp.libraries.security.CryptoManagerImpl;
-import teamcityapp.libraries.storage.Storage;
 
 /** Todo: Convert to Kotlin */
 @Module
 @dagger.hilt.migration.DisableInstallInCheck
 public class CreateAccountActivityValidationTestAppModule {
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
-    protected Context provideContext(@ApplicationContext Context context) {
-        return context;
-    }
-
-    @Provides
-    @Singleton
-    protected Storage provideStorage(SharedUserStorage sharedUserStorage) {
-        return sharedUserStorage;
-    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides

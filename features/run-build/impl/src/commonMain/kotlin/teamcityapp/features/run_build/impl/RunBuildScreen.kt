@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.flow.drop
@@ -142,7 +143,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
             Surface(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth).fillMaxWidth().padding(horizontal = TeamCityDimensions.sectionSpacing).testTag("run-build:parameter-dialog"), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
                 Column(Modifier.padding(TeamCityDimensions.sectionSpacing)) {
                     Text(stringResource(Res.string.title_add_parameter), style = MaterialTheme.typography.headlineSmall)
-                    Column(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding).heightIn(max = TeamCityDimensions.parameterListMaxHeight).verticalScroll(rememberScrollState())) {
+                    Column(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding).heightIn(max = ParameterListMaxHeight).verticalScroll(rememberScrollState())) {
                         OutlinedTextField(
                             state = nameField,
                             modifier = Modifier.fillMaxWidth().testTag("parameter:name"),
@@ -176,3 +177,5 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
 private fun RunPreview() {
     TeamCityTheme { RunBuildScreen(RunBuildUiState(), {}, {}, {}, {}, {}, {}) }
 }
+
+private val ParameterListMaxHeight = 360.dp

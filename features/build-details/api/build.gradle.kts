@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("teamcityapp.kmp.compose")
+    id("teamcityapp.kmp.library")
     alias(libs.plugins.kotlin.serialization)
 }
 kotlin.sourceSets.named("commonMain") {

@@ -16,7 +16,6 @@ Copyright 2026 Andrey Tolpeev
 -->
 <resources>
 <string name="text_build_branch">Build branch</string>
-<string name="text_no_branches_available">No branches available</string>
 <string name="text_no_branches_available_to_filter">No branches available to filter</string>
 <string name="text_loading_branches">Loading branches</string>
 <string name="title_filter_builds">Filter builds</string>
@@ -33,14 +32,5 @@ Copyright 2026 Andrey Tolpeev
 <string name="filter_status_failed_to_start">Failed to start</string>
 <string name="filter_status_running">Running</string>
 <string name="filter_status_queued">Queued</string>
-<string-array name="build_filters">
-        <item>@string/filter_status_success</item>
-        <item>@string/filter_status_failed</item>
-        <item>@string/filter_status_server_error</item>
-        <item>@string/filter_status_cancelled</item>
-        <item>@string/filter_status_failed_to_start</item>
-        <item>@string/filter_status_running</item>
-        <item>@string/filter_status_queued</item>
-    </string-array>
 <string name="branches_unavailable">Unable to load branches. The branch filter is unchanged.</string>
 </resources>

@@ -16,7 +16,6 @@
 
 package teamcityapp.features.build_overview.impl
 import org.jetbrains.compose.resources.StringResource
-import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.features.build_overview.impl.resources.*
 import teamcityapp.libraries.design_system.SharedUiText
 
@@ -35,17 +34,6 @@ fun OverviewField.label(): StringResource = when (this) {
     OverviewField.Personal -> Res.string.overview_personal
     OverviewField.Configuration -> Res.string.overview_configuration
     OverviewField.Project -> Res.string.overview_project
-}
-
-fun BuildOverviewAction.label(): StringResource = when (this) {
-    BuildOverviewAction.Share -> Res.string.overview_share
-    BuildOverviewAction.Browser -> Res.string.overview_browser
-    BuildOverviewAction.Log -> Res.string.overview_view_log
-    BuildOverviewAction.Stop -> Res.string.overview_stop
-    BuildOverviewAction.RemoveFromQueue -> Res.string.overview_remove
-    BuildOverviewAction.Restart -> Res.string.overview_restart
-    BuildOverviewAction.Configuration -> Res.string.overview_configuration
-    BuildOverviewAction.Project -> Res.string.overview_project
 }
 
 fun OverviewText.resource(): StringResource = when (this) {

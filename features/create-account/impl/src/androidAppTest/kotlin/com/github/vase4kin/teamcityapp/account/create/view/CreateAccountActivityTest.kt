@@ -116,6 +116,7 @@ class CreateAccountActivityTest {
     fun testUserCanCreateGuestUserAccountWithCorrectUrl() {
         compose.onNodeWithTag("auth:url").performTextInput(inputUrl)
         compose.onNodeWithTag("auth:guest").performClick()
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithTag("create-account:submit").performClick()
 
         compose.waitForIdle()

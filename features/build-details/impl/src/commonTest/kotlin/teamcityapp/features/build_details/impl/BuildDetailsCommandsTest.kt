@@ -17,7 +17,6 @@
 package teamcityapp.features.build_details.impl
 
 import kotlin.test.*
-import teamcityapp.features.build_details.api.BuildDetailsCommand
 import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.libraries.builds.BuildLaunchData
 

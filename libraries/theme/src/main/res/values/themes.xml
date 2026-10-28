@@ -85,9 +85,6 @@
         <item name="bottomNavigationStyle">
             @style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface
         </item>
-        <!--Custom attrs-->
-        <item name="colorSuccessState">@color/green_600</item>
-        <item name="colorFailedState">@color/red_600</item>
     </style>
 
     <style name="Base.Theme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -99,13 +96,6 @@
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">
             ?attr/colorControlHighlight
-        </item>
-    </style>
-
-    <style name="HomeTheme" parent="Theme.MyApp">
-        <item name="android:navigationBarColor">?attr/colorPrimarySurface</item>
-        <item name="android:navigationBarDividerColor" tools:ignore="NewApi">
-            @android:color/transparent
         </item>
     </style>
 

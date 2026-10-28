@@ -103,6 +103,32 @@ class FeatureModulesTest(unittest.TestCase):
                 self.assertTrue(any("test-only dependencies" in e for e in guard.validate(self.root)))
                 (self.root / f"features/about/impl/src/{source_set}/kotlin/Leak.kt").unlink()
 
+    def test_network_fixture_cannot_enter_hosts_or_library_production_code(self):
+        for path in (
+            "app/src/main/java/Leak.java",
+            "app/src/mock/kotlin/Leak.kt",
+            "app/src/prod/kotlin/Leak.kt",
+            "app/src/r8Verification/kotlin/Leak.kt",
+            "shared-app/src/iosMain/kotlin/Leak.kt",
+            "libraries/network/src/commonMain/kotlin/Leak.kt",
+            "libraries/session/src/main/kotlin/Leak.kt",
+        ):
+            with self.subTest(path=path):
+                self.write(path, "import teamcityapp.libraries.network.testing.AccountNetworkFixture")
+                self.assertTrue(any("test-only dependencies" in e for e in guard.validate(self.root)))
+                (self.root / path).unlink()
+
+    def test_network_fixture_is_allowed_in_owning_module_tests(self):
+        for path in (
+            "app/src/androidTest/kotlin/Fixture.kt",
+            "shared-app/src/commonTest/kotlin/Fixture.kt",
+            "libraries/shared-data/src/commonTest/kotlin/Fixture.kt",
+            "libraries/network-testing/src/commonMain/kotlin/Fixture.kt",
+            "features/about/impl/src/androidHostTest/kotlin/Fixture.kt",
+        ):
+            self.write(path, "import teamcityapp.libraries.network.testing.AccountNetworkFixture")
+        self.assertEqual([], guard.validate(self.root))
+
     def test_android_leak_and_unmoved_sources_are_rejected(self):
         self.write("features/about/impl/src/commonMain/kotlin/About.kt", "import android.app.Activity")
         self.write("features/about/impl/src/main/kotlin/Old.kt", "class Old")

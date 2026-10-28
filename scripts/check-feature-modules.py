@@ -49,8 +49,6 @@ def validate(root):
                     errors.append(f"{source.relative_to(root)}: feature APIs must not expose implementation types")
                 elif owner != namespace and not ("androidAppTest" in source.parts and (member == "R" or member.startswith("R."))):
                     errors.append(f"{source.relative_to(root)}: feature source and tests must not import another feature implementation")
-            if any(part == "main" or part.endswith("Main") for part in source.parts) and "teamcityapp.libraries.network.testing" in text:
-                errors.append(f"{source.relative_to(root)}: network fixtures are test-only dependencies")
         impl = feature / "impl"
         if not (impl / "build.gradle.kts").exists():
             continue
@@ -79,6 +77,17 @@ def validate(root):
     for source in (root / "libraries").glob("*/src/*Main/**/*.kt"):
         if re.search(r"^import teamcityapp\.features\.", source.read_text(), re.MULTILINE):
             errors.append(f"{source.relative_to(root)}: feature adapters belong in their owning feature")
+    # The test fixture module is shared by tests, never by a host or production adapter.
+    modules = [root / "app", root / "shared-app", *(root / "libraries").glob("*"), *features.glob("*/*")]
+    for module in modules:
+        if module == root / "libraries/network-testing":
+            continue
+        for source_set in (module / "src").glob("*"):
+            if source_set.name not in {"main", "prod", "mock", "r8Verification"} and not source_set.name.endswith("Main"):
+                continue
+            for source in source_set.rglob("*"):
+                if source.suffix in {".kt", ".java"} and "teamcityapp.libraries.network.testing" in source.read_text():
+                    errors.append(f"{source.relative_to(root)}: network fixtures are test-only dependencies")
     # Event decisions belong to each feature; the root only composes implementations.
     for source in (root / "shared-app/src/commonMain").rglob("*.kt"):
         text = source.read_text()

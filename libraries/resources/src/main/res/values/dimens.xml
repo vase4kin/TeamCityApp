@@ -16,9 +16,8 @@
 
 <resources>
     <dimen name="dp_0">0dp</dimen>
-    <dimen name="dp_16">16dp</dimen>
+
     <dimen name="dp_24">24dp</dimen>
     <dimen name="dp_recycler_view_horizontal">@dimen/dp_0</dimen>
-
 
 </resources>

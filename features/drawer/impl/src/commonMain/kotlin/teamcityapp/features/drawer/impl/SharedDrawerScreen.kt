@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.*
 import teamcityapp.features.drawer.api.*
 import teamcityapp.features.drawer.impl.resources.*
@@ -191,7 +192,7 @@ private fun DrawerMenu(icon: org.jetbrains.compose.resources.DrawableResource, l
         MaterialTheme.colorScheme.onSurfaceVariant
     }
     Surface(
-        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding).then(if (!last) Modifier.padding(bottom = TeamCityDimensions.drawerRowSpacing) else Modifier),
+        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding).then(if (!last) Modifier.padding(bottom = DrawerRowSpacing) else Modifier),
         color = if (tonal) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(topStart = if (first) outer else inner, topEnd = if (first) outer else inner, bottomStart = if (last) outer else inner, bottomEnd = if (last) outer else inner)
     ) {
@@ -235,3 +236,5 @@ private fun DrawerFooter(enabled: Boolean, onPrivacy: () -> Unit, onRate: () -> 
 private fun DrawerPreview() {
     TeamCityTheme { SharedDrawerScreen(DrawerUiState(DrawerAccountsUiState.Content(listOf(DrawerAccount(DrawerAccountId("https://teamcity.example", "Guest user"), true, false)))), {}, {}, {}, {}, {}, {}, {}) }
 }
+
+private val DrawerRowSpacing = 2.dp

@@ -17,14 +17,10 @@ Copyright 2026 Andrey Tolpeev
 <resources>
 <string name="server_field_hint">TeamCity server url</string>
 <string name="server_cannot_be_empty">Server url cannot be empty</string>
-<string name="server_no_such_server">No TeamCity server associated with hostname</string>
-<string name="server_correct_url">Please provide correct server url</string>
-<string name="server_check_url">Please check server url</string>
 <string name="server_password_cannot_be_empty">Password cannot be empty</string>
 <string name="server_user_name_cannot_be_empty">Username cannot be empty</string>
 <string name="server_not_secure_http">Using http is insecure and it's recommend to use https instead. Use your favorite search engine to get more information about this topic.</string>
 <string name="error_save_account">Could not save user. Please try again</string>
-<string name="text_teamcity_url">https://</string>
 <string name="text_guest_user_switch">Login as guest user</string>
 <string name="text_disable_ssl_switch">Ignore SSL issues</string>
 <string name="hint_user_name">Username</string>

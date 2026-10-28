@@ -305,7 +305,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:submit").performClick()
 
         compose.onNodeWithText(context.getString(R.string.warning_ssl_dialog_title)).assertIsDisplayed()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.server_not_secure_http)).assertIsDisplayed()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.server_not_secure_http)).assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.dialog_ok_title).uppercase()).performClick()
 
         compose.waitForIdle()
@@ -329,7 +329,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("auth:username").performTextInput("user")
         compose.onNodeWithTag("auth:password").performTextInput("pass")
         compose.onNodeWithTag("auth:password").performImeAction()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.error_save_account)).assertIsDisplayed()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.error_save_account)).assertIsDisplayed()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasAccountWithUrl(URL, "user"), `is`(false))
         compose.onNodeWithTag("home:tab:Projects").assertDoesNotExist()
@@ -371,7 +371,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:demo").performScrollTo()
             .assertIsDisplayed()
             .performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.warning_ssl_dialog_negative)).performClick()
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().context.getString(teamcityapp.libraries.authentication.R.string.warning_ssl_dialog_negative)).performClick()
         assertNoUnverifiedIntents()
     }
 

@@ -26,7 +26,6 @@ import javax.inject.Singleton;
 import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
 import teamcityapp.libraries.security.CryptoManager;
-import teamcityapp.libraries.storage.Storage;
 
 /** Todo: Convert to Kotlin */
 @Module
@@ -36,22 +35,9 @@ public class LoginActivityTestAppModule {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected Context provideContext(@ApplicationContext Context context) {
-        return context;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
     protected SharedUserStorage provideSharedUserStorage(
             @ApplicationContext Context context, CryptoManager cryptoManager) {
         return SharedUserStorage.init(context, cryptoManager);
-    }
-
-    @Provides
-    @Singleton
-    protected Storage provideStorage(SharedUserStorage sharedUserStorage) {
-        return sharedUserStorage;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

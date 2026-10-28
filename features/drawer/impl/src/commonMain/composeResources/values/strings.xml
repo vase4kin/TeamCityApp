@@ -18,7 +18,6 @@
 <string name="about_app_text_privacy">Privacy policy</string>
 <string name="account_back">Back</string>
 <string name="account_title">Account</string>
-<string name="dialog_ok">OK</string>
 <string name="drawer_current_account">Current account</string>
 <string name="drawer_current_short">Current</string>
 <string name="drawer_dismiss">Dismiss</string>
