@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0...v2.1.0) (2026-10-28)
+
+
+### Features
+
+* **kmp:** share the Android and iOS application core ([#478](https://github.com/vase4kin/TeamCityApp/issues/478)) ([a68ad85](https://github.com/vase4kin/TeamCityApp/commit/a68ad85c9d4ee2c0dc28c6d26edfb147bd1c6403))
+
 ## [2.0.0](https://github.com/vase4kin/TeamCityApp/compare/v2.0.0-beta.4...v2.0.0) (2026-10-14)
 
 
